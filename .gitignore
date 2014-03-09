@@ -14,9 +14,10 @@ info.json
 # Compiled Python doohickies
 *.pyc
 
+#Doesn't work for some reason. Git ignores everything in config.
 #ignore any files in config/, except those in subdirectories.
-/config/*
-!/config/*/*
+#/config/*
+#!/config/*/*
 
 # OpenBYOND-generated crap
 /dmis
