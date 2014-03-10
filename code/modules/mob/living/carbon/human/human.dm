@@ -1,5 +1,4 @@
 
-
 /mob/living/carbon/human/New()
 	var/datum/reagents/R = new/datum/reagents(1000)
 	reagents = R
@@ -1209,7 +1208,7 @@
 				c:layer = initial(c:layer)
 		w_uniform.screen_loc = ui_iclothing
 		if (istype(w_uniform, /obj/item/clothing/under))
-			var/t1 = w_uniform.color
+			var/t1 = w_uniform.colour
 			if (!t1)
 				t1 = icon_state
 			if (mutations & FAT)
@@ -1504,8 +1503,8 @@
 			src.frozen++ // you're going to need help when you're this fucking cool, no turning back.
 
 	if (frozen > 15)
-		frozen = 15 // Führerin Erika: and then they're like omg im frozen cant unfreeze
-					//	Führerin Erika: so we have been adminfixing people
+		frozen = 15 // Fï¿½hrerin Erika: and then they're like omg im frozen cant unfreeze
+					//	Fï¿½hrerin Erika: so we have been adminfixing people
 
 
 	if (frozen) // cool
