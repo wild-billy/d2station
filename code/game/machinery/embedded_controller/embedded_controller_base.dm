@@ -70,7 +70,6 @@ obj/machinery/embedded_controller
 
 		initialize()
 			set_frequency(frequency)
-
 		post_signal(datum/signal/signal)
 			signal.transmission_method = TRANSMISSION_RADIO
 			if(radio_connection)

@@ -32,7 +32,7 @@ client
 
 		body += "</ol>"
 
-		var/html = "<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />"
+		var/html = "<html><head>"
 		if (title)
 			html += "<title>[title]</title>"
 		html += {"<style>
@@ -139,4 +139,3 @@ client
 	switch (alert("Are you sure you wish to delete \the [A.name] at ([A.x],[A.y],[A.z]) ?", "Admin Delete Object","Yes","No"))
 		if("Yes")
 			log_admin("[usr.key] deleted [A.name] at ([A.x],[A.y],[A.z])")
-

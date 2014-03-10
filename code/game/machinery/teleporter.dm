@@ -10,7 +10,7 @@
 			src.attack_hand()
 
 		var/obj/S = null
-		for(var/obj/landmark/sloc in landmarkz)
+		for(var/obj/landmark/sloc in world)
 			if (sloc.name != "Clown Land")
 				continue
 			if (locate(/mob) in sloc.loc)
@@ -158,8 +158,8 @@
 		for(var/mob/O in viewers(M, null))
 			O.show_message(text("\red <B>The [] bounces off of the portal!</B>", M.name), 1)
 		return
-	if (istype(M, /mob/living))
-		var/mob/living/MM = M
+	if (istype(M, /mob))
+		var/mob/MM = M
 		if(MM.check_contents_for(/obj/item/weapon/disk/nuclear))
 			MM << "\red Something you are carrying seems to be unable to pass through the portal. Better drop it if you want to go through."
 			return
@@ -175,8 +175,8 @@
 					disky = 1
 		if (istype(O, /obj/item/weapon/disk/nuclear))
 			disky = 1
-		if (istype(O, /mob/living))
-			var/mob/living/MM = O
+		if (istype(O, /mob))
+			var/mob/MM = O
 			if(MM.check_contents_for(/obj/item/weapon/disk/nuclear))
 				disky = 1
 	if (disky)
@@ -184,9 +184,9 @@
 			P.show_message(text("\red <B>The [] bounces off of the portal!</B>", M.name), 1)
 		return
 
-//Bags of Holding cause bluespace teleportation to go funky. --NeoFite
-	if (istype(M, /mob/living))
-		var/mob/living/MM = M
+//Bags of Holding cause bluespace teleportation to go funky
+	if (istype(M, /mob))
+		var/mob/MM = M
 		if(MM.check_contents_for(/obj/item/weapon/storage/backpack/holding))
 			MM << "\red The Bluespace interface on your Bag of Holding interferes with the teleport!"
 			precision = rand(1,100)
@@ -203,11 +203,10 @@
 					precision = rand(1,100)
 		if (istype(O, /obj/item/weapon/storage/backpack/holding))
 			precision = rand(1,100)
-		if (istype(O, /mob/living))
-			var/mob/living/MM = O
+		if (istype(O, /mob))
+			var/mob/MM = O
 			if(MM.check_contents_for(/obj/item/weapon/storage/backpack/holding))
 				precision = rand(1,100)
-
 
 	var/turf/destturf = get_turf(destination)
 
@@ -259,7 +258,7 @@
 	if (com)
 		com.icon_state = "tele1"
 		use_power(5000)
-		playsound(src.loc, 'teleporter_open.ogg', 30, 0)
+		playsound(src.loc, 'teleporter_open.ogg', 50, 0)
 		for(var/mob/O in hearers(src, null))
 			O.show_message("\blue Teleporter engaged!", 2)
 	src.add_fingerprint(usr)
@@ -274,7 +273,7 @@
 	var/atom/com = locate(/obj/machinery/teleport/hub, locate(l.x + 1, l.y, l.z))
 	if (com)
 		com.icon_state = "tele0"
-		playsound(src.loc, 'teleporter_close.ogg', 30, 0)
+		playsound(src.loc, 'teleporter_close.ogg', 50, 0)
 		for(var/mob/O in hearers(src, null))
 			O.show_message("\blue Teleporter disengaged!", 2)
 	src.add_fingerprint(usr)
@@ -397,36 +396,5 @@
 		usr << text("<B>[]</B>\n\t []", topic, src.topics[text("[]", topic)])
 	else
 		usr << text("Unable to find- []", topic)
-	src.add_fingerprint(usr)
-	return
-
-
-/obj/machinery/computer/teleporter
-	name = "Long Range Teleporter"
-	desc = "use this to travel much further distances than ever before"
-	icon_state = "teleport"
-
-
-/obj/machinery/computer/teleporter/longrange/attack_hand()
-	if(stat & (NOPOWER|BROKEN))
-		return
-
-	var/list/L = list()
-	var/list/areaindex = list()
-
-	for(var/obj/machinery/teleport/hub/R in machines)
-		var/turf/T = find_loc(R)
-		if (!T)	continue
-		var/tmpname = T.loc.name
-		if(areaindex[tmpname])
-			tmpname = "[tmpname] ([++areaindex[tmpname]])"
-		else
-			areaindex[tmpname] = 1
-		L[tmpname] = R
-
-	var/desc = input("Please select a location to lock in.", "Locking Computer") in L
-	src.locked = L[desc]
-	for(var/mob/O in hearers(src, null))
-		O.show_message("\blue Locked In", 2)
 	src.add_fingerprint(usr)
 	return

@@ -1,5 +1,4 @@
 //Config stuff
-//buttes
 #define SUPPLY_DOCKZ 2          //Z-level of the Dock.
 #define SUPPLY_STATIONZ 1       //Z-level of the Station.
 #define SUPPLY_POINTSPER 10      //Points per tick.
@@ -9,6 +8,16 @@
 #define SUPPLY_STATION_AREATYPE "/area/supply/station" //Type of the supply shuttle area for station
 #define SUPPLY_DOCK_AREATYPE "/area/supply/dock"	//Type of the supply shuttle area for dock
 #define SUPPLY_POINTSPERSLIP 1 //points per packing slip sent back stamped.
+#define SUPPLY_POINTSPERCOAL 5
+#define SUPPLY_POINTSPERDIAMOND 25
+#define SUPPLY_POINTSPERGLASS 3
+#define SUPPLY_POINTSPERGOLD 15
+#define SUPPLY_POINTSPERIRON 8
+#define SUPPLY_POINTSPERPLASMA 18
+#define SUPPLY_POINTSPERROCK 1
+#define SUPPLY_POINTSPERSILVER 10
+#define SUPPLY_POINTSPERSLAG 1
+#define SUPPLY_POINTSPERURANIUM 35
 
 var/supply_shuttle_moving = 0
 var/supply_shuttle_at_station = 0
@@ -17,30 +26,28 @@ var/list/supply_shuttle_requestlist = new/list()
 var/supply_shuttle_can_send = 1
 var/supply_shuttle_time = 0
 var/supply_shuttle_timeleft = 0
-var/supply_shuttle_points = 50
+var/supply_shuttle_points = 0
 var/ordernum=0
 
-/area/supply/station //DO NOT TURN THE ul_LIGHTING STUFF ON FOR SHUTTLES. IT BREAKS THINGS.
+/area/supply/station //DO NOT TURN THE SD_LIGHTING STUFF ON FOR SHUTTLES. IT BREAKS THINGS.
 	name = "supply shuttle"
 	icon_state = "shuttle3"
+	luminosity = 1
+	sd_lighting = 0
 	requires_power = 0
-	luminosity = 0
-//	sd_lighting = 0
-	ul_Lighting = 0
 
-/area/supply/dock //DO NOT TURN THE ul_LIGHTING STUFF ON FOR SHUTTLES. IT BREAKS THINGS.
+/area/supply/dock //DO NOT TURN THE SD_LIGHTING STUFF ON FOR SHUTTLES. IT BREAKS THINGS.
 	name = "supply shuttle"
 	icon_state = "shuttle3"
+	luminosity = 1
+	sd_lighting = 0
 	requires_power = 0
-	luminosity = 0
-//	sd_lighting = 0
-	ul_Lighting = 0
 
 //SUPPLY PACKS MOVED TO /code/defines/obj/supplypacks.dm
 
 /obj/plasticflaps //HOW DO YOU CALL THOSE THINGS ANYWAY
 	name = "Plastic flaps"
-	desc = "I definitely cant get past those. no way."
+	desc = "I definitely can't get past those. no way."
 	icon = 'stationobjs.dmi' //Change this.
 	icon_state = "plasticflaps"
 	density = 0
@@ -48,9 +55,7 @@ var/ordernum=0
 	layer = 4
 
 /obj/plasticflaps/CanPass(atom/A, turf/T)
-	if(istype(A) && A.checkpass(PASSGLASS))
-		return prob(60)
-	else if(istype(A, /mob/living)) // You Shall Not Pass!
+	if (istype(A, /mob/living)) // You Shall Not Pass!
 		var/mob/living/M = A
 		if(!M.lying)			// unless you're lying down
 			return 0
@@ -71,10 +76,6 @@ var/ordernum=0
 	name = "Supply Shuttle"
 	icon_state = "supply"
 	requires_power = 0
-	requires_power = 0
-	luminosity = 0
-//	sd_lighting = 0
-	ul_Lighting = 0
 
 /obj/machinery/computer/supplycomp
 	name = "Supply shuttle console"
@@ -159,6 +160,9 @@ var/ordernum=0
 /obj/item/weapon/paper/manifest
 	name = "Supply Manifest"
 
+
+
+
 /proc/process_supply_order()
 	var/shuttleat = supply_shuttle_at_station ? SUPPLY_STATION_AREATYPE : SUPPLY_DOCK_AREATYPE
 
@@ -212,26 +216,6 @@ var/ordernum=0
 		//manifest finalisation
 		slip.info += "</ul><br>"
 		slip.info += "CHECK CONTENTS AND STAMP BELOW THE LINE TO CONFIRM RECEIPT OF GOODS<hr>"
-		if(prob(1))
-			if(prob(1))
-				if(prob(1))
-					new /obj/critter/lizzzard(A)
-		if(prob(1))
-			if(prob(1))
-				if(prob(1))
-					new /obj/critter/lizard(A)
-		if(prob(1))
-			if(prob(1))
-				if(prob(1))
-					new /obj/critter/slipperydick(A)
-		if(prob(1))
-			if(prob(1))
-				if(prob(1))
-					new /obj/critter/roach(A)
-		if(prob(1))
-			if(prob(1))
-				if(prob(1))
-					new /obj/livestock/spessbee(A)
 
 	return
 
@@ -269,7 +253,7 @@ var/ordernum=0
 		dat = src.temp
 	else
 
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Supply shuttle</B><HR>
+		dat += {"<BR><B>Supply shuttle</B><HR>
 		Location: [supply_shuttle_moving ? "Moving to station ([supply_shuttle_timeleft] Mins.)":supply_shuttle_at_station ? "Station":"Dock"]<BR>
 		<HR>Supply points: [supply_shuttle_points]<BR>
 		<BR>\n<A href='?src=\ref[src];order=1'>Request items</A><BR><BR>
@@ -313,7 +297,7 @@ var/ordernum=0
 		var/obj/item/weapon/paper/reqform = new /obj/item/weapon/paper(src.loc)
 		var/idname = "Unknown"
 		var/idrank = "Unknown"
-		var/reason = strip_html(input(usr,"Reason:","Why do you require this item?",""))
+		var/reason = input(usr,"Reason:","Why do you require this item?","")
 
 		reqform.name = "Requisition Form - [P.name]"
 		reqform.info += "<h3>[station_name] Supply Requisition Form</h3><hr>"
@@ -374,12 +358,13 @@ var/ordernum=0
 	if(..())
 		return
 	user.machine = src
+	sleep(-1)
 	post_signal("supply")
 	var/dat
 	if (src.temp)
 		dat = src.temp
 	else
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Supply shuttle</B><HR>
+		dat += {"<BR><B>Supply shuttle</B><HR>
 		\nLocation: [supply_shuttle_moving ? "Moving to station ([supply_shuttle_timeleft] Mins.)":supply_shuttle_at_station ? "Station":"Dock"]<BR>
 		<HR>\nSupply points: [supply_shuttle_points]<BR>\n<BR>
 		[supply_shuttle_moving ? "\n*Must be at dock to order items*<BR>\n<BR>":supply_shuttle_at_station ? "\n*Must be at dock to order items*<BR>\n<BR>":"\n<A href='?src=\ref[src];order=1'>Order items</A><BR>\n<BR>"]
@@ -408,6 +393,7 @@ var/ordernum=0
 
 		src.temp = "Shuttle sent.<BR><BR><A href='?src=\ref[src];mainmenu=1'>OK</A>"
 		src.updateUsrDialog()
+		sleep(-1)
 		post_signal("supply")
 
 		supply_shuttle_shoppinglist = null
@@ -416,13 +402,14 @@ var/ordernum=0
 		sell_crates()
 		send_supply_shuttle()
 
+
 	else if (href_list["sendtostation"])
 		if(supply_shuttle_at_station || supply_shuttle_moving) return
 
 		if (!supply_can_move())
 			usr << "\red The supply shuttle can not transport station employees or homing beacons."
 			return
-
+		sleep(-1)
 		post_signal("supply")
 		usr << "\blue The supply shuttle has been called and will arrive in [round(((SUPPLY_MOVETIME/10)/60))] minutes."
 
@@ -457,7 +444,7 @@ var/ordernum=0
 				supply_shuttle_points -= P.cost
 				O.object = P
 				O.orderedby = usr.name
-				O.comment = strip_html(input(usr,"Comment:","Enter comment",""))
+				O.comment = input(usr,"Comment:","Enter comment","")
 				supply_shuttle_shoppinglist += O
 				src.temp = "Thanks for your order.<BR>"
 				src.temp += "<BR><A href='?src=\ref[src];mainmenu=1'>OK</A>"
@@ -473,7 +460,7 @@ var/ordernum=0
 				supply_shuttle_points -= P.cost
 				O.object = P
 				O.orderedby = usr.name
-				O.comment = strip_html(input(usr,"Comment:","Enter comment",""))
+				O.comment = input(usr,"Comment:","Enter comment","")
 				supply_shuttle_shoppinglist += O
 				src.temp = "Thanks for your order.<BR>"
 				src.temp += "<BR><A href='?src=\ref[src];mainmenu=1'>OK</A>"
@@ -547,6 +534,4 @@ var/ordernum=0
 	if(!from || !dest) return
 
 	from.move_contents_to(dest)
-	for(var/turf/A in from)
-		del(A)
 	supply_shuttle_at_station = !supply_shuttle_at_station

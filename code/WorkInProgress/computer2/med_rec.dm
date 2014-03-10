@@ -8,12 +8,13 @@
 	var/screen = null
 	var/datum/data/record/active1 = null
 	var/datum/data/record/active2 = null
-	var/a_id = null
+
 	var/temp = null
 
 /datum/computer/file/computer_program/med_data/return_text()
 	if(..())
 		return
+	src.master.icon_state = "computer_med_data"
 	var/dat
 	if (src.temp)
 		dat = text("<TT>[src.temp]</TT><BR><BR><A href='?src=\ref[src];temp=1'>Clear Screen</A>")
@@ -59,24 +60,22 @@
 						dat += text("<A href='?src=\ref[src];new=1'>New Record</A><BR><BR>")
 					dat += text("\n<A href='?src=\ref[];print_p=1'>Print Record</A><BR>\n<A href='?src=\ref[];screen=2'>Back</A><BR>", src, src)
 				if(5.0)
-					dat += {"<CENTER><B>Virus Database</B></CENTER>
-					<br><a href='?src=\ref[src];vir=gbs'>GBS</a>
-					<br><a href='?src=\ref[src];vir=cc'>Common Cold</a>
-					<br><a href='?src=\ref[src];vir=f'>Flu</A>
-					<br><a href='?src=\ref[src];vir=jf'>Jungle Fever</a>
-					<br><a href='?src=\ref[src];vir=ca'>Clowning Around</a>
-					<br><a href='?src=\ref[src];vir=p'>Plasmatoid</a>
-					<br><a href='?src=\ref[src];vir=dna'>Space Rhinovirus</a>
-					<br><a href='?src=\ref[src];vir=bot'>Robot Transformation</a>
-					<br><a href='?src=\ref[src];screen=1'>Back</a>"}
+					dat += "<CENTER><B>Virus Database</B></CENTER>"
+					for(var/Dt in typesof(/datum/disease/))
+						var/datum/disease/Dis = new Dt(0)
+						if(!Dis.desc)
+							continue
+						dat += "<br><a href='?src=\ref[src];vir=[Dt]'>[Dis.name]</a>"
+					dat += "<br><a href='?src=\ref[src];screen=1'>Back</a>"
+
 				if(6.0)
 					dat += "<center><b>Medical Robot Monitor</b></center>"
 					dat += "<a href='?src=\ref[src];screen=1'>Back</a>"
-					dat += "<br><b>Medical Robots:</b>"
+					dat += "<br><b>Medical Robots:<br></b>"
 					var/bdat = null
-					for(var/obj/machinery/bot/medbot/M in machines)
+					for(var/obj/machinery/bot/medbot/M in world)
 						var/turf/bl = get_turf(M)
-						bdat += "[M.name] - <b>\[[bl.x],[bl.y]\]</b> - [M.on ? "Online" : "Offline"]<br>"
+						bdat += "<font color='blue'> <B>[M.name]</B></font><BR> - <b>\[[bl.x],[bl.y]\]</b> <BR>- [M.on ? "<font color='darkgreen'>Online</font>" : "<font color='darkred'>Offline</font>"]<BR>"
 						if(!isnull(M.reagent_glass))
 							bdat += "Reservoir: \[[M.reagent_glass.reagents.total_volume]/[M.reagent_glass.reagents.maximum_volume]\]"
 						else
@@ -109,7 +108,7 @@
 		src.active1 = null
 		src.active2 = null
 	else if (href_list["login"])
-		if (istype(usr, /mob/living/silicon))
+		if (istype(src.master, /mob/living/silicon))
 			src.active1 = null
 			src.active2 = null
 			src.authenticated = 1
@@ -133,87 +132,21 @@
 			src.active2 = null
 
 		if(href_list["vir"])
-			switch(href_list["vir"])
-				if("gbs")
-					src.temp = {"<b>Name:</b> GBS
-<BR><b>Number of stages:</b> 5
-<BR><b>Spread:</b> Airborne Transmission
-<BR><b>Possible Cure:</b> Spaceacillin
-<BR><b>Affected Species:</b> Human
+			var/type = href_list["vir"]
+			var/datum/disease/Dis = new type(0)
+			var/AfS = ""
+			for(var/Str in Dis.affected_species)
+				AfS += " [Str];"
+			src.temp = {"<b>Name:</b> [Dis.name]
+<BR><b>Number of stages:</b> [Dis.max_stages]
+<BR><b>Spread:</b> [Dis.spread] Transmission
+<BR><b>Possible Cure:</b> [(Dis.cure||"none")]
+<BR><b>Affected Species:</b>[AfS]
 <BR>
-<BR><b>Notes:</b> If left untreated death will occur.
+<BR><b>Notes:</b> [Dis.desc]
 <BR>
-<BR><b>Severity:</b> Major"}
-				if("cc")
-					src.temp = {"<b>Name:</b> Common Cold
-<BR><b>Number of stages:</b> 3
-<BR><b>Spread:</b> Airborne Transmission
-<BR><b>Possible Cure:</b> Rest
-<BR><b>Affected Species:</b> Human
-<BR>
-<BR><b>Notes:</b> If left untreated the subject will contract the flu.
-<BR>
-<BR><b>Severity:</b> Minor"}
-				if("f")
-					src.temp = {"<b>Name:</b> The Flu
-<BR><b>Number of stages:</b> 3
-<BR><b>Spread:</b> Airborne Transmission
-<BR><b>Possible Cure:</b> Rest
-<BR><b>Affected Species:</b> Human
-<BR>
-<BR><b>Notes:</b> If left untreated the subject will feel quite unwell.
-<BR>
-<BR><b>Severity:</b> Medium"}
-				if("jf")
-					src.temp = {"<b>Name:</b> Jungle Fever
-<BR><b>Number of stages:</b> 1
-<BR><b>Spread:</b> Airborne Transmission
-<BR><b>Possible Cure:</b> None
-<BR><b>Affected Species:</b> Monkey
-<BR>
-<BR><b>Notes:</b> Monkies with this disease will bite humans, causing humans to spontaneously to mutate into a monkey.
-<BR>
-<BR><b>Severity:</b> Medium"}
-				if("ca")
-					src.temp = {"<b>Name:</b> Clowning Around
-<BR><b>Number of stages:</b> 4
-<BR><b>Spread:</b> Airborne Transmission
-<BR><b>Possible Cure:</b> Spaceacillin
-<BR><b>Affected Species:</b> Human
-<BR>
-<BR><b>Notes:</b> Subjects are affected by rampant honking and a fondness for shenanigans. They may also spontaneously phase through closed airlocks.
-<BR>
-<BR><b>Severity:</b> Laughable"}
-				if("p")
-					src.temp = {"<b>Name:</b> Plasmatoid
-<BR><b>Number of stages:</b> 3
-<BR><b>Spread:</b> Airborne Transmission
-<BR><b>Possible Cure:</b> Inaprovaline
-<BR><b>Affected Species:</b> Human and Monkey
-<BR>
-<BR><b>Notes:</b> With this disease the victim will need plasma to breathe.
-<BR>
-<BR><b>Severity:</b> Major"}
-				if("dna")
-					src.temp = {"<b>Name:</b> Space Rhinovirus
-<BR><b>Number of stages:</b> 4
-<BR><b>Spread:</b> Airborne Transmission
-<BR><b>Possible Cure:</b> Spaceacillin
-<BR><b>Affected Species:</b> Human
-<BR>
-<BR><b>Notes:</b> This disease transplants the genetic code of the intial vector into new hosts.
-<BR>
-<BR><b>Severity:</b> Medium"}
-				if("bot")
-					src.temp = {"<b>Name:</b> Robot Transformation
-<BR><b>Number of stages:</b> 5
-<BR><b>Spread:</b> Infected food
-<BR><b>Possible Cure:</b> None
-<BR><b>Affected Species:</b> Human
-<BR>
-<BR><b>Notes:</b> This disease, actually acute nanomachine infection, converts the victim into a cyborg.
-<BR>
-<BR><b>Severity:</b> Major"}
+<BR><b>Severity:</b> [Dis.severity]"}
+
 
 		if (href_list["del_all"])
 			src.temp = text("Are you sure you wish to delete all records?<br>\n\t<A href='?src=\ref[];temp=1;del_all2=1'>Yes</A><br>\n\t<A href='?src=\ref[];temp=1'>No</A><br>", src, src)
@@ -229,7 +162,7 @@
 			switch(href_list["field"])
 				if("fingerprint")
 					if (istype(src.active1, /datum/data/record))
-						var/t1 = strip_html(input("Please input fingerprint hash:", "Med. records", src.active1.fields["id"], null)  as text)
+						var/t1 = input("Please input fingerprint hash:", "Med. records", src.active1.fields["id"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active1 != a1))
 							return
 						src.active1.fields["fingerprint"] = t1
@@ -241,61 +174,61 @@
 							src.active1.fields["sex"] = "Male"
 				if("age")
 					if (istype(src.active1, /datum/data/record))
-						var/t1 = strip_html(input("Please input age:", "Med. records", src.active1.fields["age"], null)  as text)
+						var/t1 = input("Please input age:", "Med. records", src.active1.fields["age"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active1 != a1))
 							return
 						src.active1.fields["age"] = t1
 				if("mi_dis")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please input minor disabilities list:", "Med. records", src.active2.fields["mi_dis"], null)  as text)
+						var/t1 = input("Please input minor disabilities list:", "Med. records", src.active2.fields["mi_dis"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["mi_dis"] = t1
 				if("mi_dis_d")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize minor dis.:", "Med. records", src.active2.fields["mi_dis_d"], null)  as message)
+						var/t1 = input("Please summarize minor dis.:", "Med. records", src.active2.fields["mi_dis_d"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["mi_dis_d"] = t1
 				if("ma_dis")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please input major diabilities list:", "Med. records", src.active2.fields["ma_dis"], null)  as text)
+						var/t1 = input("Please input major diabilities list:", "Med. records", src.active2.fields["ma_dis"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["ma_dis"] = t1
 				if("ma_dis_d")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize major dis.:", "Med. records", src.active2.fields["ma_dis_d"], null)  as message)
+						var/t1 = input("Please summarize major dis.:", "Med. records", src.active2.fields["ma_dis_d"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["ma_dis_d"] = t1
 				if("alg")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please state allergies:", "Med. records", src.active2.fields["alg"], null)  as text)
+						var/t1 = input("Please state allergies:", "Med. records", src.active2.fields["alg"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["alg"] = t1
 				if("alg_d")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize allergies:", "Med. records", src.active2.fields["alg_d"], null)  as message)
+						var/t1 = input("Please summarize allergies:", "Med. records", src.active2.fields["alg_d"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["alg_d"] = t1
 				if("cdi")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please state diseases:", "Med. records", src.active2.fields["cdi"], null)  as text)
+						var/t1 = input("Please state diseases:", "Med. records", src.active2.fields["cdi"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["cdi"] = t1
 				if("cdi_d")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize diseases:", "Med. records", src.active2.fields["cdi_d"], null)  as message)
+						var/t1 = input("Please summarize diseases:", "Med. records", src.active2.fields["cdi_d"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["cdi_d"] = t1
 				if("notes")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize notes:", "Med. records", src.active2.fields["notes"], null)  as message)
+						var/t1 = input("Please summarize notes:", "Med. records", src.active2.fields["notes"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 							return
 						src.active2.fields["notes"] = t1
@@ -403,7 +336,7 @@
 			if (!( istype(src.active2, /datum/data/record) ))
 				return
 			var/a2 = src.active2
-			var/t1 = strip_html(input("Add Comment:", "Med. records", null, null)  as message)
+			var/t1 = input("Add Comment:", "Med. records", null, null)  as message
 			if ((!( t1 ) || !( src.authenticated ) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 				return
 			var/counter = 1
@@ -416,7 +349,7 @@
 				src.active2.fields[text("com_[]", href_list["del_c"])] = "<B>Deleted</B>"
 
 		if (href_list["search"])
-			var/t1 = strip_html(input("Search String: (Name or ID)", "Med. records", null, null)  as text)
+			var/t1 = input("Search String: (Name or ID)", "Med. records", null, null)  as text
 			if ((!( t1 ) || usr.stat || (!src.master) || !( src.authenticated ) || usr.restrained() || ((!in_range(src.master, usr)) && (!istype(usr, /mob/living/silicon)))))
 				return
 			src.active1 = null
@@ -461,3 +394,5 @@
 	src.master.add_fingerprint(usr)
 	src.master.updateUsrDialog()
 	return
+
+

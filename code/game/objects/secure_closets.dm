@@ -133,7 +133,7 @@
 		return
 	return
 
-/obj/secure_closet/bullet_act(var/obj/item/projectile/Proj)
+/obj/secure_closet/bullet_act(flag)
 /* Just in case someone gives closets health
 	if (flag == PROJECTILE_BULLET)
 		src.health -= 1
@@ -167,22 +167,13 @@
 	else if(src.broken)
 		user << "\red It appears to be broken."
 		return
-	else if( (istype(W, /obj/item/weapon/card/emag)||istype(W, /obj/item/weapon/melee/energy/blade)) && !src.broken)
-		broken = 1
-		locked = 0
-		desc = "It appears to be broken."
-		icon_state = src.icon_broken
-		if(istype(W, /obj/item/weapon/melee/energy/blade))
-			var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-			spark_system.set_up(5, 0, src.loc)
-			spark_system.start()
-			playsound(src.loc, 'blade1.ogg', 50, 1)
-			playsound(src.loc, "sparks", 50, 1)
-			for(var/mob/O in viewers(user, 3))
-				O.show_message(text("\blue The locker has been sliced open by [] with an energy blade!", user), 1, text("\red You hear metal being sliced and sparks flying."), 2)
-		else
-			for(var/mob/O in viewers(user, 3))
-				O.show_message(text("\blue The locker has been broken by [] with an electromagnetic card!", user), 1, text("You hear a faint electrical spark."), 2)
+	else if(istype(W, /obj/item/weapon/card/emag) && !src.broken)
+		src.broken = 1
+		src.locked = 0
+		src.icon_state = src.icon_broken
+		for(var/mob/O in viewers(user, 3))
+			if ((O.client && !( O.blinded )))
+				O << text("\blue The locker has been broken by [user] with an electromagnetic card!")
 	else if(src.allowed(user))
 		src.locked = !src.locked
 		for(var/mob/O in viewers(user, 3))
@@ -197,8 +188,6 @@
 		user << "\red Access Denied"
 	return
 
-/obj/secure_closet
-	var/lastbang
 /obj/secure_closet/relaymove(mob/user as mob)
 	if (user.stat)
 		return
@@ -214,10 +203,8 @@
 		src.opened = 1
 	else
 		user << "\blue It's welded shut!"
-		if (world.time > lastbang+5)
-			lastbang = world.time
-			for(var/mob/M in hearers(src, null))
-				M << text("<FONT size=[]>BANG, bang!</FONT>", max(0, 5 - get_dist(src, M)))
+		for(var/mob/M in hearers(src, null))
+			M << text("<FONT size=[]>BANG, bang!</FONT>", max(0, 5 - get_dist(src, M)))
 	return
 
 /obj/secure_closet/MouseDrop_T(atom/movable/O as mob|obj, mob/user as mob)

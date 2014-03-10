@@ -25,7 +25,7 @@
 	var/var_value = O.vars[variable]
 	var/dir
 
-	if (locked.Find(variable) && !(src.holder.rank in list("Host", "Robustmin")))
+	if (locked.Find(variable) && !(src.holder.rank in list("Host", "Coder")))
 		return
 
 	if(isnull(var_value))
@@ -108,7 +108,7 @@
 			O.vars[variable] = initial(O.vars[variable])
 
 			if(istype(O, /mob))
-				for(var/mob/M in mobz)
+				for(var/mob/M in world)
 					if (M.type == O.type)
 						M.vars[variable] = O.vars[variable]
 
@@ -118,7 +118,7 @@
 						A.vars[variable] = O.vars[variable]
 
 			else if(istype(O, /turf))
-				for(var/turf/A in turfs)
+				for(var/turf/A in world)
 					if (A.type == O.type)
 						A.vars[variable] = O.vars[variable]
 
@@ -126,11 +126,11 @@
 			return .(O.vars[variable])
 
 		if("text")
-			O.vars[variable] = strip_html(input("Enter new text:","Text",\
-				O.vars[variable]) as text)
+			O.vars[variable] = input("Enter new text:","Text",\
+				O.vars[variable]) as text
 
 			if(istype(O, /mob))
-				for(var/mob/M in mobz)
+				for(var/mob/M in world)
 					if (M.type == O.type)
 						M.vars[variable] = O.vars[variable]
 
@@ -140,49 +140,35 @@
 						A.vars[variable] = O.vars[variable]
 
 			else if(istype(O, /turf))
-				for(var/turf/A in turfs)
+				for(var/turf/A in world)
 					if (A.type == O.type)
 						A.vars[variable] = O.vars[variable]
 
 		if("num")
-			var/new_value = input("Enter new number:","Num",\
-					O.vars[variable]) as num
-
-			if(variable=="luminosity")
-				O.ul_SetLuminosity(new_value)
-			else
-				O.vars[variable] = new_value
+			O.vars[variable] = input("Enter new number:","Num",\
+				O.vars[variable]) as num
 
 			if(istype(O, /mob))
-				for(var/mob/M in mobz)
+				for(var/mob/M in world)
 					if (M.type == O.type)
-						if(variable=="luminosity")
-							M.ul_SetLuminosity(new_value)
-						else
-							M.vars[variable] = O.vars[variable]
+						M.vars[variable] = O.vars[variable]
 
 			else if(istype(O, /obj))
 				for(var/obj/A in world)
 					if (A.type == O.type)
-						if(variable=="luminosity")
-							A.ul_SetLuminosity(new_value)
-						else
-							A.vars[variable] = O.vars[variable]
+						A.vars[variable] = O.vars[variable]
 
 			else if(istype(O, /turf))
-				for(var/turf/A in turfs)
+				for(var/turf/A in world)
 					if (A.type == O.type)
-						if(variable=="luminosity")
-							A.ul_SetLuminosity(new_value)
-						else
-							A.vars[variable] = O.vars[variable]
+						A.vars[variable] = O.vars[variable]
 
 		if("type")
 			O.vars[variable] = input("Enter type:","Type",O.vars[variable]) \
 				in typesof(/obj,/mob,/area,/turf)
 
 			if(istype(O, /mob))
-				for(var/mob/M in mobz)
+				for(var/mob/M in world)
 					if (M.type == O.type)
 						M.vars[variable] = O.vars[variable]
 
@@ -192,7 +178,7 @@
 						A.vars[variable] = O.vars[variable]
 
 			else if(istype(O, /turf))
-				for(var/turf/A in mobz)
+				for(var/turf/A in world)
 					if (A.type == O.type)
 						A.vars[variable] = O.vars[variable]
 
@@ -201,7 +187,7 @@
 				as file
 
 			if(istype(O, /mob))
-				for(var/mob/M in mobz)
+				for(var/mob/M in world)
 					if (M.type == O.type)
 						M.vars[variable] = O.vars[variable]
 
@@ -211,7 +197,7 @@
 						A.vars[variable] = O.vars[variable]
 
 			else if(istype(O.type, /turf))
-				for(var/turf/A in turfs)
+				for(var/turf/A in world)
 					if (A.type == O.type)
 						A.vars[variable] = O.vars[variable]
 
@@ -219,7 +205,7 @@
 			O.vars[variable] = input("Pick icon:","Icon",O.vars[variable]) \
 				as icon
 			if(istype(O, /mob))
-				for(var/mob/M in mobz)
+				for(var/mob/M in world)
 					if (M.type == O.type)
 						M.vars[variable] = O.vars[variable]
 
@@ -229,7 +215,7 @@
 						A.vars[variable] = O.vars[variable]
 
 			else if(istype(O, /turf))
-				for(var/turf/A in turfs)
+				for(var/turf/A in world)
 					if (A.type == O.type)
 						A.vars[variable] = O.vars[variable]
 

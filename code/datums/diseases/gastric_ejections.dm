@@ -8,8 +8,7 @@
 	spread_type = SPECIAL
 	curable = 0
 	affected_species = list("Monkey", "Human")
-	affected_species2 = list(/mob/living/carbon/monkey, /mob/living/carbon/human)
-	why_so_serious = 0
+
 /datum/disease/gastric_ejections/stage_act()
 	..()
 
@@ -31,14 +30,10 @@
 				return
 			else if (prob(8))
 				affected_mob.emote("shiver")
-			else if(prob(5))
-				new /obj/decal/cleanable/poo/drip(affected_mob.loc)
 			else if (prob(10))
 				playsound(affected_mob.loc, 'poo2.ogg', 50, 1)
 				for(var/mob/O in viewers(affected_mob, null))
 					O.show_message(text("\red [] lets out a foul-smelling fart!", affected_mob), 1)
-					if(prob(5))
-						new /obj/decal/cleanable/poo/drip(affected_mob.loc)
 
 		if (4)
 			if(affected_mob.sleeping && prob(20))
@@ -57,10 +52,6 @@
 			else if (prob(2))
 				for(var/mob/O in viewers(affected_mob, null))
 					O.show_message(text("\red [] keels over in pain!", affected_mob), 1)
-					if(prob(5))
-						new /obj/decal/cleanable/poo/drip(affected_mob.loc)
-			else if(prob(5))
-				new /obj/decal/cleanable/poo/drip(affected_mob.loc)
 				affected_mob.toxloss += 1
 				affected_mob.updatehealth()
 				affected_mob.stunned += rand(1,3)
@@ -79,8 +70,6 @@
 			else if (prob(2))
 				for(var/mob/O in viewers(affected_mob, null))
 					O.show_message(text("\red [] keels over in pain!", affected_mob), 1)
-			else if(prob(5))
-				new /obj/decal/cleanable/poo/drip(affected_mob.loc)
 				affected_mob.toxloss += 1
 				affected_mob.updatehealth()
 				affected_mob.stunned += rand(2,4)

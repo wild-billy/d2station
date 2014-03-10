@@ -24,20 +24,22 @@
 	var/tod = time2text(world.realtime,"hh:mm:ss") //weasellos time of death patch
 	store_memory("Time of death: [tod]", 0)
 
-//	sql_report_cyborg_death(src)
+	if(mind)
+		if(client)
+			sql_report_cyborg_death(src)
 
-	for(var/mob/M in mobz)
+	for(var/mob/M in world)
 		if ((M.client && !( M.stat )))
 			cancel = 1
 			break
 	if (!( cancel ))
-		world << "<B>Everyone is dead! Resetting in 30 seconds!</B>"
+		world << "<B>Everybody's dead, Dave.</B>"
 		spawn( 300 )
 			log_game("Rebooting because of no live players")
 			world.Reboot()
 			return
-	if (src.key)
+	if (src.client)
 		spawn(50)
-			if(src.key && src.stat == 2)
-				src.verbs += /mob/proc/ghost
+			if(src.client && src.stat == 2)
+				src.verbs += /mob/proc/ghostize
 	return ..(gibbed)

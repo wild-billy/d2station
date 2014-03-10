@@ -28,51 +28,47 @@
 		if(lastgenlev != 0)
 			overlays += image('power.dmi', "teg-op[lastgenlev]")
 
-#define GENRATE 80000		// generator output coefficient from Q
+#define GENRATE 800		// generator output coefficient from Q
 
 /obj/machinery/power/generator/process()
 
 	if(!circ1 || !circ2)
 		return
 
-	var/datum/gas_mixture/hot_air_in = circ1.air1
-	var/datum/gas_mixture/cold_air_in = circ2.air1
-	var/datum/gas_mixture/hot_air_out = circ1.air2
-	var/datum/gas_mixture/cold_air_out = circ2.air2
+	var/datum/gas_mixture/hot_air = circ1.return_transfer_air()
+	var/datum/gas_mixture/cold_air = circ2.return_transfer_air()
 
 	lastgen = 0
 
+	if(cold_air && hot_air)
+		var/cold_air_heat_capacity = cold_air.heat_capacity()
+		var/hot_air_heat_capacity = hot_air.heat_capacity()
 
-	if(hot_air_in && hot_air_out && cold_air_in && cold_air_out)
-		var/cold_air_heat_capacity = (cold_air_in.heat_capacity() + cold_air_out.heat_capacity()) / 2
-		var/hot_air_heat_capacity = (hot_air_in.heat_capacity() + hot_air_out.heat_capacity()) / 2
-		var/cold_air_temperature = (cold_air_in.temperature + cold_air_out.temperature) / 2
-		var/hot_air_temperature = (hot_air_in.temperature + hot_air_out.temperature) / 2
-		var/delta_temperature = (hot_air_in.temperature + hot_air_out.temperature) - (cold_air_in.temperature + cold_air_out.temperature)
+		var/delta_temperature = hot_air.temperature - cold_air.temperature
 
 		if(delta_temperature > 0 && cold_air_heat_capacity > 0 && hot_air_heat_capacity > 0)
-			var/efficiency = (1 - cold_air_temperature/hot_air_temperature)*0.05 //65% of Carnot efficiency
+			var/efficiency = (1 - cold_air.temperature/hot_air.temperature)*0.65 //65% of Carnot efficiency
 
 			var/energy_transfer = delta_temperature*hot_air_heat_capacity*cold_air_heat_capacity/(hot_air_heat_capacity+cold_air_heat_capacity)
 
 			var/heat = energy_transfer*(1-efficiency)
 			lastgen = energy_transfer*efficiency
 
-			hot_air_temperature = hot_air_temperature - energy_transfer/hot_air_heat_capacity
-			cold_air_temperature = cold_air_temperature + heat/cold_air_heat_capacity
+			hot_air.temperature = hot_air.temperature - energy_transfer/hot_air_heat_capacity
+			cold_air.temperature = cold_air.temperature + heat/cold_air_heat_capacity
 
 
-		//	world << "POWER: [lastgen] W generated at [efficiency*100]% efficiency and sinks sizes [cold_air_heat_capacity], [hot_air_heat_capacity]"
+			//world << "POWER: [lastgen] W generated at [efficiency*100]% efficiency and sinks sizes [cold_air_heat_capacity], [hot_air_heat_capacity]"
 
 			add_avail(lastgen)
 	// update icon overlays only if displayed level has changed
 
-/*	if(hot_air_in)
-		circ1.air2.merge(hot_air_in)
+	if(hot_air)
+		circ1.air2.merge(hot_air)
 
-	if(cold_air_in)
-		circ2.air2.merge(cold_air_in)
-*/
+	if(cold_air)
+		circ2.air2.merge(cold_air)
+
 	var/genlev = max(0, min( round(11*lastgen / 100000), 11))
 	if(genlev != lastgenlev)
 		lastgenlev = genlev
@@ -89,9 +85,7 @@
 
 	add_fingerprint(user)
 
-	if(stat & (BROKEN|NOPOWER))
-		world << "returns as broken"
-		return
+	if(stat & (BROKEN|NOPOWER)) return
 
 	interact(user)
 
@@ -103,7 +97,7 @@
 
 	user.machine = src
 
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><PRE><B>Thermo-Electric Generator</B><HR>"
+	var/t = "<PRE><B>Thermo-Electric Generator</B><HR>"
 
 	t += "Output : [round(lastgen)] W<BR><BR>"
 

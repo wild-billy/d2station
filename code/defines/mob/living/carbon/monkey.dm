@@ -6,28 +6,16 @@
 	icon = 'monkey.dmi'
 	icon_state = "monkey1"
 	gender = NEUTER
-	pass_flags = PASSTABLE
+	flags = 258.0
 
 	var/obj/item/weapon/card/id/wear_id = null // Fix for station bounced radios -- Skie
 
-/mob/living/carbon/monkey/New()
-	..()
-	if(prob(20))
-		if(prob(10))
-			contract_disease(new /datum/disease/spaceaids) //MONKEYS RANDOMLY CATCH AIDS CUZ THEYR BLACK LOL
-
-/mob/living/carbon/monkey/rpbody // For admin RP
-	update_icon = 0
-	voice_message = "says"
-	say_message = "says"
-
-
-/mob/living/carbon/monkey/ai_test/New()
+/mob/living/carbon/monkey/retard/New()
 	..()
 	spawn(20)
 		ai_init()
 
-/mob/living/carbon/monkey/ai_test/violent/New()
+/mob/living/carbon/monkey/retard/violent/New()
 	..()
 
 /mob/living/carbon/monkey/rpbody // For admin RP
@@ -41,35 +29,19 @@
 /mob/living/carbon/monkey/rathen
 	name = "Mr Rathen"
 	icon_state = "rathen1"
-	update_icon = 0
+
 /mob/living/carbon/monkey/mellens
 	name = "Mr Melons"
 	icon_state = "melons1"
-	update_icon = 0
+
 /mob/living/carbon/monkey/muggles
 	name = "Mr Muggles"
 	icon_state = "muggles1"
-	update_icon = 0
+
 /mob/living/carbon/monkey/mrsmuggles
 	name = "Mrs Muggles"
 	icon_state = "mrsmuggles1"
-	update_icon = 0
-/mob/living/carbon/monkey/hunke
-	name = "Hunke"
-	icon_state = "hunke1"
-	update_icon = 0
-/mob/living/carbon/monkey/mimeky
-	name = "Mimeky"
-	icon_state = "mimeky1"
-	update_icon = 0
-/mob/living/carbon/monkey/dorfky
-	name = "Dorfky"
-	icon_state = "dorfky1"
-	update_icon = 0
-/mob/living/carbon/monkey/kobold
-	name = "Kobold"
-	icon_state = "kobold1"
-	update_icon = 0
+
 
 /mob/living/carbon/monkey/rat/brown
 	name = "rat"

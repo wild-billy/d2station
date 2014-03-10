@@ -8,31 +8,25 @@
 /datum/data/vending_product
 	var/product_name = "generic"
 	var/product_path = null
-	var/product_price = 0
 	var/amount = 0
 	var/display_color = "blue"
 
 /obj/machinery/vending/New()
 	..()
 	spawn(4)
-		src.inflation = src.getInflation()
 		src.slogan_list = dd_text2List(src.product_slogans, ";")
 		var/list/temp_paths = dd_text2List(src.product_paths, ";")
 		var/list/temp_amounts = dd_text2List(src.product_amounts, ";")
 		var/list/temp_hidden = dd_text2List(src.product_hidden, ";")
 		var/list/temp_hideamt = dd_text2List(src.product_hideamt, ";")
-		var/list/temp_prices = dd_text2List(src.product_prices, ";")
 		//Little sanity check here
-		if ((isnull(temp_paths)) || (isnull(temp_amounts)) || (isnull(temp_prices)) || (temp_paths.len != temp_amounts.len) || (temp_prices.len != temp_amounts.len) || (temp_hidden.len != temp_hideamt.len))
+		if ((isnull(temp_paths)) || (isnull(temp_amounts)) || (temp_paths.len != temp_amounts.len) || (temp_hidden.len != temp_hideamt.len))
 			stat |= BROKEN
-			world.log <<  "HEY DEVS YOU FUCKED UP THE [src.name] VENDING MACHINES! THIS IS WHY THEY SPAWN BROKEN! YOU NEED TO SET THE EQUAL AMOUNT OF PATHS, AMOUNTS AND PRICES OR IT WILL BREAK"
-			power_change()
 			return
 
-		src.build_inventory(temp_paths,temp_prices,temp_amounts)
+		src.build_inventory(temp_paths,temp_amounts)
 		 //Add hidden inventory
-		src.build_inventory(temp_hidden,temp_prices,temp_hideamt, 1)
-		power_change()
+		src.build_inventory(temp_hidden,temp_hideamt, 1)
 		return
 
 	return
@@ -64,23 +58,17 @@
 
 	return
 
-/obj/machinery/vending/proc/build_inventory(var/list/path_list,var/list/price_list,var/list/amt_list,hidden=0)
+/obj/machinery/vending/proc/build_inventory(var/list/path_list,var/list/amt_list,hidden=0)
 
 	for(var/p=1, p <= path_list.len ,p++)
 		var/checkpath = text2path(path_list[p])
 		if (!checkpath)
 			continue
 		var/obj/temp = new checkpath(src)
-
 		var/datum/data/vending_product/R = new /datum/data/vending_product(  )
 		R.product_name = capitalize(temp.name)
 		R.product_path = path_list[p]
-		if(!hidden)
-			if(text2num(price_list[p]) != 0)
-				R.product_price = text2num(price_list[p]) + text2num(src.inflation)
-			else
-				R.product_price = text2num(price_list[p])
-		R.display_color = "green"
+		R.display_color = pick("red","blue","green")
 //		R.amount = text2num(amt_list[p])
 //		src.product_records += R
 
@@ -93,13 +81,40 @@
 
 		del(temp)
 
-		//world << "Added: [R.product_name] - [R.amount] - [R.product_path] - [R.product_price]"
+//			world << "Added: [R.product_name]] - [R.amount] - [R.product_path]"
 		continue
 
 	return
 
+/obj/machinery/vending/attackby(obj/item/weapon/card/id/C as obj, mob/user as mob)
+	if (istype(C, /obj/item/weapon/card/id) && (src.auth == 0))
+		if (C.credit >= src.product_cost)
+			C.credit -= src.product_cost
+			usr << "\blue You swipe your ID card, the machine takes [src.product_cost] space euros!"
+			src.auth = 1
+			attack_hand(usr)
+		else
+			usr << "\blue You don't have that much money on your card!"
+			attack_hand(usr)
+			return
+		return
+
 /obj/machinery/vending/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if (istype(W, /obj/item/weapon/card/emag))
+	if(istype(W, /obj/item/weapon/spacecash) && (src.auth == 0))
+		if (W.moneyvalue >= src.product_cost)
+			W.moneyvalue -= src.product_cost
+			W.name = "[W.moneyvalue] space euros"
+			if (W.moneyvalue <= 0)
+				del(W)
+			usr << "\blue You insert [src.product_cost] space euros into the vending machine!"
+			attack_hand(usr)
+			src.auth = 1
+		else
+			usr << "\blue You don't have that much money!"
+			attack_hand(usr)
+			return
+		return
+	else if (istype(W, /obj/item/weapon/card/emag))
 		src.emagged = 1
 		user << "You short out the product lock on [src]"
 		return
@@ -141,7 +156,7 @@
 			"Goldenrod" = 3,
 			"Green" = 4,
 		)
-		var/pdat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Access Panel</B><br>"
+		var/pdat = "<B>Access Panel</B><br>"
 		for(var/wiredesc in vendwires)
 			var/is_uncut = src.wires & APCWireColorToFlag[vendwires[wiredesc]]
 			pdat += "[wiredesc] wire: "
@@ -161,7 +176,9 @@
 		user << browse(pdat, "window=vendwires")
 		onclose(user, "vendwires")
 
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><body style='margin: 0; padding: 0;'>"
+	var/dat = "<TT>"
+
+	dat += "<b>Swipe your ID and select an item:</b><br>"
 
 	if (src.product_records.len == 0)
 		dat += "<font color = 'red'>No product loaded!</font>"
@@ -171,18 +188,23 @@
 			display_records = (src.product_records + src.hidden_records)
 
 		for (var/datum/data/vending_product/R in display_records)
-			dat += "<div style='border-bottom:1px solid #000;padding: 4px;'>"
+			dat += "<FONT color = '[R.display_color]'><B>[R.product_name]</B>:"
+			dat += " [R.amount] </font>"
 			if (R.amount > 0)
-				if (R.product_price != 0)
-					dat += "<a href='byond://?src=\ref[src];vend=\ref[R]'><img src='http://somethingdickful.com/ficons/cart_go.png' style='margin: -3px 0;'></A> (Ð[R.product_price])"
+				if (src.product_cost != 0)
+					if (src.auth == 0)
+						dat += "Vend ([src.product_cost] space euros)"
+					else
+						dat += "<a href='byond://?src=\ref[src];vend=\ref[R]'>Vend</A>"
 				else
-					dat += "<a href='byond://?src=\ref[src];vend=\ref[R]'><img src='http://somethingdickful.com/ficons/bullet_go.png' style='margin: -3px 0;'></A> (free)"
-			else
-				dat += "<img src='http://somethingdickful.com/ficons/cart_delete.png' style='margin: -3px 0;'> (<font color='red'>SOLD OUT</font>)"
-			dat += " - <FONT color = '[R.display_color]'><B>[R.product_name]</B>: [R.amount] </font>"
-			dat += "</div>"
+					dat += "<a href='byond://?src=\ref[src];vend=\ref[R]'>Vend</A>"
 
-		dat += "</body>"
+			else
+				dat += "<font color = 'red'>SOLD OUT</font>"
+			dat += "<br>"
+
+		dat += "</TT>"
+		dat += "</TT>"
 
 	user << browse(dat, "window=vending")
 	onclose(user, "vending")
@@ -210,43 +232,10 @@
 				flick(src.icon_deny,src)
 				return
 
-			var/obj/item/I = usr.equipped()
-			var/datum/data/vending_product/R = locate(href_list["vend"])
-			if (R.product_price != 0)
-				if(I)
-					if (istype(I, /obj/item/weapon/card/id))
-						var/pincode = input("Enter your PIN:", "PIN", null) as num
-						if(pincode != I:pincode)
-							usr << "\blue <span class='game say'><span class='name'>[src]</span> beeps, \"PIN incorrect.\""
-							return
-						if(src.doTransaction(I:originalckey,"-[R.product_price]","Vending Machine: [src.name] (Item: [R.product_name])") == 1)
-							usr << "\blue You swipe your ID card, the machine takes Ð[R.product_price]!"
-							attack_hand(usr)
-						else
-							usr << "\blue <span class='game say'><span class='name'>[src]</span> beeps, \"You don't have enough money on your card or your bank account is inexistent.\""
-							attack_hand(usr)
-							return
-					else if(istype(I, /obj/item/weapon/money))
-						if (text2num(I:value) >= R.product_price)
-							I:value -= text2num(R.product_price)
-							I.name = "Ð[I:value]"
-							if (text2num(I:value) <= 0)
-								del(I)
-							usr << "\blue You insert [I:currency][R.product_price] into the vending machine!"
-							attack_hand(usr)
-						else
-							usr << "\blue <span class='game say'><span class='name'>[src]</span> beeps, \"You don't have enough money.\""
-							attack_hand(usr)
-							return
-					else
-						return
-				else
-					usr << "\blue <span class='game say'><span class='name'>[src]</span> beeps, \"You have not inserted any money.\""
-					usr << "\blue Click the purchase icon with your ID or the right amount of money in your hand."
-					return
-
 			src.vend_ready = 0 //One thing at a time!!
+			src.auth = 0
 
+			var/datum/data/vending_product/R = locate(href_list["vend"])
 			if (!R || !istype(R))
 				src.vend_ready = 1
 				return
@@ -445,7 +434,7 @@
 	var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
 	s.set_up(5, 1, src)
 	s.start()
-	if (electrocute_mob(user, get_area(src), src, 0.7))
+	if (electrocute_mob(user, get_area(src), src))
 		return 1
 	else
 		return 0

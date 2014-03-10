@@ -1,9 +1,8 @@
 /obj/machinery/computer/operating/New()
 	..()
-	for(var/obj/machinery/optable/O in machines)
+	for(var/obj/machinery/optable/O in world)
 		if(src.id == O.id)
 			src.table = O
-//	soundprocess()
 
 /obj/machinery/computer/operating/attack_ai(mob/user)
 	add_fingerprint(user)
@@ -26,7 +25,7 @@
 			return
 
 	user.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>Operating Computer</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
+	var/dat = "<HEAD><TITLE>Operating Computer</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
 	dat += "<A HREF='?src=\ref[user];mach_close=op'>Close</A><br><br>" //| <A HREF='?src=\ref[user];update=1'>Update</A>"
 	if(src.table && (src.table.check_victim()))
 		src.victim = src.table.victim
@@ -66,41 +65,5 @@
 /obj/machinery/computer/operating/process()
 	if(!(stat & (NOPOWER|BROKEN)) )
 		use_power(500)
+
 	src.updateDialog()
-
-	if(src.table && (src.table.check_victim()))
-		src.victim = src.table.victim
-		if(src.victim.health > 70)
-			playsound(src.loc, 'normalrate.ogg', 3, 0)
-			sleep(10)
-		else if(src.victim.health < -199)
-			playsound(src.loc, 'flatline.ogg', 3, 0)
-			sleep(9)
-		else if(src.victim.health < 70)
-			playsound(src.loc, 'fasterrate.ogg', 3, 0)
-			sleep(src.victim.health / 20)
-
-	if(src.table && (src.table.check_victim()))
-		if(src.victim.health > 70)
-			playsound(src.loc, 'normalrate.ogg', 3, 0)
-			sleep(10)
-		else if(src.victim.health < -199)
-			playsound(src.loc, 'flatline.ogg', 3, 0)
-			sleep(9)
-		else if(src.victim.health < 100)
-			playsound(src.loc, 'fasterrate3.ogg', 3, 0)
-			sleep(src.victim.health / 40)
-		else if(src.victim.health < 70)
-			playsound(src.loc, 'fasterrate.ogg', 3, 0)
-			sleep(src.victim.health / 20)
-		else if(src.victim.health < 0)
-			playsound(src.loc, 'fasterrate2.ogg', 3, 0)
-			sleep(src.victim.health / 20)
-
-/*/obj/machinery/computer/operating/proc/soundprocess()
-	if(src.table && (src.table.check_victim()))
-		src.victim = src.table.victim
-		playsound(src.loc, 'heartmonitor.ogg', 40, 0)
-		sleep(src.victim.health)
-	sleep(-1)
-	soundprocess()*/

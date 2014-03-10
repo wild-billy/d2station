@@ -19,9 +19,6 @@
 /obj/spawner/bomb/timer/syndicate
 	btemp = 450
 
-/obj/spawner/bomb/timer/analdevastators
-	btemp = 1488
-
 /obj/spawner/bomb/suicide
 	btype = 3
 

@@ -1,7 +1,7 @@
 /obj/machinery/recharge_station
 	name = "Cyborg Recharging Station"
 	icon = 'cloning.dmi'
-	icon_state = "pod_0"
+	icon_state = "robomatic"
 	density = 1
 	anchored = 1.0
 	use_power = 1
@@ -39,11 +39,16 @@
 		build_icon()
 			if(NOPOWER|BROKEN)
 				if(src.occupant)
-					icon_state = "pod_1"
+					icon_state = "robomatic_close"
 				else
-					icon_state = "pod_0"
+					icon_state = "robomatic"
+			if(!NOPOWER && !BROKEN)
+				if(src.occupant)
+					icon_state = "robomatic_on"
+				else
+					icon_state = "robomatic"
 			else
-				icon_state = "pod_0"
+				icon_state = "robomatic"
 
 		process_occupant()
 			if(src.occupant)
@@ -100,13 +105,13 @@
 						if(istype(O,/obj/item/device/flash))
 							if(O:shots < 5)
 								O:shots += 1
-						if(istype(O,/obj/item/weapon/gun/energy/taser/cyborg))
-							if(O:power_supply.charge < O:power_supply.maxcharge)
-								O:power_supply.give(100)
-						if(istype(O,/obj/item/weapon/melee/baton))
+						if(istype(O,/obj/item/weapon/gun/energy/taser_gun))
+							if(O:charges < 4)
+								O:charges += 1
+						if(istype(O,/obj/item/weapon/baton))
 							if(O:charges < 10)
 								O:charges += 1
-					R.module.respawn_consumable(R)
+
 
 
 	verb
@@ -120,18 +125,13 @@
 
 		move_inside()
 			set src in oview(1)
-			if (usr.stat == 2)
-				//Whoever had it so that a borg with a dead cell can't enter this thing should be shot. --NEO
+			if (usr.stat != 0 || stat & (NOPOWER|BROKEN))
 				return
 			if (!(istype(usr, /mob/living/silicon/)))
 				usr << "\blue <B>Only non-organics may enter the recharger!</B>"
 				return
 			if (src.occupant)
 				usr << "\blue <B>The cell is already occupied!</B>"
-				return
-			if (!usr:cell)
-				usr<<"\blue Without a powercell, you can't be recharged."
-				//Make sure they actually HAVE a cell, now that they can get in while powerless. --NEO
 				return
 			usr.pulling = null
 			usr.client.perspective = EYE_PERSPECTIVE

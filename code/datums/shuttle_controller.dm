@@ -15,7 +15,6 @@ datum/shuttle_controller
 		direction = 1 //-1 = going back to central command, 1 = going back to SS13
 
 		endtime			// timeofday that shuttle arrives
-		timelimit //important when the shuttle gets called for more than shuttlearrivetime
 		//timeleft = 360 //600
 		fake_recall = 0 //Used in rounds to prevent "ON NOES, IT MUST [INSERT ROUND] BECAUSE SHUTTLE CAN'T BE CALLED"
 
@@ -23,12 +22,12 @@ datum/shuttle_controller
 	// call the shuttle
 	// if not called before, set the endtime to T+600 seconds
 	// otherwise if outgoing, switch to incoming
-	proc/incall(coeff = 1)
+	proc/incall()
 		if(endtime)
 			if(direction == -1)
 				setdirection(1)
 		else
-			settimeleft(SHUTTLEARRIVETIME*coeff)
+			settimeleft(SHUTTLEARRIVETIME)
 			online = 1
 
 	proc/recall()
@@ -37,9 +36,7 @@ datum/shuttle_controller
 			if(timeleft >= 600)
 				world << "\blue <B>Shuttle is at Centcom. Unable to recall.</B>"
 				return
-			extendedshuttlesent = 0
-			command_alert("The emergency shuttle has been recalled.", "Emergency Shuttle Recalled.")
-			//world << sound('shuttlerecalled.ogg')
+			world << "\blue <B>Alert: The shuttle is going back!</B>"
 			setdirection(-1)
 			online = 1
 
@@ -59,7 +56,6 @@ datum/shuttle_controller
 	// sets the time left to a given delay (in seconds)
 	proc/settimeleft(var/delay)
 		endtime = world.timeofday + delay * 10
-		timelimit = delay
 
 	// sets the shuttle direction
 	// 1 = towards SS13, -1 = back to centcom
@@ -82,7 +78,7 @@ datum/shuttle_controller
 				timeleft = 0
 			switch(location)
 				if(0)
-					if(timeleft>timelimit)
+					if(timeleft>SHUTTLEARRIVETIME)
 						online = 0
 						direction = 1
 						endtime = null
@@ -124,16 +120,13 @@ datum/shuttle_controller
 								del(T)
 
 						start_location.move_contents_to(end_location)
-						ul_Update()
 						settimeleft(SHUTTLELEAVETIME)
 						world << "<B>The Emergency Shuttle has docked with the station! You have [timeleft()/60] minutes to board the Emergency Shuttle.</B>"
-						for(var/obj/machinery/door/airlock/external/E in machines)
-							if(E.name == "Escape Airlock")
-								if(E.locked)
-									E.locked = 0
-									E.icon_state = "door_closed"
 
-						//world << sound('shuttledock.ogg')
+						for(var/obj/machinery/door/poddoor/L in machines)
+							if (L.id == "es")
+								spawn( 0 )
+								L.open()
 
 						return 1
 
@@ -145,11 +138,12 @@ datum/shuttle_controller
 						location = 2
 						var/area/start_location = locate(/area/shuttle/escape/station)
 						var/area/end_location = locate(/area/shuttle/escape/centcom)
-
+						for(var/obj/machinery/door/poddoor/L in machines)
+							if (L.id == "es")
+								spawn( 0 )
+								L.close()
 						start_location.move_contents_to(end_location)
-						for(var/turf/T in start_location)
-							del(T)
-						ul_Update()
+
 						online = 0
 
 						return 1

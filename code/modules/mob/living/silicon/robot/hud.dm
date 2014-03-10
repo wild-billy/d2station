@@ -38,6 +38,27 @@
 	src.druggy.layer = 17
 	src.druggy.mouse_opacity = 0
 
+	src.gogglemeson = new src.h_type( src )
+	src.gogglemeson.screen_loc = "WEST,SOUTH to EAST,NORTH"
+	src.gogglemeson.name = "Meson Goggles"
+	src.gogglemeson.icon_state = "meson"
+	src.gogglemeson.layer = 18
+	src.gogglemeson.mouse_opacity = 0
+
+	src.gogglethermal = new src.h_type( src )
+	src.gogglethermal.screen_loc = "WEST,SOUTH to EAST,NORTH"
+	src.gogglethermal.name = "Thermal Goggles"
+	src.gogglethermal.icon_state = "thermal"
+	src.gogglethermal.layer = 18
+	src.gogglethermal.mouse_opacity = 0
+
+	src.ectoglasses = new src.h_type( src )
+	src.ectoglasses.screen_loc = "WEST,SOUTH to EAST,NORTH"
+	src.ectoglasses.name = "Ecto Glasses"
+	src.ectoglasses.icon_state = "dither12g"
+	src.ectoglasses.layer = 18
+	src.ectoglasses.mouse_opacity = 0
+
 	// station explosion cinematic
 	src.station_explosion = new src.h_type( src )
 	src.station_explosion.icon = 'station_explosion.dmi'

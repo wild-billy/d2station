@@ -34,7 +34,7 @@ other types of metals and chemistry for reagents).
 #define PROTOLATHE	2	//New stuff. Uses glass/metal/chemicals
 #define	AUTOLATHE	4	//Uses glass/metal only.
 #define CRAFTLATHE	8	//Uses fuck if I know. For use eventually.
-#define MECHFAB		16 //Remember, objects utilising this flag should have construction_time and construction_cost vars.
+#define MECHFAB		16
 //Note: More then one of these can be added to a design but imprinter and lathe designs are incompatable.
 
 datum
@@ -93,15 +93,6 @@ datum
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/aiupload"
 
-		borgupload
-			name = "Circuit Design (Cyborg Upload)"
-			desc = "Allows for the construction of circuit boards used to build a Cyborg Upload Console."
-			id = "borgupload"
-			req_tech = list("programming" = 4)
-			build_type = IMPRINTER
-			materials = list("$glass" = 2000, "acid" = 20)
-			build_path = "/obj/item/weapon/circuitboard/borgupload"
-
 		med_data
 			name = "Circuit Design (Medical Records)"
 			desc = "Allows for the construction of circuit boards used to build a medical records console."
@@ -111,14 +102,14 @@ datum
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/med_data"
 
-//		pandemic
-//			name = "Circuit Design (PanD.E.M.I.C. 2200)"
-//			desc = "Allows for the construction of circuit boards used to build a PanD.E.M.I.C. 2200 console."
-//			id = "pandemic"
-//			req_tech = list("programming" = 2, "biotech" = 2)
-//			build_type = IMPRINTER
-//			materials = list("$glass" = 2000, "acid" = 20)
-//			build_path = "/obj/item/weapon/circuitboard/pandemic"
+		pandemic
+			name = "Circuit Design (PanD.E.M.I.C. 2200)"
+			desc = "Allows for the construction of circuit boards used to build a PanD.E.M.I.C. 2200 console."
+			id = "pandemic"
+			req_tech = list("programming" = 2, "biotech" = 2)
+			build_type = IMPRINTER
+			materials = list("$glass" = 2000, "acid" = 20)
+			build_path = "/obj/item/weapon/circuitboard/pandemic"
 
 		scan_console
 			name = "Circuit Design (DNA Machine)"
@@ -127,7 +118,7 @@ datum
 			req_tech = list("programming" = 2, "biotech" = 3)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
-			build_path = "/obj/item/weapon/circuitboard/scan_consolenew"
+			build_path = "/obj/machinery/scan_consolenew"
 
 		comconsole
 			name = "Circuit Design (Communications)"
@@ -183,7 +174,7 @@ datum
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/general_air_control"
 
-		general_alert
+/*		general_alert
 			name = "Circuit Design (General Alert Console)"
 			desc = "Allows for the construction of circuit boards used to build a General Alert console."
 			id = "general_alert"
@@ -209,7 +200,7 @@ datum
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/cloning"
-
+*/
 		arcademachine
 			name = "Circuit Design (Arcade Machine)"
 			desc = "Allows for the construction of circuit boards used to build a new arcade machine."
@@ -219,15 +210,6 @@ datum
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/arcade"
 
-//		puzzlearcademachine
-//			name = "Circuit Design (Arcade Machine)"
-//			desc = "Allows for the construction of circuit boards used to build a new arcade machine."
-//			id = "arcademachine"
-//			req_tech = list("programming" = 1)
-//			build_type = IMPRINTER
-//			materials = list("$glass" = 2000, "acid" = 20)
-//			build_path = "/obj/item/weapon/circuitboard/arcadepuzzle"
-
 		powermonitor
 			name = "Circuit Design (Power Monitor)"
 			desc = "Allows for the construction of circuit boards used to build a new power monitor"
@@ -236,15 +218,15 @@ datum
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/powermonitor"
-
-//		prisonmanage
-//			name = "Circuit Design (Prisoner Management Console)"
-//			desc = "Allows for the construction of circuit boards used to build a prisoner management console."
-//			id = "prisonmanage"
-//			req_tech = list("programming" = 2)
-//			build_type = IMPRINTER
-//			materials = list("$glass" = 2000, "acid" = 20)
-//			build_path = "/obj/item/weapon/circuitboard/prisoner"
+/*
+		prisonmanage
+			name = "Circuit Design (Prisoner Management Console)"
+			desc = "Allows for the construction of circuit boards used to build a prisoner management console."
+			id = "prisonmanage"
+			req_tech = list("programming" = 2)
+			build_type = IMPRINTER
+			materials = list("$glass" = 2000, "acid" = 20)
+			build_path = "/obj/item/weapon/circuitboard/prisoner"
 
 		mechacontrol
 			name = "Circuit Design (Exosuit Control Console)"
@@ -254,7 +236,7 @@ datum
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/mecha_control"
-
+*/
 ///////////////////////////////////
 //////////AI Module Disks//////////
 ///////////////////////////////////
@@ -262,7 +244,7 @@ datum
 			name = "Module Design (Safeguard)"
 			desc = "Allows for the construction of a Safeguard AI Module."
 			id = "safeguard_module"
-			req_tech = list("programming" = 3, "materials" = 4)
+			req_tech = list("programming" = 3)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$gold" = 100)
 			build_path = "/obj/item/weapon/aiModule/safeguard"
@@ -271,7 +253,7 @@ datum
 			name = "Module Design (OneHuman)"
 			desc = "Allows for the construction of a OneHuman AI Module."
 			id = "onehuman_module"
-			req_tech = list("programming" = 4, "materials" = 6)
+			req_tech = list("programming" = 4)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$diamond" = 100)
 			build_path = "/obj/item/weapon/aiModule/oneHuman"
@@ -280,7 +262,7 @@ datum
 			name = "Module Design (ProtectStation)"
 			desc = "Allows for the construction of a ProtectStation AI Module."
 			id = "protectstation_module"
-			req_tech = list("programming" = 3, "materials" = 6)
+			req_tech = list("programming" = 3)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$gold" = 100)
 			build_path = "/obj/item/weapon/aiModule/protectStation"
@@ -298,43 +280,34 @@ datum
 			name = "Module Design (Quarantine)"
 			desc = "Allows for the construction of a Quarantine AI Module."
 			id = "quarantine_module"
-			req_tech = list("programming" = 3, "biotech" = 2, "materials" = 4)
+			req_tech = list("programming" = 3, "biotech" = 2, "$gold" = 100)
 			build_type = IMPRINTER
-			materials = list("$glass" = 2000, "acid" = 20, "$gold" = 100)
+			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/aiModule/quarantine"
 
 		oxygen_module
 			name = "Module Design (OxygenIsToxicToHumans)"
 			desc = "Allows for the construction of a Safeguard AI Module."
 			id = "oxygen_module"
-			req_tech = list("programming" = 3, "biotech" = 2, "materials" = 4)
+			req_tech = list("programming" = 3, "biotech" = 2, "$gold" = 100)
 			build_type = IMPRINTER
-			materials = list("$glass" = 2000, "acid" = 20, "$gold" = 100)
+			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/aiModule/oxygen"
 
 		freeform_module
 			name = "Module Design (Freeform)"
 			desc = "Allows for the construction of a Freeform AI Module."
 			id = "freeform_module"
-			req_tech = list("programming" = 4, "materials" = 4)
+			req_tech = list("programming" = 4)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$gold" = 100)
 			build_path = "/obj/item/weapon/aiModule/freeform"
-
-		namechange_module
-			name = "Module Design (Namechange)"
-			desc = "Allows for the construction of a Namechange AI Module."
-			id = "namechange_module"
-			req_tech = list("programming" = 3, "materials" = 1)
-			build_type = IMPRINTER
-			materials = list("$glass" = 2000, "acid" = 20, "$gold" = 100)
-			build_path = "/obj/item/weapon/aiModule/namechange"
 
 		reset_module
 			name = "Module Design (Reset)"
 			desc = "Allows for the construction of a Reset AI Module."
 			id = "reset_module"
-			req_tech = list("programming" = 3, "materials" = 6)
+			req_tech = list("programming" = 3)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$gold" = 100)
 			build_path = "/obj/item/weapon/aiModule/reset"
@@ -343,7 +316,7 @@ datum
 			name = "Module Design (Purge)"
 			desc = "Allows for the construction of a Purge AI Module."
 			id = "purge_module"
-			req_tech = list("programming" = 4, "materials" = 6)
+			req_tech = list("programming" = 4)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$diamond" = 100)
 			build_path = "/obj/item/weapon/aiModule/purge"
@@ -352,7 +325,7 @@ datum
 			name = "Core Module Design (Freeform)"
 			desc = "Allows for the construction of a Freeform AI Core Module."
 			id = "freeformcore_module"
-			req_tech = list("programming" = 4, "materials" = 6)
+			req_tech = list("programming" = 4)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$diamond" = 100)
 			build_path = "/obj/item/weapon/aiModule/freeformcore"
@@ -361,7 +334,7 @@ datum
 			name = "Core Module Design (Asimov)"
 			desc = "Allows for the construction of a Asimov AI Core Module."
 			id = "asimov_module"
-			req_tech = list("programming" = 3, "materials" = 6)
+			req_tech = list("programming" = 3)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$diamond" = 100)
 			build_path = "/obj/item/weapon/aiModule/asimov"
@@ -370,7 +343,7 @@ datum
 			name = "Core Module Design (P.A.L.A.D.I.N.)"
 			desc = "Allows for the construction of a P.A.L.A.D.I.N. AI Core Module."
 			id = "paladin_module"
-			req_tech = list("programming" = 4, "materials" = 6)
+			req_tech = list("programming" = 4)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$diamond" = 100)
 			build_path = "/obj/item/weapon/aiModule/paladin"
@@ -379,7 +352,7 @@ datum
 			name = "Core Module Design (T.Y.R.A.N.T.)"
 			desc = "Allows for the construction of a T.Y.R.A.N.T. AI Module."
 			id = "tyrant_module"
-			req_tech = list("programming" = 4, "syndicate" = 2, "materials" = 6)
+			req_tech = list("programming" = 4, "syndicate" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20, "$diamond" = 100)
 			build_path = "/obj/item/weapon/aiModule/tyrant"
@@ -393,19 +366,11 @@ datum
 			name = "Intellicard AI Transportation System"
 			desc = "Allows for the construction of an intellicard."
 			id = "intellicard"
-			req_tech = list("programming" = 4, "materials" = 4)
+			req_tech = list("programming" = 4)
 			build_type = PROTOLATHE
 			materials = list("$glass" = 1000, "$gold" = 200)
 			build_path = "/obj/item/device/aicard"
 
-		paicard
-			name = "Personal Artificial Intelligence Card"
-			desc = "Allows for the construction of a pAI Card"
-			id = "paicard"
-			req_tech = list("programming" = 3)
-			build_type = PROTOLATHE
-			materials = list("$glass" = 500, "$metal" = 500)
-			build_path = "/obj/item/device/paicard"
 
 ///////////////////////////////////
 //////////Mecha Module Disks///////
@@ -415,7 +380,7 @@ datum
 			name = "Circuit Design (APLU \"Ripley\" Central Control module)"
 			desc = "Allows for the construction of a \"Ripley\" Central Control module."
 			id = "ripley_main"
-			req_tech = list("programming" = 3)
+			req_tech = list("programming" = 3, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/ripley/main"
@@ -424,7 +389,7 @@ datum
 			name = "Circuit Design (APLU \"Ripley\" Peripherals Control module)"
 			desc = "Allows for the construction of a  \"Ripley\" Peripheral Control module."
 			id = "ripley_peri"
-			req_tech = list("programming" = 3)
+			req_tech = list("programming" = 3, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/ripley/peripherals"
@@ -433,7 +398,7 @@ datum
 			name = "Circuit Design (\"Gygax\" Central Control module)"
 			desc = "Allows for the construction of a \"Gygax\" Central Control module."
 			id = "gygax_main"
-			req_tech = list("programming" = 4)
+			req_tech = list("programming" = 4, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/gygax/main"
@@ -442,7 +407,7 @@ datum
 			name = "Circuit Design (\"Gygax\" Peripherals Control module)"
 			desc = "Allows for the construction of a \"Gygax\" Peripheral Control module."
 			id = "gygax_peri"
-			req_tech = list("programming" = 4)
+			req_tech = list("programming" = 4, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/gygax/peripherals"
@@ -451,7 +416,7 @@ datum
 			name = "Circuit Design (\"Gygax\" Weapons & Targeting Control module)"
 			desc = "Allows for the construction of a \"Gygax\" Weapons & Targeting Control module."
 			id = "gygax_targ"
-			req_tech = list("programming" = 4, "combat" = 2)
+			req_tech = list("programming" = 4, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/gygax/targeting"
@@ -460,7 +425,7 @@ datum
 			name = "Circuit Design (\"Durand\" Central Control module)"
 			desc = "Allows for the construction of a \"Durand\" Central Control module."
 			id = "durand_main"
-			req_tech = list("programming" = 4)
+			req_tech = list("programming" = 4, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/durand/main"
@@ -469,7 +434,7 @@ datum
 			name = "Circuit Design (\"Durand\" Peripherals Control module)"
 			desc = "Allows for the construction of a \"Durand\" Peripheral Control module."
 			id = "durand_peri"
-			req_tech = list("programming" = 4)
+			req_tech = list("programming" = 4, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/durand/peripherals"
@@ -478,7 +443,7 @@ datum
 			name = "Circuit Design (\"Durand\" Weapons & Targeting Control module)"
 			desc = "Allows for the construction of a \"Durand\" Weapons & Targeting Control module."
 			id = "durand_targ"
-			req_tech = list("programming" = 4, "combat" = 2)
+			req_tech = list("programming" = 4, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/durand/targeting"
@@ -488,7 +453,7 @@ datum
 			name = "Circuit Design (\"H.O.N.K\" Central Control module)"
 			desc = "Allows for the construction of a \"H.O.N.K\" Central Control module."
 			id = "honker_main"
-			req_tech = list("programming" = 3)
+			req_tech = list("programming" = 3, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/honker/main"
@@ -497,7 +462,7 @@ datum
 			name = "Circuit Design (\"H.O.N.K\" Peripherals Control module)"
 			desc = "Allows for the construction of a \"H.O.N.K\" Peripheral Control module."
 			id = "honker_peri"
-			req_tech = list("programming" = 3)
+			req_tech = list("programming" = 3, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/honker/peripherals"
@@ -506,10 +471,11 @@ datum
 			name = "Circuit Design (\"H.O.N.K\" Weapons & Targeting Control module)"
 			desc = "Allows for the construction of a \"H.O.N.K\" Weapons & Targeting Control module."
 			id = "honker_targ"
-			req_tech = list("programming" = 3)
+			req_tech = list("programming" = 3, "materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/mecha_parts/circuitboard/honker/targeting"
+
 
 ////////////////////////////////////////
 /////////// Mecha Equpment /////////////
@@ -528,7 +494,7 @@ datum
 			desc = "Allows for the construction of CH-PS Laser."
 			id = "mech_laser"
 			build_type = MECHFAB
-			req_tech = list("combat" = 3, "magnets" = 3)
+			req_tech = list("combat" = 2)
 			build_path = "/obj/item/mecha_parts/mecha_equipment/weapon/laser"
 
 		mech_grenade_launcher
@@ -544,7 +510,7 @@ datum
 			desc = "An exosuit module that allows generating of small quasi-stable wormholes."
 			id = "mech_wormhole_gen"
 			build_type = MECHFAB
-			req_tech = list("bluespace" = 3, "magnets" = 2)
+			req_tech = list("bluepace" = 4)
 			build_path = "/obj/item/mecha_parts/mecha_equipment/wormhole_generator"
 
 		mech_teleporter
@@ -552,7 +518,7 @@ datum
 			desc = "An exosuit module that allows exosuits to teleport to any position in view."
 			id = "mech_teleporter"
 			build_type = MECHFAB
-			req_tech = list("bluespace" = 10, "magnets" = 5)
+			req_tech = list("bluespace" = 10)
 			build_path = "/obj/item/mecha_parts/mecha_equipment/teleporter"
 
 		mech_rcd
@@ -560,7 +526,7 @@ datum
 			desc = "An exosuit-mounted Rapid Construction Device."
 			id = "mech_rcd"
 			build_type = MECHFAB
-			req_tech = list("materials" = 4, "bluespace" = 3, "magnets" = 4, "powerstorage"=4, "engineering" = 4)
+			req_tech = list("materials" = 4, "bluespace" = 4, "magnets" = 4, "powerstorage"=4)
 			build_path = "/obj/item/mecha_parts/mecha_equipment/tool/rcd"
 
 		mech_gravcatapult
@@ -568,16 +534,8 @@ datum
 			desc = "An exosuit mounted Gravitational Catapult."
 			id = "mech_gravcatapult"
 			build_type = MECHFAB
-			req_tech = list("bluespace" = 2, "magnets" = 3, "engineering" = 3)
+			req_tech = list("bluespace" = 1, "magnets" = 3)
 			build_path = "/obj/item/mecha_parts/mecha_equipment/gravcatapult"
-
-		mech_repair_droid
-			name = "Exosuit Module Design (Repair Droid Module)"
-			desc = "Automated Repair Droid. BEEP BOOP"
-			id = "mech_repair_droid"
-			build_type = MECHFAB
-			req_tech = list("magnets" = 3, "programming" = 3, "engineering" = 3)
-			build_path = "/obj/item/mecha_parts/mecha_equipment/repair_droid"
 
 
 ////////////////////////////////////////
@@ -604,7 +562,6 @@ datum
 ////////////////////////////////////////
 /////////////Stock Parts////////////////
 ////////////////////////////////////////
-
 
 		basic_capacitor
 			name = "Basic Capacitor"
@@ -745,166 +702,6 @@ datum
 			materials = list("$metal" = 80)
 			reliability_base = 75
 			build_path = "/obj/item/weapon/stock_parts/matter_bin/super"
-//////////
-
-		basic_analyser
-			name = "Basic Analyzer"
-			desc = "A hand-held environmental scanner which reports current gas levels."
-			id = "basic_analyser"
-			req_tech = list("powerstorage" = 1, "magnets" = 1, "programming" = 1)
-			build_type = PROTOLATHE | AUTOLATHE
-			materials = list("$metal" = 150, "$glass" = 150)
-			build_path = "/obj/item/device/analyzer"
-
-		plant_analyser
-			name = "Plant Analyzer"
-			desc = "A hand-held scanner which aids in the growth and care of plants."
-			id = "plant_analyser"
-			req_tech = list("powerstorage" = 2, "magnets" = 1, "programming" = 1)
-			build_type = PROTOLATHE | AUTOLATHE
-			materials = list("$metal" = 150, "$glass" = 220)
-			build_path = "/obj/item/device/analyzer/plant_analyzer"
-
-		detective_scanner
-			name = "Detective Scanner"
-			desc = "Used to scan objects for DNA and fingerprints."
-			id = "detective_scanner"
-			req_tech = list("powerstorage" = 1, "materials" = 2, "programming" = 2)
-			build_type = PROTOLATHE | AUTOLATHE
-			materials = list("$metal" = 300, "$glass" = 220)
-			build_path = "/obj/item/device/detective_scanner"
-
-		flashlight
-			name = "Flashlight"
-			desc = "A hand-held emergency light."
-			id = "flashlight"
-			req_tech = list("powerstorage" = 1)
-			build_type = PROTOLATHE | AUTOLATHE
-			materials = list("$metal" = 10, "$glass" = 20)
-			build_path = "/obj/item/device/flashlight"
-/*
-		basic_matter_bin
-			name = "Basic Matter Bin"
-			desc = "It's a bin that destroys objects that are put inside."
-			id = "basic_matter_bin"
-			req_tech = list("materials" = 1)
-			build_type = PROTOLATHE | AUTOLATHE
-			materials = list("$metal" = 80)
-			build_path = "/obj/item/weapon/stock_parts/matter_bin"
-*/
-		igniter
-			name = "Igniter"
-			desc = "A small electronic device able to ignite combustable substances. Does not function well as a lighter."
-			id = "igniter"
-			req_tech = list("powerstorage" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 50, "$glass" = 50)
-			build_path = "/obj/item/device/igniter"
-
-		multitool
-			name = "Multitool"
-			desc = "Used for pulsing wires to test which to cut. Not recommended by doctors."
-			id = "multitool"
-			req_tech = list("magnets" = 2)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 250, "$glass" = 120)
-			build_path = "/obj/item/device/multitool"
-
-		prox_sensor
-			name = "Proximity Sensor"
-			desc = "Used for scanning and alerting when someone enters a certain proximity."
-			id = "prox_sensor"
-			req_tech = list("materials" = 2, "programming" = 2)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 30)
-			build_path = "/obj/item/device/prox_sensor"
-
-		radio
-			name = "Radio"
-			desc = "Radio communication device"
-			id = "radio"
-			req_tech = list("magnets" = 3, "powerstorage" = 2)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 10, "$glass" = 20)
-			build_path = "/obj/item/device/radio"
-/*
-		adv_matter_bin
-			name = "Advanced Matter Bin"
-			desc = "A stock part used in the construction of various devices."
-			id = "adv_matter_bin"
-			req_tech = list("materials" = 3)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 80)
-			build_path = "/obj/item/weapon/stock_parts/matter_bin/adv"
-*/
-		signaler
-			name = "Remote Signaling Device"
-			desc = "Used to remotely activate devices."
-			id = "signaler"
-			req_tech = list("powerstorage" = 5, "materials" = 4)
-			build_type = PROTOLATHE
-			reliability_base = 91
-			materials = list("$metal" = 150, "$glass" = 150)
-			build_path = "/obj/item/device/radio/signaler"
-
-		rdanalyzer
-			name = "Technology Analyzer"
-			desc = "A hand-held scanner which reports technology levels."
-			id = "rdanalyzer"
-			req_tech = list("magnets" = 3, "materials" = 3)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 50, "$glass" = 20, "$silver" = 10)
-			reliability_base = 82
-			build_path = "/obj/item/device/rd_analyzer"
-
-
-		t_scanner
-			name = "T-ray scanner"
-			desc = "A terahertz-ray emitter and scanner used to detect underfloor objects such as cables and pipes."
-			id = "t_scanner"
-			req_tech = list("materials" = 4, "programming" = 2)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 130, "$glass" = 20)
-			reliability_base = 73
-			build_path = "/obj/item/device/t_scanner"
-
-		cargotele
-			name = "Cargo Transporter"
-			desc = "A device for teleporting crated goods."
-			id = "cargotele"
-			req_tech = list("magnets" = 4, "materials" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 150, "$glass" = 20, "$silver" = 10)
-			reliability_base = 90
-			build_path = "/obj/item/weapon/cargotele"
-
-/*		super_matter_bin
-			name = "Super Matter Bin"
-			desc = "A stock part used in the construction of various devices."
-			id = "super_matter_bin"
-			req_tech = list("materials" = 5)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 80)
-			reliability_base = 75
-			build_path = "/obj/item/weapon/stock_parts/matter_bin/super"
-*/
-		fireaxe
-			name = "Fire Axe"
-			desc = "Truly, the tool of a madman. Who would possibly think to fight fire with an axe?"
-			id = "fireaxe"
-			req_tech = list("materials" = 5)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 280)
-			build_path = "/obj/item/weapon/fireaxe"
-
-		hand_tele
-			name = "Hand Teleporter"
-			desc = "A portable item using blue-space technology."
-			id = "hand_tele"
-			req_tech = list("powerstorage" = 6, "materials" = 5, "bluespace" = 4)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 280)
-			build_path = "/obj/item/weapon/fireaxe"
 
 ////////////////////////////////////////
 //////////////////Power/////////////////
@@ -938,16 +735,6 @@ datum
 			materials = list("$metal" = 700, "$glass" = 70)
 			build_path = "/obj/item/weapon/cell/super"
 
-		hyper_cell
-			name = "Hyper-Capacity Power Cell"
-			desc = "A power cell that holds 30000 units of energy"
-			id = "hyper_cell"
-			req_tech = list("powerstorage" = 6, "materials" = 4)
-			reliability_base = 70
-			build_type = PROTOLATHE
-			materials = list("$metal" = 400, "$gold" = 150, "$silver" = 150, "$glass" = 70)
-			build_path = "/obj/item/weapon/cell/hyper"
-
 ////////////////////////////////////////
 //////////////MISC Boards///////////////
 ////////////////////////////////////////
@@ -956,7 +743,7 @@ datum
 			name = "Destructive Analyzer Board"
 			desc = "The circuit board for a destructive analyzer."
 			id = "destructive_analyzer"
-			req_tech = list("programming" = 2, "magnets" = 2, "engineering" = 2)
+			req_tech = list("materials" = 2, "magnets" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/destructive_analyzer"
@@ -965,7 +752,7 @@ datum
 			name = "Protolathe Board"
 			desc = "The circuit board for a protolathe."
 			id = "protolathe"
-			req_tech = list("programming" = 2, "engineering" = 2)
+			req_tech = list("materials" = 3)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/protolathe"
@@ -974,7 +761,7 @@ datum
 			name = "Circuit Imprinter Board"
 			desc = "The circuit board for a circuit imprinter."
 			id = "circuit_imprinter"
-			req_tech = list("programming" = 2, "engineering" = 2)
+			req_tech = list("materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/circuit_imprinter"
@@ -983,7 +770,7 @@ datum
 			name = "Autolathe Board"
 			desc = "The circuit board for a autolathe."
 			id = "autolathe"
-			req_tech = list("programming" = 2, "engineering" = 2)
+			req_tech = list("materials" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/autolathe"
@@ -992,7 +779,7 @@ datum
 			name = "R&D Server Control Console Board"
 			desc = "The circuit board for a R&D Server Control Console"
 			id = "rdservercontrol"
-			req_tech = list("programming" = 3)
+			req_tech = list("programming" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/rdservercontrol"
@@ -1001,30 +788,20 @@ datum
 			name = "R&D Server Board"
 			desc = "The circuit board for an R&D Server"
 			id = "rdserver"
-			req_tech = list("programming" = 3)
+			req_tech = list("programming" = 2)
 			build_type = IMPRINTER
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/rdserver"
-
-		mechfab
-			name = "Exosuit Fabricator Board"
-			desc = "The circuit board for an Exosuit Fabricator"
-			id = "mechfab"
-			req_tech = list("programming" = 3, "engineering" = 3)
-			build_type = IMPRINTER
-			materials = list("$glass" = 2000, "acid" = 20)
-			build_path = "/obj/item/weapon/circuitboard/mechfab"
-
 
 /////////////////////////////////////////
 ////////////Power Stuff//////////////////
 /////////////////////////////////////////
 
-/*		pacman
+		pacman
 			name = "PACMAN-type Generator Board"
 			desc = "The circuit board that for a PACMAN-type portable generator."
 			id = "pacman"
-			req_tech = list("programming" = 3, "plasmatech" = 3, "powerstorage" = 3, "engineering" = 3)
+			req_tech = list("plasmatech" = 3, "powerstorage" = 3)
 			build_type = IMPRINTER
 			reliability_base = 79
 			materials = list("$glass" = 2000, "acid" = 20)
@@ -1034,7 +811,7 @@ datum
 			name = "SUPERPACMAN-type Generator Board"
 			desc = "The circuit board that for a SUPERPACMAN-type portable generator."
 			id = "superpacman"
-			req_tech = list("programming" = 3, "powerstorage" = 4, "engineering" = 4)
+			req_tech = list("materials" = 5, "powerstorage" = 4)
 			build_type = IMPRINTER
 			reliability_base = 76
 			materials = list("$glass" = 2000, "acid" = 20)
@@ -1044,13 +821,12 @@ datum
 			name = "MRSPACMAN-type Generator Board"
 			desc = "The circuit board that for a MRSPACMAN-type portable generator."
 			id = "mrspacman"
-			req_tech = list("programming" = 3, "powerstorage" = 5, "engineering" = 5)
+			req_tech = list("materials" = 6, "powerstorage" = 5)
 			build_type = IMPRINTER
 			reliability_base = 74
 			materials = list("$glass" = 2000, "acid" = 20)
 			build_path = "/obj/item/weapon/circuitboard/pacman/mrs"
 
-*/
 
 /////////////////////////////////////////
 ////////////Medical Tools////////////////
@@ -1066,61 +842,6 @@ datum
 			reliability_base = 76
 			build_path = "/obj/item/device/mass_spectrometer"
 
-		cautery
-			name = "Cauterizer"
-			desc = "This stops bleeding, by burning the wound closed."
-			id = "cautery"
-			req_tech = list("materials" = 2, "biotech" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 20)
-			build_path = "/obj/item/weapon/cautery"
-
-		scalpel
-			name = "Scalpel"
-			desc = "A scalpel, is a small and extremely sharp bladed instrument used for surgery."
-			id = "scalpel"
-			req_tech = list("materials" = 2, "biotech" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 60)
-			build_path = "/obj/item/weapon/scalpel"
-
-		hemostat
-			name = "Hemostat"
-			desc = "A hemostat is a vital surgical tool used in almost any surgical procedure."
-			id = "hemostat"
-			req_tech = list("materials" = 2, "biotech" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 20)
-			build_path = "/obj/item/weapon/hemostat"
-
-		retractor
-			name = "Surgical Retractor"
-			desc = "A retractor is a surgical instrument by which a surgeon can either actively separate the edges of a surgical incision or wound."
-			id = "retractor"
-			req_tech = list("materials" = 1, "biotech" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 20)
-			build_path = "/obj/item/weapon/retractor"
-
-
-		surgicaldrill
-			name = "Surgical Drill"
-			desc = "A Surgical drill is a tool fitted with a cutting tool attachment or driving tool attachment used for drilling holes in the human body."
-			id = "surgicaldrill"
-			req_tech = list("materials" = 2, "biotech" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 80)
-			build_path = "/obj/item/weapon/surgicaldrill"
-
-		circular_saw
-			name = "Circular Saw"
-			desc = "For heavy duty cutting of biological matter."
-			id = "circular_saw"
-			req_tech = list("materials" = 2, "biotech" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 60)
-			build_path = "/obj/item/weapon/circular_saw"
-
 		adv_mass_spectrometer
 			name = "Advanced Mass-Spectrometer"
 			desc = "A device for analyzing chemicals in the blood and their quantities."
@@ -1131,63 +852,57 @@ datum
 			reliability_base = 74
 			build_path = "/obj/item/device/mass_spectrometer/adv"
 
-		mmi
+		hypospray
+			name = "Medical Hypospray"
+			desc = "The DeForest Medical Corporation hypospray is a sterile, air-needle autoinjector for rapid administration of drugs to patients."
+			id = "hypospray"
+			req_tech = list("biotech" = 4, "materials" = 2)
+			build_type = PROTOLATHE
+			materials = list("$metal" = 30)
+			reliability_base = 74
+			build_path = "/obj/item/weapon/reagent_containers/hypospray"
+
+		hyposprayvial
+			name = "Hypospray Vial"
+			desc = "A small vial that contains chemicals for a hypospray."
+			id = "hyposprayvial"
+			req_tech = list("biotech" = 4, "materials" = 2)
+			build_type = PROTOLATHE
+			materials = list("$metal" = 1)
+			reliability_base = 74
+			build_path = "/obj/item/weapon/reagent_containers/glass/hyposprayvial"
+
+		dermalregenerator
+			name = "Dermal Regenerator"
+			desc = "A small vial that contains chemicals for a hypospray."
+			id = "dermalregenerator"
+			req_tech = list("biotech" = 4, "magnets" = 4)
+			build_type = PROTOLATHE
+			materials = list("$metal" = 1)
+			reliability_base = 74
+			build_path = "/obj/item/weapon/dermalregenerator"
+
+
+		tricorder
+			name = "Medical Tricorder"
+			desc = "The medical tricorder is used by doctors to help diagnose diseases and collect bodily information about a patient."
+			id = "Tricorder"
+			req_tech = list("biotech" = 4, "magnets" = 4)
+			build_type = PROTOLATHE
+			materials = list("$metal" = 30, "$glass" = 20)
+			reliability_base = 74
+			build_path = "/obj/item/device/Tricorder"
+
+/*		mmi
 			name = "Man-Machine Interface"
 			desc = "The Warrior's bland acronym, MMI, obscures the true horror of this monstrosity."
 			id = "mmi"
-			req_tech = list("programming" = 2, "biotech" = 3)
+			req_tech = list("biotech" = 3)
 			build_type = PROTOLATHE | MECHFAB
 			materials = list("$metal" = 1000, "$glass" = 500)
 			reliability_base = 76
 			build_path = "/obj/item/device/mmi"
-
-		hypospray
-			name = "Hypospray"
-			desc = "The DeForest Medical Corporation hypospray is a sterile, air-needle autoinjector for rapid administration of drugs to patients."
-			id = "hypospray"
-			req_tech = list("materials" = 3, "biotech" = 3)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 90, "tricordrazine" = 30)
-			build_path = "/obj/item/weapon/reagent_containers/hypospray"
-
-		tricorder
-			name = "Tricorder"
-			desc = "An advanced hand-held body scanner able to distinguish vital signs of the subject."
-			id = "tricorder"
-			req_tech = list("programming" = 2, "materials" = 3, "biotech" = 3, "powerstorage" = 3)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 300, "$glass" = 20)
-			build_path = "/obj/item/device/healthanalyzer/tricorder"
-
-		mmi_radio
-			name = "Radio-enabled Man-Machine Interface"
-			desc = "The Warrior's bland acronym, MMI, obscures the true horror of this monstrosity. This one comes with a built-in radio."
-			id = "mmi_radio"
-			req_tech = list("programming" = 2, "biotech" = 4)
-			build_type = PROTOLATHE | MECHFAB
-			materials = list("$metal" = 1200, "$glass" = 500)
-			reliability_base = 74
-			build_path = "/obj/item/device/mmi/radio_enabled"
-
-		genetics
-			name = "Genetic Analyser"
-			desc = "Used to analyse genetic abnormalities"
-			id = "genetics"
-			req_tech = list("programming" = 2, "materials" = 2, "biotech" = 2, "powerstorage" = 2)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 300, "$glass" = 20)
-			build_path = "/obj/item/device/geneticsanalyzer"
-
-		regenerator
-			name = "Dermal Regenerator"
-			desc = "Used to heal light brute damage"
-			id = "genetics"
-			req_tech = list("programming" = 1, "materials" = 1, "biotech" = 2, "powerstorage" = 1)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 300, "$glass" = 20)
-			build_path = "/obj/item/weapon/dermalregenerator"
-
-
+*/
 /////////////////////////////////////////
 /////////////////Weapons/////////////////
 /////////////////////////////////////////
@@ -1200,206 +915,136 @@ datum
 			build_type = PROTOLATHE
 			materials = list("$metal" = 5000, "$glass" = 1000, "$uranium" = 500)
 			reliability_base = 76
-			build_path = "/obj/item/weapon/gun/energy/nuclear"
+			build_path = "/obj/item/weapon/gun/energy/general/nuclear"
 
-		freeze_gun
-			name = "Freeze Gun"
-			desc = "A gun that shoots supercooled hydrogen particles to drastically chill a target's body temperature."
-			id = "freeze_gun"
-			req_tech = list("combat" = 3, "materials" = 4, "powerstorage" = 3, "magnets" = 2)
+/*		large_grenade
+			name = "Large Grenade"
+			desc = "A grenade that affects a larger area and use larger containers."
+			id = "large_Grenade"
+			req_tech = list("combat" = 3, "materials" = 3)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 5000, "$glass" = 500, "$silver" = 3000)
-			build_path = "/obj/item/weapon/gun/energy/freeze"
+			materials = list("$metal" = 3000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/chem_grenade/large"*/
 
-		energy_gun
-			name = "Energy Gun"
-			desc = "A basic energy-based gun with two settings: Stun and kill."
-			id = "energy_gun"
-			req_tech = list("combat" = 5, "materials" = 4, "powerstorage" = 5, "magnets" = 2)
+		ak331
+			name = "AK-331"
+			desc = "An automatic machine gun."
+			id = "ak331"
+			req_tech = list("combat" = 3, "materials" = 6)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 7000, "$glass" = 500, "$silver" = 1000)
-			build_path = "/obj/item/weapon/gun/energy"
+			materials = list("$metal" = 6000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/gun/ak331"
 
-		phaser_gun
-			name = "Phaser"
-			desc = "A gun with multiple settings allowing area of effect electrical fields to stun targets."
-			id = "freeze_gun"
-			req_tech = list("combat" = 4, "materials" = 4, "powerstorage" = 4, "magnets" = 2)
+		carbine
+			name = "Carbine"
+			desc = "An automatic machine gun."
+			id = "carbine"
+			req_tech = list("combat" = 3, "materials" = 3)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 5000, "$glass" = 500, "$silver" = 3000)
-			build_path = "/obj/item/weapon/gun/energy/phaser"
+			materials = list("$metal" = 6000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/gun/carbine"
 
-		sword
-			name = "Energy Sword"
-			desc = "May the force be within you."
-			id = "sword"
-			req_tech = list("syndicate" = 3, "materials" = 5, "powerstorage" = 3)
+		laser_gun
+			name = "Laser Gun"
+			desc = "Replica of the Mark 1 Laser Gun."
+			id = "plasma_pistol"
+			req_tech = list("combat" = 4, "materials" = 3, "powerstorage" = 3)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 5000, "$glass" = 1000, "$uranium" = 500)
-			reliability_base = 76
-			build_path = "/obj/item/weapon/melee/energy/sword"
+			materials = list("$metal" = 2000, "$plasma" = 2000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/gun/energy/laser_gun/captain"
 
-		baton
-			name = "Stun Baton"
-			desc = "Used to stun criminals for arrest."
-			id = "baton"
-			req_tech = list("materials" = 5, "powerstorage" = 3)
+		plasma_pistol
+			name = "Plasma Pistol"
+			desc = "Pre-Production version of the Mark 1 Plasma Pistol."
+			id = "plasma_pistol"
+			req_tech = list("combat" = 4, "materials" = 3, "plasmatech" = 2, "powerstorage" = 2)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 5000, "$glass" = 1000)
-			reliability_base = 96
-			build_path = "/obj/item/weapon/melee/baton"
+			materials = list("$metal" = 3000, "$plasma" = 3000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/gun/energy/Research/plasma_pistol"
 
-//		large_grenade
-//			name = "Large Grenade"
-//			desc = "A grenade that affects a larger area and use larger containers."
-//			id = "large_Grenade"
-//			req_tech = list("combat" = 3, "materials" = 2)
-//			build_type = PROTOLATHE
-//			materials = list("$metal" = 3000)
-//			reliability_base = 79
-//			build_path = "/obj/item/weapon/chem_grenade/large"
-
-		smg
-			name = "Submachine Gun"
-			desc = "A lightweight, fast firing gun."
-			id = "smg"
-			req_tech = list("combat" = 5, "materials" = 2)
+		Plasma_Rifle
+			name = "Plasma Rifle"
+			desc = "Pre-Production version of the Mark 1 Plasma Rifle."
+			id = "Plasma_Rifle"
+			req_tech = list("combat" = 4, "materials" = 3, "plasmatech" = 3, "powerstorage" = 2)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 8000, "$silver" = 2000, "$diamond" = 1000)
-			build_path = "/obj/item/weapon/gun/projectile/automatic"
+			materials = list("$metal" = 6000, "$plasma" = 6000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/gun/energy/Research/Plasma_Rifle"
 
-		c45
-			name = "Ammunition Box (.45)"
-			desc = "A box of prototype .45 ammunition."
-			id = "c9mm"
-			req_tech = list("combat" = 4, "materials" = 3)
+		Heavy_Plasma
+			name = "Heavy Plasma Rifle"
+			desc = "Pre-Production version of the Mark 1 Plasma Pistol."
+			id = "Heavy_Plasma"
+			req_tech = list("combat" = 5, "materials" = 5, "plasmatech" = 5,  "powerstorage" = 3)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 3750, "$silver" = 100)
-			build_path = "/obj/item/ammo_magazine/c45"
+			materials = list("$metal" = 9000, "$plasma" = 9000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/gun/energy/Research/Heavy_Plasma"
 
-	//	c9mm
-	//		name = "Ammunition Box (9mm)"
-	//		desc = "A box of prototype 9mm ammunition."
-	//		id = "c9mm"
-	//		req_tech = list("combat" = 4, "materials" = 3)
-	//		build_type = PROTOLATHE
-	//		materials = list("$metal" = 3750, "$silver" = 100)
-	//		build_path = "obj/item/ammo_magazine/c9mm"
-
-		cloaking_device
-			name = "Cloaking Device"
-			desc = "Use this to become invisible to the human eyesocket."
-			id = "cloaking_device"
-			req_tech = list("combat" = 5, "materials" = 5, "powerstorage" = 5, "magnets" = 5)
+		pulse_rifle
+			name = "Pulse Rifle"
+			desc = "A heavy-duty, pulse-based energy weapon preferred by front-line combat personnel."
+			id = "pulse_rifle"
+			req_tech = list("combat" = 7, "materials" = 5,  "powerstorage" = 5, "magnets" =5)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 5000, "$glass" = 500, "$silver" = 3000)
-			build_path = "/obj/item/weapon/cloaking_device"
+			materials = list("$metal" = 19000, "$uranium" = 4000 )
+			reliability_base = 79
+			build_path = "/obj/item/weapon/gun/energy/pulse_rifle"
 
 
 /////////////////////////////////////////
 /////////////////Mining//////////////////
 /////////////////////////////////////////
 
-		jackhammer
-			name = "Sonic Jackhammer"
-			desc = "Cracks rocks with sonic blasts, perfect for killing cave lizards."
-			id = "jackhammer"
-			req_tech = list("materials" = 3, "powerstorage" = 2, "engineering" = 2)
+		pick_silver
+			name = "Silver Pickaxe"
+			desc = "This makes no metallurgic sense."
+			id = "pick_silver"
+			req_tech = list("materials" = 3)
 			build_type = PROTOLATHE
-			materials = list("$metal" = 2000, "$glass" = 500, "$silver" = 500)
-			build_path = "/obj/item/weapon/tgpickaxe/jackhammer"
-
-		drill
-			name = "Mining Drill"
-			desc = "Yours is the drill that will pierce through the rock walls."
-			id = "drill"
-			req_tech = list("materials" = 2, "powerstorage" = 3, "engineering" = 2)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 6000, "$glass" = 1000) //expensive, but no need for miners.
-			build_path = "/obj/item/weapon/tgpickaxe/drill"
-
-		plasmacutter
-			name = "Plasma Cutter"
-			desc = "You could use it to cut limbs off of xenos! Or, you know, mine stuff."
-			id = "plasmacutter"
-			req_tech = list("materials" = 4, "plasmatech" = 3, "engineering" = 3)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 1500, "$glass" = 500, "$gold" = 500, "$plasma" = 500)
+			materials = list("$silver" = 3000)
 			reliability_base = 79
-			build_path = "/obj/item/weapon/tgpickaxe/plasmacutter"
+			build_path = "/obj/item/weapon/pickaxe/silver"
+
+		pick_gold
+			name = "Golden Pickaxe"
+			desc = "This makes no metallurgic sense."
+			id = "pick_gold"
+			req_tech = list("materials" = 4)
+			build_type = PROTOLATHE
+			materials = list("$gold" = 3000)
+			reliability_base = 79
+			build_path = "/obj/item/weapon/pickaxe/gold"
 
 		pick_diamond
 			name = "Diamond Pickaxe"
-			desc = "A pickaxe with a diamond pick head, this is just like minecraft."
+			desc = "This makes no metallurgic sense."
 			id = "pick_diamond"
 			req_tech = list("materials" = 6)
 			build_type = PROTOLATHE
 			materials = list("$diamond" = 3000)
-			build_path = "/obj/item/weapon/tgpickaxe/diamond"
-
-		drill_diamond
-			name = "Diamond Mining Drill"
-			desc = "Yours is the drill that will pierce the heavens!"
-			id = "drill_diamond"
-			req_tech = list("materials" = 6, "powerstorage" = 4, "engineering" = 4)
-			build_type = PROTOLATHE
-			materials = list("$metal" = 3000, "$glass" = 1000, "$diamond" = 3750) //Yes, a whole diamond is needed.
 			reliability_base = 79
-			build_path = "/obj/item/weapon/tgpickaxe/diamonddrill"
+			build_path = "/obj/item/weapon/pickaxe/diamond"
 
 /////////////////////////////////////////
 //////////////Blue Space/////////////////
 /////////////////////////////////////////
 
-		beacon
-			name = "Tracking Beacon"
-			desc = "A blue space tracking beacon."
-			id = "beacon"
-			req_tech = list("bluespace" = 1)
-			build_type = PROTOLATHE
-			materials = list ("$metal" = 20, "$glass" = 10)
-			build_path = "/obj/item/device/radio/beacon"
-
 		bag_holding
 			name = "Bag of Holding"
 			desc = "A backpack that opens into a localized pocket of Blue Space."
 			id = "bag_holding"
-			req_tech = list("bluespace" = 4, "materials" = 6)
+			req_tech = list("bluespace" = 4)
 			build_type = PROTOLATHE
 			materials = list("$gold" = 3000, "$diamond" = 1500, "$uranium" = 250)
 			reliability_base = 80
 			build_path = "/obj/item/weapon/storage/backpack/holding"
-
-/////////////////////////////////////////
-/////////////////HUDs////////////////////
-/////////////////////////////////////////
-
-			health_hud
-				name = "Health Scanner HUD"
-				desc = "A heads-up display that scans the humans in view and provides accurate data about their health status."
-				id = "health_hud"
-				req_tech = list("biotech" = 2, "magnets" = 3)
-				build_type = PROTOLATHE
-				materials = list("$metal" = 50, "$glass" = 50)
-				build_path = "/obj/item/clothing/glasses/hud/health"
-
-			security_hud
-				name = "Security HUD"
-				desc = "A heads-up display that scans the humans in view and provides accurate data about their ID status."
-				id = "security_hud"
-				req_tech = list("magnets" = 3, "combat" = 2)
-				build_type = PROTOLATHE
-				materials = list("$metal" = 50, "$glass" = 50)
-				build_path = "/obj/item/clothing/glasses/hud/security"
-
-			thermal_hud
-				name = "Thermal HUD"
-				desc = "A heads-up display that scans for heat prints in an area, allowing one to detect people through walls."
-				id = "security_hud"
-				req_tech = list("biotech" = 2, "magnets" = 3, "combat" = 5)
-				build_type = PROTOLATHE
-				materials = list("$metal" = 50, "$glass" = 50)
-				build_path = "/obj/item/clothing/glasses/thermal"
 
 /////////////////////////////////////////
 //////////////////Test///////////////////

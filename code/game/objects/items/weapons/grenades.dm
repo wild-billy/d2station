@@ -5,9 +5,9 @@ FLASHBANG
 
 */
 
-/obj/item/weapon/empgrenade/afterattack(atom/target as mob|obj|turf|area, mob/user as mob)
+/*/obj/item/weapon/empgrenade/afterattack(atom/target as mob|obj|turf|area, mob/user as mob)
 	if (user.equipped() == src)
-		if ((user.mutations & CLOWN) && prob(50))
+		if ((user.mutations & 16) && prob(50))
 			user << "\red Huh? How does this thing work?!"
 			src.state = 1
 			src.icon_state = "empar"
@@ -28,7 +28,7 @@ FLASHBANG
 		var/t = (isturf(target) ? target : target.loc)
 		walk_towards(src, t, 3)
 		src.add_fingerprint(user)
-	return
+	return*/
 
 /obj/item/weapon/empgrenade/proc/prime()
 	playsound(src.loc, 'Welder2.ogg', 25, 1)
@@ -38,9 +38,7 @@ FLASHBANG
 
 	var/grenade = src // detaching the proc - in theory
 	empulse(src, 5, 7)
-
 	del(grenade)
-
 	return
 
 /obj/item/weapon/flashbang/attackby(obj/item/weapon/W as obj, mob/user as mob)
@@ -62,9 +60,9 @@ FLASHBANG
 		src.add_fingerprint(user)
 	return
 
-/obj/item/weapon/flashbang/afterattack(atom/target as mob|obj|turf|area, mob/user as mob)
+/*/obj/item/weapon/flashbang/afterattack(atom/target as mob|obj|turf|area, mob/user as mob)
 	if (user.equipped() == src)
-		if ((user.mutations & CLOWN) && prob(50))
+		if ((user.mutations & 16) && prob(50))
 			user << "\red Huh? How does this thing work?!"
 			src.state = 1
 			src.icon_state = "flashbang1"
@@ -85,7 +83,7 @@ FLASHBANG
 		var/t = (isturf(target) ? target : target.loc)
 		walk_towards(src, t, 3)
 		src.add_fingerprint(user)
-	return
+	return*/
 
 /obj/item/weapon/flashbang/attack_paw(mob/user as mob)
 	return src.attack_hand(user)
@@ -108,8 +106,8 @@ FLASHBANG
 				S.icon_state = "shield0"
 		if ((get_dist(M, T) <= 2 || src.loc == M.loc || src.loc == M))
 			flick("e_flash", M.flash)
-			if(!(M.mutations & HULK))  M.stunned = 10
-			if(!(M.mutations & HULK))  M.weakened = 3
+			if(!(M.mutations & 8))  M.stunned = 10
+			if(!(M.mutations & 8))  M.weakened = 3
 			M << "\red <B>BANG</B>"
 			if ((prob(14) || (M == src.loc && prob(70))))
 				M.ear_damage += rand(1, 10)
@@ -136,8 +134,8 @@ FLASHBANG
 			if (get_dist(M, T) <= 5)
 				flick("e_flash", M.flash)
 				if (!( istype(M, /mob/living/carbon/human) ))
-					if(!(M.mutations & HULK))  M.stunned = 7
-					if(!(M.mutations & HULK))  M.weakened = 2
+					if(!(M.mutations & 8))  M.stunned = 7
+					if(!(M.mutations & 8))  M.weakened = 2
 				else
 					var/mob/living/carbon/human/H = M
 					M.ear_deaf += 10
@@ -149,10 +147,15 @@ FLASHBANG
 					if (istype(H.head, /obj/item/clothing/head/helmet/welding))
 						if(!H.head:up)
 							safe = 1
+					if(!safe)
+						safe = 1
+					if (istype(H.head, /obj/item/clothing/head/helmet/welding))
+						if(!H.head:up)
+							safe = 1
 
 					if(!safe)
-						if(!(M.mutations & HULK))  M.stunned = 7
-						if(!(M.mutations & HULK))  M.weakened = 2
+						if(!(M.mutations & 8))  M.stunned = 7
+						if(!(M.mutations & 8))  M.weakened = 2
 					else
 						if (!( M.paralysis ))
 							M.eye_stat += rand(1, 3)
@@ -162,13 +165,7 @@ FLASHBANG
 					flick("flash", M.flash)
 				else
 					var/mob/living/carbon/human/H = M
-					var/safe = 0
-					if (istype(H.glasses, /obj/item/clothing/glasses/sunglasses))
-						safe = 1
-					if (istype(H.head, /obj/item/clothing/head/helmet/welding))
-						if(!H.head:up)
-							safe = 1
-					if(!safe)
+					if (!( istype(H.glasses, /obj/item/clothing/glasses/sunglasses) || istype(H.head, /obj/item/clothing/head/helmet/welding) ) )
 						flick("flash", M.flash)
 				M.eye_stat += rand(1, 2)
 				M.ear_deaf += 5
@@ -197,7 +194,7 @@ FLASHBANG
 
 /obj/item/weapon/flashbang/attack_self(mob/user as mob)
 	if (!src.state)
-		if (user.mutations & CLOWN)
+		if (user.mutations & 16)
 			user << "\red Huh? How does this thing work?!"
 			spawn( 5 )
 				prime()
@@ -214,7 +211,7 @@ FLASHBANG
 
 /obj/item/weapon/empgrenade/attack_self(mob/user as mob)
 	if (!src.state)
-		if (user.mutations & CLOWN)
+		if (user.mutations & 16)
 			user << "\red Huh? How does this thing work?!"
 			spawn( 5 )
 				prime()

@@ -53,7 +53,7 @@
 	if(stat & BROKEN)
 		return
 	user.machine = src
-	var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Loaded Tank Dispensing Unit</B><BR>\n<FONT color = 'blue'><B>Oxygen</B>: []</FONT> []<BR>\n<FONT color = 'orange'><B>Plasma</B>: []</FONT> []<BR>\n</TT>", src.o2tanks, (src.o2tanks ? text("<A href='?src=\ref[];oxygen=1'>Dispense</A>", src) : "empty"), src.pltanks, (src.pltanks ? text("<A href='?src=\ref[];plasma=1'>Dispense</A>", src) : "empty"))
+	var/dat = text("<TT><B>Loaded Tank Dispensing Unit</B><BR>\n<FONT color = 'blue'><B>Oxygen</B>: []</FONT> []<BR>\n<FONT color = 'orange'><B>Plasma</B>: []</FONT> []<BR>\n</TT>", src.o2tanks, (src.o2tanks ? text("<A href='?src=\ref[];oxygen=1'>Dispense</A>", src) : "empty"), src.pltanks, (src.pltanks ? text("<A href='?src=\ref[];plasma=1'>Dispense</A>", src) : "empty"))
 	user << browse(dat, "window=dispenser")
 	onclose(user, "dispenser")
 	return
@@ -77,7 +77,6 @@
 				if (src.o2tanks > 0)
 					use_power(5)
 					new /obj/item/weapon/tank/oxygen( src.loc )
-					new /obj/item/clothing/mask/breath( src.loc )
 					src.o2tanks--
 			if (istype(src.loc, /mob))
 				attack_hand(src.loc)

@@ -1,5 +1,4 @@
 
-
 /atom/proc/MouseDrop_T()
 	return
 
@@ -12,18 +11,12 @@
 /atom/proc/attack_ai(mob/user as mob)
 	return
 
+
 //for aliens, it works the same as monkeys except for alien-> mob interactions which will be defined in the
 //appropiate mob files
 /atom/proc/attack_alien(mob/user as mob)
 	src.attack_paw(user)
 	return
-
-
-// for metroids
-/atom/proc/attack_metroid(mob/user as mob)
-	return
-
-
 
 /atom/proc/hand_h(mob/user as mob)
 	return
@@ -48,7 +41,7 @@
 			if ((O.client && !( O.blinded )))
 				O << text("\red [src] has been scanned by [user] with the [W]")
 	else
-		if (!( istype(W, /obj/item/weapon/grab) ) && !(istype(W, /obj/item/weapon/plastique)) &&!(istype(W, /obj/item/weapon/spraybottle/cleaner)) && !(istype(W, /obj/item/weapon/plantbgone)) )
+		if (!( istype(W, /obj/item/weapon/grab) ) && !(istype(W, /obj/item/weapon/plastique)) &&!(istype(W, /obj/item/weapon/cleaner)) && !(istype(W, /obj/item/weapon/plantbgone)) )
 			for(var/mob/O in viewers(src, null))
 				if ((O.client && !( O.blinded )))
 					O << text("\red <B>[] has been hit by [] with []</B>", src, user, W)
@@ -91,21 +84,13 @@
 			src.fingerprintslast = M.key
 	return
 
-///atom/proc/add_vomit_floor(mob/living/carbon/M as mob)
-//	if( istype(src, /turf/simulated) )
-	//	var/obj/decal/cleanable/vomit/this = new /obj/decal/cleanable/vomit(src)
-	//	for(var/datum/disease/D in M.viruses)
-		//	var/datum/disease/newDisease = new D.type
-		//	this.viruses += newDisease
-		//	newDisease.holder = this
-
 /atom/proc/add_blood(mob/living/carbon/human/M as mob)
 	if (!( istype(M, /mob/living/carbon/human) ))
 		return 0
 	if (!( src.flags ) & 256)
 		return
 	if (!( src.blood_DNA ))
-		if (istype(src, /obj/item)&&!istype(src, /obj/item/weapon/melee/energy))//Only regular items. Energy melee weapon are not affected.
+		if (istype(src, /obj/item))
 			var/obj/item/source2 = src
 			source2.icon_old = src.icon
 			var/icon/I = new /icon(src.icon, src.icon_state)
@@ -125,10 +110,9 @@
 			var/obj/decal/cleanable/blood/this = new /obj/decal/cleanable/blood(source2)
 			this.blood_DNA = M.dna.unique_enzymes
 			this.blood_type = M.b_type
-			for(var/datum/disease/D in M.viruses)
-				var/datum/disease/newDisease = new D.type
-				this.viruses += newDisease
-				newDisease.holder = this
+			if (M.virus)
+				this.virus = new M.virus.type
+				this.virus.holder = this
 		else if (istype(src, /mob/living/carbon/human))
 			src.blood_DNA = M.dna.unique_enzymes
 			src.blood_type = M.b_type
@@ -151,28 +135,25 @@
 			var/turf/simulated/source1 = src
 			var/obj/decal/cleanable/blood/this = new /obj/decal/cleanable/blood(source1)
 			this.blood_DNA = M.dna.unique_enzymes
-			for(var/datum/disease/D in M.viruses)
-				var/datum/disease/newDisease = new D.type
-				this.viruses += newDisease
-				newDisease.holder = this
+			if(M.virus)
+				this.virus = new M.virus.type
+				this.virus.holder = this
 
 	else if( istype(M, /mob/living/carbon/alien ))
 		if( istype(src, /turf/simulated) )
 			var/turf/simulated/source2 = src
 			var/obj/decal/cleanable/xenoblood/this = new /obj/decal/cleanable/xenoblood(source2)
-			for(var/datum/disease/D in M.viruses)
-				var/datum/disease/newDisease = new D.type
-				this.viruses += newDisease
-				newDisease.holder = this
+			if(M.virus)
+				this.virus = new M.virus.type
+				this.virus.holder = this
 
 	else if( istype(M, /mob/living/silicon/robot ))
 		if( istype(src, /turf/simulated) )
 			var/turf/simulated/source2 = src
 			var/obj/decal/cleanable/oil/this = new /obj/decal/cleanable/oil(source2)
-			for(var/datum/disease/D in M.viruses)
-				var/datum/disease/newDisease = new D.type
-				this.viruses += newDisease
-				newDisease.holder = this
+			if(M.virus)
+				this.virus = new M.virus.type
+				this.virus.holder = this
 
 
 
@@ -199,7 +180,6 @@
 			source2.icon = I
 	return
 
-
 /atom/proc/add_poo()
 	if (istype(src, /obj/item/clothing))
 		if (!(src:poop_covering))
@@ -224,30 +204,6 @@
 			source.update_icon()
 	return
 
-/atom/proc/add_egg()
-	if (istype(src, /obj/item/clothing))
-		if (!(src:egg_covering))
-			src:egg_covering = 1
-			var/obj/item/source = src
-			source.icon_old = src.icon
-			var/icon/I = new /icon(src.icon, src.icon_state)
-			I.Blend(new /icon('blood.dmi', "thisisfuckingstupid"),ICON_ADD)
-			I.Blend(new /icon('eggeffect.dmi', "itemegg"),ICON_MULTIPLY)
-			I.Blend(new /icon(src.icon, src.icon_state),ICON_UNDERLAY)
-			src.icon = I
-		else
-			return
-	return
-
-/atom/proc/clean_egg()
-	if (istype (src, /obj/item/clothing))
-		if (src:egg_covering)
-			var/obj/item/clothing/source = src
-			source.egg_covering = 0
-			source.icon = source.icon_old
-			source.update_icon()
-	return
-
 /atom/MouseDrop(atom/over_object as mob|obj|turf|area)
 	spawn( 0 )
 		if (istype(over_object, /atom))
@@ -259,12 +215,15 @@
 /atom/Click(location,control,params)
 	//world << "atom.Click() on [src] by [usr] : src.type is [src.type]"
 
+	if(usr.client.buildmode)
+		build_click(usr, usr.client.buildmode, location, control, params, src)
+		return
 
 	return DblClick()
 
 /atom/DblClick() //TODO: DEFERRED: REWRITE
 //	world << "checking if this shit gets called at all"
-	if (world.time <= usr:lastDblClick+2)
+	if (world.time <= usr:lastDblClick+1)
 //		world << "BLOCKED atom.DblClick() on [src] by [usr] : src.type is [src.type]"
 		return
 	else
@@ -285,7 +244,6 @@
 		return usr:throw_item(src)
 
 	var/obj/item/W = usr.equipped()
-
 
 	if(istype(usr, /mob/living/silicon/hivebot)||istype(usr, /mob/living/silicon/robot))
 		if(!isnull(usr:module_active))
@@ -411,15 +369,7 @@
 					W.afterattack(src, usr, (t5 ? 1 : 0))
 			else
 				if (istype(usr, /mob/living/carbon/human))
-					var/mob/living/carbon/human/att = usr
-					if(att.hand)
-						if(att.organ_manager.l_hand)
-							src.attack_hand(usr, usr.hand)
-						else att << "\red You are missing that hand!"
-					else
-						if(att.organ_manager.r_hand)
-							src.attack_hand(usr, usr.hand)
-						else att << "\red You are missing that hand!"
+					src.attack_hand(usr, usr.hand)
 				else
 					if (istype(usr, /mob/living/carbon/monkey))
 						src.attack_paw(usr, usr.hand)
@@ -429,10 +379,6 @@
 						else
 							if (istype(usr, /mob/living/silicon/ai) || istype(usr, /mob/living/silicon/robot)|| istype(usr, /mob/living/silicon/hivebot))
 								src.attack_ai(usr, usr.hand)
-
-							else
-								if(istype(usr, /mob/living/carbon/metroid))
-									src.attack_metroid(usr)
 		else
 			if (istype(usr, /mob/living/carbon/human))
 				src.hand_h(usr, usr.hand)
@@ -479,19 +425,10 @@
 							src.hand_al(usr, usr.hand)
 		else
 			examine() //enabling this go make rightclick menus appear faster and you can bitch about how annoying this is afterwards
-			//this makes you walk to stuff when clicked
-			//step_to(usr,src)
 	return
-/* /atom/proc/add_vomit_floor(mob/living/carbon/M as mob)
-	if( istype(src, /turf/simulated) )
-		var/obj/decal/cleanable/vomit/this = new /obj/decal/cleanable/vomit(src)
-		for(var/datum/disease/D in M.viruses)
-			var/datum/disease/newDisease = new D.type
-			this.viruses += newDisease
-			newDisease.holder = this
-*/
+
 /atom/proc/get_global_map_pos()
-	if(!islist(global_map) || isemptylist(global_map)) return
+	if(!global_map.len) return
 	var/cur_x = null
 	var/cur_y = null
 	var/list/y_arr = null
@@ -505,6 +442,3 @@
 		return list("x"=cur_x,"y"=cur_y)
 	else
 		return 0
-
-/atom/proc/checkpass(passflag)
-	return pass_flags&passflag

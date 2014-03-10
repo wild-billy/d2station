@@ -1,17 +1,17 @@
 /mob/living/carbon/alien/humanoid/hunter/New()
-	var/datum/reagents/R = new/datum/reagents(100)
-	reagents = R
-	R.my_atom = src
-	if(src.name == "alien hunter")
-		src.name = text("alien hunter ([rand(1, 1000)])")
-	src.real_name = src.name
 	spawn (1)
 		src.verbs -= /mob/living/carbon/alien/humanoid/verb/corrode
+		var/datum/reagents/R = new/datum/reagents(100)
+		reagents = R
+		R.my_atom = src
 		src.stand_icon = new /icon('alien.dmi', "alienh_s")
 		src.lying_icon = new /icon('alien.dmi', "alienh_l")
 		src.icon = src.stand_icon
+		if(src.name == "alien hunter") src.name = text("alien hunter ([rand(1, 1000)])")
+		src.real_name = src.name
+		src << "\blue Your icons have been generated!"
+
 		update_clothing()
-		//src << "\blue Your icons have been generated!"
 
 
 /mob/living/carbon/alien/humanoid/hunter
@@ -27,7 +27,7 @@
 
 	handle_regular_hud_updates()
 
-		if (src.stat == 2 || src.mutations & XRAY)
+		if (src.stat == 2 || src.mutations & 4)
 			src.sight |= SEE_TURFS
 			src.sight |= SEE_MOBS
 			src.sight |= SEE_OBJS
@@ -76,7 +76,7 @@
 
 	handle_regular_status_updates()
 
-		health = 150 - (oxyloss + fireloss + bruteloss + cloneloss)
+		health = 150 - (oxyloss + fireloss + bruteloss)
 
 		if(oxyloss > 50) paralysis = max(paralysis, 3)
 
@@ -165,16 +165,20 @@
 	set desc = "Makes you invisible for 15 seconds"
 	set category = "Alien"
 
-	if(powerc(50))
-		toxloss -= 50
-		alien_invis = 1.0
+	if(src.stat)
+		src << "\green You must be conscious to do this."
+		return
+	if(src.toxloss >= 50)
+		src.toxloss -= 50
+		src.alien_invis = 1.0
 		src << "\green You are now invisible."
 		for(var/mob/O in oviewers(src, null))
 			O.show_message(text("\red <B>[src] fades into the surroundings!</B>"), 1)
 		spawn(150)
-			if(!isnull(src))//Don't want the game to runtime error when the mob no-longer exists.
-				alien_invis = 0.0
-				src << "\green You are no longer invisible."
+			src.alien_invis = 0.0
+			src << "\green You are no longer invisible."
+	else
+		src << "\green Not enough plasma stored"
 	return
 
 /mob/living/carbon/alien/humanoid/hunter/verb/regurgitate()
@@ -182,13 +186,17 @@
 	set desc = "Empties the contents of your stomach"
 	set category = "Alien"
 
-	if(powerc())
-		if(stomach_contents.len)
-			for(var/mob/M in src)
-				if(M in stomach_contents)
-					stomach_contents.Remove(M)
-					M.loc = loc
-					M.paralysis += 10
-			for(var/mob/O in viewers(src, null))
-				O.show_message(text("\green <B>[src] hurls out the contents of their stomach!</B>"), 1)
+	if(src.stat)
+		src << "\green You must be conscious to do this."
+		return
+
+	if(src.stomach_contents.len)
+		for(var/mob/M in src)
+			if(M in src.stomach_contents)
+				src.stomach_contents.Remove(M)
+				M.loc = src.loc
+				M.paralysis += 10
+
+		for(var/mob/O in viewers(src, null))
+			O.show_message(text("\green <B>[src] hurls out the contents of their stomach.</B>"), 1)
 	return

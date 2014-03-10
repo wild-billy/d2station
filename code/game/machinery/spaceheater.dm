@@ -95,7 +95,7 @@
 			dat += "<A href='?src=\ref[src];op=temp;val=5'>+</A><BR>"
 
 			user.machine = src
-			user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Space Heater Control Panel</TITLE></HEAD><TT>[dat]</TT>", "window=spaceheater")
+			user << browse("<HEAD><TITLE>Space Heater Control Panel</TITLE></HEAD><TT>[dat]</TT>", "window=spaceheater")
 			onclose(user, "spaceheater")
 
 
@@ -119,8 +119,8 @@
 				if("temp")
 					var/value = text2num(href_list["val"])
 
-					// limit to 20-500 degC
-					set_temperature = dd_range(20, 500, set_temperature + value)
+					// limit to 20-90 degC
+					set_temperature = dd_range(20, 90, set_temperature + value)
 
 				if("cellremove")
 					if(open && cell && !usr.equipped())

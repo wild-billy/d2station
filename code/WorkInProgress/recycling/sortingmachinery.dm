@@ -11,11 +11,10 @@
 
 
 	attack_hand(mob/user as mob)
-		if (src.wrapped) //sometimes items can disappear. For example, bombs. --rastaf0
-			src.wrapped.loc = (get_turf(src.loc))
-			if (istype(src.wrapped,/obj/closet))
-				var/obj/closet/O = src.wrapped
-				O.welded = 0
+		src.wrapped.loc = (get_turf(src.loc))
+		if (istype(src.wrapped,/obj/closet))
+			var/obj/closet/O = src.wrapped
+			O.welded = 0
 		del(src)
 		return
 
@@ -37,8 +36,7 @@
 
 
 	attack_hand(mob/user as mob)
-		if (src.wrapped) //sometimes items can disappear. For example, bombs. --rastaf0
-			src.wrapped.loc = (get_turf(src.loc))
+		src.wrapped.loc = (get_turf(src.loc))
 
 		del(src)
 		return
@@ -60,9 +58,6 @@
 
 
 	attack(target as obj, mob/user as mob)
-
-		user.attack_log += text("<font color='blue'>[world.time] - has used [src.name] on \ref[target]</font>")
-
 		if (istype(target, /obj/item))
 			var/obj/item/O = target
 			if (src.amount > 1)
@@ -210,71 +205,3 @@
 			mode = 1	// switch to charging
 		update()
 		return
-
-/obj/machinery/disposal/deliveryChute/airduct
-	name = "Maintenence Duct"
-	desc = "Air ducting and Maintenence hatch"
-	density = 0
-	icon_state = "duct0"
-	var/open = 0
-	interact()
-		return
-	proc/updateicon()
-		if(open)
-			icon_state = "duct1"
-		else
-			icon_state = "duct0"
-
-	HasEntered(AM as mob|obj) //Go straight into the chute
-		if(!open)return
-		if (istype(AM, /obj))
-			var/obj/O = AM
-			O.loc = src
-		else if (istype(AM, /mob))
-			var/mob/M = AM
-			M.loc = src
-		src.flush()
-
-	flush()
-		flushing = 1
-		var/deliveryCheck = 0
-		var/obj/disposalholder/H = new()	// virtual holder object which actually
-											// travels through the pipes.
-		for(var/obj/bigDelivery/O in src)
-			deliveryCheck = 1
-			if(O.sortTag == 0)
-				O.sortTag = 1
-		for(var/obj/item/smallDelivery/O in src)
-			deliveryCheck = 1
-			if (O.sortTag == 0)
-				O.sortTag = 1
-		if(deliveryCheck == 0)
-			H.destinationTag = 1
-
-
-		H.init(src)	// copy the contents of disposer to holder
-
-		air_contents = new()		// new empty gas resv.
-
-		sleep(10)
-		sleep(5) // wait for animation to finish
-
-
-		H.start(src) // start the holder processing movement
-		flushing = 0
-		// now reset disposal state
-		update()
-		return
-	attackby(var/obj/item/I, var/mob/user)
-		if(istype(I, /obj/item/weapon/crowbar))
-			user << "You force the vent cover open."
-			open = 1
-			updateicon()
-			return
-
-	expel()
-		..()
-		src.open = 1
-		updateicon()
-
-

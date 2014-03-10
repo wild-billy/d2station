@@ -3,7 +3,7 @@
 		if (1)
 			new /obj/item/weapon/shard( src.loc )
 			if (occupied)
-				new /obj/item/weapon/gun/energy/laser/captain( src.loc )
+				new /obj/item/weapon/gun/energy/laser_gun/captain( src.loc )
 				occupied = 0
 			del(src)
 		if (2)
@@ -15,14 +15,26 @@
 				src.health -= 5
 				src.healthcheck()
 
-/obj/displaycase/bullet_act(var/obj/item/projectile/Proj)
+/obj/displaycase/bullet_act(flag)
 
-	if (Proj.flag == "bullet")
+	if (flag == PROJECTILE_BULLET)
 		src.health -= 10
 		src.healthcheck()
 		return
+	if (flag != PROJECTILE_LASER) //lasers aren't particularly good at breaking glass
+		src.health -= 1
+		src.healthcheck()
+		return
+	if (flag != PROJECTILE_PLASMA) //Plasma Rocks at breaking glass
+		src.health -= 10
+		src.healthcheck()
+		return
+	if (flag != PROJECTILE_MAGNET) //Let's throw subsonic bullets at it
+		src.health -= 60
+		src.healthcheck()
+		return
 	else
-		src.health -= 4
+		src.health -= 5
 		src.healthcheck()
 		return
 
@@ -31,14 +43,14 @@
 	if (prob(75))
 		new /obj/item/weapon/shard( src.loc )
 		if (occupied)
-			new /obj/item/weapon/gun/energy/laser/captain( src.loc )
+			new /obj/item/weapon/gun/energy/laser_gun/captain( src.loc )
 			occupied = 0
 		del(src)
 
 
 /obj/displaycase/meteorhit(obj/O as obj)
 		new /obj/item/weapon/shard( src.loc )
-		new /obj/item/weapon/gun/energy/laser/captain( src.loc )
+		new /obj/item/weapon/gun/energy/laser_gun/captain( src.loc )
 		del(src)
 
 
@@ -48,7 +60,7 @@
 			src.density = 0
 			src.destroyed = 1
 			new /obj/item/weapon/shard( src.loc )
-			playsound(src, "shatter", 70, 1)
+			playsound(src, "shatter", 70, 0)
 			update_icon()
 	else
 		playsound(src.loc, 'Glasshit.ogg', 75, 1)
@@ -73,7 +85,7 @@
 
 /obj/displaycase/attack_hand(mob/user as mob)
 	if (src.destroyed && src.occupied)
-		new /obj/item/weapon/gun/energy/laser/captain( src.loc )
+		new /obj/item/weapon/gun/energy/laser_gun/captain( src.loc )
 		user << "\b You deactivate the hover field built into the case."
 		src.occupied = 0
 		src.add_fingerprint(user)
@@ -87,5 +99,3 @@
 		src.health -= 2
 		healthcheck()
 		return
-
-

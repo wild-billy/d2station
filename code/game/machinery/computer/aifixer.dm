@@ -45,48 +45,81 @@
 		if(stat & (NOPOWER|BROKEN))
 			user << "This terminal isn't functioning right now, get it working!"
 			return
-		I:transfer_ai("AIFIXER","AICARD",src,user)
+		var/obj/item/device/aicard/C = I
+		if(src.contents.len == 0)
+			if (C.contents.len == 0)
+				user << "No AI to copy over!"
+			else for(var/mob/living/silicon/ai/A in C)
+				A << "You have been uploaded to a stationary terminal. Sadly, there is no remote access from here."
+				user << "<b>Transfer succesful</b>: [A.name] ([rand(1000,9999)].exe) installed and executed succesfully. Local copy has been removed."
+				C.icon_state = "aicard"
+				C.name = "inteliCard"
+				C.overlays = null
+				A.loc = src
+				src.occupant = A
+				A.control_disabled = 1
+				if (A.stat == 2)
+					src.overlays += image('computer.dmi', "ai-fixer-404")
+				else
+					src.overlays += image('computer.dmi', "ai-fixer-full")
+				src.overlays -= image('computer.dmi', "ai-fixer-empty")
+
+
+		else
+			if(C.contents.len == 0 && src.occupant && !src.active)
+				C.name = "inteliCard - [src.occupant.name]"
+				src.overlays += image('computer.dmi', "ai-fixer-empty")
+				if (src.occupant.stat == 2)
+					C.icon_state = "aicard-404"
+					src.overlays -= image('computer.dmi', "ai-fixer-404")
+				else
+					C.icon_state = "aicard-full"
+					src.overlays -= image('computer.dmi', "ai-fixer-full")
+				src.occupant << "You have been downloaded to a mobile storage device. Still no remote access."
+				user << "<b>Transfer succeeded</b>: [src.occupant.name] ([rand(1000,9999)].exe) removed from host terminal and stored within local memory."
+				src.occupant.loc = C
+				src.occupant = null
+			else if (C.contents.len)
+				user << "There's already an AI in the reconstructer!"
+			else if (src.active)
+				user << "Can't remove an AI during reconstruction!"
+			else if (!src.occupant)
+				user << "No AI to remove!"
 
 	//src.attack_hand(user)
 	return
 
+
 /obj/machinery/computer/aifixer/attack_ai(var/mob/user as mob)
-	return attack_hand(user)
+	return src.attack_hand(user)
 
 /obj/machinery/computer/aifixer/attack_paw(var/mob/user as mob)
-	return attack_hand(user)
+
+	return src.attack_hand(user)
+	return
 
 /obj/machinery/computer/aifixer/attack_hand(var/mob/user as mob)
 	if(..())
 		return
-
-	if(ishuman(user))//Checks to see if they are ninja
-		if(istype(user:gloves, /obj/item/clothing/gloves/space_ninja)&&user:gloves:candrain&&!user:gloves:draining)
-			if(user:wear_suit:s_control)
-				user:wear_suit.transfer_ai("AIFIXER","NINJASUIT",src,user)
-			else
-				user << "\red <b>ERROR</b>: \black Remote access channel disabled."
-			return
-
 	user.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h3>AI System Integrity Restorer</h3><br><br>"
+	var/dat = "<h3>AI System Integrity Restorer</h3><br><br>"
 
 	if (src.occupant)
 		var/laws
 		dat += "Stored AI: [src.occupant.name]<br>System integrity: [(src.occupant.health+100)/2]%<br>"
 
-		if (src.occupant.laws.zeroth)
-			laws += "0: [src.occupant.laws.zeroth]<BR>"
+		if (src.occupant.laws_object.zeroth)
+			laws += "0: [src.occupant.laws_object.zeroth]<BR>"
 
 		var/number = 1
-		for (var/index = 1, index <= src.occupant.laws.inherent.len, index++)
-			var/law = src.occupant.laws.inherent[index]
+		for (var/index = 1, index <= src.occupant.laws_object.inherent.len, index++)
+			var/law = src.occupant.laws_object.inherent[index]
 			if (length(law) > 0)
 				laws += "[number]: [law]<BR>"
 				number++
 
-		for (var/index = 1, index <= src.occupant.laws.supplied.len, index++)
-			var/law = src.occupant.laws.supplied[index]
+		for (var/index = 1, index <= src.occupant.laws_object.supplied.len, index++)
+			var/law = src.occupant.laws_object.supplied[index]
 			if (length(law) > 0)
 				laws += "[number]: [law]<BR>"
 				number++
@@ -110,7 +143,6 @@
 /obj/machinery/computer/aifixer/process()
 	if(stat & (NOPOWER|BROKEN))
 		return
-
 
 	src.updateDialog()
 	return

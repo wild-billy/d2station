@@ -7,17 +7,19 @@
 		return
 	if(alert("BEGIN THE TOURNAMENT?",,"Yes","No")=="No")
 		return
-	for(var/mob/living/carbon/human/H in mobz)
+	for(var/mob/living/carbon/human/H in world)
 		if(H.stat == 2 || !(H.client)) continue
-		if(is_special_character(H)) continue
+		if(checktraitor(H)) continue
 
-		ticker.mode.equip_traitor(H)
+		//ticker.mode.equip_traitor(H)
 		ticker.mode.traitors += H.mind
 		H.mind.special_role = "traitor"
 
 		var/datum/objective/steal/steal_objective = new
 		steal_objective.owner = H.mind
-		steal_objective.set_target("nuclear authentication disk")
+		steal_objective.target_name = "nuclear authentication disk"
+		steal_objective.steal_target = /obj/item/weapon/disk/nuclear
+		steal_objective.explanation_text = "Steal a [steal_objective.target_name]."
 		H.mind.objectives += steal_objective
 
 		var/datum/objective/hijack/hijack_objective = new

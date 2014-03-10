@@ -1,9 +1,8 @@
 /obj/mecha/combat/gygax
-	desc = "A lightweight, security exosuit. Popular among private and corporate security."
+	desc = "Security exosuit."
 	name = "Gygax"
 	icon_state = "gygax"
-	step_in = 3
-	dir_in = 1 //Facing North.
+	step_in = 5
 	health = 300
 	deflect_chance = 15
 	max_temperature = 3500
@@ -11,8 +10,6 @@
 	var/overload = 0
 	wreckage = "/obj/decal/mecha_wreckage/gygax"
 	internal_damage_threshold = 35
-	max_equip = 4
-
 
 /*
 /obj/mecha/combat/gygax/New()
@@ -46,7 +43,7 @@
 /obj/mecha/combat/gygax/relaymove(mob/user,direction)
 	if(!..()) return
 	if(overload)
-		use_power(step_energy_drain)
+		cell.use(step_energy_drain)
 		health--
 		if(health < initial(health) - initial(health)/3)
 			overload = 0
@@ -61,13 +58,7 @@
 	return output
 
 /obj/mecha/combat/gygax/get_commands()
-	var/output = {"<div class='wr'>
-						<div class='header'>Special</div>
-						<div class='links'>
-						<a href='?src=\ref[src];toggle_leg_overload=1'>Toggle leg actuators overload</a>
-						</div>
-						</div>
-						"}
+	var/output = "<a href='?src=\ref[src];toggle_leg_overload=1'>Toggle leg actuators overload</a><br><hr>"
 	output += ..()
 	return output
 

@@ -42,8 +42,40 @@
 	location = get_turf(location)
 	return location
 
+
+
+/proc/dir2text(direction)
+	switch(direction)
+		if(1.0)
+			return "north"
+		if(2.0)
+			return "south"
+		if(4.0)
+			return "east"
+		if(8.0)
+			return "west"
+		if(5.0)
+			return "northeast"
+		if(6.0)
+			return "southeast"
+		if(9.0)
+			return "northwest"
+		if(10.0)
+			return "southwest"
+		else
+	return
+
+/obj/proc/hear_talk(mob/M as mob, text)
+	var/mob/mo = locate(/mob) in src
+	if(mo)
+		var/rendered = "<span class='game say'><span class='name'>[M.name]: </span> <span class='message'>[text]</span></span>"
+		mo.show_message(rendered, 2)
+	return
+
 /proc/is_type_in_list(var/atom/A, var/list/L)
 	for(var/type in L)
+		if(isnull(type))
+			continue
 		if(istype(A, type))
 			return 1
 	return 0
@@ -64,36 +96,36 @@ var/global/list/common_tools = list(
 	return 0
 
 /proc/iswrench(O)
-	if(istype(O, /obj/item/weapon/wrench))
+	if(O && istype(O, /obj/item/weapon/wrench))
 		return 1
 	return 0
 
 /proc/iswelder(O)
-	if(istype(O, /obj/item/weapon/weldingtool))
+	if(O && istype(O, /obj/item/weapon/weldingtool))
 		return 1
 	return 0
 
 /proc/iscoil(O)
-	if(istype(O, /obj/item/weapon/cable_coil))
+	if(O && istype(O, /obj/item/weapon/cable_coil))
 		return 1
 	return 0
 
 /proc/iswirecutter(O)
-	if(istype(O, /obj/item/weapon/wirecutters))
+	if(O && istype(O, /obj/item/weapon/wirecutters))
 		return 1
 	return 0
 
 /proc/isscrewdriver(O)
-	if(istype(O, /obj/item/weapon/screwdriver))
+	if(O && istype(O, /obj/item/weapon/screwdriver))
 		return 1
 	return 0
 
 /proc/ismultitool(O)
-	if(istype(O, /obj/item/device/multitool))
+	if(O && istype(O, /obj/item/device/multitool))
 		return 1
 	return 0
 
 /proc/iscrowbar(O)
-	if(istype(O, /obj/item/weapon/crowbar))
+	if(O && istype(O, /obj/item/weapon/crowbar))
 		return 1
 	return 0

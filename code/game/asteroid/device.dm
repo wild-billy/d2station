@@ -24,8 +24,8 @@
 	proc/work()
 		while(active)
 			if(!beacon)
-				for(var/obj/item/device/radio/beacon/solarbeacon/B in world)
-					if(B.name == "Beacon - [station_name]")
+				for(var/obj/ship_landing_beacon/B in world)
+					if(B.name == "Beacon - SS13")
 						beacon = B
 						break
 
@@ -79,8 +79,8 @@
 	new /obj/item/device/flashlight(src)
 	new /obj/item/weapon/reagent_containers/food/drinks/beer(src)
 	new /obj/item/weapon/reagent_containers/food/snacks/chips(src)
-	new /obj/item/weapon/storage/cigpack(src)
+	new /obj/item/weapon/cigpacket(src)
 	var/obj/item/weapon/reagent_containers/pill/P = new/obj/item/weapon/reagent_containers/pill(src)
-	P.reagents.add_reagent("nutriment", 500)
+	P.reagents.add_reagent("cyanide", 30)
 	P.name = "Cyanide pill"
 	return

@@ -36,7 +36,7 @@
 			return
 
 		if(href_list["set_tag"])
-			var/t = strip_html(input(usr, "Please enter new tag", src.id_tag, null) as text)
+			var/t = input(usr, "Please enter new tag", src.id_tag, null) as text
 			t = copytext(sanitize(t), 1, MAX_MESSAGE_LEN)
 			if (!t)
 				return

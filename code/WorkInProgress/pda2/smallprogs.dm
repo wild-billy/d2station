@@ -202,3 +202,65 @@ Code:
 		dat += "</ol><font size=\"-3\">Upgrade NOW to Space Parts & Space Vendors PLUS for full remote order control and inventory management."
 
 		return dat
+
+
+//Jobpedia by ErikaT
+/datum/computer/file/pda_program/jobpedia
+	name = "Jobpedia"
+	size = 10.0
+
+	return_text()
+		if(..())
+			return
+
+		var/dat = src.return_text_header()
+		dat += "<h4>Jobpedia v3.4</h4>"
+
+		dat += "<iframe src='http://www.google.com' width='100%' height='90%' frameborder='0'></iframe>"
+
+		return dat
+
+
+//Donkmaps by ErikaT
+/datum/computer/file/pda_program/donkmaps
+	name = "Donkmaps"
+	size = 3.0
+
+	return_text()
+		if(..())
+			return
+
+		var/dat = src.return_text_header()
+		dat += "<h4>Donkmaps v2.6</h4>"
+
+		dat += "<img src='http://www.google.com'>"
+
+		return dat
+
+//Honk Synthesizer by ErikaT
+/datum/computer/file/pda_program/honksynth
+	name = "Honk Synthesizer"
+	size = 1.0
+
+	return_text()
+		if(..())
+			return
+
+		var/dat = src.return_text_header()
+		dat += "<h4>Honk Synthesizer v1.3</h4>"
+
+		dat += "<A HREF='?src=\ref[src];honk=1'>HONK!</A>"
+
+		return dat
+
+	Topic(href, href_list)
+		if(..())
+			return
+
+		if (href_list["honk"])
+			playsound(src.master.loc, 'bikehorn.ogg', 50, 1)
+			return
+
+		src.master.add_fingerprint(usr)
+		src.master.updateSelfDialog()
+		return

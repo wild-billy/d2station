@@ -13,16 +13,12 @@
 
 /obj/item/device/radio/signaler/attack_self(mob/user as mob, flag1)
 	user.machine = src
-	interact(user,flag1)
-
-/obj/item/device/radio/signaler/interact(mob/user as mob, flag1)
 	var/t1
 	if ((src.b_stat && !( flag1 )))
 		t1 = text("-------<BR>\nGreen Wire: []<BR>\nRed Wire:   []<BR>\nBlue Wire:  []<BR>\n", (src.wires & 4 ? text("<A href='?src=\ref[];wires=4'>Cut Wire</A>", src) : text("<A href='?src=\ref[];wires=4'>Mend Wire</A>", src)), (src.wires & 2 ? text("<A href='?src=\ref[];wires=2'>Cut Wire</A>", src) : text("<A href='?src=\ref[];wires=2'>Mend Wire</A>", src)), (src.wires & 1 ? text("<A href='?src=\ref[];wires=1'>Cut Wire</A>", src) : text("<A href='?src=\ref[];wires=1'>Mend Wire</A>", src)))
 	else
 		t1 = "-------"
 	var/dat = {"
-<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />
 <TT>
 Speaker: [src.listening ? "<A href='byond://?src=\ref[src];listen=0'>Engaged</A>" : "<A href='byond://?src=\ref[src];listen=1'>Disengaged</A>"]<BR>
 <A href='byond://?src=\ref[src];send=1'>Send Signal</A><BR>
@@ -68,7 +64,9 @@ Code:
 	if(src.master && (src.wires & 1))
 		src.master.receive_signal(signal)
 	for(var/mob/O in hearers(1, src.loc))
-		O.show_message(text("\icon[] *beep* *beep*", src), 3, "*beep* *beep*", 2)
+		O.show_message(text("\icon[] *beep*", src), 3, "*beep*", 2)
+		playsound(src.loc, 'dep.ogg', 10, 0)
+		sleep(240)
 	return
 
 /obj/item/device/radio/signaler/proc/send_signal(message="ACTIVATE")

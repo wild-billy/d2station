@@ -15,7 +15,7 @@
 	anchored = 1.0    		// can't pick it up
 	density = 0       		// can walk through it.
 	var/id = null     		// id of door it controls.
-	var/releasetime = 0		// when world.time reaches it - release the prisoneer
+	var/releasetime = 0		// when world.time reaches it - release the prisoner
 	var/timing = 1    		// boolean, true/1 timer is on, false/0 means it's not timing
 	var/childproof = 0		// boolean, when activating the door controls, locks door for 1 minute
 	var/picture_state		// icon_state of alert picture, if not displaying text/numbers
@@ -24,14 +24,14 @@
 
 /obj/machinery/door_timer/New()
 	..()
-	for(var/obj/machinery/door/window/brigdoor/M in machines)
+	for(var/obj/machinery/door/window/brigdoor/M in world)
 		if (M.id == src.id)
 			targetdoors += M
 			break
 	if (targetdoors.len==0)
 		stat |= BROKEN
 	targetflashers = list()
-	for(var/obj/machinery/flasher/F in machines)
+	for(var/obj/machinery/flasher/F in world)
 		if(F.id == src.id)
 			targetflashers += F
 	update_icon()

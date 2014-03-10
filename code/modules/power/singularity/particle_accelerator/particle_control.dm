@@ -155,7 +155,7 @@
 			user.machine = src
 
 			var/dat = ""
-			dat += "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Particle Accelerator Control Panel<BR>"
+			dat += "Particle Accelerator Control Panel<BR>"
 			dat += "<A href='?src=\ref[src];close=1'>Close</A><BR><BR>"
 			dat += "Status:<BR>"
 			if(!assembled)

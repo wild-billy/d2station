@@ -1,9 +1,8 @@
 /obj/mecha/combat/durand
-	desc = "An aging combat exosuit utilized by the Nanotrasen corporation. Originally developed to combat hostile alien lifeforms."
+	desc = "Combat exosuit."
 	name = "Durand"
 	icon_state = "durand"
-	step_in = 4
-	dir_in = 1 //Facing North.
+	step_in = 6
 	health = 400
 	deflect_chance = 20
 	max_temperature = 3000
@@ -55,13 +54,7 @@
 	return output
 
 /obj/mecha/combat/durand/get_commands()
-	var/output = {"<div class='wr'>
-						<div class='header'>Special</div>
-						<div class='links'>
-						<a href='?src=\ref[src];toggle_defence_mode=1'>Toggle defence mode</a>
-						</div>
-						</div>
-						"}
+	var/output = "<a href='?src=\ref[src];toggle_defence_mode=1'>Toggle defence mode</a><hr>"
 	output += ..()
 	return output
 

@@ -153,7 +153,7 @@ var/bomb_set = 1
 	if (src.temp)
 		dat = src.temp
 	else
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Syndicate Shuttle</B><HR>
+		dat += {"<BR><B>Syndicate Shuttle</B><HR>
 		\nLocation: [syndicate_station_moving_to_station || syndicate_station_moving_to_space ? "Moving to station ([syndicate_station_timeleft] Secs.)":syndicate_station_at_station ? "Station":"Space"]<BR>
 		[syndicate_station_moving_to_station || syndicate_station_moving_to_space ? "\n*Shuttle already called*<BR>\n<BR>":syndicate_station_at_station ? "\n<A href='?src=\ref[src];sendtospace=1'>Send to space</A><BR>\n<BR>":"\n<A href='?src=\ref[src];sendtostation=1'>Send to station</A><BR>\n<BR>"]
 		\n<A href='?src=\ref[user];mach_close=computer'>Close</A>"}

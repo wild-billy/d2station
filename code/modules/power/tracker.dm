@@ -29,9 +29,8 @@
 		// find all solar controls and update them
 		// currently, just update all controllers in world
 		// ***TODO: better communication system using network
-		if(powernet)
-			for(var/obj/machinery/power/solar_control/C in powernet.nodes)
-				C.tracker_update(angle)
+		for(var/obj/machinery/power/solar_control/C in world)
+			C.tracker_update(angle)
 
 
 	// timed process

@@ -70,6 +70,7 @@
 		M.stunned += rand(0,1)
 		M.eye_blind = 2
 		M.eye_blurry += 25
+		M.updatehealth()
 //		src.amount -= 1
 		give_disease(M)
 
@@ -91,6 +92,10 @@
 //	src.amount--
 	if(istype(M, /mob/living/carbon/human))
 		playsound(M.loc, 'eatfood.ogg', rand(5,60), 1)
+		M.urine += 0.25
+		if(M.urine >= 4)
+			spawn(200)
+			M << "You feel like taking a piss right now."
 
 		if(prob(50))
 			M << "Ugh! Brain freeze!"

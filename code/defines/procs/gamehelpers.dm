@@ -18,35 +18,18 @@
 	return 0
 
 /proc/get_area_name(N) //get area by it's name
+
 	for(var/area/A in world)
 		if(A.name == N)
 			return A
 	return 0
-
-/proc/get_random_turf(var/atom/A, var/list/L)
-	while(L.len > 0)
-		var/dir = pick(L)
-		L -= dir
-		var/turf/T = get_step(A,dir)
-		var/possible = 1
-
-		if(T.density == 0)
-			for(var/obj/I in T)
-				if(I.density == 1)
-					possible = 0
-					break
-
-			if(possible)
-				return T
-
-	return
 
 /proc/in_range(source, user)
 	if(get_dist(source, user) <= 1)
 		return 1
 	else
 		if (istype(user, /mob/living/carbon))
-			if (user:mutations & PORTALS && get_dist(source, user) <= 7)
+			if (user:mutations & 1 && get_dist(source, user) <= 7)
 				var/X = source:x
 				var/Y = source:y
 				var/Z = source:z
@@ -99,14 +82,6 @@
 	//turfs += centerturf
 	return turfs
 
-/proc/get_dist_euclidian(atom/Loc1 as turf|mob|obj,atom/Loc2 as turf|mob|obj)
-	var/dx = Loc1.x - Loc2.x
-	var/dy = Loc1.y - Loc2.y
-
-	var/dist = sqrt(dx**2 + dy**2)
-
-	return dist
-
 /proc/circlerangeturfs(center=usr,radius=3)
 
 	var/turf/centerturf = get_turf(center)
@@ -132,3 +107,4 @@
 		if(dx*dx + dy*dy <= rsq)
 			turfs += T
 	return turfs
+

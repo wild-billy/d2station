@@ -28,7 +28,6 @@ Buildable meters
 	flags = TABLEPASS|FPRINT
 	w_class = 4
 	level = 2
-	health = 60
 
 /obj/item/pipe/New(var/loc, var/pipe_type as num, var/dir as num, var/obj/machinery/atmospherics/make_from = null)
 	..()
@@ -110,8 +109,8 @@ Buildable meters
 // rotate the pipe item clockwise
 
 /obj/item/pipe/verb/rotate()
-	set category = "Object"
 	set name = "Rotate Pipe"
+	set category = "Object"
 	set src in view(1)
 
 	if ( usr.stat || usr.restrained() )
@@ -203,13 +202,6 @@ Buildable meters
 /obj/item/pipe/attackby(var/obj/item/weapon/W as obj, var/mob/user as mob)
 	..()
 	//*
-	if (W.force)
-		health -= W.force
-		if (health <= 0)
-			new /obj/item/weapon/crowbar(src.loc)
-			user << "\blue You bludgeon the [src.name] into a usable crowbar!"
-			del(src)
-			return
 	if (!istype(W, /obj/item/weapon/wrench))
 		return ..()
 	if (!isturf(src.loc))
@@ -432,7 +424,6 @@ Buildable meters
 
 /obj/item/pipe_meter/attackby(var/obj/item/weapon/W as obj, var/mob/user as mob)
 	..()
-
 	if (!istype(W, /obj/item/weapon/wrench))
 		return ..()
 	if(!locate(/obj/machinery/atmospherics/pipe, src.loc))

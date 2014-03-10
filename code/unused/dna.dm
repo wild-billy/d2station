@@ -18,13 +18,13 @@
 		return
 	user.machine = src
 	if (istype(user, /mob/living/carbon/human) || istype(user, /mob/living/silicon/ai))
-		var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><I>Please Insert the cards into the slots</I><BR>\n\t\t\t\tFunction Disk: <A href='?src=\ref[];scan=1'>[]</A><BR>\n\t\t\t\tTarget Disk: <A href='?src=\ref[];modify=1'>[]</A><BR>\n\t\t\t\tAux. Data Disk: <A href='?src=\ref[];modify2=1'>[]</A><BR>\n\t\t\t\t\t(Not always used!)<BR>\n\t\t\t\t[]", src, (src.scan ? text("[]", src.scan.name) : "----------"), src, (src.modify ? text("[]", src.modify.name) : "----------"), src, (src.modify2 ? text("[]", src.modify2.name) : "----------"), (src.scan ? text("<A href='?src=\ref[];execute=1'>Execute Function</A>", src) : "No function disk inserted!"))
+		var/dat = text("<I>Please Insert the cards into the slots</I><BR>\n\t\t\t\tFunction Disk: <A href='?src=\ref[];scan=1'>[]</A><BR>\n\t\t\t\tTarget Disk: <A href='?src=\ref[];modify=1'>[]</A><BR>\n\t\t\t\tAux. Data Disk: <A href='?src=\ref[];modify2=1'>[]</A><BR>\n\t\t\t\t\t(Not always used!)<BR>\n\t\t\t\t[]", src, (src.scan ? text("[]", src.scan.name) : "----------"), src, (src.modify ? text("[]", src.modify.name) : "----------"), src, (src.modify2 ? text("[]", src.modify2.name) : "----------"), (src.scan ? text("<A href='?src=\ref[];execute=1'>Execute Function</A>", src) : "No function disk inserted!"))
 		if (src.temp)
 			dat = text("[]<BR><BR><A href='?src=\ref[];clear=1'>Clear Message</A>", src.temp, src)
 		user << browse(dat, "window=dna_comp")
 		onclose(user, "dna_comp")
 	else
-		var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><I>[]</I><BR>\n\t\t\t\t[] <A href='?src=\ref[];scan=1'>[]</A><BR>\n\t\t\t\t[] <A href='?src=\ref[];modify=1'>[]</A><BR>\n\t\t\t\t[] <A href='?src=\ref[];modify2=1'>[]</A><BR>\n\t\t\t\t\t(Not always used!)<BR>\n\t\t\t\t[]", stars("Please Insert the cards into the slots"), stars("Function Disk:"), src, (src.scan ? text("[]", src.scan.name) : "----------"), stars("Target Disk:"), src, (src.modify ? text("[]", src.modify.name) : "----------"), stars("Aux. Data Disk:"), src, (src.modify2 ? text("[]", src.modify2.name) : "----------"), (src.scan ? text("<A href='?src=\ref[];execute=1'>[]</A>", src, stars("Execute Function")) : stars("No function disk inserted!")))
+		var/dat = text("<I>[]</I><BR>\n\t\t\t\t[] <A href='?src=\ref[];scan=1'>[]</A><BR>\n\t\t\t\t[] <A href='?src=\ref[];modify=1'>[]</A><BR>\n\t\t\t\t[] <A href='?src=\ref[];modify2=1'>[]</A><BR>\n\t\t\t\t\t(Not always used!)<BR>\n\t\t\t\t[]", stars("Please Insert the cards into the slots"), stars("Function Disk:"), src, (src.scan ? text("[]", src.scan.name) : "----------"), stars("Target Disk:"), src, (src.modify ? text("[]", src.modify.name) : "----------"), stars("Aux. Data Disk:"), src, (src.modify2 ? text("[]", src.modify2.name) : "----------"), (src.scan ? text("<A href='?src=\ref[];execute=1'>[]</A>", src, stars("Execute Function")) : stars("No function disk inserted!")))
 		if (src.temp)
 			dat = text("[]<BR><BR><A href='?src=\ref[];clear=1'>[]", stars(src.temp), src, stars("Clear Message</A>"))
 		user << browse(dat, "window=dna_comp")
@@ -121,7 +121,7 @@
 							src.temp = "Disk Failure: Cannot read target disk!"
 					if("data_input")
 						if (src.modify)
-							var/dat = strip_html(input(usr, ">", text("[]", src.name), null)  as text)
+							var/dat = input(usr, ">", text("[]", src.name), null)  as text
 							var/s = src.scan
 							var/m = src.modify
 							if ((usr.stat || usr.restrained() || src.modify != m || src.scan != s))
@@ -602,7 +602,7 @@
 		return
 	var/dat
 	if (src.temp)
-		dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />[]<BR><BR><A href='?src=\ref[];clear=1'>Clear Message</A>", src.temp, src)
+		dat = text("[]<BR><BR><A href='?src=\ref[];clear=1'>Clear Message</A>", src.temp, src)
 	else
 		if (src.connected)
 			var/mob/occupant = src.connected.occupant

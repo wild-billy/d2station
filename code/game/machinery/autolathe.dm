@@ -97,7 +97,7 @@
 
 /obj/machinery/autolathe/proc/wires_win(mob/user as mob)
 	var/dat as text
-	dat += "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Autolathe Wires:<BR>"
+	dat += "Autolathe Wires:<BR>"
 	for(var/wire in src.wires)
 		dat += text("[wire] Wire: <A href='?src=\ref[src];wire=[wire];act=wire'>[src.wires[wire] ? "Mend" : "Cut"]</A> <A href='?src=\ref[src];wire=[wire];act=pulse'>Pulse</A><BR>")
 
@@ -109,7 +109,7 @@
 
 /obj/machinery/autolathe/proc/regular_win(mob/user as mob)
 	var/dat as text
-	dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Metal Amount:</B> [src.m_amount] cm<sup>3</sup> (MAX: [max_m_amount])<BR>\n<FONT color=blue><B>Glass Amount:</B></FONT> [src.g_amount] cm<sup>3</sup> (MAX: [max_g_amount])<HR>")
+	dat = text("<B>Metal Amount:</B> [src.m_amount] cm<sup>3</sup> (MAX: [max_m_amount])<BR>\n<FONT color=blue><B>Glass Amount:</B></FONT> [src.g_amount] cm<sup>3</sup> (MAX: [max_g_amount])<HR>")
 	var/list/objs = list()
 	objs += src.L
 	if (src.hacked)
@@ -238,31 +238,46 @@ var/global/list/autolathe_recipes = list( \
 		new /obj/item/stack/sheet/rglass(), \
 		new /obj/item/stack/rods(), \
 		new /obj/item/weapon/rcd_ammo(), \
-		new /obj/item/weapon/kitchenknife(), \
+		new /obj/item/weapon/kitchenknife(),\
 		new /obj/item/weapon/scalpel(), \
 		new /obj/item/weapon/circular_saw(), \
 		new /obj/item/device/t_scanner(), \
 		new /obj/item/weapon/reagent_containers/glass/bucket(), \
-		new /obj/item/ammo_casing/shotgun/blank(), \
+		new /obj/item/weapon/ammo/shell/blank(), \
 		new /obj/item/device/taperecorder(), \
 		new /obj/item/weapon/stock_parts/console_screen(), \
 	)
 
 var/global/list/autolathe_recipes_hidden = list( \
-		new /obj/item/weapon/flamethrower(), \
 		new /obj/item/device/igniter(), \
 		new /obj/item/device/timer(), \
 		new /obj/item/weapon/rcd(), \
 		new /obj/item/device/infra(), \
-		new /obj/item/weapon/weldingtool/largetank(), \
 		new /obj/item/device/infra_sensor(), \
+		new /obj/item/weapon/weldingtool/largetank(), \
 		new /obj/item/weapon/handcuffs(), \
-		new /obj/item/ammo_magazine(), \
-		new /obj/item/ammo_casing/shotgun(), \
-		new /obj/item/ammo_casing/shotgun/beanbag(), \
-		new /obj/item/ammo_casing/shotgun/dart(), \
-		/* new /obj/item/weapon/shield/riot(), */ \
+		new /obj/item/weapon/ammo/a357(), \
+		new /obj/item/weapon/ammo/magnetrifle(), \
+		new /obj/item/weapon/ammo/shell/gauge(), \
+		new /obj/item/weapon/ammo/a38(), \
+		new /obj/item/weapon/ammo/shell/beanbag(), \
+		new /obj/item/weapon/ammo/shell/dart(), \
 	)
+
+var/global/list/autolathe_recipes_weaponassembly = list( \
+		new /obj/item/weapon/weaponassembly/underboard(), \
+		new /obj/item/weapon/weaponassembly/trigger(), \
+		new /obj/item/weapon/weaponassembly/coil_energ(), \
+		new /obj/item/weapon/weaponassembly/driving_mechnsm(), \
+		new /obj/item/weapon/weaponassembly/plsm_accel(), \
+		new /obj/item/weapon/weaponassembly/driving_coil(), \
+		new /obj/item/weapon/weaponassembly/battery(), \
+		new /obj/item/weapon/weaponassembly/heatsink(), \
+		new /obj/item/weapon/weaponassembly/barrel(), \
+		new /obj/item/weapon/weaponassembly/hsng_panels(), \
+		new /obj/item/weapon/weaponassembly/housing(), \
+	)
+
 
 /obj/machinery/autolathe/RefreshParts()
 	..()
@@ -286,6 +301,7 @@ var/global/list/autolathe_recipes_hidden = list( \
 
 	src.L = autolathe_recipes
 	src.LL = autolathe_recipes_hidden
+	src.LLL = autolathe_recipes_weaponassembly
 	src.wires["Light Red"] = 0
 	src.wires["Dark Red"] = 0
 	src.wires["Blue"] = 0
@@ -304,6 +320,19 @@ var/global/list/autolathe_recipes_hidden = list( \
 	src.disable_wire = pick(w)
 	w -= src.disable_wire
 
+/*
+/obj/machinery/autolathe/proc/get_connection()
+	var/turf/T = src.loc
+	if(!istype(T, /turf/simulated/floor))
+		return
+
+	for(var/obj/cable/C in T)
+		if(C.d1 == 0)
+			return C.netnum
+
+	return 0
+*/
+
 /obj/machinery/autolathe/proc/shock(mob/user, prb)
 	if(stat & (BROKEN|NOPOWER))		// unpowered, no shock
 		return 0
@@ -312,7 +341,7 @@ var/global/list/autolathe_recipes_hidden = list( \
 	var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
 	s.set_up(5, 1, src)
 	s.start()
-	if (electrocute_mob(user, get_area(src), src, 0.7))
+	if (electrocute_mob(user, get_area(src), src))
 		return 1
 	else
 		return 0

@@ -43,6 +43,30 @@
 	src.druggy.layer = 17
 	src.druggy.mouse_opacity = 0
 
+	src.gogglemeson = new src.h_type( src )
+	src.gogglemeson.screen_loc = "WEST,SOUTH to EAST,NORTH"
+	src.gogglemeson.name = "Meson Goggles"
+	src.gogglemeson.icon = ui_style
+	src.gogglemeson.icon_state = "meson"
+	src.gogglemeson.layer = 18
+	src.gogglemeson.mouse_opacity = 0
+
+	src.gogglethermal = new src.h_type( src )
+	src.gogglethermal.screen_loc = "WEST,SOUTH to EAST,NORTH"
+	src.gogglethermal.name = "Thermal Goggles"
+	src.gogglethermal.icon = ui_style
+	src.gogglethermal.icon_state = "thermal"
+	src.gogglethermal.layer = 18
+	src.gogglethermal.mouse_opacity = 0
+
+	src.ectoglasses = new src.h_type( src )
+	src.ectoglasses.screen_loc = "WEST,SOUTH to EAST,NORTH"
+	src.ectoglasses.name = "Ecto Glasses"
+	src.ectoglasses.icon = ui_style
+	src.ectoglasses.icon_state = "dither12g"
+	src.ectoglasses.layer = 18
+	src.ectoglasses.mouse_opacity = 0
+
 	// station explosion cinematic
 	src.station_explosion = new src.h_type( src )
 	src.station_explosion.icon = 'station_explosion.dmi'
@@ -340,7 +364,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "1,1 to 5,13"
+	using.screen_loc = "1,1 to 5,15"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.vimpaired += using
@@ -356,7 +380,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "6,11 to 10,13"
+	using.screen_loc = "6,11 to 10,15"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.vimpaired += using
@@ -364,7 +388,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "11,1 to 13,13"
+	using.screen_loc = "11,1 to 15,15"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.vimpaired += using
@@ -433,14 +457,14 @@
 	mymob.blind.icon = ui_style
 	mymob.blind.icon_state = "black"
 	mymob.blind.name = " "
-	mymob.blind.screen_loc = "1,1 to 13,13"
+	mymob.blind.screen_loc = "1,1 to 15,15"
 	mymob.blind.layer = 0
 
 	mymob.flash = new /obj/screen( null )
 	mymob.flash.icon = ui_style
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
-	mymob.flash.screen_loc = "1,1 to 13,13"
+	mymob.flash.screen_loc = "1,1 to 15,15"
 	mymob.flash.layer = 17
 
 	mymob.hands = new /obj/screen( null )

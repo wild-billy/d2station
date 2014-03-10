@@ -41,13 +41,7 @@ h1, h2, h3, h4, h5, h6
 .adminooc
 {
 	font-weight: bold;
-	color: #b82e00;
-}
-
-.hostadmin
-{
-	font-weight: bold;
-	color: #E01BD9;
+	color: #B82E00;
 }
 
 .admin
@@ -59,13 +53,19 @@ h1, h2, h3, h4, h5, h6
 .gfartooc
 {
 	font-weight: bold;
-	color: #002eb8;
+	color: #0099cc;
 }
 
 .gfartadmin
 {
 	font-weight: bold;
-	color: #733900;
+	color: #996600;
+}
+
+.cocksay
+{
+	font-weight: bold;
+	color: #0F4C6F;
 }
 
 .medal
@@ -93,11 +93,6 @@ h1, h2, h3, h4, h5, h6
 	color: #008000;
 }
 
-.deptradio
-{
-	color: #993399;
-}
-
 .comradio
 {
 	color: #ACA82D;
@@ -108,6 +103,10 @@ h1, h2, h3, h4, h5, h6
 	color: #6D3F40;
 }
 
+.deptradio
+{
+	color: #993399
+}
 .alert
 {
 	color: #ff0000;
@@ -116,11 +115,5 @@ h1, h2, h3, h4, h5, h6
 h1.alert, h2.alert
 {
 	color: #000000;
-}
-
-.attack
-{
-	font-weight: bold;
-	color: #f00;
 }
 </style>"}

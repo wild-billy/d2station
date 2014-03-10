@@ -114,14 +114,14 @@
 			if (src.master.authenticated)
 				var/t1 = href_list["assign"]
 				if(t1 == "Custom")
-					t1 = strip_html(input("Enter a custom job assignment.","Assignment"), 35)
+					t1 = input("Enter a custom job assignment.","Assignment")
 				else
 					src.master.auxid.access = get_access(t1)
 				if (src.master.auxid)
 					src.master.auxid.assignment = t1
 		if (href_list["reg"])
 			if (src.master.authenticated)
-				var/t1 = strip_html(input(usr, "What name?", "ID computer", null) as text, 35)
+				var/t1 = input(usr, "What name?", "ID computer", null) as text
 				src.master.auxid.registered = t1
 		if (href_list["mode"])
 			src.mode = text2num(href_list["mode"])

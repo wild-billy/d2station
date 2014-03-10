@@ -5,4 +5,3 @@
 	var/mode = 0			// 0 = restart vote, 1 = mode vote
 							// modes which can be voted for
 	var/winner = null		// the vote winner
-	var/output = "<br/>"

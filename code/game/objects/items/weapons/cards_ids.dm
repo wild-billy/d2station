@@ -46,8 +46,8 @@ FINGERPRINT CARD
 
 /obj/item/weapon/card/id/syndicate/attack_self(mob/user as mob)
 	if(!src.registered)
-		src.registered = strip_html(input(user, "What name would you like to put on this card?", "Agent card name", ishuman(user) ? user.real_name : user.name))
-		src.assignment = strip_html(input(user, "What occupation would you like to put on this card?\nNote: This will not grant any access levels other than Maintenance.", "Agent card job assignment", "Assistant"))
+		src.registered = input(user, "What name would you like to put on this card?", "Agent card name", ishuman(user) ? user.real_name : user.name)
+		src.assignment = input(user, "What occupation would you like to put on this card?\nNote: This will not grant any access levels other than Maintenance.", "Agent card job assignment", "Assistant")
 		src.name = "[src.registered]'s ID Card ([src.assignment])"
 		user << "\blue You successfully forge the ID card."
 	else
@@ -58,15 +58,15 @@ FINGERPRINT CARD
 	if(istype(W,/obj/item/weapon/photo))
 		if(!(PHOTO))
 			src.PHOTO = W
-			usr.before_take_item(W)
+			usr.u_equip(W)
 			W.loc = src
-			//src.orient2hud(usr)
+			if ((usr.client && usr.s_active != src))
+				usr.client.screen -= W
+			W.dropped(usr)
 			add_fingerprint(usr)
-			usr << "\blue You add the photo to the ID"
+			usr << "\blue You add the photo to the ID."
 		else
-			usr << "\blue There is already a photo on this ID"
-
-			//PHOTO.loc = locate(0,0,0)
+			usr << "\blue There is already a photo on this ID."
 
 /obj/item/weapon/card/id/verb/removePhoto()
 	set name = "Remove Photo From ID"
@@ -78,7 +78,8 @@ FINGERPRINT CARD
 		PHOTO.layer = 3
 		PHOTO = null
 	else
-		usr << "\blue There is no photo to remove"
+		usr << "\blue There is no photo to remove."
+
 
 
 // FINGERPRINT HOLDER
@@ -118,10 +119,10 @@ FINGERPRINT CARD
 			var/obj/item/weapon/f_card/P = locate(href_list["read"])
 			if ((P && P.loc == src))
 				if (!( istype(usr, /mob/living/carbon/human) ))
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 				else
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 			src.add_fingerprint(usr)
 		if (ismob(src.loc))
@@ -157,7 +158,7 @@ FINGERPRINT CARD
 			user << "\blue Not enough space!!!"
 	else
 		if (istype(P, /obj/item/weapon/pen))
-			var/t = strip_html(input(user, "Holder Label:", text("[]", src.name), null)  as text)
+			var/t = input(user, "Holder Label:", text("[]", src.name), null)  as text
 			if (user.equipped() != P)
 				return
 			if ((!in_range(src, usr) && src.loc != user))
@@ -195,7 +196,7 @@ FINGERPRINT CARD
 
 	..()
 	usr << text("\blue There are [] on the stack!", src.amount)
-	usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, display()), text("window=[]", src.name))
+	usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, display()), text("window=[]", src.name))
 	onclose(usr, "[src.name]")
 	return
 
@@ -252,7 +253,7 @@ FINGERPRINT CARD
 			W.add_fingerprint(user)
 	else
 		if (istype(W, /obj/item/weapon/pen))
-			var/t = strip_html(input(user, "Card Label:", text("[]", src.name), null)  as text)
+			var/t = input(user, "Card Label:", text("[]", src.name), null)  as text
 			if (user.equipped() != W)
 				return
 			if ((!in_range(src, usr) && src.loc != user))

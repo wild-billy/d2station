@@ -2,22 +2,18 @@
 	desc = "Produced by \"Tyranny of Honk, INC\", this exosuit is designed as heavy clown-support. Used to spread the fun and joy of life. HONK!"
 	name = "H.O.N.K"
 	icon_state = "honker"
-	step_in = 2
+	step_in = 4
 	health = 140
 	deflect_chance = 60
 	internal_damage_threshold = 60
 	max_temperature = 3500
 	infra_luminosity = 5
 	operation_req_access = list(access_clown)
-	wreckage = "/obj/decal/mecha_wreckage/honker"
 	add_req_access = 0
-	max_equip = 3
-	var/squeak = 0
 
-/*
 /obj/mecha/combat/honker/New()
 	..()
-
+/*
 	weapons += new /datum/mecha_weapon/honker(src)
 	weapons += new /datum/mecha_weapon/missile_rack/banana_mortar(src)
 	weapons += new /datum/mecha_weapon/missile_rack/mousetrap_mortar(src)
@@ -41,58 +37,28 @@
 						[internal_damage&MECHA_INT_CONTROL_LOST?"<font color='red'><b>HONK-A-DOODLE</b></font> - <a href='?src=\ref[src];repair_int_control_lost=1'>Recalibrate</a><br>":null]
 						<b>IntegriHONK: </b> [health/initial(health)*100] %) <br>
 						<b>PowerHONK charge: </b>[isnull(cell_charge)?"Someone HONKed powerHonk!!!":"[cell.percent()]%"])<br>
-						<b>Air source: </b>[use_internal_tank?"Internal AirHONK":"EnvironHONK"]<br>
 						<b>AirHONK pressure: </b>[src.return_pressure()]HoNKs<br>
-						<b>Internal HONKature: </b> [src.return_temperature()]&deg;honK|[src.return_temperature() - T0C]&deg;honCk<br>
+						<b>Internal HONKature: </b> [src.air_contents.temperature]&deg;honK|[src.air_contents.temperature - T0C]&deg;honCk<br>
 						<b>Lights: </b>[lights?"on":"off"]<br>
 					"}
+	output += "<b>HONKon systems:</b><div style=\"margin-left: 15px;\">"
+	if(equipment.len)
+		for(var/obj/item/mecha_parts/mecha_equipment/W in equipment)
+			output += "[selected==W?"<b>":"<a href='?src=\ref[src];select_equip=\ref[W]'>"][W.get_equip_info()][selected==W?"</b>":"</a>"]<br>"
+	else
+		output += "None. HONK!"
+	output += "</div>"
+	output += {"<b>Sounds of HONK:</b><div style=\"margin-left: 15px;\">
+					<a href='?src=\ref[src];play_sound=sadtrombone'>Sad Trombone</a>
+					</div>"}
 	return output
 
 
 /obj/mecha/combat/honker/get_stats_html()
 	var/output = {"<html>
-						<head><title>[src.name] data</title>
-						<style>
-						.wr {margin-bottom: 5px;}
-						.header {cursor:pointer;}
-						.open, .closed {background: #32CD32; color:#000; padding:1px 2px;}
-						.links a {margin-bottom: 2px;}
-						.visible {display: block;}
-						.hidden {display: none;}
-						</style>
-						<script language='javascript' type='text/javascript'>
-						[js_byjax]
-						[js_dropdowns]
-						function ticker() {
-						    setInterval(function(){
-						        window.location='byond://?src=\ref[src]&update_content=1';
-						        document.body.style.color = get_rand_color_string();
-								  document.body.style.background = get_rand_color_string();
-
-						    }, 1000);
-						}
-
-						function get_rand_color_string() {
-						    var color = new Array;
-						    for(var i=0;i<3;i++){
-						        color.push(Math.floor(Math.random()*255));
-						    }
-						    return "rgb("+color.toString()+")";
-						}
-
-						window.onload = function() {
-							dropdowns();
-							ticker();
-						}
-						</script>
-						</head>
-						<body style="color: #fff; background: #000; font: 14px 'Courier', monospace;">
-						<div id='content'>
+						<head><title>[src.name] data</title></head>
+						<body style="color: #[rand_hex_color()]; background: #[rand_hex_color()]; font: 14px 'Courier', monospace;">
 						[src.get_stats_part()]
-						</div>
-						<div id='eq_list'>
-						[src.get_equipment_list()]
-						</div>
 						<hr>
 						[src.get_commands()]
 						</body>
@@ -100,37 +66,11 @@
 					 "}
 	return output
 
-/obj/mecha/combat/honker/get_commands()
-	var/output = {"<div class='wr'>
-						<div class='header'>Sounds of HONK:</div>
-						<div class='links'>
-						<a href='?src=\ref[src];play_sound=sadtrombone'>Sad Trombone</a>
-						</div>
-						</div>
-						"}
-	output += ..()
-	return output
-
-
-/obj/mecha/combat/honker/get_equipment_list()
-	if(!equipment.len)
-		return
-	var/output = "<b>Honk-ON-Systems:</b><div style=\"margin-left: 15px;\">"
-	for(var/obj/item/mecha_parts/mecha_equipment/MT in equipment)
-		output += "[selected==MT?"<b id='\ref[MT]'>":"<a id='\ref[MT]' href='?src=\ref[src];select_equip=\ref[MT]'>"][MT.get_equip_info()][selected==MT?"</b>":"</a>"]<br>"
-	output += "</div>"
-	return output
-
-
 
 /obj/mecha/combat/honker/relaymove(mob/user,direction)
-	var/result = ..()
+	var/result = ..(user,direction)
 	if(result)
-		if(!squeak)
-			playsound(src, "clownstep", 70, 1)
-			squeak = 1
-		else
-			squeak = 0
+		playsound(src, "clownstep", 70, 1)
 	return result
 
 

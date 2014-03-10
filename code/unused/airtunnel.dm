@@ -152,7 +152,7 @@ obj/machinery/computer/airtunnel/attack_ai(user as mob)
 	if(..())
 		return
 
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HTML><BODY><TT><B>Air Tunnel Controls</B><BR>"
+	var/dat = "<HTML><BODY><TT><B>Air Tunnel Controls</B><BR>"
 	user.machine = src
 	if (SS13_airtunnel.operating == 1)
 		dat += "<B>Status:</B> RETRACTING<BR>"
@@ -267,7 +267,7 @@ obj/machinery/computer/airtunnel/attack_ai(user as mob)
 	use_power(10)
 
 	if (src.loc == user.loc)
-		var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Security Pad:</B><BR>\nKeycard: []<BR>\n<A href='?src=\ref[];door1=1'>Toggle Outer Door</A><BR>\n<A href='?src=\ref[];door2=1'>Toggle Inner Door</A><BR>\n<BR>\n<A href='?src=\ref[];em_cl=1'>Emergency Close</A><BR>\n<A href='?src=\ref[];em_op=1'>Emergency Open</A><BR>", (src.scan ? text("<A href='?src=\ref[];card=1'>[]</A>", src, src.scan.name) : text("<A href='?src=\ref[];card=1'>-----</A>", src)), src, src, src, src)
+		var/dat = text("<B>Security Pad:</B><BR>\nKeycard: []<BR>\n<A href='?src=\ref[];door1=1'>Toggle Outer Door</A><BR>\n<A href='?src=\ref[];door2=1'>Toggle Inner Door</A><BR>\n<BR>\n<A href='?src=\ref[];em_cl=1'>Emergency Close</A><BR>\n<A href='?src=\ref[];em_op=1'>Emergency Open</A><BR>", (src.scan ? text("<A href='?src=\ref[];card=1'>[]</A>", src, src.scan.name) : text("<A href='?src=\ref[];card=1'>-----</A>", src)), src, src, src, src)
 		user << browse(dat, "window=sec_lock")
 		onclose(user, "sec_lock")
 	return

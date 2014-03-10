@@ -19,9 +19,9 @@
 
 	src.alien_view = new src.h_type(src)
 	src.alien_view.screen_loc = "WEST,SOUTH to EAST,NORTH"
-	src.alien_view.name = "Sunglasses"
+	src.alien_view.name = "Alien"
 	src.alien_view.icon = ui_style
-	src.alien_view.icon_state = "dark64"
+	src.alien_view.icon_state = "alien"
 	src.alien_view.layer = 18
 	src.alien_view.mouse_opacity = 0
 
@@ -273,7 +273,7 @@
 	using = new src.h_type( src )
 	using.name = "m_intent"
 	using.icon_state = "move"
-	using.screen_loc = "15,15"
+	using.screen_loc = "15,14"
 	using.layer = 20
 	src.adding += using
 */
@@ -345,14 +345,14 @@
 	using = new src.h_type( src )
 	using.name = "disarm"
 	using.icon_state = "disarm"
-	using.screen_loc = "15:-10,15"
+	using.screen_loc = "14:-10,15"
 	using.layer = 19
 	src.intents += using
 
 	using = new src.h_type( src )
 	using.name = "help"
 	using.icon_state = "help"
-	using.screen_loc = "15:-10,15"
+	using.screen_loc = "13:-10,15"
 	using.layer = 19
 	src.intents += using
 	src.m_ints += using
@@ -360,21 +360,21 @@
 	using = new src.h_type( src )
 	using.name = "face"
 	using.icon_state = "facing"
-	using.screen_loc = "15:-11,15"
+	using.screen_loc = "15:-11,14"
 	using.layer = 19
 	src.mov_int += using
 
 	using = new src.h_type( src )
 	using.name = "walk"
 	using.icon_state = "walking"
-	using.screen_loc = "15:-11,15"
+	using.screen_loc = "14:-11,14"
 	using.layer = 19
 	src.mov_int += using
 
 	using = new src.h_type( src )
 	using.name = "run"
 	using.icon_state = "running"
-	using.screen_loc = "15:-11,15"
+	using.screen_loc = "13:-11,14"
 	using.layer = 19
 	src.mov_int += using
 */
@@ -416,7 +416,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "3,3 to 5,15"
+	using.screen_loc = "3,3 to 5,13"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -432,7 +432,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "6,11 to 10,15"
+	using.screen_loc = "6,11 to 10,13"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -440,7 +440,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "11,3 to 15,15"
+	using.screen_loc = "11,3 to 13,13"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -464,7 +464,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "black"
-	using.screen_loc = "15,3 to 15,15"
+	using.screen_loc = "14,3 to 15,15"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -472,7 +472,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "black"
-	using.screen_loc = "3,15 to 15,15"
+	using.screen_loc = "3,14 to 13,15"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -498,7 +498,7 @@
 	mymob.m_select = new /obj/screen( null )
 	mymob.m_select.icon_state = "selector"
 	mymob.m_select.name = "moving"
-	mymob.m_select.screen_loc = "16:-11,15"
+	mymob.m_select.screen_loc = "16:-11,14"
 */
 
 	mymob.toxin = new /obj/screen( null )
@@ -531,12 +531,6 @@
 	mymob.healths.name = "health"
 	mymob.healths.screen_loc = ui_health
 
-	mymob.nutrition_icon = new /obj/screen( null )
-	mymob.nutrition_icon.icon = ui_style
-	mymob.nutrition_icon.icon_state = "nutrition0"
-	mymob.nutrition_icon.name = "nutrition"
-	mymob.nutrition_icon.screen_loc = ui_nutrition
-
 	mymob.pullin = new /obj/screen( null )
 	mymob.pullin.icon = ui_style
 	mymob.pullin.icon_state = "pull0"
@@ -545,7 +539,7 @@
 
 	mymob.blind = new /obj/screen( null )
 	mymob.blind.icon = ui_style
-	mymob.blind.icon_state = "dither50"
+	mymob.blind.icon_state = "black"
 	mymob.blind.name = " "
 	mymob.blind.screen_loc = "1,1 to 15,15"
 	mymob.blind.layer = 0
@@ -671,7 +665,7 @@
 	mymob.client.screen = null
 
 	//, mymob.i_select, mymob.m_select
-	mymob.client.screen += list( mymob.throw_icon, mymob.zone_sel, mymob.oxygen, mymob.toxin, mymob.bodytemp, mymob.internals, mymob.fire, mymob.hands, mymob.healths, mymob.nutrition_icon, mymob.pullin, mymob.blind, mymob.flash, mymob.rest, mymob.sleep) //, mymob.mach )
+	mymob.client.screen += list( mymob.throw_icon, mymob.zone_sel, mymob.oxygen, mymob.toxin, mymob.bodytemp, mymob.internals, mymob.fire, mymob.hands, mymob.healths, mymob.pullin, mymob.blind, mymob.flash, mymob.rest, mymob.sleep) //, mymob.mach )
 	mymob.client.screen += src.adding + src.other
 
 	//if(istype(mymob,/mob/living/carbon/monkey)) mymob.client.screen += src.mon_blo

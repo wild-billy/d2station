@@ -112,7 +112,7 @@
 
 				if("rename")
 					spawn(0)
-						var/t = strip_html(input(usr, "Please enter new name", F.name, null) as text)
+						var/t = input(usr, "Please enter new name", F.name, null) as text
 						t = copytext(sanitize(t), 1, 16)
 						if (!t)
 							return

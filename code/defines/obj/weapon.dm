@@ -6,13 +6,6 @@
 		src.pixel_x = rand(-3.0, 3)
 		src.pixel_y = rand(-3.0, 3)
 
-/obj/item/weapon/offhand
-	name = "Offhand"
-	var/linked_weapon_name = ""
-	w_class = 5.0
-	icon_state = "offhand"
-	item_state = "nothing"
-
 /obj/item/weapon/shield
 	name = "shield"
 
@@ -41,14 +34,11 @@
 	w_class = 1.0
 	origin_tech = "materials=1"
 
-/obj/item/weapon/storage/matchbox
+/obj/item/weapon/matchbox
 	name = "Matchbox"
 	desc = "A small box of Almost But Not Quite Plasma Premium Matches."
 	icon = 'cigarettes.dmi'
 	icon_state = "matchbox"
-	item_state = "zippo"
-	w_class = 1
-	flags = ONBELT | TABLEPASS
 	var/matchcount = 10
 	w_class = 1.0
 
@@ -71,8 +61,21 @@
 	throw_range = 5
 	w_class = 3.0
 	m_amt = 50000
-	origin_tech = "engineering=4;materials=2"
 	var/datum/effects/system/spark_spread/spark_system
+	origin_tech = "materials=4"
+
+/obj/item/weapon/rcd_ammo
+	name = "Compressed matter cartridge"
+	desc = "Highly compressed matter for the RCD."
+	icon = 'ammo.dmi'
+	icon_state = "rcd"
+	item_state = "rcdammo"
+	opacity = 0
+	density = 0
+	anchored = 0.0
+	m_amt = 30000
+	g_amt = 15000
+	origin_tech = "materials=2"
 
 /obj/item/weapon/rsf
 	name = "Rapid-Service-Fabricator (RSF)"
@@ -87,26 +90,11 @@
 	flags = TABLEPASS
 	w_class = 3.0
 
-/obj/item/weapon/rcd_ammo
-	name = "Compressed matter cartridge"
-	desc = "Highly compressed matter for the RCD."
-	icon = 'ammo.dmi'
-	icon_state = "rcd"
-	item_state = "rcdammo"
-	opacity = 0
-	density = 0
-	anchored = 0.0
-	origin_tech = "materials=2"
-	m_amt = 30000
-	g_amt = 15000
-
-
-
-/obj/item/weapon/money
-	name = "Space Cash"
-	desc = "You can probably deposit this in the ATM!"
+/obj/item/weapon/spacecash
+	name = "20 space euros"
+	desc = "Cash!"
 	icon = 'spacecash.dmi'
-	icon_state = "5"
+	icon_state = "20"
 	opacity = 0
 	density = 0
 	anchored = 0.0
@@ -115,140 +103,151 @@
 	throw_speed = 1
 	throw_range = 2
 	w_class = 1.0
-	var/value = 0
-	var/currency
-	var/split = 5
-	var/round = 0.01
+	moneyvalue = 20
+	flags = FPRINT
+	New()
+		..()
+		src.pixel_x = rand(-4.0, 4)
+		src.pixel_y = rand(-4.0, 4)
+
+/obj/item/weapon/spacecash/examine()
+	set src in view(2)
+	..()
+
+	if (usr.moneypaid > 0)
+		src.moneyvalue = src.moneyvalue + usr.moneypaid
+		src.name = "[src.moneyvalue + usr.moneypaid] space euros"
+		usr.moneypaid = 0
+
+	usr << "\red [src.moneyvalue] space euros"
+	usr << "\blue "
+	usr << "\blue Quick Guide to Money:"
+	usr << "\blue Dropping and Picking up: Click on the item and type in an amount to drop that amount of it, to take back the money, hold one bill in one hand and one in the other, and combine them to add them to one."
+	usr << "\blue Using it in vending machines: Use the above instruction to drop as much as the vending machine wants, pick it up, click on the vending machine to open the vending box, and click on the (insert money) link (or just click on the machine with the right amount of money)."
+	src.name = "[src.moneyvalue] space euros"
+
+/obj/item/weapon/spacecash/attack_self(mob/user as mob)
+	if (usr.moneypaid > 0)
+		src.moneyvalue = src.moneyvalue + usr.moneypaid
+		src.name = "[src.moneyvalue] space euros"
+		usr.moneypaid = 0
+
+	var/mvalidate = input(user, "How much money would you like to drop?", "Dropping Money", null) as num
+
+	if (mvalidate > src.moneyvalue)
+		usr << "\red You don't have that much money."
+	else if (mvalidate <= 0)
+		usr << "\red You can't drop a negative amount, that doesn't even make sense! You're silly!"
+	else
+		var/obj/item/weapon/spacecash = new/obj/item/weapon/spacecash ( user.loc )
+		spacecash.moneyvalue = mvalidate
+		spacecash.name = "[mvalidate] space euros"
+		src.name = "[src.moneyvalue - mvalidate] space euros"
+		src.moneyvalue = src.moneyvalue - mvalidate
+		spacecash.add_fingerprint(user)
+		usr << "\blue You take out [spacecash.moneyvalue] space euros!"
+
+		if(spacecash.moneyvalue >= 1)
+			spacecash.icon_state = "1"
+		else if(spacecash.moneyvalue >= 2)
+			spacecash.icon_state = "2"
+		else if(spacecash.moneyvalue >= 3)
+			spacecash.icon_state = "3"
+		else if(spacecash.moneyvalue >= 5)
+			spacecash.icon_state = "spacecash5"
+		else if(spacecash.moneyvalue >= 10)
+			spacecash.icon_state = "spacecash10"
+		else if(spacecash.moneyvalue >= 20)
+			spacecash.icon_state = "spacecash20"
+		else if(spacecash.moneyvalue >= 50)
+			spacecash.icon_state = "spacecash50"
+		else if(spacecash.moneyvalue >= 100)
+			spacecash.icon_state = "spacecash100"
+		else if(spacecash.moneyvalue >= 500)
+			spacecash.icon_state = "spacecash500"
+		else if(spacecash.moneyvalue >= 1000)
+			spacecash.icon_state = "spacecash1000"
+
+		if(src.moneyvalue >= 1)
+			src.icon_state = "1"
+		else if(src.moneyvalue >= 2)
+			src.icon_state = "2"
+		else if(src.moneyvalue >= 3)
+			src.icon_state = "3"
+		else if(src.moneyvalue >= 5)
+			src.icon_state = "spacecash5"
+		else if(src.moneyvalue >= 10)
+			src.icon_state = "spacecash10"
+		else if(src.moneyvalue >= 20)
+			src.icon_state = "spacecash20"
+		else if(src.moneyvalue >= 50)
+			src.icon_state = "spacecash50"
+		else if(src.moneyvalue >= 100)
+			src.icon_state = "spacecash100"
+		else if(src.moneyvalue >= 500)
+			src.icon_state = "spacecash500"
+		else if(src.moneyvalue >= 1000)
+			src.icon_state = "spacecash1000"
+
+		if (src.moneyvalue <= 0)
+			del(src)
+		return
+
+/obj/item/weapon/spacecash/attackby(obj/item/weapon/W as obj, mob/user as mob)
+	if (usr.moneypaid > 0)
+		src.moneyvalue = src.moneyvalue + usr.moneypaid
+		src.name = "[src.moneyvalue] space euros"
+		usr.moneypaid = 0
+	if (istype(W, /obj/item/weapon/spacecash))
+		src.moneyvalue = src.moneyvalue + W.moneyvalue
 
 
-/obj/item/weapon/money/proc/updatedesc()
-	name = "[currency]"
-	desc = "A pile of [currency][value]"
+		if(src.moneyvalue >= 1)
+			src.icon_state = "1"
+		else if(src.moneyvalue >= 2)
+			src.icon_state = "2"
+		else if(src.moneyvalue >= 3)
+			src.icon_state = "3"
+		else if(src.moneyvalue >= 5)
+			src.icon_state = "spacecash5"
+		else if(src.moneyvalue >= 10)
+			src.icon_state = "spacecash10"
+		else if(src.moneyvalue >= 20)
+			src.icon_state = "spacecash20"
+		else if(src.moneyvalue >= 50)
+			src.icon_state = "spacecash50"
+		else if(src.moneyvalue >= 100)
+			src.icon_state = "spacecash100"
+		else if(src.moneyvalue >= 500)
+			src.icon_state = "spacecash500"
+		else if(src.moneyvalue >= 1000)
+			src.icon_state = "spacecash1000"
 
-//	someone fix this pls -erika
+		usr << "\blue You add [W.moneyvalue] space euros to the [src.name]. You now have [src.moneyvalue] space euros in total!"
+		del(W)
 
+/obj/item/weapon/spacecash/c10
+	icon_state = "spacecash10"
+	moneyvalue = 10
+/obj/item/weapon/spacecash/c20
+	icon_state = "spacecash20"
+	moneyvalue = 20
+/obj/item/weapon/spacecash/c50
+	icon_state = "spacecash50"
+	moneyvalue = 50
+/obj/item/weapon/spacecash/c100
+	icon_state = "spacecash100"
+	moneyvalue = 100
+/obj/item/weapon/spacecash/c200
+	icon_state = "spacecash200"
+	moneyvalue = 200
+/obj/item/weapon/spacecash/c500
+	icon_state = "spacecash500"
+	moneyvalue = 500
+/obj/item/weapon/spacecash/c1000
+	icon_state = "spacecash1000"
+	moneyvalue = 1000
 
-	if(value >= 0 && value < 1)
-		icon_state = "0"
-	else if(value >= 1 && value < 2)
-		icon_state = "1"
-	else if(value >= 2 && value < 4)
-		icon_state = "2"
-	else if(value >= 5 && value < 9)
-		icon_state = "5"
-	else if(value >= 10 && value < 19)
-		icon_state = "10"
-	else if(value >= 20 && value < 49)
-		icon_state = "20"
-	else if(value >= 50 && value < 99)
-		icon_state = "50"
-	else if(value >= 100 && value < 199)
-		icon_state = "100"
-	else if(value >= 200 && value < 499)
-		icon_state = "200"
-	else if(value >= 500 && value < 999)
-		icon_state = "500"
-	else if(value >= 1000)
-		icon_state = "1000"
-
-
-/obj/item/weapon/money/New(var/nloc, var/nvalue=10,var/ncurrency  = "Space Cash")
-	if(!value)
-		value = nvalue
-	if(!currency)
-		currency = ncurrency
-	split = round(value/2,round)
-	updatedesc()
-	return ..(nloc)
-
-/*
-/obj/item/weapon/money/attack_self(var/mob/user)
-	interact(user)
-
-/obj/item/weapon/money/proc/interact(var/mob/user)
-	user.machine = src
-
-	var/dat
-
-	dat += "<BR>[value] [currency]"
-	dat += "<BR>New pile:"
-
-	dat += "<A href='?src=\ref[src];sd=5'>-</a>"
-	dat += "<A href='?src=\ref[src];sd=1'>-</a>"
-	if(round<=0.1)
-		dat += "<A href='?src=\ref[src];sd=0.1'>-</a>"
-		if(round<=0.01)
-			dat += "<A href='?src=\ref[src];sd=0.01'>-</a>"
-	dat += "[split]"
-	if(round<=0.01)
-		dat += "<A href='?src=\ref[src];su=0.01'>+</a>"
-	if(round<=0.1)
-		dat += "<A href='?src=\ref[src];su=0.1'>+</a>"
-	dat += "<A href='?src=\ref[src];su=1'>+</a>"
-	dat += "<A href='?src=\ref[src];su=5'>+</a>"
-	dat += "<BR><A href='?src=\ref[src];split=1'>split</a>"
-
-
-	user << browse(dat, "window=computer;size=400x500")
-
-	onclose(user, "computer")
-	return
-
-/obj/item/weapon/money/Topic(href, href_list)
-	if ((usr.contents.Find(src) || (in_range(src, usr) && istype(src.loc, /turf))) || (istype(usr, /mob/living/silicon)))
-		usr.machine = src
-
-		if (href_list["su"])
-			var/samt = text2num(href_list["su"])
-			if(split+samt<value)
-				split+=samt
-		if (href_list["sd"])
-			var/samt = text2num(href_list["sd"])
-			if(split-samt>0)
-				split-=samt
-		if(href_list["split"])
-			new type(get_turf(src),split,currency)
-			value-=split
-			split = round(value/2,round)
-			updatedesc()
-
-
-		src.add_fingerprint(usr)
-	src.updateUsrDialog()
-	for (var/mob/M in viewers(1, src.loc))
-		if (M.client && M.machine == src)
-			src.attack_self(M)
-	return
-
-
-/obj/item/weapon/money/attackby(var/obj/I as obj, var/mob/user as mob)
-	if(istype(I,/obj/item/weapon/money))
-		var/mob/living/carbon/c = user
-		if(!uppertext(I:currency)==uppertext(currency))
-			c<<"You can't mix currencies!"
-			return ..()
-		else
-			value+=I:value
-			c<<"You combine the piles."
-			updatedesc()
-			del I
-	return ..()
-*/
-
-/obj/item/weapon/money/pawnbucks
-	name = "Pawn Bucks"
-	desc = "100% genuine, bonified PAWN BUCKS! Real money not included."
-	value = 10
-	currency = "Pawn Bucks"
-
-/obj/item/weapon/money/tickets
-	name = "Tickets"
-	desc = ""
-	value = 5
-	currency = "Tickets"
-	round = 1
-
-/*
 /obj/item/weapon/ammo
 	name = "ammo"
 	icon = 'ammo.dmi'
@@ -260,43 +259,47 @@
 	w_class = 1.0
 	throw_speed = 4
 	throw_range = 20
-	origin_tech = "materials=2;combat=1"
-
+	origin_tech = "combat=1"
 /obj/item/weapon/ammo/a357
-	desc = "There are 7 rounds left!"
-	name = "ammo-357"
+	desc = "There are 7 bullets left!"
+	name = "magazine-357"
 	icon_state = "357-7"
 	amount_left = 7.0
-
+	origin_tech = "combat=1"
 /obj/item/weapon/ammo/a45
-	desc = "There are 10 rounds left!"
-	name = "ammo-45"
+	desc = "There are 10 bullets left!"
+	name = "magazine-45"
 	icon_state = "45-10"
 	amount_left = 10.0
-
-/obj/item/weapon/ammo/a763m
-	desc = "There are 9 rounds left!"
-	name = "ammo-7.63x25"
-	icon_state = "7.63x25m-9"
-	amount_left = 9.0
-
-/obj/item/weapon/ammo/a9x19p
-	desc = "There are 8 rounds left!"
-	name = "ammo-9x19"
-	icon_state = "9x19p-8"
-	amount_left = 8.0
-
+	origin_tech = "combat=1"
+/obj/item/weapon/ammo/magnetrifle
+	desc = "A magnetic round designed for use with experimental weaponery."
+	name = "magnet round"
+	icon_state = "magnet_round"
+	amount_left = 1
+	origin_tech = "combat=1"
 /obj/item/weapon/ammo/assaultmag
-	desc = "There are 30 rounds left!"
+	desc = "There are 30 bullets left!"
 	name = "5.56x45mm NATO"
 	icon_state = "5.56"
 	amount_left = 30.0
+	origin_tech = "combat=1"
+/obj/item/weapon/ammo/fiveseven
+	desc = "There are 9 bullets left!"
+	name = "magazine-5.7x28mm"
+	icon_state = "5-7_9"
+	amount_left = 9.0
+	m_amt = 10000
+	origin_tech = "combat=1"
+	New()
+		src.pixel_x = rand(-10.0, 10)
 
 /obj/item/weapon/ammo/shell //easier to add new shell types. Like badmin laser/taser/pulse shells.
 	desc = "Generic shell description."
 	name = "Generic shell."
 	icon_state = "blshell"
 	m_amt = 9000
+	origin_tech = "combat=1"
 	New()
 		src.pixel_x = rand(-10.0, 10)
 		src.pixel_y = rand(-10.0, 10)
@@ -306,25 +309,25 @@
 	name = "beanbag shell"
 	icon_state = "bshell"
 	m_amt = 10000
-
+	origin_tech = "combat=1"
 /obj/item/weapon/ammo/shell/gauge
 	desc = "A 12gauge shell."
 	name = "12 gauge shell"
 	icon_state = "gshell"
 	m_amt = 25000
-
+	origin_tech = "combat=1"
 /obj/item/weapon/ammo/shell/blank
 	desc = "A blank shell."
 	name = "blank shell"
 	icon_state = "blshell"
 	m_amt = 500
-
+	origin_tech = "combat=1"
 /obj/item/weapon/ammo/shell/dart
 	desc = "A dart for use in shotguns.."
 	name = "shotgun dart"
 	icon_state = "blshell" //someone, draw the icon, please.
 	m_amt = 50000 //because it's like, instakill.
-
+	origin_tech = "combat=1"
 
 /obj/item/weapon/ammo/a38
 	desc = "A speedloader that contains 7 .38 Special rounds."
@@ -332,7 +335,21 @@
 	icon_state = "38-7"
 	amount_left = 7.0
 	m_amt = 10000
-*/
+	origin_tech = "combat=1"
+/obj/item/device/analyzer
+	desc = "A hand-held environmental scanner which reports current gas levels."
+	name = "analyzer"
+	icon_state = "atmos"
+	item_state = "analyzer"
+	w_class = 2.0
+	flags = FPRINT | TABLEPASS| CONDUCT | ONBELT
+	throwforce = 5
+	throw_speed = 4
+	throw_range = 20
+	m_amt = 30
+	g_amt = 20
+	origin_tech = "magnets=1"
+
 /obj/item/device/mass_spectrometer
 	desc = "A hand-held mass spectrometer which identifies trace chemicals in a blood sample."
 	name = "mass-spectrometer"
@@ -354,7 +371,7 @@
 	name = "advanced mass-spectrometer"
 	icon_state = "adv_spectrometer"
 	details = 1
-	origin_tech = "magnets=4;biotech=2"
+	origin_tech = "magnets=4;biotech=3"
 
 /obj/item/weapon/asteroidcutter
 	name = "Asteroid Cutter"
@@ -369,7 +386,6 @@
 	throw_range = 5
 	w_class = 3.0
 	origin_tech = "combat=1;plasmatech=1"
-	var/digspeed = 20
 	var/processing = 0
 	var/operating = 0
 	var/lit = 0	//on or off
@@ -377,90 +393,18 @@
 	m_amt = 1500
 	g_amt = 100
 
-/obj/item/weapon/melee/baton
-	name = "Stun Baton"
-	desc = "A stun baton for hitting people with."
-	icon_state = "stunbaton_active"
-	item_state = "baton"
-	flags = FPRINT | ONBELT | TABLEPASS
-	force = 10
-	throwforce = 7
-	w_class = 3
-	var/charges = 10.0
-	var/maximum_charges = 10.0
-	var/status = 1
-	var/penis = 0
-	origin_tech = "combat=2"
-	dir = NORTH
-
-/obj/item/weapon/melee/baton/proc/batonthrow(mob/target)
-	if(ismob(target))
-		if(src.status) // http://www.youtube.com/watch?v=kQvmCzILBfE -Deadsnipe
-			if(src.charges >= 5) //was 5- no wait it's 5 again, but meant could only throw stun twice, then rending it into a bashing weapon oppose to a stunning weapon. -Nernums
-				playsound(src.loc, 'Egloves.ogg', 50, 1, -1)
-				target.weakened += rand(5,15)
-				target.stunned += rand(5,15)
-			//	target.paralysis += 50
-				target << "\red The stun baton hits you! Argh!"
-				if(prob(5))
-					target << "\red You release your bodily fluids!"
-					target.emote(pick("pee","poo","vomit","cum"))
-				src.charges -= 5  //Was 5, see above. -Nernums
-				for(var/mob/O in viewers(world.view, src))
-					if(prob(5))
-						O << sound('playball.ogg')
-
-
-
-/obj/item/weapon/melee/energy
-	var/active = 0
-
-/obj/item/weapon/melee/energy/axe
+/obj/item/weapon/axe
 	name = "Axe"
 	desc = "An energised battle axe."
 	icon_state = "axe0"
+	var/active = 0.0
 	force = 40.0
 	throwforce = 25.0
 	throw_speed = 1
 	throw_range = 5
 	w_class = 3.0
 	flags = FPRINT | CONDUCT | NOSHIELD | TABLEPASS
-	origin_tech = "combat=3"
-
-/obj/item/weapon/melee/energy/sword
-	var/colour
-	name = "energy sword"
-	desc = "May the force be within you."
-	icon_state = "sword0"
-	force = 3.0
-	throwforce = 5.0
-	throw_speed = 1
-	throw_range = 5
-	w_class = 2.0
-	flags = FPRINT | TABLEPASS | NOSHIELD
-	origin_tech = "magnets=3;syndicate=4"
-
-/obj/item/weapon/melee/energy/sword/chainsword
-	colour = "chain"
-	New()
-		return
-
-/obj/item/weapon/melee/energy/sword/pirate
-	name = "energy cutlass"
-	desc = "Arrrr matey."
-	icon_state = "cutlass0"
-
-/obj/item/weapon/melee/energy/blade
-	name = "energy blade"
-	desc = "A concentrated beam of energy in the shape of a blade. Very stylish... and lethal."
-	icon_state = "blade"
-	force = 70.0//Normal attacks deal very high damage.
-	throwforce = 1//Throwing or dropping the item deletes it.
-	throw_speed = 1
-	throw_range = 1
-	w_class = 4.0//So you can't hide it in your pocket or some such.
-	flags = FPRINT | TABLEPASS | NOSHIELD
-	var/datum/effects/system/spark_spread/spark_system
+	origin_tech = "combat=3;magnets=1;materials=2"
 
 /obj/item/weapon/bananapeel
 	name = "Banana Peel"
@@ -473,27 +417,31 @@
 	throw_speed = 4
 	throw_range = 20
 
-/obj/item/weapon/soap
-	name = "Soap"
-	desc = "A cheap bar of soap. Doesn't smell."
-	icon = 'items.dmi'
-	icon_state = "soap"
-	w_class = 1.0
-	throwforce = 0
-	throw_speed = 4
-	throw_range = 20
-
-/obj/item/weapon/soap/nanotrasen
-	desc = "A Nanotrasen brand bar of soap. Smells of plasma."
-	icon_state = "soapnt"
-
-/obj/item/weapon/soap/deluxe
-	desc = "A deluxe Waffle Co. brand bar of soap. Smells of comdoms."
-	icon_state = "soapdeluxe"
+/obj/item/weapon/baton
+	name = "Stun Baton"
+	desc = "A metal baton featuring explosed electrodes."
+	icon_state = "stunbaton"
+	item_state = "baton"
+	flags = FPRINT | ONBELT | TABLEPASS
+	force = 10
+	throwforce = 7
+	w_class = 3
+	var/charges = 10.0
+	var/maximum_charges = 10.0
+	var/status = 1
+	origin_tech = "combat=1"
+/obj/item/weapon/baton_classic
+	name = "police baton"
+	desc = "A wooden truncheon for beating criminal scum."
+	icon = 'weapons.dmi'
+	icon_state = "baton"
+	item_state = "classic_baton"
+	flags = FPRINT | ONBELT | TABLEPASS
+	force = 10
+	origin_tech = "combat=1"
 
 /obj/item/weapon/bedsheet
 	name = "bedsheet"
-	desc = "Nice, linen, bedsheet. Perfect to put on."
 	icon = 'items.dmi'
 	icon_state = "sheet"
 	layer = 4.0
@@ -515,37 +463,54 @@
 	throw_range = 15
 	var/spam_flag = 0
 
-/obj/item/stack/medical
-	name = "medical pack"
-	singular_name = "medical pack"
+/obj/item/weapon/clownvuvuzela
+	name = "Modified Clown Vuvuzela"
+	desc = "BBBZZZZZZZZZZZZZZZZ"
 	icon = 'items.dmi'
-	amount = 5
-	max_amount = 5
+	icon_state = "vuvuzela"
+	item_state = "vuvuzela"
+	throwforce = 3
+	w_class = 1.0
+	throw_speed = 3
+	throw_range = 15
+	var/spam_flag = 0
+
+/obj/item/weapon/medical
+	name = "medical pack"
+	icon = 'items.dmi'
+	var/amount = 5
 	w_class = 1
 	throw_speed = 4
 	throw_range = 20
 	var/heal_brute = 0
 	var/heal_burn = 0
 
-/obj/item/stack/medical/bruise_pack
+/obj/item/weapon/medical/bruise_pack
 	name = "bruise pack"
-	singular_name = "bruise pack"
 	desc = "A pack designed to treat blunt-force trauma."
 	icon_state = "brutepack"
 	heal_brute = 60
 	origin_tech = "biotech=1"
 
-/obj/item/stack/medical/ointment
+/obj/item/weapon/dermalregenerator
+	name = "Dermal regenerator"
+	desc = "A cutting edge device used to heal minor cuts, bruises and burns."
+	icon = 'items.dmi'
+	icon_state = "dermalr0"
+	flags = FPRINT | ONBELT | TABLEPASS
+	var/heal_brute = 5
+	var/heal_burn = 5
+	var/on = 0
+	origin_tech = "biotech=3"
+
+/obj/item/weapon/medical/ointment
 	name = "ointment"
-	desc = "Used to treat those nasty burns."
-	singular_name = "ointment"
 	icon_state = "ointment"
 	heal_burn = 40
 	origin_tech = "biotech=1"
 
 /obj/item/weapon/c_tube
 	name = "cardboard tube"
-	desc = "A tube...of cardboard."
 	icon = 'items.dmi'
 	icon_state = "c_tube"
 	throwforce = 1
@@ -553,17 +518,23 @@
 	throw_speed = 4
 	throw_range = 5
 
+/obj/item/weapon/camera
+	name = "camera"
+	icon_state = "camera"
+	var/last_pic = 1.0
+	item_state = "wrench"
+	w_class = 2.0
+	origin_tech = "magnets=1"
+
 /obj/item/weapon/card
 	name = "card"
-	desc = "Does card things."
 	icon = 'card.dmi'
 	w_class = 1.0
-
+	var/credit = 0
 	var/list/files = list(  )
-
+	origin_tech = "programming=1"
 /obj/item/weapon/card/data
 	name = "data disk"
-	desc = "A disk of data."
 	icon_state = "data"
 	var/function = "storage"
 	var/data = "null"
@@ -598,7 +569,6 @@
 	icon = 'items.dmi'
 	icon_state = "keycard_blue"
 	item_state = "card-id"
-	var/money = 0
 
 /obj/item/weapon/card/emag
 	desc = "It's a card with a magnetic strip attached to some circuitry."
@@ -611,32 +581,19 @@
 	name = "identification card"
 	icon_state = "id"
 	item_state = "card-id"
-	var/originalckey = null
-	var/pincode = null
+	credit = 20
 	var/access = list()
 	var/registered = null
 	var/assignment = null
 	var/obj/item/weapon/photo/PHOTO = null
-	var/money = 0
+
 /obj/item/weapon/card/id/gold
 	name = "identification card"
 	icon_state = "gold"
 	item_state = "gold_id"
 
-/obj/item/weapon/card/id/captains_spare
-	name = "Captain's spare ID"
-	desc = "The spare ID of the High Lord himself."
-	icon_state = "gold"
-	item_state = "gold_id"
-	registered = "Captain"
-	assignment = "Captain"
-	New()
-		access = get_access("Captain")
-		..()
-
 /obj/item/weapon/card/id/syndicate
 	name = "agent card"
-	desc = "Shhhhh."
 	access = list(access_maint_tunnels)
 	origin_tech = "syndicate=2"
 
@@ -678,11 +635,6 @@
 /obj/item/weapon/card/id/rd
 	name = "identification card"
 	icon_state = "id_rd"
-	item_state = "card-id"
-
-/obj/item/weapon/card/id/cmo
-	name = "identification card"
-	icon_state = "id_cmo"
 	item_state = "card-id"
 
 /obj/item/weapon/card/id/det
@@ -760,6 +712,16 @@
 	icon_state = "id_blankwhite"
 	item_state = "card-id"
 
+/obj/item/weapon/card/id/captains_spare
+	name = "Captain's spare ID"
+	icon_state = "gold"
+	item_state = "gold_id"
+	registered = "Captain"
+	assignment = "Captain"
+	New()
+		access = get_access("Captain")
+		..()
+
 /obj/item/weapon/card/id/sanderson
 	name = "Paul Sanderson's ID Card (Security Officer)"
 	icon_state = "id_sec"
@@ -784,53 +746,57 @@
 	name = "Erika's Room Key Card"
 	icon_state = "key_erika"
 	registered = "Erika Treial"
+	credit = "0"
 
 /obj/item/weapon/card/id/rebecca
 	name = "Rebecca's Room Key Card"
 	icon_state = "key_rebecca"
 	registered = "Rebecca Pilcrow"
+	credit = "0"
 
 /obj/item/weapon/card/id/nori
 	name = "Nori's Room Key Card"
 	icon_state = "key_nori"
 	registered = "Nori Taggart"
+	credit = "0"
 
 /obj/item/weapon/card/id/emily
 	name = "Emily's Room Key Card"
 	icon_state = "key_emily"
 	registered = "Emily Guest"
+	credit = "0"
 
-/obj/item/weapon/card/id/centcom
-	name = "CentCom ID"
-	desc = "An ID straight from Cent. Com."
-	icon_state = "centcom"
-	registered = "Central Command"
-	assignment = "General"
-	New()
-		access = get_all_centcom_access()
-		..()
 
-/obj/item/weapon/spraybottle
-	desc = "Facilitates fast dispersal of chemical media!"
+/obj/item/weapon/cleaner
+	desc = "Space Cleaner!"
 	icon = 'janitor.dmi'
-	name = "spraybottle"
-	icon_state = "cleanerempty"
+	name = "space cleaner"
+	icon_state = "cleaner"
 	item_state = "cleaner"
 	flags = ONBELT|TABLEPASS|OPENCONTAINER|FPRINT|USEDELAY
 	throwforce = 3
 	w_class = 2.0
 	throw_speed = 2
 	throw_range = 10
+
+/obj/item/weapon/cleaner/empty
+	desc = ""
+	icon_state = "cleanercolor"
+	name = "spray bottle"
 	var/main_reagent
 
-/obj/item/weapon/spraybottle/cleaner
-	desc = "Space Cleaner!"
-	name = "space cleaner"
-	icon_state = "cleaner"
+/obj/item/weapon/cleaner/empty/on_reagent_change()
+	if(reagents.total_volume)
+		if(src.icon_state == "cleanercolor")
+			src.icon_state = "cleanercolor"
+			src.main_reagent = src.reagents.get_master_reagent_reference()
+			var/icon/dropperc = new/icon("icon" = 'janitor.dmi', "icon_state" = "cleanercolormod")
+			//dropperc.Blend(rgb(src.main_reagent:colour_r, src.main_reagent:colour_g, src.main_reagent:colour_b), ICON_ADD)
+			src.overlays += dropperc
+			src.main_reagent = ""
 
 /obj/item/weapon/clipboard
 	name = "clipboard"
-	desc = "Apply paper to this to write better. Can also hold pens."
 	icon = 'items.dmi'
 	icon_state = "clipboard00"
 	var/obj/item/weapon/pen/pen = null
@@ -840,134 +806,160 @@
 	throw_speed = 3
 	throw_range = 10
 
+/obj/item/weapon/clipboard/MouseDrop(obj/over_object as obj)
+	if ((istype(usr, /mob/living/carbon/human) || (ticker && ticker.mode.name == "monkey")))
+		var/mob/M = usr
+		if (!( istype(over_object, /obj/screen) ))
+			return ..()
+		playsound(src.loc, "rustle", 50, 1, -5)
+		if ((!( M.restrained() ) && !( M.stat )))
+			if (over_object.name == "r_hand")
+				if (!( M.r_hand ))
+					M.u_equip(src)
+					M.r_hand = src
+			else
+				if (over_object.name == "l_hand")
+					if (!( M.l_hand ))
+						M.u_equip(src)
+						M.l_hand = src
+			M.update_clothing()
+			src.add_fingerprint(usr)
+			return
+
 /obj/item/weapon/cloaking_device
 	name = "cloaking device"
-	desc = "Use this to become invisible to the human eyesocket."
 	icon = 'device.dmi'
 	icon_state = "shield0"
 	var/active = 0.0
+	var/drain
+	var/power = 100
 	flags = FPRINT | TABLEPASS| CONDUCT
 	item_state = "electronic"
 	throwforce = 10.0
 	throw_speed = 2
 	throw_range = 10
 	w_class = 2.0
-	origin_tech = "magnets=3;syndicate=4"
+	origin_tech = "magnets=3;syndicate=3"
+
+	proc
+		drain(mob/user as mob)
+			while(src.active)
+				sleep(10)
+				power--
+				if(power <= 0)
+					src.active = 0
+					user << "\red The cloaking device needs time to recharge."
+					src.icon_state = "shield0"
+			while(!src.active)
+				sleep(10)
+				if(power >= 100)
+					return
+				else
+					power++
 
 #define MAXCOIL 30
 /obj/item/weapon/cable_coil
 	name = "cable coil"
-	icon = 'power.dmi'
-	icon_state = "coil_red"
 	var/amount = MAXCOIL
-	var/colour = "red"
+	icon = 'power.dmi'
+	icon_state = "coil"
 	desc = "A coil of power cable."
 	throwforce = 10
 	w_class = 2.0
 	throw_speed = 2
 	throw_range = 5
 	flags = TABLEPASS|USEDELAY|FPRINT|CONDUCT
-	item_state = "coil_red"
-
+	item_state = "coil"
 
 /obj/item/weapon/cable_coil/cut
-	item_state = "coil_red2"
-
-/obj/item/weapon/cable_coil/yellow
-	colour = "yellow"
-	icon_state = "coil_yellow"
-
-/obj/item/weapon/cable_coil/pink
-	colour = "pink"
-	icon_state = "coil_pink"
-
-/obj/item/weapon/cable_coil/blue
-	colour = "blue"
-	icon_state = "coil_blue"
-
-/obj/item/weapon/cable_coil/green
-	colour = "green"
-	icon_state = "coil_green"
+	icon = 'power.dmi'
+	icon_state = "coil2"
+	origin_tech = "materials=1"
 
 /obj/item/weapon/crowbar
 	name = "crowbar"
-	desc = "Used to hit floors"
 	icon = 'items.dmi'
 	icon_state = "crowbar"
 	flags = FPRINT | TABLEPASS| CONDUCT
 	force = 5.0
 	throwforce = 7.0
-	hitsound = 'squish.ogg'
 	item_state = "wrench"
 	w_class = 2.0
 	m_amt = 50
-	origin_tech = "engineering=1"
-
-/obj/item/weapon/crowbar/red
-	icon = 'items.dmi'
-	icon_state = "red_crowbar"
-
-/obj/item/weapon/crowbar/tutorial
-	icon = 'tutorial.dmi'
-	icon_state = "crowbar"
-
-/obj/item/weapon/crowbar/tutorial/attack_hand(mob/user as mob)
-	var/obj/item/weapon/crowbar/tutorial/T = new /obj/item/weapon/crowbar/tutorial (src.loc)
-	if (user.hand)
-		user.l_hand = T
-	else
-		user.r_hand = T
-	T.loc = user
-	T.layer = 20
-
-/obj/item/weapon/crowbar/tutorial/dropped(mob/user as mob)
-	spawn(300)
-		del(src)
-
-/obj/item/weapon/fireaxe
-	icon_state = "fireaxe0"
-	name = "Fire axe"
-	desc = "Truly, the tool of a madman. Who would possibly think to fight fire with an axe?"
-	force = 5
-	w_class = 4.0
-	twohanded = 1
 	hitsound = 'squish.ogg'
-	force_unwielded = 5
-	force_wielded = 30
+	origin_tech = "materials=1"
+	New()
+		if(prob(50))
+			icon_state = "crowbar_red"
 
-/obj/item/weapon/fireaxe/regular
-	icon_state = "axe0"
+/obj/item/weapon/axe
 	name = "axe"
-	desc = "Truly, the tool of a madman. Who would possibly think to fight trees with an axe?"
-	force = 5
-	w_class = 4.0
-
-/obj/item/weapon/cane
-	name = "cane"
-	desc = "A cane used by a true gentlemen. Or a clown."
-	icon = 'weapons.dmi'
-	icon_state = "cane"
+	icon = 'items.dmi'
+	icon_state = "axe"
 	flags = FPRINT | TABLEPASS| CONDUCT
-	force = 5.0
-	throwforce = 7.0
-	item_state = "cane"
+	force = 15
+	throwforce = 15
+	item_state = "wrench"
+	w_class = 10
+	m_amt = 50
+	hitsound = 'squish.ogg'
+	origin_tech = "materials=1"
+/obj/item/weapon/fireaxe
+	name = "fireaxe"
+	icon = 'items.dmi'
+	icon_state = "fireaxe"
+	flags = FPRINT | TABLEPASS| CONDUCT
+	force = 30
+	throwforce = 30
+	item_state = "wrench"
 	w_class = 2.0
 	m_amt = 50
-
-/obj/item/weapon/cane/browncane
-	name = " browncane"
-	icon_state = "browncane"
-
+	hitsound = 'squish.ogg'
+	origin_tech = "materials=1"
 /obj/item/weapon/disk
 	name = "disk"
 	icon = 'items.dmi'
-
+	origin_tech = "programming=1"
 /obj/item/weapon/disk/nuclear
 	name = "Nuclear Authentication Disk"
-	desc = "Better keep this safe."
 	icon_state = "nucleardisk"
 	item_state = "card-id"
 	w_class = 1.0
+
+/obj/item/weapon/doll
+	name = "Action Figure"
+	desc = "IT'S NOT A DOLL THERE'S A DIFFERENCE"
+	icon = 'items.dmi'
+
+/obj/item/weapon/doll/mecha/durand
+	name = "Durand Model"
+	desc = "A miniature replica of a Durand chassis."
+	icon_state = "duranddoll"
+
+/obj/item/weapon/doll/mecha/gygax
+	name = "Gygax Model"
+	desc = "A miniature replica of a Gygax chassis."
+	icon_state = "gygaxdoll"
+
+/obj/item/weapon/doll/mecha/ripley
+	name = "Ripley Model"
+	desc = "A miniature replica of a Ripley chassis."
+	icon_state = "ripleydoll"
+
+/obj/item/weapon/doll/mecha/marauder
+	name = "Marauder Model"
+	desc = "A miniature replica of a Marauder chassis."
+	icon_state = "marauderdoll"
+
+/obj/item/weapon/doll/mecha/miningrig
+	name = "Mining Rig Model"
+	desc = "A miniature replica of a mining rig chassis."
+	icon_state = "miningrigdoll"
+
+/obj/item/weapon/doll/mecha/tick
+	name = "Tick Model"
+	desc = "A miniature replica of a Tick chassis."
+	icon_state = "tickdoll"
 
 /obj/item/weapon/dummy
 	name = "dummy"
@@ -977,7 +969,6 @@
 
 /obj/item/weapon/extinguisher
 	name = "fire extinguisher"
-	desc = "Contains water....dangit..."
 	icon = 'items.dmi'
 	icon_state = "fire_extinguisher0"
 	var/last_use = 1.0
@@ -991,10 +982,10 @@
 	force = 10.0
 	item_state = "fire_extinguisher"
 	m_amt = 90
+	origin_tech = "materials=1"
 
 /obj/item/weapon/f_card
 	name = "Finger Print Card"
-	desc = "Used to take fingerprints."
 	icon = 'card.dmi'
 	icon_state = "fingerprint0"
 	var/amount = 10.0
@@ -1003,17 +994,20 @@
 	w_class = 1.0
 	throw_speed = 3
 	throw_range = 5
+	New()
+		..()
+		src.pixel_x = rand(-3.0, 3)
+		src.pixel_y = rand(-3.0, 3)
 
 
 /obj/item/weapon/fcardholder
 	name = "Finger Print Case"
-	desc = "Apply finger print card."
 	icon = 'items.dmi'
 	icon_state = "fcardholder0"
 	item_state = "clipboard"
 
 
-/obj/item/weapon/flashbang //these suck, instead use the chemical versions as they work with mousetraps. /obj/item/weapon/chem_grenade/flashbang -Nernums
+/obj/item/weapon/flashbang
 	desc = "It is set to detonate in 3 seconds."
 	name = "flashbang"
 	icon = 'grenade.dmi'
@@ -1039,7 +1033,7 @@
 	throw_speed = 4
 	throw_range = 20
 	flags = FPRINT | TABLEPASS | CONDUCT | ONBELT
-	origin_tech = "materials=2;magnets=3"
+	origin_tech = "materials=2;magnets=3;combat=1"
 
 /obj/item/weapon/flasks
 	name = "flask"
@@ -1047,7 +1041,7 @@
 	var/oxygen = 0.0
 	var/plasma = 0.0
 	var/coolant = 0.0
-
+	origin_tech = "materials=1"
 /obj/item/weapon/flasks/coolant
 	name = "light blue flask"
 	icon_state = "coolant-c"
@@ -1063,7 +1057,6 @@
 	icon_state = "plasma-c"
 	plasma = 500.0
 
-
 /obj/item/weapon/game_kit
 	name = "Gaming Kit"
 	icon = 'items.dmi'
@@ -1071,14 +1064,12 @@
 	var/selected = null
 	var/board_stat = null
 	var/data = ""
-	var/base_url = "http://svn.slurm.us/public/spacestation13/misc/game_kit"
+	var/base_url = "http://google.com"
 	item_state = "sheet-metal"
 	w_class = 5.0
 
-
 /obj/item/weapon/gift
 	name = "gift"
-	desc = "A wrapped item."
 	icon = 'items.dmi'
 	icon_state = "gift3"
 	var/size = 3.0
@@ -1102,26 +1093,6 @@
 	item_state = "nothing"
 	w_class = 5.0
 
-/obj/item/weapon/grab/proc/throwperson(mob/target)
-	var/obj/item/weapon/grab/G
-	if(istype(G))
-		if(ismob(G.affecting))
-			if(ismob(target))
-				playsound(src.loc, 'punch1.ogg', 50, 1, -1)
-				target.weakened = 5
-				target.stunned = 5
-				target.paralysis = 5
-				var/mob/GA = G.affecting
-				target << "\red [GA.name] tumbles into you!"
-				GA.paralysis = 5
-				GA.stunned = 5
-				GA.weakened = 5
-				for (var/mob/V in viewers(usr))
-					V.show_message("[GA.name] crashes into [target]!", 3)
-
-
-
-/*
 /obj/item/weapon/gun
 	name = "gun"
 	icon = 'gun.dmi'
@@ -1137,6 +1108,7 @@
 /obj/item/weapon/gun/shotgun
 	name = "shotgun"
 	icon_state = "shotgun"
+	item_state = "shotgun"
 	var/shellsmax
 	var/shellsunlimited = 0
 	var/index
@@ -1151,17 +1123,47 @@
 /obj/item/weapon/gun/shotgun/combat
 	name = "combat shotgun"
 	icon_state = "cshotgun"
+	item_state = "cshotgun"
 	w_class = 4.0
 	force = 12.0
 	flags =  FPRINT | TABLEPASS | CONDUCT | USEDELAY | ONBACK
 	shellsmax = 8
 	origin_tech = "combat=3"
 
+/obj/item/weapon/gun/carbine
+	desc = "There are 0 bullets left. Uses 5.56x45mm NATO"
+	name = "carbine"
+	icon_state = "carbinenomag"
+	var/burst = 0
+	var/obj/item/weapon/ammo/assaultmag/magazine
+	flags =  FPRINT | TABLEPASS | CONDUCT | USEDELAY
+	w_class = 4.0
+	throw_speed = 2
+	throw_range = 10
+	force = 6.0
+	m_amt = 2000
+	origin_tech = "combat=1;materials=2"
+
+/obj/item/weapon/gun/ak331
+	desc = "There are 0 bullets left. Uses 5.56x45mm NATO"
+	name = "ak331"
+	icon_state = "ak331nomag"
+	item_state = "ak331"
+	var/burst = 0
+	var/obj/item/weapon/ammo/assaultmag/magazine
+	flags =  FPRINT | TABLEPASS | CONDUCT | USEDELAY
+	w_class = 4.0
+	throw_speed = 2
+	throw_range = 10
+	force = 18.0
+	m_amt = 2000
+	origin_tech = "combat=2;materials=3"
+
 /obj/item/weapon/gun/energy
 	name = "energy"
 	var/charges = 10.0
 	var/maximum_charges = 10.0
-	origin_tech = "combat=2;magnets=2"
+	origin_tech = "combat=2;magnets=1"
 
 /obj/item/weapon/gun/energy/taser_gun
 	name = "taser gun"
@@ -1174,7 +1176,7 @@
 	charges = 4
 	maximum_charges = 4
 	m_amt = 2000
-	origin_tech = "combat=2;magnets=2"
+	origin_tech = "combat=2;magnets=1"
 
 /obj/item/weapon/gun/energy/teleport_gun
 	name = "teleport gun"
@@ -1215,12 +1217,50 @@
 	force = 7.0
 	m_amt = 2000
 	origin_tech = "combat=3;magnets=2"
-	var/shot_delay = 0 //used for borg guns, adds that much in deciseconds delay between shots
-	var/next_attack = 0 //used for the delay
+
+/obj/item/weapon/gun/energy/Research/plasma_pistol
+	name = "Plasma Pistol"
+	icon_state = "Plasma_Gun"
+	desc = "Pre-Production version of the Mark 1 Plasma Pistol."
+	w_class = 3.0
+	throw_speed = 2
+	throw_range = 10
+	force = 3.0
+	m_amt = 2000
+	charges = 20
+	maximum_charges = 20.0
+	origin_tech = "combat=3;magnets=2"
+
+/obj/item/weapon/gun/energy/Research/Plasma_Rifle
+	name = "Plasma Rifle"
+	desc = "Pre-Production version of the Mark 1 Plasma Rifle."
+	icon_state = "Plasma_Rifle"
+	w_class = 4.0
+	throw_speed = 2
+	throw_range = 10
+	force = 4.0
+	m_amt = 2000
+	charges = 40
+	maximum_charges = 40.0
+	origin_tech = "combat=4;magnets=3"
+
+/obj/item/weapon/gun/energy/Research/Heavy_Plasma
+	name = "Heavy Plasma Rifle"
+	desc = "The ultimate in urban pacification."
+	icon_state = "HPR"
+	w_class = 5.0
+	throw_speed = 2
+	throw_range = 20
+	force = 5.0
+	m_amt = 2000
+	charges = 80
+	maximum_charges = 80.0
+	origin_tech = "combat=5;magnets=5"
 
 /obj/item/weapon/gun/energy/laser_gun/captain
 	icon_state = "caplaser"
-	desc = "This is an antique laser gun. All craftsmanship is of the highest quality. It is decorated with assistant leather and chrome. The object menaces with spikes of energy. On the item is an image of Space Station 13. The station is exploding."
+	item_state = "capgun"
+	desc = "I can't believe this old thing was actually used to shoot something.."
 	force = 10
 	origin_tech = null
 
@@ -1232,9 +1272,37 @@
 	w_class = 3.0
 	throw_speed = 2
 	throw_range = 10
-	force = 24.0
+	force = 8.0
 	m_amt = 2000
 	origin_tech = "combat=3;materials=2"
+
+/obj/item/weapon/gun/fiveseven
+	desc = "A versatile pistol favored by varied forces. Uses 5.7x28mm"
+	name = "Five-seveN"
+	icon_state = "five_seven"
+	var/obj/item/weapon/ammo/fiveseven/magazine
+	w_class = 3.0
+	throw_speed = 2
+	throw_range = 10
+	force = 10.0
+	m_amt = 1500
+	origin_tech = "combat=3;materials=3"
+
+/obj/item/weapon/gun/magnetrifle
+	desc = "An experimental weapon that uses an electromagnetic coil to propel a projectile to lethal speeds."
+	name = "Magnet Rifle"
+	icon_state = "magnetrifle0"
+	item_state = "magrifle"
+	var/bullets = 0.0
+	var/maximum_charges = 3.0
+	var/charges = 1
+	w_class = 3.0
+	throw_speed = 2
+	throw_range = 10
+	force = 8.0
+	m_amt = 2750
+	g_amt = 550
+	origin_tech = "combat=3;materials=3;magnets=3"
 
 /obj/item/weapon/gun/revolver/mateba
 	desc = "There are 0 bullets left. Uses 357"
@@ -1242,32 +1310,8 @@
 	icon_state = "mateba"
 	origin_tech = "combat=3;materials=2"
 
-/obj/item/weapon/gun/c96
-	desc = "There are 0 rounds left. Uses 7.63x25 Mauser"
-	name = "c96"
-	icon_state = "c96"
-	var/obj/item/weapon/ammo/a763m/magazine
-	w_class = 3.0
-	throw_speed = 2
-	throw_range = 10
-	force = 12.0
-	m_amt = 2000
-//	origin_tech = "combat=2;materials=2"
-
-/obj/item/weapon/gun/p08
-	desc = "There are 0 rounds left. Uses 9x19 Parabellum"
-	name = "p08"
-	icon_state = "p08empty"
-	var/obj/item/weapon/ammo/a9x19p/magazine
-	w_class = 3.0
-	throw_speed = 2
-	throw_range = 10
-	force = 16.0
-	m_amt = 2000
-//	origin_tech = "combat=2;materials=2"
-
 /obj/item/weapon/gun/glock
-	desc = "There are 0 rounds left. Uses .45 ACP"
+	desc = "There are 0 bullets left. Uses .45 ACP"
 	name = "glock"
 	icon_state = "glock"
 	var/obj/item/weapon/ammo/a45/magazine
@@ -1276,10 +1320,10 @@
 	throw_range = 10
 	force = 6.0
 	m_amt = 2000
-//	origin_tech = "combat=2;materials=2"
+//	origin_tech = "combat=3;materials=2"
 
 /obj/item/weapon/gun/m1911
-	desc = "There are 0 rounds left. Uses .45 ACP"
+	desc = "There are 0 bullets left. Uses .45 ACP"
 	name = "m1911"
 	icon_state = "m1911"
 	var/obj/item/weapon/ammo/a45/magazine
@@ -1288,33 +1332,7 @@
 	throw_range = 10
 	force = 14.0
 	m_amt = 2000
-//	origin_tech = "combat=2;materials=2"
-
-/obj/item/weapon/gun/carbine
-	desc = "There are 0 rounds left. Uses 5.56x45mm NATO"
-	name = "carbine"
-	icon_state = "carbinenomag"
-	var/obj/item/weapon/ammo/assaultmag/magazine
-	flags =  FPRINT | TABLEPASS | CONDUCT | USEDELAY
-	w_class = 4.0
-	throw_speed = 2
-	throw_range = 10
-	force = 6.0
-	m_amt = 2000
-//	origin_tech = "combat=2;materials=2"
-
-/obj/item/weapon/gun/ak331
-	desc = "There are 0 rounds left. Uses 5.56x45mm NATO"
-	name = "ak331"
-	icon_state = "ak331nomag"
-	var/obj/item/weapon/ammo/assaultmag/magazine
-	flags =  FPRINT | TABLEPASS | CONDUCT | USEDELAY
-	w_class = 4.0
-	throw_speed = 2
-	throw_range = 10
-	force = 18.0
-	m_amt = 2000
-//	origin_tech = "combat=2;materials=2"
+//	origin_tech = "combat=3;materials=2"
 
 /obj/item/weapon/gun/detectiverevolver
 	desc = "A cheap Martian knock-off of a Smith & Wesson Model 10. Uses .38-Special rounds."
@@ -1326,12 +1344,10 @@
 	throw_range = 10
 	force = 14.0
 	m_amt = 1000
-	origin_tech = "combat=2;materials=2"
-*/
+	origin_tech = "combat=1;materials=2"
 
 /obj/item/weapon/hand_tele
 	name = "hand tele"
-	desc = "A portable item using blue-space technology."
 	icon = 'device.dmi'
 	icon_state = "hand_tele"
 	item_state = "electronic"
@@ -1344,7 +1360,6 @@
 
 /obj/item/weapon/handcuffs
 	name = "handcuffs"
-	desc = "Use this to keep prisoners in line."
 	icon = 'items.dmi'
 	icon_state = "handcuff"
 	flags = FPRINT | TABLEPASS | CONDUCT | ONBELT
@@ -1355,87 +1370,54 @@
 	m_amt = 500
 	origin_tech = "materials=1"
 
-
 /obj/item/weapon/implant
 	name = "implant"
 	var/implanted = null
 	var/mob/imp_in = null
 	var/colour = "b"
+	origin_tech = "materials=2;programming=4;biotech=4"
 
 /obj/item/weapon/implant/freedom
 	name = "freedom"
-	desc = "Use this to escape from those evil Red Shirts."
 	var/uses = 1.0
 	colour = "r"
 	var/activation_emote = "chuckle"
 
 /obj/item/weapon/implant/tracking
 	name = "tracking"
-	desc = "Track with this."
 	var/frequency = 1451
 	var/id = 1.0
 
 /obj/item/weapon/implant/explosive
 	name = "explosive"
-	desc = "And boom goes the weasel."
 
 /obj/item/weapon/implant/chem
 	name = "chem"
 
-/obj/item/weapon/implant/nukeoperative
-	name = "neutralization"
-	desc = "Protects Syndicate assets."
-	colour = "r"
-
-/obj/item/weapon/implant/securityweapons
-	name = "security"
-	desc = "Grants clearance to stationboard security."
-
-/obj/item/weapon/implant/mercweapons
-	name = "mercenary"
-	desc = "Grants clearance to mercenary weapons."
-	colour = "r"
-
 /obj/item/weapon/implantcase
 	name = "Glass Case"
-	desc = "A case containing an implant."
 	icon_state = "implantcase-0"
 	var/obj/item/weapon/implant/imp = null
 	item_state = "implantcase"
 	throw_speed = 1
 	throw_range = 5
 	w_class = 1.0
-
+	origin_tech = "materials=1"
 /obj/item/weapon/implantcase/tracking
 	name = "Glass Case- 'Tracking'"
-	desc = "A case containing a tracking implant."
 	icon = 'items.dmi'
 	icon_state = "implantcase-b"
-
+	origin_tech = "materials=1"
 /obj/item/weapon/implantcase/explosive
 	name = "Glass Case- 'Explosive'"
-	desc = "A case containing an explosive implant."
 	icon = 'items.dmi'
 	icon_state = "implantcase-r"
-
+	origin_tech = "materials=1"
 /obj/item/weapon/implantcase/chem
 	name = "Glass Case- 'Chem'"
-	desc = "A case containing a chemical implant."
 	icon = 'items.dmi'
 	icon_state = "implantcase-b"
-
-/obj/item/weapon/implantcase/securityweapons
-	name = "Glass Case- 'Security'"
-	desc = "A case containing a security implant."
-	icon = 'items.dmi'
-	icon_state = "implantcase-b"
-
-/obj/item/weapon/implantcase/mercweapons
-	name = "Glass Case- 'Merc Weapons Unlock'"
-	desc = "A case containing an implant."
-	icon = 'items.dmi'
-	icon_state = "implantcase-r"
-
+	origin_tech = "materials=1"
 /obj/item/weapon/implanter
 	name = "implanter"
 	icon = 'items.dmi'
@@ -1445,10 +1427,9 @@
 	throw_speed = 1
 	throw_range = 5
 	w_class = 2.0
-
+	origin_tech = "materials=1"
 /obj/item/weapon/implantpad
 	name = "implantpad"
-	desc = "Used to modify implants."
 	icon = 'items.dmi'
 	icon_state = "implantpad-0"
 	var/obj/item/weapon/implantcase/case = null
@@ -1458,11 +1439,10 @@
 	throw_speed = 1
 	throw_range = 5
 	w_class = 2.0
-
+	origin_tech = "materials=1"
 
 /obj/item/weapon/locator
 	name = "locator"
-	desc = "Used to track those with locater implants."
 	icon = 'device.dmi'
 	icon_state = "locator"
 	var/temp = null
@@ -1478,7 +1458,6 @@
 	origin_tech = "magnets=1"
 
 
-
 /obj/item/weapon/mop
 	desc = "The world of janitalia wouldn't be complete without a mop."
 	name = "mop"
@@ -1492,12 +1471,12 @@
 	throw_range = 10
 	w_class = 3.0
 	flags = FPRINT | TABLEPASS
-
+	origin_tech = "materials=1"
 /obj/item/weapon/mop/shammy
-	desc = "Can hold twenty times its weight in liquid!"
+	desc = "This little towel can hold almost twelve times its weight in water."
+	name = "shammy"
 	icon_state = "shamwow"
-	force = 1.0
-	throwforce = 3.0
+	throwforce = 2.0
 	w_class = 1.0
 
 /obj/item/weapon/caution
@@ -1512,11 +1491,9 @@
 	w_class = 3.0
 	flags = FPRINT | TABLEPASS
 
-
 /obj/item/weapon/paint
 	name = "Paint Can"
-	desc = "Used to recolor floors and walls. Can not be removed by the janitor."
-	icon = 'items.dmi'
+	icon = 'old_or_unused.dmi'
 	icon_state = "paint_neutral"
 	var/colour = "neutral"
 	item_state = "paintcan"
@@ -1524,7 +1501,6 @@
 
 /obj/item/weapon/paper
 	name = "Paper"
-	desc = "It is made from wood."
 	icon = 'items.dmi'
 	icon_state = "paper"
 	var/info = null
@@ -1541,21 +1517,33 @@
 	var/gas_transfer_coefficient = 1
 	var/permeability_coefficient = 0.99
 	var/siemens_coefficient = 0.80
+	var/lit = 0
+	var/lastHolder = null
+	var/smoketime = 5
+	New()
+		..()
+		src.pixel_x = rand(-3.0, 3)
+		src.pixel_y = rand(-3.0, 3)
+
+/obj/item/weapon/paper/menu
+	name = "Menu"
+	icon = 'items.dmi'
+	icon_state = "menu"
+	throwforce = 0
+	w_class = 1.0
+	throw_speed = 3
+	throw_range = 15
+	layer = 4
 
 /obj/item/weapon/directions
 	name = "Crumpled Paper"
-	desc = "This is a crumpled piece fo paper."
 	icon = 'weapons.dmi'
 	icon_state = "crumpled"
 	throwforce = 0
 	w_class = 1.0
 	throw_speed = 3
 	throw_range = 15
-	//layer = 4
-
-/obj/item/weapon/paper/Captains_log
-	name = "paper- 'Last Captains log; for anyone who finds this'"
-	info = "<b>Captains log:</b> Final Entry<BR><BR>The station was sent off course by a meteor hit to atmospherics and science. I've ordered all hands to abandon the station, we're trying to take anything of value but some sections are too damaged to enter. last I heard from engineering was that they'd repaired damage in the core, but power failed before a more detailed report was filed.<br>I worry for the safety of my crew; We've lost so many already, and rescue is days away, My only hope right now is that the ISE Event Horizon can reach us, as the ship was reported much closer to us than Centcom rescue crafts..If you've found this, and you're still on board after the evacuation, then there are some air canisters reportedly undamaged in Toxins Storage. There was reports of the singularity and station power net being remarkably undamaged if you need to regain power. There will also likely be a lot of supply crates, as any rescue will want to get out of this asteroid field. Do not attempt to open sealed fire doors, some of my fallen and heroic crew closed those doors, sacrificing themselves for the station they are likely to be the only thing keeping the station from being totally ripped apart<BR><br>Report Ends<BR>Captain Morris Branson, Nanotransen.<BR>"
+	layer = 4
 
 
 /obj/item/weapon/paper/Internal
@@ -1661,7 +1649,6 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 
 /obj/item/weapon/paper_bin
 	name = "Paper Bin"
-	desc = "This contains many papers."
 	icon = 'items.dmi'
 	icon_state = "paper_bin1"
 	var/amount = 30.0
@@ -1670,7 +1657,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	w_class = 3.0
 	throw_speed = 3
 	throw_range = 7
-
+	origin_tech = "materials=1"
 /obj/item/weapon/pen
 	desc = "It's a normal black ink pen."
 	name = "pen"
@@ -1682,38 +1669,26 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_speed = 7
 	throw_range = 15
 	m_amt = 10
-	hitsound = 'squish.ogg'
 	var/text_size = 2
 	var/text_color = "#000000"
 	var/text_bold = 0
 	var/text_italic = 0
 	var/text_underline = 0
 	var/text_break = 0
-
-/obj/item/weapon/banhammer
-	desc = "A banhammer"
-	name = "Banhammer"
-	icon = 'items.dmi'
-	icon_state = "toyhammer"
-	flags = FPRINT | ONBELT | TABLEPASS
-	throwforce = 0
-	w_class = 1.0
-	throw_speed = 7
-	throw_range = 15
-
+	hitsound = 'squish.ogg'
+	origin_tech = "materials=1"
 /obj/item/weapon/pen/sleepypen
 	desc = "It's a normal black ink pen with a sharp point."
 	flags = FPRINT | ONBELT | TABLEPASS | OPENCONTAINER
-	origin_tech = "materials=2;biotech=1;syndicate=5"
+	origin_tech = "materials=2;biotech=1;syndicate=2"
 
 /obj/item/weapon/rack_parts
 	name = "rack parts"
-	desc = "Parts of a rack."
 	icon = 'items.dmi'
 	icon_state = "rack_parts"
 	flags = FPRINT | TABLEPASS| CONDUCT
 	m_amt = 3750
-
+	origin_tech = "materials=1"
 /obj/item/weapon/rubber_chicken
 	name = "Rubber Chicken"
 	desc = "A rubber chicken, isn't that hilarious?"
@@ -1724,17 +1699,16 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 
 /obj/item/weapon/screwdriver
 	name = "screwdriver"
-	desc = "You can be totally screwwy with this."
 	icon = 'items.dmi'
 	icon_state = "screwdriver"
 	flags = FPRINT | TABLEPASS| CONDUCT
 	force = 5.0
 	w_class = 1.0
-	hitsound = 'fleshstab.ogg'
 	throwforce = 5.0
 	throw_speed = 3
 	throw_range = 5
-
+	hitsound = 'fleshstab.ogg'
+	origin_tech = "materials=1"
 /obj/item/weapon/shard
 	name = "shard"
 	icon = 'shards.dmi'
@@ -1746,17 +1720,15 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	item_state = "shard-glass"
 	g_amt = 3750
 	hitsound = 'squish.ogg'
-
+	origin_tech = "materials=1"
 /obj/item/weapon/syndicate_uplink
 	name = "station bounced radio"
-	desc = "Remain silent about this..."
-	icon = 'radio.dmi'
+	icon = 'device.dmi'
 	icon_state = "radio"
 	var/temp = null
 	var/uses = 10.0
 	var/selfdestruct = 0.0
 	var/traitor_frequency = 0.0
-	var/mob/currentUser = null
 	var/obj/item/device/radio/origradio = null
 	flags = FPRINT | TABLEPASS | CONDUCT | ONBELT
 	w_class = 2.0
@@ -1764,12 +1736,11 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_speed = 4
 	throw_range = 20
 	m_amt = 100
-	origin_tech = "magnets=2;syndicate=3"
+	origin_tech = "magnets=4;syndicate=5"
 
 /obj/item/weapon/SWF_uplink
 	name = "station bounced radio"
-	desc = "used to comunicate it appears."
-	icon = 'radio.dmi'
+	icon = 'device.dmi'
 	icon_state = "radio"
 	var/temp = null
 	var/uses = 4.0
@@ -1783,11 +1754,10 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_speed = 4
 	throw_range = 20
 	m_amt = 100
-	origin_tech = "magnets=1"
+	origin_tech = "magnets=4;bluespace=10"
 
 /obj/item/weapon/spellbook
 	name = "Spell Book"
-	desc = "The legendary book of spells of the wizard."
 	icon = 'library.dmi'
 	icon_state ="book"
 	throw_speed = 1
@@ -1796,15 +1766,9 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	flags = FPRINT | TABLEPASS
 	var/uses = 4.0
 	var/temp = null
-	var/spell_type = "verb"
-	var/max_uses = 5
-
-/obj/item/weapon/spellbook/object_type_spells //used for giving out object spells as opposed to verb spells
-	spell_type = "object"
 
 /obj/item/weapon/staff
 	name = "wizards staff"
-	desc = "Apparently a staff used by the wizard."
 	icon = 'wizard.dmi'
 	icon_state = "staff"
 	force = 3.0
@@ -1813,43 +1777,37 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_range = 5
 	w_class = 2.0
 	flags = FPRINT | TABLEPASS | NOSHIELD
-
-
-/obj/item/weapon/staff/stick
-	name = "stick"
-	desc = "A great tool to drag someone else's drinks across the bar."
-	icon = 'weapons.dmi'
-	icon_state = "stick"
-	item_state = "stick"
+	origin_tech = "materials=1"
+/obj/item/weapon/sword
+	name = "energy sword"
+	icon_state = "sword0"
+	var/active = 0.0
 	force = 3.0
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 5
 	w_class = 2.0
 	flags = FPRINT | TABLEPASS | NOSHIELD
+	origin_tech = "magnets=3;syndicate=3"
 
+/obj/item/weapon/sword/pirate
+	name = "energy cutlass"
+	icon_state = "cutlass0"
+	origin_tech = "materials=1"
 /obj/item/weapon/table_parts
 	name = "table parts"
-	desc = "Parts of a table. Poor table."
 	icon = 'items.dmi'
 	icon_state = "table_parts"
 	m_amt = 3750
 	flags = FPRINT | TABLEPASS| CONDUCT
 
 /obj/item/weapon/table_parts/reinforced
-	name = "reinforced table parts"
-	desc = "Hard table parts. Well...harder..."
+	name = "table parts"
 	icon = 'items.dmi'
 	icon_state = "reinf_tableparts"
 	m_amt = 7500
 	flags = FPRINT | TABLEPASS| CONDUCT
-
-/obj/item/weapon/table_parts/wood
-	name = "wooden table parts"
-	desc = "Keep away from fire."
-	icon_state = "wood_tableparts"
-	flags = null
-
+	origin_tech = "materials=1"
 /obj/item/weapon/tank
 	name = "tank"
 	icon = 'tank.dmi'
@@ -1865,99 +1823,57 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_speed = 1
 	throw_range = 4
 	var/volume = 70
-	var/startempty = 0
-	hitsound = 'smash.ogg'
-
+	origin_tech = "materials=1"
 /obj/item/weapon/tank/anesthetic
 	name = "Gas Tank (Sleeping Agent)"
-	desc = "Seriously, who uses this anymore?"
 	icon_state = "anesthetic"
-	item_state = "an_tank"
+	hitsound = 'smash.ogg'
 
 /obj/item/weapon/tank/jetpack
 	name = "Jetpack (Oxygen)"
-	desc = "A pack of jets it appears."
 	icon_state = "jetpack0"
 	var/on = 0.0
 	w_class = 4.0
 	item_state = "jetpack"
+	hitsound = 'smash.ogg'
 	var/datum/effects/system/ion_trail_follow/ion_trail
+	var/startempty = 0.0
 	distribute_pressure = ONE_ATMOSPHERE*O2STANDARD
 	//volume = 140 //jetpack sould be larger, but then it will never deplete -rastaf0
 
-/obj/item/weapon/tank/jetpack/void_jetpack
+/obj/item/weapon/tank/jetpack/voidjetpack
 	name = "Void Jetpack (oxygen)"
-	desc = "It works well in a void."
 	icon_state = "voidjetpack0"
-	item_state =  "jetpack"
-
-/obj/item/weapon/tank/jetpack/black_jetpack
-	name = "Black Jetpack (oxygen)"
-	desc = "A black model of jetpacks."
-	icon_state = "black_jetpack0"
-	item_state =  "black_jetpack"
-
-/obj/item/weapon/tank/jetpack/screwballscape
-	name = "Screwball Supercape"
-	desc = "A fancy came which comes with space travelling powers."
-	icon_state = "screwballcape0"
-	item_state =  "screwballcape"
+//	item_state =  //I want my item state very soon Agouri.
 
 /obj/item/weapon/tank/oxygen
 	name = "Gas Tank (Oxygen)"
-	desc = "A tank of oxygen"
 	icon_state = "oxygen"
+	hitsound = 'smash.ogg'
 	distribute_pressure = ONE_ATMOSPHERE*O2STANDARD
-
-/obj/item/weapon/tank/oxygen/yellow
-	name = "Gas Tank (Oxygen)"
-	desc = "A tank of oxygen meant for firefighters."
-	icon_state = "oxygen_f"
-
-/obj/item/weapon/tank/oxygen/yellowempty
-	name = "Gas Tank"
-	desc = "An empty tank."
-	icon_state = "oxygen_f"
-	startempty = 1
-
-/obj/item/weapon/tank/oxygen/red
-	name = "Gas Tank (Oxygen)"
-	desc = "A tank of oxygen meant for firefighters."
-	icon_state = "oxygen_fr"
 
 /obj/item/weapon/tank/air
 	name = "Gas Tank (Air Mix)"
-	desc = "Mixed anyone?"
 	icon_state = "oxygen"
+	hitsound = 'smash.ogg'
 
 /obj/item/weapon/tank/plasma
 	name = "Gas Tank (BIOHAZARD)"
-	desc = "Contains dangerous plasma. Do not inhale."
 	icon_state = "plasma"
+	hitsound = 'smash.ogg'
 
 /obj/item/weapon/tank/emergency_oxygen
-	name = "Emergency Oxygen Tank"
-	desc = "Used for emergencies. Contains very little oxygen, so try to conserve it until you actualy need it."
+	name = "emergency oxygentank"
 	icon_state = "emergency"
 	flags = FPRINT | TABLEPASS | ONBELT | CONDUCT
-	w_class = 2.0
+	w_class = 2.5
 	force = 4.0
 	distribute_pressure = ONE_ATMOSPHERE*O2STANDARD
-	volume = 8 //Tiny. Real life equivalents only have 21 breaths of oxygen in them. They're EMERGENCY tanks anyway -errorage (dangercon 2011)
-
-/obj/item/weapon/tank/emergency_oxygen/engi
-	icon_state = "emergency_engi"
-	name = "Engineering Emergency Oxygen Tank"
-	volume = 10 //Engineers are always superior. -errorage (dangercon 2011)
-
-/obj/item/weapon/tank/emergency_oxygen/double
-	icon_state = "emergency_double"
-	name = "Double Emergency Oxygen Tank"
-	volume = 10 //These have the same emoung of gas in them as air tanks, but can be worn on your belt -errorage (dangercon 2011)
+	volume = 10 //yeah, SO tiny
+	hitsound = 'smash.ogg'
 
 /obj/item/weapon/teleportation_scroll
 	name = "Teleportation Scroll"
-	desc = "A scroll for moving around."
 	icon = 'wizard.dmi'
 	icon_state = "scroll"
 	var/uses = 4.0
@@ -1977,10 +1893,9 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	var/laying = 0.0
 	var/old_lay = null
 	m_amt = 40
-
+	origin_tech = "materials=1"
 /obj/item/weapon/wirecutters
 	name = "wirecutters"
-	desc = "This cuts wires."
 	icon = 'items.dmi'
 	icon_state = "cutters"
 	flags = FPRINT | TABLEPASS| CONDUCT
@@ -1989,22 +1904,16 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_range = 9
 	w_class = 2.0
 	m_amt = 80
-	origin_tech = "materials=1;engineering=1"
-
-	New()
-		if(prob(50))
-			icon_state = "cutters-y"
+	origin_tech = "materials=1"
 
 /obj/item/weapon/wrapping_paper
 	name = "wrapping paper"
-	desc = "You can use this to wrap items in."
 	icon = 'items.dmi'
 	icon_state = "wrap_paper"
 	var/amount = 20.0
 
 /obj/item/weapon/wrench
 	name = "wrench"
-	desc = "A wrench with common uses. Can be found in your hand."
 	icon = 'items.dmi'
 	icon_state = "wrench"
 	flags = FPRINT | TABLEPASS| CONDUCT
@@ -2012,7 +1921,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throwforce = 7.0
 	w_class = 2.0
 	m_amt = 150
-	origin_tech = "materials=1;engineering=1"
+	origin_tech = "materials=1"
 
 /obj/item/weapon/cell
 	name = "power cell"
@@ -2035,21 +1944,6 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	var/rigged = 0		// true if rigged to explode
 	var/minor_fault = 0 //If not 100% reliable, it will build up faults.
 
-
-/obj/item/weapon/cell/crap
-	name = "Nanotrassen Brand Rechargable AA Battery"
-	desc = "You can't top the plasma top." //TOTALLY TRADEMARK INFRINGEMENT
-	origin_tech = "powerstorage=0"
-	maxcharge = 500
-	g_amt = 40
-
-/obj/item/weapon/cell/verylow
-	name = "Nanotrassen Brand Rechargable AA Battery"
-	desc = "You can't top the plasma top." //TOTALLY TRADEMARK INFRINGEMENT
-	origin_tech = "powerstorage=0"
-	maxcharge = 100
-	g_amt = 40
-
 /obj/item/weapon/cell/high
 	name = "high-capacity power cell"
 	origin_tech = "powerstorage=2"
@@ -2057,37 +1951,26 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	g_amt = 60
 
 /obj/item/weapon/cell/super
-	name = "super-capacity power cell"
+	name = "super-capcity power cell"
 	origin_tech = "powerstorage=3"
 	maxcharge = 20000
 	g_amt = 70
 
-/obj/item/weapon/cell/hyper
-	name = "hyper-capacity power cell"
-	origin_tech = "powerstorage=6"
-	maxcharge = 30000
-	g_amt = 80
+/obj/item/weapon/cell/robotcrate
+	maxcharge = 10000
 
-/obj/item/weapon/cell/infinite
-	name = "infinite-capacity power cell!"
-	origin_tech =  null
-	maxcharge = 30000
-	g_amt = 80
-	use()
-		return
-
-/obj/item/weapon/cell/potato
+/*/obj/item/weapon/cell/potato
 	name = "Potato Battery"
 	desc = "A rechargable starch based power cell."
-	//icon = 'harvest.dmi' doesn't work don't bother
-	//icon_state = "potato_battery"
+	icon = 'harvest.dmi'
+	icon_state = "potato_battery"
 	maxcharge = 100
 	m_amt = 0
-	g_amt = 0
+	g_amt = 0*/
 
 /obj/item/weapon/camera_bug/attack_self(mob/usr as mob)
 	var/list/cameras = new/list()
-	for (var/obj/machinery/camera/C in machines)
+	for (var/obj/machinery/camera/C in world)
 		if (C.bugged && C.status)
 			cameras.Add(C)
 	if (length(cameras) == 0)
@@ -2147,7 +2030,6 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 
 /obj/item/weapon/a_gift
 	name = "gift"
-	desc = "A gift it appears."
 	icon = 'items.dmi'
 	icon_state = "gift"
 	item_state = "gift"
@@ -2162,21 +2044,20 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	item_state = "electronic"
 	throw_speed = 4
 	throw_range = 20
-
+	origin_tech = "materials=1"
 
 /obj/item/weapon/kitchen
 	icon = 'kitchen.dmi'
 
 /obj/item/weapon/kitchen/rollingpin
 	name = "rolling pin"
-	desc = "Used to knock out the Bartender."
 	icon_state = "rolling_pin"
 	force = 8.0
 	throwforce = 10.0
 	throw_speed = 2
 	throw_range = 7
 	w_class = 3.0
-
+	origin_tech = "materials=1"
 /obj/item/weapon/kitchenknife
 	name = "Kitchen knife"
 	icon = 'kitchen.dmi'
@@ -2195,28 +2076,16 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	name = "Tray"
 	icon = 'food.dmi'
 	icon_state = "tray"
-	desc = "A plastic tray to lay food on."
-	//throwforce = 12.0
+	desc = "A metal tray to lay food on."
+	throwforce = 12.0
 	throwforce = 10.0
 	throw_speed = 1
 	throw_range = 5
 	w_class = 3.0
 	flags = FPRINT | TABLEPASS | CONDUCT
 	m_amt = 3000
-	var/food_total= 0
-	var/burger_amt = 0
-	var/cheese_amt = 0
-	var/fries_amt = 0
-	var/classyalcdrink_amt = 0
-	var/alcdrink_amt = 0
-	var/bottle_amt = 0
-	var/soda_amt = 0
-	var/carton_amt = 0
-	var/pie_amt = 0
-	var/meatbreadslice_amt = 0
-	var/salad_amt = 0
-	var/miscfood_amt = 0
-
+	var/item
+	origin_tech = "materials=1"
 
 /obj/item/weapon/kitchen/utensil
 	force = 5.0
@@ -2230,20 +2099,10 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 
 /obj/item/weapon/kitchen/utensil/fork
 	name = "fork"
-	desc = "Pointy."
 	icon_state = "fork"
-
-
-/obj/item/weapon/kitchen/utensil/razorblade
-	name = "razorblade"
-	desc = "Really sharp."
-	icon_state = "razorblade"
-	force = 1.0
-	throwforce = 0
 
 /obj/item/weapon/kitchen/utensil/knife
 	name = "knife"
-	desc = "Can cut through any food."
 	icon_state = "knife"
 	force = 10.0
 	throwforce = 10.0
@@ -2255,7 +2114,6 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 
 /obj/item/weapon/scalpel
 	name = "scalpel"
-	desc = "Cut, cut, and once more cut."
 	icon = 'surgery.dmi'
 	icon_state = "scalpel"
 	flags = FPRINT | TABLEPASS | CONDUCT
@@ -2270,16 +2128,46 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 
 /obj/item/weapon/retractor
 	name = "retractor"
-	desc = "Retracts stuff."
 	icon = 'surgery.dmi'
 	icon_state = "retractor"
 	flags = FPRINT | TABLEPASS | CONDUCT
 	w_class = 1.0
 	origin_tech = "materials=1;biotech=1"
 
+/obj/item/weapon/scissors
+	name = "scissors"
+	icon = 'surgery.dmi'
+	icon_state = "scissors"
+	flags = FPRINT | TABLEPASS | CONDUCT
+	w_class = 1.0
+	origin_tech = "materials=1"
+
+/obj/item/weapon/dye
+	name = "hairdye"
+	icon = 'surgery.dmi'
+	icon_state = "dye"
+	flags = FPRINT | TABLEPASS | CONDUCT
+	w_class = 1.0
+	origin_tech = "materials=1"
+
+/obj/item/weapon/bearddye
+	name = "bearddye"
+	icon = 'surgery.dmi'
+	icon_state = "dye"
+	flags = FPRINT | TABLEPASS | CONDUCT
+	w_class = 1.0
+	origin_tech = "materials=1"
+
+/obj/item/weapon/comb
+	name = "straight razor"
+	icon = 'surgery.dmi'
+	icon_state = "razor"
+	flags = FPRINT | TABLEPASS | CONDUCT
+	w_class = 1.0
+	origin_tech = "materials=1"
+
 /obj/item/weapon/hemostat
 	name = "hemostat"
-	desc = "A hemostat is a vital surgical tool used in almost any surgical procedure."
 	icon = 'surgery.dmi'
 	icon_state = "hemostat"
 	flags = FPRINT | TABLEPASS | CONDUCT
@@ -2287,26 +2175,23 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	origin_tech = "materials=1;biotech=1"
 
 /obj/item/weapon/cautery
-	name = "cautery"
-	desc = "This stops bleeding."
+	name = "cautery electrode"
 	icon = 'surgery.dmi'
 	icon_state = "cautery"
 	flags = FPRINT | TABLEPASS | CONDUCT
 	w_class = 1.0
-	origin_tech = "materials=1;biotech=1"
+	origin_tech = "materials=1;biotech=2"
 
 /obj/item/weapon/surgicaldrill
 	name = "surgical drill"
-	desc = "You can drill using this item. You dig?"
 	icon = 'surgery.dmi'
 	icon_state = "drill"
 	flags = FPRINT | TABLEPASS | CONDUCT
 	w_class = 1.0
-	origin_tech = "materials=1;biotech=1"
+	origin_tech = "materials=1;biotech=2"
 
 /obj/item/weapon/circular_saw
 	name = "circular saw"
-	desc = "For heavy duty cutting."
 	icon = 'surgery.dmi'
 	icon_state = "saw"
 	flags = FPRINT | TABLEPASS | CONDUCT
@@ -2317,27 +2202,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_range = 5
 	m_amt = 20000
 	g_amt = 10000
-	origin_tech = "materials=1;biotech=1"
-
-/obj/item/weapon/surgicaltube
-	name = "surgical tubing"
-	desc = "A length of sterile tubing, used in various medical procedures. One end of it looks big enough to couple with a syringe."
-	icon = 'chemical.dmi'
-	icon_state = "surgicaltubecoil"
-	item_state = "toxinbottle"
-	flags = FPRINT | TABLEPASS | CONDUCT
-	w_class = 1.0
-	origin_tech = "biotech=1"
-	var/cannula = 0
-
-/obj/item/weapon/synthflesh
-	name = "synthflesh"
-	desc = "Meat that appears...strange..."
-	icon = 'food.dmi'
-	icon_state = "meat"
-	flags = FPRINT | TABLEPASS | CONDUCT
-	w_class = 1.0
-	origin_tech = "biotech=2"
+	origin_tech = "materials=2;biotech=2"
 
 /obj/item/weapon/stamp
 	desc = "A rubber stamp for stamping important documents."
@@ -2351,49 +2216,44 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throw_speed = 7
 	throw_range = 15
 	m_amt = 60
-	var/colour = "green"
 
 /obj/item/weapon/stamp/captain
 	name = "captain's rubber stamp"
 	icon_state = "stamp-cap"
-	colour = "blue"
 
 /obj/item/weapon/stamp/hop
 	name = "head of personnel's rubber stamp"
 	icon_state = "stamp-hop"
-	colour = "blue"
 
 /obj/item/weapon/stamp/hos
 	name = "head of security's rubber stamp"
 	icon_state = "stamp-hos"
-	colour = "red"
 
 /obj/item/weapon/stamp/ce
 	name = "chief engineer's rubber stamp"
 	icon_state = "stamp-ce"
-	colour = "white"
 
 /obj/item/weapon/stamp/rd
 	name = "research director's rubber stamp"
 	icon_state = "stamp-rd"
-	colour = "white"
 
 /obj/item/weapon/stamp/cmo
 	name = "chief medical officer's rubber stamp"
 	icon_state = "stamp-cmo"
-	colour = "white"
+
+/obj/item/weapon/stamp/doctor
+	name = "Medical doctor's rubber stamp"
+	icon_state = "stamp-doc"
 
 /obj/item/weapon/stamp/denied
 	name = "DENIED rubber stamp"
 	icon_state = "stamp-qm"
-	colour = "red"
 
 /obj/item/weapon/stamp/clown
 	name = "clown's rubber stamp"
 	icon_state = "stamp-clown"
-	colour = "pink"
 
-/obj/item/weapon/storage/cigpack
+/obj/item/weapon/cigpacket
 	name = "Cigarette packet"
 	desc = "The most popular brand of Space Cigarettes, sponsors of the Space Olympics."
 	icon = 'cigarettes.dmi'
@@ -2403,8 +2263,11 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throwforce = 2
 	var/cigcount = 6
 	flags = ONBELT | TABLEPASS
+	New()
+		..()
+		src.pixel_x = rand(-3.0, 3)
+		src.pixel_y = rand(-3.0, 3)
 
-/*
 /obj/item/weapon/cigarpacket
 	name = "Pete's Cuban Cigars"
 	desc = "The most robust cigars on the planet."
@@ -2414,7 +2277,11 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	w_class = 1
 	throwforce = 2
 	var/cigarcount = 6
-	flags = ONBELT | TABLEPASS */
+	flags = ONBELT | TABLEPASS
+	New()
+		..()
+		src.pixel_x = rand(-3.0, 3)
+		src.pixel_y = rand(-3.0, 3)
 
 /obj/item/weapon/cigbutt
 	name = "Cigarette butt"
@@ -2423,6 +2290,10 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	icon_state = "cigbutt"
 	w_class = 1
 	throwforce = 1
+	New()
+		..()
+		src.pixel_x = rand(-3.0, 3)
+		src.pixel_y = rand(-3.0, 3)
 
 /obj/item/weapon/cigarbutt
 	name = "Cigar butt"
@@ -2431,6 +2302,10 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	icon_state = "cigarbutt"
 	w_class = 1
 	throwforce = 1
+	New()
+		..()
+		src.pixel_x = rand(-3.0, 3)
+		src.pixel_y = rand(-3.0, 3)
 
 /obj/item/weapon/zippo
 	name = "Zippo lighter"
@@ -2442,7 +2317,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	throwforce = 4
 	var/lit = 0
 	flags = ONBELT | TABLEPASS | CONDUCT
-
+	origin_tech = "materials=1"
 
 /obj/item/weapon/mousetrap
 	name = "mousetrap"
@@ -2454,36 +2329,11 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	force = null
 	throwforce = null
 	var/armed = 0
-	var/obj/item/weapon/chem_grenade/nade
-	origin_tech = "combat=1"
+	origin_tech = "combat=1;materials=1"
 
 /obj/item/weapon/mousetrap/armed
 	icon_state = "mousetraparmed"
 	armed = 1
-
-/obj/item/weapon/mousetrap/nade
-	icon_state = "mousetrapnade"
-	armed = 1
-
-/obj/item/weapon/mousetrap/nade/cleaner
-	New()
-		nade = new /obj/item/weapon/chem_grenade/cleaner(src)
-
-/obj/item/weapon/mousetrap/nade/incendiary
-	New()
-		nade = new /obj/item/weapon/chem_grenade/incendiary(src)
-
-/obj/item/weapon/mousetrap/nade/lube
-	New()
-		nade = new /obj/item/weapon/chem_grenade/lube(src)
-
-/obj/item/weapon/mousetrap/nade/poo
-	New()
-		nade = new /obj/item/weapon/chem_grenade/poo(src)
-
-/obj/item/weapon/mousetrap/nade/poo2
-	New()
-		nade = new /obj/item/weapon/chem_grenade/poo2(src)
 
 /obj/item/weapon/astronautfoodpacket
 	name = "Astronaut Ration Packet"
@@ -2496,6 +2346,65 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	var/foodcount = 3
 	flags = ONBELT | TABLEPASS
 
+/obj/item/weapon/weaponassembly/underboard
+	name = "underboard"
+	desc = "A panel on which to apply simple wiring and components."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "underboard"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 50
+	m_amt = 250
+
+/obj/item/weapon/weaponassembly/trigger
+	name = "trigger mechanism"
+	desc = "A component required in most weapon systems. Sends user input to an underboard."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "trigger_mechanism"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 0
+	m_amt = 200
+
+/obj/item/weapon/weaponassembly/coil_energ
+	name = "coil energizer"
+	desc = "A component required in some physical-projectile weapon systems. Uses power from a battery to charge a driving coil."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "coil_energizer"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 300
+	m_amt = 350
+
+/obj/item/weapon/weaponassembly/driving_mechnsm
+	name = "driving mechanism"
+	desc = ""
+	icon = 'weapon_assembly.dmi'
+	icon_state = "driving_mechanism"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 200
+	m_amt = 150
+
+/obj/item/weapon/weaponassembly/plsm_accel
+	name = "plasma accelerator"
+	desc = "A component required in some plasma weapon systems. Superheats and forms plasma into a shape suitable for projection."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "plasma_accelerator"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 375
+	m_amt = 450
+
+/obj/item/weapon/weaponassembly/driving_coil
+	name = "electromagnet coil"
+	desc = "A component required in some physical-projectile weapon systems. Speeds ammunition up to near the speed of sound."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "driving_coil"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 200
+	m_amt = 500
 
 /obj/item/weapon/weaponassembly/battery
 	name = "turnover battery"
@@ -2507,7 +2416,45 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	g_amt = 100
 	m_amt = 1000
 
+/obj/item/weapon/weaponassembly/heatsink
+	name = "heat sink"
+	desc = "Eliminates the need for cooling periods during weapon operation. A vital component in most weapon systems."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "heatsink"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 0
+	m_amt = 700
 
+/obj/item/weapon/weaponassembly/barrel
+	name = "weapon barrel"
+	desc = "Guides a projectile out of a weapon. Used mainly in physical-projectile weapons."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "barrel"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 0
+	m_amt = 1000
+
+/obj/item/weapon/weaponassembly/hsng_panels
+	name = "housing panels"
+	desc = "A set of lightweight composite panels and a weapon grip. A vital component in almost all weapon systems."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "covering_panels"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 200
+	m_amt = 1200
+
+/obj/item/weapon/weaponassembly/housing
+	name = "component housing"
+	desc = "A lightweight housing for weapon components. A vital component in almost all weapon systems."
+	icon = 'weapon_assembly.dmi'
+	icon_state = "housing"
+	item_state = "rack_parts"
+	w_class = 1.0
+	g_amt = 300
+	m_amt = 2000
 
 /obj/item/weapon/weaponassembly/energhousing
 	name = "energy gun housing"
@@ -2569,100 +2516,132 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	g_amt = 150
 	m_amt = 150
 
-/obj/item/weapon/dermalregenerator
-	name = "Dermal regenerator"
-	desc = "A cutting edge device used to heal minor cuts, bruises and burns."
-	icon = 'device.dmi'
-	icon_state = "dermal_regenerator"
-	flags = FPRINT | ONBELT | TABLEPASS
-	var/heal_brute = 5
-	var/heal_burn = 5
-	var/on = 0
-	origin_tech = "magnets=2;biotech=2"
-
-/obj/item/weapon/dermalregenerator/attack(mob/M as mob, mob/user as mob)
-
-	if (on == 1)
-		return
-	if (M.health < -50)
-		user << "\red [M.name] is too badly injured!"
-		return
-	if (M.health >= 100)
-		user << "[M.name] is not injured."
-		return
-
-	if (!(istype(user, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")
-		user << "\red You don't have the dexterity to do this!"
-		return
-	on = 1
-	if (user)
-		if (M != user)
-			for (var/mob/O in viewers(M, null))
-				O.show_message("\red [user] has used the [src] on [M]", 1)
-				src.icon_state = "dermalr1"
-		else
-			var/t_himself = "itself"
-			if (user.gender == MALE)
-				t_himself = "himself"
-			else if (user.gender == FEMALE)
-				t_himself = "herself"
-
-			for (var/mob/O in viewers(M, null))
-				O.show_message("\red [M] used the [src] on [t_himself]", 1)
-			src.icon_state = "dermalr1"
-
-	if (istype(M, /mob/living/carbon/human))
-		var/mob/living/carbon/human/H = M
-		var/datum/organ/external/affecting = H.organs["chest"]
-
-		if (istype(user, /mob/living/carbon/human))
-			var/mob/living/carbon/human/user2 = user
-			var/t = user2.zone_sel.selecting
-
-			if (t in list("eyes", "mouth"))
-				t = "head"
-
-			if (H.organs[t])
-				affecting = H.organs[t]
-		else
-			if (!istype(affecting, /datum/organ/external) || affecting:burn_dam <= 0)
-				affecting = H.organs["head"]
-				if (!istype(affecting, /datum/organ/external) || affecting:burn_dam <= 0)
-					affecting = H.organs["groin"]
-
-		if (affecting.heal_damage(src.heal_brute, src.heal_burn))
-			H.UpdateDamageIcon()
-		else
-			H.UpdateDamage()
-	else
-		M.bruteloss = max(0, M.bruteloss - (src.heal_brute/2))
-		M.fireloss = max(0, M.fireloss - (src.heal_burn/2))
-
-	sleep(10)
-	src.icon_state = "dermal_regenerator"
-	on = 0
-
-/obj/item/weapon/dice // -- TLE
+/obj/item/weapon/dice
 	name = "d6"
-	desc = "A dice with six sides."
 	var/sides = 6
 	icon_state = "dice"
 	item_state = "dice"
 
-/obj/item/weapon/dice/d20 // -- TLE
+/obj/item/weapon/dice/d20
 	name = "d20"
-	desc = "A dice with...hell that is many sides."
 	sides = 20
 	icon_state = "d20"
 	item_state = "dice"
 
-/obj/item/weapon/pai_cable
-	desc = "A flexible coated cable with a universal jack on one end."
-	desc = "Some spacey cable."
-	name = "data cable"
-	icon = 'power.dmi'
-	icon_state = "wire1"
-	var/obj/machinery/machine
+/obj/item/weapon/grown // Grown weapons
+	name = "grown_weapon"
+	icon = 'weapons.dmi'
+	var/seed = ""
+	var/plantname = ""
+	var/productname = ""
+	var/species = ""
+	var/lifespan = 20
+	var/endurance = 15
+	var/maturation = 7
+	var/production = 7
+	var/yield = 2
+	var/potency = -1
+	var/plant_type = 0
+	New()
+		var/datum/reagents/R = new/datum/reagents(50)
+		reagents = R
+		R.my_atom = src
+
+
+/obj/item/weapon/grown/nettle // -- Skie
+	desc = "This is a nettle. It's probably <B>not</B> wise to touch it with bare hands..."
+	icon = 'weapons.dmi'
+	name = "Nettle"
+	icon_state = "nettle"
+	damtype = "fire"
+	force = 15
+	flags = TABLEPASS
+	throwforce = 1
+	w_class = 1.0
+	throw_speed = 1
+	throw_range = 3
+	plant_type = 1
+	origin_tech = "combat=1;biotech=1"
+	seed = "/obj/item/seeds/nettleseed"
+	New()
+		..()
+		reagents.add_reagent("nutriment", 1)
+		reagents.add_reagent("acid", round(potency, 1))
+
+/obj/item/weapon/grown/deathnettle // -- Skie
+	desc = "The \red glowing \black nettle incites \red<B>rage</B>\black in you just from looking at it!"
+	icon = 'weapons.dmi'
+	name = "Deathnettle"
+	icon_state = "deathnettle"
+	damtype = "fire"
+	force = 30
+	flags = TABLEPASS
+	throwforce = 1
+	w_class = 1.0
+	throw_speed = 1
+	throw_range = 3
+	plant_type = 1
+	origin_tech = "combat=2;biotech=1"
+	seed = "/obj/item/seeds/deathnettleseed"
+	New()
+		..()
+		reagents.add_reagent("nutriment", 1)
+		reagents.add_reagent("pacid", round(potency, 1))
+
+/obj/item/weapon/plantbgone // -- Skie
+	desc = "Plant-B-Gone! Kill those pesky weeds!"
+	icon = 'hydroponics.dmi'
+	name = "Plant-B-Gone"
+	icon_state = "plantbgone"
+	item_state = "plantbgone"
+	flags = ONBELT|TABLEPASS|OPENCONTAINER|FPRINT|USEDELAY
+	throwforce = 3
+	w_class = 2.0
+	throw_speed = 2
+	throw_range = 10
+	var/empty = 0
+
+/*			Commented out due to being redundant. - Darem
+/obj/item/weapon/weedspray // -- Skie
+	desc = "Toxic mixture in spray form to kill small weeds."
+	icon = 'hydroponics.dmi'
+	name = "Weed Spray"
+	icon_state = "weedspray"
+	item_state = "spray"
+	flags = ONBELT|TABLEPASS|OPENCONTAINER|FPRINT|USEDELAY
+	throwforce = 4
+	w_class = 2.0
+	throw_speed = 2
+	throw_range = 10
+	var/toxicity = 4
+	var/WeedKillStr = 2
+*/
+
+/obj/item/weapon/pestspray // -- Skie
+	desc = "Pest eliminator spray! Do not inhale!"
+	icon = 'hydroponics.dmi'
+	name = "Pest Spray"
+	icon_state = "pestspray"
+	item_state = "spray"
+	flags = ONBELT|TABLEPASS|OPENCONTAINER|FPRINT|USEDELAY
+	throwforce = 4
+	w_class = 2.0
+	throw_speed = 2
+	throw_range = 10
+	var/toxicity = 4
+	var/PestKillStr = 2
+
+/obj/item/weapon/minihoe // -- Numbers
+	name = "Mini hoe"
+	desc = "Useful for removing weeds or scratching your back."
+	icon = 'weapons.dmi'
+	icon_state = "hoe"
+	item_state = "hoe"
+	flags = FPRINT | TABLEPASS | CONDUCT | USEDELAY
+	force = 5.0
+	throwforce = 7.0
+	w_class = 2.0
+	m_amt = 50
 
 /obj/item/weapon/plastique
 	name = "Plastic Explosives"
@@ -2672,7 +2651,6 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	item_state = "plasticx"
 	flags = FPRINT | TABLEPASS | USEDELAY
 	w_class = 2.0
-	origin_tech = "syndicate=2"
 	var/timer = 10
 	var/atom/target = null
 
@@ -2716,7 +2694,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	name = "Micro-Manipulator"
 	desc = "A tiny little manipulator used in the construction of certain devices."
 	icon_state = "micro_mani"
-	origin_tech = "materials=1;programming=1"
+	origin_tech = "materials=1;programming=1;robotics=1"
 	m_amt = 30
 
 /obj/item/weapon/stock_parts/micro_laser
@@ -2757,7 +2735,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 	name = "Nano-Manipulator"
 	desc = "A tiny little manipulator used in the construction of certain devices."
 	icon_state = "micro_mani"
-	origin_tech = "materials=3,programming=2"
+	origin_tech = "materials=3;programming=2;robotics=2"
 	rating = 2
 	m_amt = 30
 
@@ -2791,6 +2769,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 /obj/item/weapon/stock_parts/scanning_module/phasic
 	name = "Phasic Scanning Module"
 	desc = "A compact, high resolution phasic scanning module used in the construction of certain devices."
+	icon_state = "scan_module"
 	origin_tech = "magnets=5"
 	rating = 3
 	m_amt = 50
@@ -2799,6 +2778,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 /obj/item/weapon/stock_parts/manipulator/pico
 	name = "Pico-Manipulator"
 	desc = "A tiny little manipulator used in the construction of certain devices."
+	icon_state = "pico_mani"
 	origin_tech = "materials=5,programming=2"
 	rating = 3
 	m_amt = 30
@@ -2806,6 +2786,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 /obj/item/weapon/stock_parts/micro_laser/ultra
 	name = "Ultra-High-Power Micro-laser"
 	desc = "A tiny laser used in certain devices."
+	icon_state = "micro_laser"
 	origin_tech = "magnets=5"
 	rating = 3
 	m_amt = 10
@@ -2814,40 +2795,7 @@ Total SMES charging rate should not exceed total power generation rate, or an ov
 /obj/item/weapon/stock_parts/matter_bin/super
 	name = "Super Matter Bin"
 	desc = "A container for hold compressed matter awaiting re-construction."
+	icon_state = "matter_bin"
 	origin_tech = "materials=5"
 	rating = 3
 	m_amt = 80
-
-//barber crap
-/obj/item/weapon/scissors
-	name = "scissors"
-	icon = 'surgery.dmi'
-	icon_state = "scissors"
-	flags = FPRINT | TABLEPASS | CONDUCT
-	w_class = 1.0
-	origin_tech = "materials=1"
-
-/obj/item/weapon/dye
-	name = "hairdye"
-	icon = 'surgery.dmi'
-	icon_state = "dye"
-	flags = FPRINT | TABLEPASS | CONDUCT
-	w_class = 1.0
-	origin_tech = "materials=1"
-
-/obj/item/weapon/bearddye
-	name = "bearddye"
-	icon = 'surgery.dmi'
-	icon_state = "dye"
-	flags = FPRINT | TABLEPASS | CONDUCT
-	w_class = 1.0
-	origin_tech = "materials=1"
-
-/obj/item/weapon/comb
-	name = "straight razor"
-	icon = 'surgery.dmi'
-	icon_state = "razor"
-	flags = FPRINT | TABLEPASS | CONDUCT
-	w_class = 1.0
-	origin_tech = "materials=1"
-//end barber crap

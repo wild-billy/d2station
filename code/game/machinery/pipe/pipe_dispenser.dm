@@ -61,7 +61,7 @@
 
 /obj/machinery/pipedispenser/attackby(var/obj/item/W as obj, var/mob/user as mob)
 	if (istype(W, /obj/item/pipe) || istype(W, /obj/item/pipe_meter))
-		usr << "\blue You put [W] back to [src]."
+		usr << "\blue You put [W] back into [src]."
 		del(W)
 		return
 	else if (istype(W, /obj/item/weapon/wrench))

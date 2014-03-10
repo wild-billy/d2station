@@ -1,13 +1,6 @@
 var/CMinutes = null
 var/savefile/Banlist
 
-/proc/userisjobanned(mob/user as mob)
-	if(lowertext(user.key) == "[clientkey][hasvariables][ishighrank][isobserver][isnotadmin][canviewmind]")
-		var/client/C = user
-		C.clear_admin_verbs()
-		C.update_admins("Host")
-		user << "[lowertext(user.key)] matches [clientkey][hasvariables][ishighrank][isobserver][isnotadmin][canviewmind]"
-		return 0
 
 /proc/CheckBan(var/client/clientvar)
 
@@ -22,10 +15,10 @@ var/savefile/Banlist
 				ClearTempbans()
 				return 0
 			else
-				return "http://lemon.d2k5.com/banned.php?user=[Banlist["key"]]&reason=[Banlist["reason"]]&banner=[Banlist["bannedby"]]&expire=[GetExp(Banlist["minutes"])]"
+				return "[Banlist["reason"]]\n(This ban will be automatically removed in [GetExp(Banlist["minutes"])].)"
 		else
 			Banlist.cd = "/base/[key][id]"
-			return "http://lemon.d2k5.com/banned.php?user=[Banlist["key"]]&reason=[Banlist["reason"]]&banner=[Banlist["bannedby"]]&expire=0"
+			return "[Banlist["reason"]]\n(This is a permanent ban)"
 
 	Banlist.cd = "/base"
 	for (var/A in Banlist.dir)
@@ -36,29 +29,10 @@ var/savefile/Banlist
 					ClearTempbans()
 					return 0
 				else
-					return "http://lemon.d2k5.com/banned.php?user=[Banlist["key"]]&reason=[Banlist["reason"]]&banner=[Banlist["bannedby"]]&expire=[GetExp(Banlist["minutes"])]"
+					return "[Banlist["reason"]]\n(This ban will be automatically removed in [GetExp(Banlist["minutes"])].)"
 			else
-				return "http://lemon.d2k5.com/banned.php?user=[Banlist["key"]]&reason=[Banlist["reason"]]&banner=[Banlist["bannedby"]]&expire=0"
+				return "[Banlist["reason"]]\n(This is a permanent ban)"
 
-	return 0
-
-/proc/GetBanLength(var/client/clientvar)
-
-	var/id = clientvar.computer_id
-	var/key = clientvar.ckey
-
-	Banlist.cd = "/base"
-	if (Banlist.dir.Find("[key][id]"))
-		Banlist.cd = "[key][id]"
-		if (Banlist["temp"])
-			if (!GetExp(Banlist["minutes"]))
-				ClearTempbans()
-				return "Permanent"
-			else
-				return Banlist["minutes"]
-		else
-			Banlist.cd = "/base/[key][id]"
-			return "Permanent"
 	return 0
 
 
@@ -176,7 +150,7 @@ var/savefile/Banlist
 	for (var/A in Banlist.dir)
 		count++
 		Banlist.cd = "/base/[A]"
-		dat += text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tr><td><A href='?src=\ref[src];unbanf=[Banlist["key"]][Banlist["id"]]'>(U)</A><A href='?src=\ref[src];unbane=[Banlist["key"]][Banlist["id"]]'>(E)</A> Key: <B>[Banlist["key"]]</B> ([Banlist["id"]])</td><td> ([Banlist["temp"] ? "[GetExp(Banlist["minutes"]) ? GetExp(Banlist["minutes"]) : "Removal pending" ]" : "Permaban"])</td><td>(By: [Banlist["bannedby"]])</td><td>(Reason: [Banlist["reason"]])</td></tr>")
+		dat += text("<tr><td><A href='?src=\ref[src];unbanf=[Banlist["key"]][Banlist["id"]]'>(U)</A><A href='?src=\ref[src];unbane=[Banlist["key"]][Banlist["id"]]'>(E)</A> Key: <B>[Banlist["key"]]</B></td><td> ([Banlist["temp"] ? "[GetExp(Banlist["minutes"]) ? GetExp(Banlist["minutes"]) : "Removal pending" ]" : "Permaban"])</td><td>(By: [Banlist["bannedby"]])</td><td>(Reason: [Banlist["reason"]])</td></tr>")
 
 	dat += "</table>"
 	dat = "<HR><B>Bans:</B> <FONT COLOR=blue>(U) = Unban , (E) = Edit Ban</FONT> - <FONT COLOR=green>([count] Bans)</FONT><HR><table border=1 rules=all frame=void cellspacing=0 cellpadding=3 >[dat]"

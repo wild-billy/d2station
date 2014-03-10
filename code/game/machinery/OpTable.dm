@@ -1,6 +1,6 @@
 /obj/machinery/optable/New()
 	..()
-	for(var/obj/machinery/computer/operating/O in machines)
+	for(var/obj/machinery/computer/operating/O in world)
 		if(src.id == O.id)
 			src.computer = O
 	spawn(100)
@@ -34,7 +34,7 @@
 	return
 
 /obj/machinery/optable/attack_paw(mob/user as mob)
-	if ((usr.mutations & HULK))
+	if ((usr.mutations & 8))
 		usr << text("\blue You destroy the operating table.")
 		for(var/mob/O in oviewers())
 			if ((O.client && !( O.blinded )))
@@ -51,7 +51,7 @@
 	return
 
 /obj/machinery/optable/attack_hand(mob/user as mob)
-	if ((usr.mutations & HULK))
+	if ((usr.mutations & 8))
 		usr << text("\blue You destroy the table.")
 		for(var/mob/O in oviewers())
 			if ((O.client && !( O.blinded )))
@@ -63,7 +63,13 @@
 
 
 /obj/machinery/optable/CanPass(atom/movable/O as mob|obj, target as turf)
-	return (istype(O) && O.checkpass(PASSTABLE))
+	if(!O)
+		return 0
+	if ((O.flags & 2 || istype(O, /obj/meteor)))
+		return 1
+	else
+		return 0
+	return
 
 /obj/machinery/optable/MouseDrop_T(obj/O as obj, mob/user as mob)
 

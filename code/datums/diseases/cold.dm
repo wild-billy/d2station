@@ -1,27 +1,26 @@
 /datum/disease/cold
-	name = "Cold"
+	name = "The Cold"
 	max_stages = 3
 	spread = "Airborne"
-	cure = "Rest and Spaceacillin"
+	cure = "Rest & Spaceacillin"
 	cure_id = "spaceacillin"
-	affected_species2 = list(/mob/living/carbon/monkey, /mob/living/carbon/human)
+	agent = "XY-rhinovirus"
 	affected_species = list("Human", "Monkey")
 	permeability_mod = 0.5
 	desc = "If left untreated the subject will contract the flu."
 	severity = "Minor"
-	mutated = 0
-	why_so_serious = 0
+
 /datum/disease/cold/stage_act()
 	..()
 	switch(stage)
 		if(2)
 			if(affected_mob.sleeping && prob(40))
 				affected_mob << "\blue You feel better."
-				src.cure()
+				affected_mob.virus.cure()
 				return
 			if(prob(1) && prob(10))
 				affected_mob << "\blue You feel better."
-				src.cure()
+				affected_mob.virus.cure()
 				return
 			if(prob(1))
 				affected_mob.emote("sneeze")
@@ -34,11 +33,11 @@
 		if(3)
 			if(affected_mob.sleeping && prob(25))
 				affected_mob << "\blue You feel better."
-				src.cure()
+				affected_mob.virus.cure()
 				return
 			if(prob(1) && prob(10))
 				affected_mob << "\blue You feel better."
-				src.cure()
+				affected_mob.virus.cure()
 			if(prob(1))
 				affected_mob.emote("sneeze")
 			if(prob(1))

@@ -78,6 +78,7 @@
 		var/request = signal.data["findbeacon"]
 		if(request && ((request in codes) || request == "any" || request == location))
 			spawn(1)
+				sleep(-1)
 				post_signal()
 
 	// return a signal giving location and transponder codes
@@ -145,7 +146,7 @@
 		var/t
 
 		if(locked && !ai)
-			t = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Navigation Beacon</B><HR><BR>
+			t = {"<TT><B>Navigation Beacon</B><HR><BR>
 <i>(swipe card to unlock controls)</i><BR>
 Frequency: [format_frequency(freq)]<BR><HR>
 Location: [location ? location : "(none)"]</A><BR>
@@ -157,7 +158,7 @@ Transponder Codes:<UL>"}
 
 		else
 
-			t = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Navigation Beacon</B><HR><BR>
+			t = {"<TT><B>Navigation Beacon</B><HR><BR>
 <i>(swipe card to lock controls)</i><BR>
 Frequency:
 <A href='byond://?src=\ref[src];freq=-10'>-</A>
@@ -193,7 +194,7 @@ Transponder Codes:<UL>"}
 					updateDialog()
 
 				else if(href_list["locedit"])
-					var/newloc = strip_html(input("Enter New Location", "Navigation Beacon", location) as text|null)
+					var/newloc = input("Enter New Location", "Navigation Beacon", location) as text|null
 					if(newloc)
 						location = newloc
 						updateDialog()
@@ -201,12 +202,12 @@ Transponder Codes:<UL>"}
 				else if(href_list["edit"])
 					var/codekey = href_list["code"]
 
-					var/newkey = strip_html(input("Enter Transponder Code Key", "Navigation Beacon", codekey) as text|null)
+					var/newkey = input("Enter Transponder Code Key", "Navigation Beacon", codekey) as text|null
 					if(!newkey)
 						return
 
 					var/codeval = codes[codekey]
-					var/newval = strip_html(input("Enter Transponder Code Value", "Navigation Beacon", codeval) as text|null)
+					var/newval = input("Enter Transponder Code Value", "Navigation Beacon", codeval) as text|null
 					if(!newval)
 						newval = codekey
 						return
@@ -223,11 +224,11 @@ Transponder Codes:<UL>"}
 
 				else if(href_list["add"])
 
-					var/newkey = strip_html(input("Enter New Transponder Code Key", "Navigation Beacon") as text|null)
+					var/newkey = input("Enter New Transponder Code Key", "Navigation Beacon") as text|null
 					if(!newkey)
 						return
 
-					var/newval = strip_html(input("Enter New Transponder Code Value", "Navigation Beacon") as text|null)
+					var/newval = input("Enter New Transponder Code Value", "Navigation Beacon") as text|null
 					if(!newval)
 						newval = "1"
 						return

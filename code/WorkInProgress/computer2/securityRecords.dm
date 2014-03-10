@@ -66,7 +66,7 @@
 					dat += "<a href='?src=\ref[src];screen=1'>Back</a>"
 					dat += "<br><b>Secbots:</b><BR>"
 					var/bdat = null
-					for(var/obj/machinery/bot/secbot/M in machines)
+					for(var/obj/machinery/bot/secbot/M in world)
 						var/turf/bl = get_turf(M)
 						bdat += "<font color='blue'> <B>[M.name]</B></font><BR> - <b>\[[bl.x],[bl.y]\]</b> <BR>- [M.on ? "<font color='darkgreen'>Online</font>" : "<font color='darkred'>Offline</font>"]<BR>"
 						if(M.arrest_type >= 1)
@@ -140,7 +140,7 @@
 			switch(href_list["field"])
 				if("fingerprint")
 					if (istype(src.active1, /datum/data/record))
-						var/t1 = strip_html(input("Please input fingerprint hash:", "Secure. records", src.active1.fields["id"], null)  as text)
+						var/t1 = input("Please input fingerprint hash:", "Secure. records", src.active1.fields["id"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || src.active1 != a1))
 							return
 						src.active1.fields["fingerprint"] = t1
@@ -152,37 +152,37 @@
 							src.active1.fields["sex"] = "Male"
 				if("age")
 					if (istype(src.active1, /datum/data/record))
-						var/t1 = strip_html(input("Please input age:", "Secure. records", src.active1.fields["age"], null)  as text)
+						var/t1 = input("Please input age:", "Secure. records", src.active1.fields["age"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || (!src.master) || usr.stat || usr.restrained() || src.active1 != a1))
 							return
 						src.active1.fields["age"] = t1
 				if("mi_crim")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please input minor disabilities list:", "Secure. records", src.active2.fields["mi_crim"], null)  as text)
+						var/t1 = input("Please input minor disabilities list:", "Secure. records", src.active2.fields["mi_crim"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || usr.stat || usr.restrained() ||  src.active2 != a2))
 							return
 						src.active2.fields["mi_crim"] = t1
 				if("mi_crim_d")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize minor dis.:", "Secure. records", src.active2.fields["mi_crim_d"], null)  as message)
+						var/t1 = input("Please summarize minor dis.:", "Secure. records", src.active2.fields["mi_crim_d"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || usr.stat || usr.restrained() || src.active2 != a2))
 							return
 						src.active2.fields["mi_crim_d"] = t1
 				if("ma_crim")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please input major diabilities list:", "Secure. records", src.active2.fields["ma_crim"], null)  as text)
+						var/t1 = input("Please input major diabilities list:", "Secure. records", src.active2.fields["ma_crim"], null)  as text
 						if ((!( t1 ) || !( src.authenticated ) || usr.stat || usr.restrained() || src.active2 != a2))
 							return
 						src.active2.fields["ma_crim"] = t1
 				if("ma_crim_d")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize major dis.:", "Secure. records", src.active2.fields["ma_crim_d"], null)  as message)
+						var/t1 = input("Please summarize major dis.:", "Secure. records", src.active2.fields["ma_crim_d"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || usr.stat || usr.restrained() || src.active2 != a2))
 							return
 						src.active2.fields["ma_crim_d"] = t1
 				if("notes")
 					if (istype(src.active2, /datum/data/record))
-						var/t1 = strip_html(input("Please summarize notes:", "Secure. records", src.active2.fields["notes"], null)  as message)
+						var/t1 = input("Please summarize notes:", "Secure. records", src.active2.fields["notes"], null)  as message
 						if ((!( t1 ) || !( src.authenticated ) || usr.stat || usr.restrained() || src.active2 != a2))
 							return
 						src.active2.fields["notes"] = t1
@@ -312,7 +312,7 @@
 			if (!( istype(src.active2, /datum/data/record) ))
 				return
 			var/a2 = src.active2
-			var/t1 = strip_html(input("Add Comment:", "Secure. records", null, null)  as message)
+			var/t1 = input("Add Comment:", "Secure. records", null, null)  as message
 			if ((!( t1 ) || !( src.authenticated ) || usr.stat || usr.restrained() || (!in_range(src.master, usr) && (!istype(usr, /mob/living/silicon))) || src.active2 != a2))
 				return
 			var/counter = 1
@@ -325,7 +325,7 @@
 				src.active2.fields[text("com_[]", href_list["del_c"])] = "<B>Deleted</B>"
 
 		if (href_list["search"])
-			var/t1 = strip_html(input("Search String: (Name or ID)", "Secure. records", null, null)  as text)
+			var/t1 = input("Search String: (Name or ID)", "Secure. records", null, null)  as text
 			if ((!( t1 ) || usr.stat || (!src.master) || !( src.authenticated ) || usr.restrained() || ((!in_range(src.master, usr)) && (!istype(usr, /mob/living/silicon)))))
 				return
 			src.active1 = null
@@ -347,7 +347,7 @@
 				src.screen = 4
 
 		if (href_list["search"])
-			var/t1 = strip_html(input("Search String: (Name or ID)", "Secure. records", null, null)  as text)
+			var/t1 = input("Search String: (Name or ID)", "Secure. records", null, null)  as text
 			if ((!( t1 ) || usr.stat || !( src.authenticated ) || usr.restrained() || !in_range(src, usr)))
 				return
 			src.active1 = null

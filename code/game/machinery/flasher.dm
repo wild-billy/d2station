@@ -24,17 +24,17 @@
 
 /obj/machinery/flasher/New()
 	sleep(4)
-	src.ul_SetLuminosity(2)
+	src.sd_SetLuminosity(2)
 
 /obj/machinery/flasher/power_change()
 	if ( powered() )
 		stat &= ~NOPOWER
 		icon_state = "[base_state]1"
-		src.ul_SetLuminosity(2)
+		src.sd_SetLuminosity(2)
 	else
 		stat |= ~NOPOWER
 		icon_state = "[base_state]1-p"
-		src.ul_SetLuminosity(0)
+		src.sd_SetLuminosity(0)
 
 //Don't want to render prison breaks impossible
 /obj/machinery/flasher/attackby(obj/item/weapon/W as obj, mob/user as mob)
@@ -68,12 +68,8 @@
 	for (var/mob/O in viewers(src, null))
 		if (get_dist(src, O) > src.range)
 			continue
-		if (istype(O, /mob/living/carbon/human))
-			var/mob/living/carbon/human/H = O
-			if (istype(H.glasses, /obj/item/clothing/glasses/sunglasses))	continue
-			if (istype(H.head, /obj/item/clothing/head/helmet/welding))
-				if(!H.head:up)	continue
-			if (istype(H.wear_mask, /obj/item/clothing/mask/gas/voice))	continue
+		if ((istype(O, /mob/living/carbon/human) && (istype(O:glasses, /obj/item/clothing/glasses/sunglasses))))
+			continue
 		if (istype(O, /mob/living/carbon/alien))//So aliens don't get flashed (they have no external eyes)/N
 			continue
 

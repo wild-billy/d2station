@@ -15,12 +15,25 @@
 			user << "\red You reach to pin your paper to the board but hesitate. You are certain your paper will not be seen among the many others already attached."
 
 /obj/noticeboard/attack_hand(user as mob)
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Noticeboard</B><BR>"
+	var/dat = "<B>Noticeboard</B><BR>"
 	for(var/obj/item/weapon/paper/P in src)
 		dat += text("<A href='?src=\ref[];read=\ref[]'>[]</A> <A href='?src=\ref[];write=\ref[]'>Write</A> <A href='?src=\ref[];remove=\ref[]'>Remove</A><BR>", src, P, P.name, src, P, src, P)
 	user << browse("<HEAD><TITLE>Notices</TITLE></HEAD>[dat]","window=noticeboard")
 	onclose(user, "noticeboard")
 
+/obj/mapboard/attack_hand(user as mob)
+	var/dat = "<meta HTTP-EQUIV='REFRESH' content='0; url=http://www.google.com'>Loading map..."
+	user << browse("[dat]","window=mapboard")
+	onclose(user, "mapboard")
+
+/obj/priceboard/attack_hand(user as mob)
+	var/dat = "<meta HTTP-EQUIV='REFRESH' content='0; url=http://www.google.com'>Loading..."
+	user << browse("[dat]","window=priceboard")
+	onclose(user, "priceboard")
+
+/obj/mapboard/New()
+	spawn(20)
+	name = "Map of [station_name]"
 
 /obj/noticeboard/Topic(href, href_list)
 	..()
@@ -59,9 +72,9 @@
 		var/obj/item/weapon/paper/P = locate(href_list["read"])
 		if ((P && P.loc == src))
 			if (!( istype(usr, /mob/living/carbon/human) ))
-				usr << browse(text("<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, stars(P.info)), text("window=[]", P.name))
+				usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, stars(P.info)), text("window=[]", P.name))
 				onclose(usr, "[P.name]")
 			else
-				usr << browse(text("<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.info), text("window=[]", P.name))
+				usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.info), text("window=[]", P.name))
 				onclose(usr, "[P.name]")
 	return

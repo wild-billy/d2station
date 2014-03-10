@@ -1,12 +1,11 @@
 proc/empulse(turf/epicenter, heavy_range, light_range, nolog=0)
 	if(!epicenter) return
-	playsound(epicenter.loc, 'empwave.ogg', 50, 0)
 	if (!nolog)
 		message_admins("EMP with size ([heavy_range], [light_range]) in area [epicenter.loc.name] ")
-		log_game("EMP with size ([heavy_range], [light_range]) in area [epicenter.loc.name] ")
 
 	if (!istype(epicenter, /turf))
-		epicenter = get_turf(epicenter.loc)
+		epicenter = epicenter.loc
+		return empulse(epicenter, heavy_range, light_range)
 
 	if(heavy_range > 1)
 		var/obj/overlay/pulse = new/obj/overlay ( epicenter )

@@ -71,7 +71,7 @@
 		user << text("Turret badly positioned - loc.loc is [].", loc)
 		return
 	var/area/area = loc
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>AI Liquid Dispenser</B> ([area.name])<HR>"
+	var/t = "<TT><B>AI Liquid Dispenser</B> ([area.name])<HR>"
 
 	if(src.locked && (!istype(user, /mob/living/silicon)))
 		t += "<I>(Swipe ID card to unlock control panel.)</I><BR>"

@@ -10,7 +10,6 @@
 		playsound(src.loc, 'hiss6.ogg', 80, 1, 1)
 		for(var/mob/O in viewers(src, null))
 			O.show_message("<B>[src]</B> lets out a waning guttural screech, green blood bubbling from its maw...", 1)
-
 		src.canmove = 0
 		if(src.client)
 			src.blind.layer = 0
@@ -29,19 +28,17 @@
 	//			world << "Bomb has ignited?"
 				A.part4.ignite()
 
-		if (src.key)
+		if (src.client)
 			spawn(10)
-				if(src.key && src.stat == 2)
-					src.verbs += /mob/proc/ghost
-				else
-					src.verbs -= /mob/proc/ghost
+				if(src.client && src.stat == 2)
+					src.verbs += /mob/proc/ghostize
 
 	var/tod = time2text(world.realtime,"hh:mm:ss") //weasellos time of death patch
 	if (mind) mind.store_memory("Time of death: [tod]", 0)
 	else src << "We seem to have misplaced your mind datum, so we can't add this to your memory, but you died at [tod]"
 
 	var/cancel
-	for (var/mob/M in mobz)
+	for (var/mob/M in world)
 		if (M.client && !M.stat)
 			cancel = 1
 			break
@@ -49,7 +46,7 @@
 	if (!cancel && !abandon_allowed)
 		spawn (50)
 			cancel = 0
-			for (var/mob/M in mobz)
+			for (var/mob/M in world)
 				if (M.client && !M.stat)
 					cancel = 1
 					break

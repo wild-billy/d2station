@@ -48,89 +48,50 @@
 	user.s_active = null
 	return
 
-//This proc draws out the inventory and places the items on it. tx and ty are the upper left tile and mx, my are the bottm right.
-//The numbers are calculated from the bottom-left (Right hand slot on the map) being 1,1.
 /obj/item/weapon/storage/proc/orient_objs(tx, ty, mx, my)
-	my += 2
-	ty += 2
+
 	var/cx = tx
 	var/cy = ty
-	src.boxes.screen_loc = text("[tx],[ty] to [mx],[my]")
+	src.boxes.screen_loc = text("[],[] to [],[]", tx, ty, mx, my)
 	for(var/obj/O in src.contents)
-		O.screen_loc = text("[cx],[cy]")
+		O.screen_loc = text("[],[]", cx, cy)
 		O.layer = 20
 		cx++
 		if (cx > mx)
 			cx = tx
 			cy--
-	src.closer.screen_loc = text("[mx],[my-1]")
+		//Foreach goto(56)
+	src.closer.screen_loc = text("[],[]", mx, my)
 	return
 
-//This proc determins the size of the inventory to be displayed. Please touch it only if you know what you're doing.
 /obj/item/weapon/storage/proc/orient2hud(mob/user as mob)
-	var/mob/living/carbon/human/H = user
-	var/col_num = 0
-	var/row_count = min(7,storage_slots) -1
-	if (contents.len > 7)
-		if(contents.len % 7) //So having 14 items keeps them in 2 wors instead of 3
-			col_num = round(contents.len / 7) // 7 is the maximum allowed column height for r_hand, l_hand and back storage items.
+
 	if (src == user.l_hand)
-		src.orient_objs(3-col_num, 3+row_count, 3, 3)
-	else if(src == user.r_hand)
-		src.orient_objs(1, 3+row_count, 1+col_num, 3)
-	else if(src == user.back)
-		src.orient_objs(4-col_num, 3+row_count, 4, 3)
-	else if(istype(user, /mob/living/carbon/human) && src == H.belt)//only humans have belts
-		src.orient_objs(1, 3, 8, 3)
+		src.orient_objs(3, 11, 3, 4)
 	else
-		src.orient_objs(5, 10, 11, 10)
+		if (src == user.r_hand)
+			src.orient_objs(1, 11, 1, 4)
+		else
+			if (src == user.back)
+				src.orient_objs(4, 10, 4, 3)
+			else
+				src.orient_objs(7, 8, 10, 7)
 	return
 
-//This proc is called when you want to place an item into the storage item.
 /obj/item/weapon/storage/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	..()
-	if(isrobot(user))
-		user << "\blue You're a robot. No."
-		return //Robots can't interact with storage items.
-
-	if(src.loc == W)
-		return //Means the item is already in the storage item
-
-	if(contents.len >= storage_slots)
-		user << "\red The [src] is full, make some space."
-		return //Storage item is full
 
 	if(can_hold.len)
 		var/ok = 0
 		for(var/A in can_hold)
-			if(istype(W, text2path(A) ))
-				ok = 1
-				break
+			if(istype(W, text2path(A) )) ok = 1
 		if(!ok)
-			user << "\red This [src] cannot hold [W]."
+			user << "\red This container cannot hold [W]."
 			return
 
-	for(var/A in cant_hold) //Check for specific items which this container can't hold.
-		if(istype(W, text2path(A) ))
-			user << "\red This [src] cannot hold [W]."
-			return
-
-	if (W.w_class > max_w_class)
-		user << "\red [W] is too big for [src]"
+	if (src.contents.len >= 7)
 		return
-
-	var/sum_w_class = W.w_class
-	for(var/obj/item/I in contents)
-		sum_w_class += I.w_class //Adds up the combined w_classes which will be in the storage item if the item is added to it.
-
-	if(sum_w_class > max_combined_w_class)
-		user << "\red The [W] cannot fit in the [src]. Remove some items or add a smaller one.."
+	if ((W.w_class >= 3 || istype(W, /obj/item/weapon/storage) || src.loc == W))
 		return
-
-	if ( W.w_class >= src.w_class && (istype(W, /obj/item/weapon/storage)))
-		user << "\red The [src] cannot hold  [W] as it's a storage item of the same size."
-		return //To prevent the stacking of the same sized items.
-
 	user.u_equip(W)
 	W.loc = src
 	if ((user.client && user.s_active != src))
@@ -140,12 +101,13 @@
 	add_fingerprint(user)
 	if (istype(W, /obj/item/weapon/gun/energy/crossbow)) return //STEALTHY
 	for(var/mob/O in viewers(user, null))
-		O.show_message(text("\blue [user] has added [W] to [src]!"))
+		O.show_message(text("\blue [] has added [] to []!", user, W, src), 1)
 		//Foreach goto(139)
 	return
 
 /obj/item/weapon/storage/dropped(mob/user as mob)
-	src.orient_objs(5,10,12,10)
+
+	src.orient_objs(7, 8, 10, 7)
 	return
 
 /obj/item/weapon/storage/MouseDrop(over_object, src_location, over_location)
@@ -159,6 +121,7 @@
 /obj/item/weapon/storage/attack_paw(mob/user as mob)
 	playsound(src.loc, "rustle", 50, 1, -5)
 	return src.attack_hand(user)
+	return
 
 /obj/item/weapon/storage/attack_hand(mob/user as mob)
 	playsound(src.loc, "rustle", 50, 1, -5)
@@ -171,7 +134,8 @@
 		for(var/mob/M in range(1))
 			if (M.s_active == src)
 				src.close(M)
-	src.orient2hud(user)
+			//Foreach goto(76)
+		src.orient2hud(user)
 	src.add_fingerprint(user)
 	return
 
@@ -192,42 +156,19 @@
 		return
 	return
 
-/obj/item/weapon/storage/emp_act(severity)
-	if(!istype(src.loc, /mob/living))
-		for(var/obj/O in contents)
-			O.emp_act(severity)
-	..()
-
 /obj/screen/storage/attackby(W, mob/user as mob)
 	src.master.attackby(W, user)
 	return
 
-/obj/item/weapon/storage/survival_kit/New()
-	sleep(1)
+/obj/item/weapon/storage/box/New()
+
 	new /obj/item/clothing/mask/breath( src )
 	new /obj/item/weapon/tank/emergency_oxygen( src )
-	new /obj/item/weapon/reagent_containers/pill/inaprovaline( src )
-	new /obj/item/weapon/reagent_containers/pill/inaprovaline( src )
-	new /obj/item/weapon/reagent_containers/pill/dexalin( src )
-	new /obj/item/weapon/reagent_containers/pill/kelotane( src )
-	new /obj/item/weapon/reagent_containers/pill/polyadrenalobin( src )
 	..()
-	return
-
-/obj/item/weapon/storage/survival_kit/engineer/New()
-	..()
-	contents = list()
-	sleep(1)
-	new /obj/item/clothing/mask/breath( src )
-	new /obj/item/weapon/tank/emergency_oxygen/engi( src )
 	return
 
 /obj/item/weapon/storage/dice/New()
 	new /obj/item/weapon/dice( src )
-	new /obj/item/weapon/dice( src )
-	new /obj/item/weapon/dice( src )
-	new /obj/item/weapon/dice( src )
-	new /obj/item/weapon/dice/d20( src )
 	new /obj/item/weapon/dice/d20( src )
 	..()
 	return
@@ -242,31 +183,16 @@
 	..()
 	return
 
-/obj/item/weapon/storage/pill_bottle/MouseDrop(obj/over_object as obj) //Quick pillbottle fix. -Agouri
-
-	if (ishuman(usr) || ismonkey(usr)) //Can monkeys even place items in the pocket slots? Leaving this in just in case~
-		var/mob/M = usr
-		if (!( istype(over_object, /obj/screen) ))
-			return ..()
-		if ((!( M.restrained() ) && !( M.stat ) /*&& M.pocket == src*/))
-			if (over_object.name == "r_hand")
-				if (!( M.r_hand ))
-					M.u_equip(src)
-					M.r_hand = src
-			else
-				if (over_object.name == "l_hand")
-					if (!( M.l_hand ))
-						M.u_equip(src)
-						M.l_hand = src
-			M.update_clothing()
-			src.add_fingerprint(usr)
-			return
-		if(over_object == usr && in_range(src, usr) || usr.contents.Find(src))
-			if (usr.s_active)
-				usr.s_active.close(usr)
-			src.show_to(usr)
-			return
-	return   ///////////////////////////////////////////////////////Alright, that should do it. *MARKER* for any possible runtimes
+/obj/item/weapon/storage/silverwarebox/New()
+	new /obj/item/weapon/kitchen/utensil/fork( src )
+	new /obj/item/weapon/kitchen/utensil/fork( src )
+	new /obj/item/weapon/kitchen/utensil/fork( src )
+	new /obj/item/weapon/kitchen/utensil/spoon( src )
+	new /obj/item/weapon/kitchen/utensil/spoon( src )
+	new /obj/item/weapon/kitchen/utensil/knife( src )
+	new /obj/item/weapon/kitchen/utensil/knife( src )
+	..()
+	return
 
 /obj/item/weapon/storage/pillbottlebox/New()
 	new /obj/item/weapon/storage/pill_bottle( src )
@@ -340,3 +266,142 @@
 		return
 	else
 		..()
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/obj/item/weapon/storage/injectorbelt/proc/can_use()
+	if(!ismob(loc)) return 0
+	var/mob/M = loc
+	if(src in M.get_equipped_items())
+		return 1
+	else
+		return 0
+
+/obj/item/weapon/storage/injectorbelt/dropped(mob/user as mob)
+	..()
+
+/obj/item/weapon/storage/injectorbelt/MouseDrop(obj/over_object as obj, src_location, over_location)
+	var/mob/M = usr
+	if (!istype(over_object, /obj/screen))
+		if(can_use())
+			return ..()
+		else
+			M << "\red I need to wear the belt for that."
+			return
+	playsound(src.loc, "rustle", 50, 1, -5)
+	if (!M.restrained() && !M.stat && can_use())
+		if (over_object.name == "r_hand")
+			if (!( M.r_hand ))
+				M.u_equip(src)
+				M.r_hand = src
+		else
+			if (over_object.name == "l_hand")
+				if (!( M.l_hand ))
+					M.u_equip(src)
+					M.l_hand = src
+		M.update_clothing()
+		src.add_fingerprint(usr)
+		return
+
+/obj/item/weapon/storage/injectorbelt/attack_paw(mob/user as mob)
+	return src.attack_hand(user)
+
+/obj/item/weapon/storage/injectorbelt/attack_hand(mob/user as mob)
+	if (src.loc == user)
+		if(can_use())
+			playsound(src.loc, "rustle", 50, 1, -5)
+			if (user.s_active)
+				user.s_active.close(user)
+			src.show_to(user)
+		else
+			user << "\red I need to wear the belt for that."
+			return
+	else
+		return ..()
+
+	src.add_fingerprint(user)
+
+/obj/item/weapon/storage/injectorbelt/attackby(obj/item/weapon/W as obj, mob/user as mob)
+	..()
+	if(!can_use())
+		user << "\red I need to wear the belt for that."
+		return
+	else
+		..()
+
+///////////////////////////////////////////////////////////////////////////////////
+
+/obj/item/weapon/storage/secbelt/proc/can_use()
+	if(!ismob(loc)) return 0
+	var/mob/M = loc
+	if(src in M.get_equipped_items())
+		return 1
+	else
+		return 0
+
+/obj/item/weapon/storage/secbelt/dropped(mob/user as mob)
+	..()
+
+/obj/item/weapon/storage/secbelt/MouseDrop(obj/over_object as obj, src_location, over_location)
+	var/mob/M = usr
+	if (!istype(over_object, /obj/screen))
+		if(can_use())
+			return ..()
+		else
+			M << "\red I need to wear the belt for that."
+			return
+	playsound(src.loc, "rustle", 50, 1, -5)
+	if (!M.restrained() && !M.stat && can_use())
+		if (over_object.name == "r_hand")
+			if (!( M.r_hand ))
+				M.u_equip(src)
+				M.r_hand = src
+		else
+			if (over_object.name == "l_hand")
+				if (!( M.l_hand ))
+					M.u_equip(src)
+					M.l_hand = src
+		M.update_clothing()
+		src.add_fingerprint(usr)
+		return
+
+/obj/item/weapon/storage/secbelt/attack_paw(mob/user as mob)
+	return src.attack_hand(user)
+
+/obj/item/weapon/storage/secbelt/attack_hand(mob/user as mob)
+	if (src.loc == user)
+		if(can_use())
+			playsound(src.loc, "rustle", 50, 1, -5)
+			if (user.s_active)
+				user.s_active.close(user)
+			src.show_to(user)
+		else
+			user << "\red I need to wear the belt for that."
+			return
+	else
+		return ..()
+
+	src.add_fingerprint(user)
+
+/obj/item/weapon/storage/secbelt/attackby(obj/item/weapon/W as obj, mob/user as mob)
+	..()
+	if(!can_use())
+		user << "\red I need to wear the belt for that."
+		return
+	else
+		..()
+
+/obj/item/weapon/storage/recyclingbin/attack_paw(mob/user as mob)
+	playsound(src.loc, "rustle", 50, 1, -5)
+	return src.attack_hand(user)
+	return
+
+/obj/item/weapon/storage/recyclingbin/attack_hand(mob/user as mob)
+	playsound(src.loc, "rustle", 50, 1, -5)
+	if (src.loc != user)
+		if (user.s_active)
+			user.s_active.close(user)
+		src.show_to(user)
+	return
+
+

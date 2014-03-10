@@ -1,4 +1,4 @@
-/obj/machinery/bot/ed209
+/*/obj/machinery/bot/ed209
 	name = "ED-209"
 	desc = "A security robot.  He looks less than thrilled."
 	icon = 'aibots.dmi'
@@ -125,7 +125,7 @@ Auto Patrol: []"},
 "<A href='?src=\ref[src];operation=patrol'>[auto_patrol ? "On" : "Off"]</A>" )
 
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Securitron v2.5 controls</TITLE></HEAD>[dat]", "window=autosec")
+	user << browse("<HEAD><TITLE>Securitron v2.5 controls</TITLE></HEAD>[dat]", "window=autosec")
 	onclose(user, "autosec")
 	return
 
@@ -241,11 +241,11 @@ Auto Patrol: []"},
 					var/mob/living/carbon/M = src.target
 					var/maxstuns = 4
 					if (istype(M, /mob/living/carbon/human))
-						if (M.weakened < 10 && (!(M.mutations & HULK))  /*&& (!istype(M:wear_suit, /obj/item/clothing/suit/judgerobe))*/)
+						if (M.weakened < 10 && (!(M.mutations & 8))  /*&& (!istype(M:wear_suit, /obj/item/clothing/suit/judgerobe))*/)
 							M.weakened = 10
-						if (M.stuttering < 10 && (!(M.mutations & HULK))  /*&& (!istype(M:wear_suit, /obj/item/clothing/suit/judgerobe))*/)
+						if (M.stuttering < 10 && (!(M.mutations & 8))  /*&& (!istype(M:wear_suit, /obj/item/clothing/suit/judgerobe))*/)
 							M.stuttering = 10
-						if (M.stunned < 10 && (!(M.mutations & HULK))  /*&& (!istype(M:wear_suit, /obj/item/clothing/suit/judgerobe))*/)
+						if (M.stunned < 10 && (!(M.mutations & 8))  /*&& (!istype(M:wear_suit, /obj/item/clothing/suit/judgerobe))*/)
 							M.stunned = 10
 					else
 						M.weakened = 10
@@ -613,13 +613,13 @@ Auto Patrol: []"},
 		if(src.allowed(perp)) //Corrupt cops cannot exist beep boop
 			return 0
 
-		if((istype(perp.l_hand, /obj/item/weapon/gun) && !istype(perp.l_hand, /obj/item/weapon/gun/projectile/shotgun)) || istype(perp.l_hand, /obj/item/weapon/melee/baton))
+		if((istype(perp.l_hand, /obj/item/weapon/gun) && !istype(perp.l_hand, /obj/item/weapon/gun/shotgun)) || istype(perp.l_hand, /obj/item/weapon/baton))
 			threatcount += 4
 
-		if((istype(perp.r_hand, /obj/item/weapon/gun) && !istype(perp.r_hand, /obj/item/weapon/gun/projectile/shotgun)) || istype(perp.r_hand, /obj/item/weapon/melee/baton))
+		if((istype(perp.r_hand, /obj/item/weapon/gun) && !istype(perp.r_hand, /obj/item/weapon/gun/shotgun)) || istype(perp.r_hand, /obj/item/weapon/baton))
 			threatcount += 4
 
-		if(istype(perp:belt, /obj/item/weapon/gun) || istype(perp:belt, /obj/item/weapon/melee/baton))
+		if(istype(perp:belt, /obj/item/weapon/gun) || istype(perp:belt, /obj/item/weapon/baton))
 			threatcount += 2
 
 		if(istype(perp:wear_suit, /obj/item/clothing/suit/wizrobe))
@@ -667,15 +667,14 @@ Auto Patrol: []"},
 		return
 	return
 
-/obj/machinery/bot/ed209/Bumped(atom/movable/M as mob|obj)
+/obj/machinery/bot/ed209/Bumped(M as mob|obj)
 	spawn(0)
-		if (M)
-			var/turf/T = get_turf(src)
-			M:loc = T
+		var/turf/T = get_turf(src)
+		M:loc = T
 
 /obj/machinery/bot/ed209/proc/speak(var/message)
 	for(var/mob/O in hearers(src, null))
-		O.show_message("<span class='game say'><span class='name'>[src]</span> beeps, \"[message]\"",2)
+		O << "<span class='game say'><span class='name'>[src]</span> beeps, \"[message]\""
 	return
 
 /obj/machinery/bot/ed209/explode()
@@ -689,7 +688,7 @@ Auto Patrol: []"},
 	Sa.created_name = src.name
 	new /obj/item/device/prox_sensor(Tsec)
 
-	var/obj/item/weapon/melee/baton/B = new /obj/item/weapon/melee/baton(Tsec)
+	var/obj/item/weapon/baton/B = new /obj/item/weapon/baton(Tsec)
 	B.charges = 0
 
 	if (prob(50))
@@ -719,11 +718,11 @@ Auto Patrol: []"},
 	//if(lastfired && world.time - lastfired < 100)
 	//	playsound(src.loc, 'ed209_shoot.ogg', 50, 0)
 
-	var/obj/item/projectile/A
+	var/obj/beam/a_laser/A
 	if (src.emagged)
-		A = new /obj/item/projectile/beam( loc )
+		A = new /obj/beam/a_laser( loc )
 	else
-		A = new /obj/item/projectile/electrode( loc )
+		A = new /obj/bullet/electrode( loc )
 
 	if (!( istype(U, /turf) ))
 		//A = null
@@ -835,7 +834,7 @@ Auto Patrol: []"},
 			src.build_step++
 			user << "\blue You wire the ED-209 assembly!"
 			src.name = "Wired ED-209 Assembly"
-	else if (istype(W, /obj/item/weapon/gun/energy/taser) && (src.build_step == 7))
+	else if (istype(W, /obj/item/weapon/gun/energy/taser_gun) && (src.build_step == 7))
 		src.build_step++
 		user << "You add the taser gun to [src]!"
 		src.name = "Taser/Wired ED-209 Assembly"
@@ -861,7 +860,7 @@ Auto Patrol: []"},
 		del(src)
 
 	else if (istype(W, /obj/item/weapon/pen))
-		var/t = strip_html(input(user, "Enter new robot name", src.name, src.created_name)) as text
+		var/t = input(user, "Enter new robot name", src.name, src.created_name) as text
 		t = copytext(sanitize(t), 1, MAX_MESSAGE_LEN)
 		if (!t)
 			return
@@ -869,4 +868,4 @@ Auto Patrol: []"},
 			return
 
 		src.created_name = t
-
+*/

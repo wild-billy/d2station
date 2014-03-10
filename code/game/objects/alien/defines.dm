@@ -2,7 +2,7 @@
 	name = "alien thing"
 	desc = "theres something alien about this"
 	icon = 'alien.dmi'
-	unacidable = 1 //Aliens won't melt their own.
+	unacidable = 1 //Aliens won't ment their own.
 
 /obj/alien/egg
 	desc = "It looks like a weird egg"
@@ -13,17 +13,18 @@
 
 	var/health = 100
 
-/obj/alien/flower
-	name = "alien flower"
-	desc = "Slowly pulsating."
-	icon_state = "flower"
-	density = 0
-	anchored = 1
-	var/health = 60
 
 /obj/alien/head
 	name = "severed head"
 	desc = "a severed head..."
+	icon_state = "weeds"
+
+	density = 0
+	anchored = 0
+
+/obj/alien/skin_suit
+	name = "skin"
+	desc = "a persons skin, disgusting"
 	icon_state = "weeds"
 
 	density = 0
@@ -37,12 +38,12 @@
 	density = 1
 	opacity = 1
 	anchored = 1
+//Alien can now normally destroy resin walls so they are no longer targetable with acid.
 	var/health = 50
-	var/mob/living/affecting = null
 
 /obj/alien/weeds
 	name = "weeds"
-	desc = "Weird purple weeds."
+	desc = "Purple weed, that shit looks dank."
 	icon_state = "weeds"
 
 	anchored = 1

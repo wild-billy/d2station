@@ -1,28 +1,15 @@
-
 /obj/item/weapon/storage/firstaid/fire/New()
 	..()
-	if (empty) return
+	new /obj/item/weapon/medical/ointment( src )
+	new /obj/item/weapon/medical/ointment( src )
 	new /obj/item/device/healthanalyzer( src )
 	new /obj/item/weapon/reagent_containers/syringe/inaprovaline( src )
-	new /obj/item/stack/medical/ointment( src )
-	new /obj/item/stack/medical/ointment( src )
+	new /obj/item/weapon/reagent_containers/syringe/inaprovaline( src )
 	new /obj/item/weapon/reagent_containers/pill/kelotane( src )
 	new /obj/item/weapon/reagent_containers/pill/kelotane( src )
-	new /obj/item/weapon/reagent_containers/pill/kelotane( src ) //Replaced ointment with these since they actually work --Errorage
 	return
 
-/obj/item/weapon/storage/firstaid/hypospray/New()
-	..()
-	new /obj/item/weapon/reagent_containers/glass/hyposprayvial( src )
-	new /obj/item/weapon/reagent_containers/glass/hyposprayvial( src )
-	new /obj/item/weapon/reagent_containers/glass/hyposprayvial( src )
-	new /obj/item/weapon/reagent_containers/glass/hyposprayvial( src )
-	new /obj/item/weapon/reagent_containers/glass/hyposprayvial( src )
-	new /obj/item/weapon/reagent_containers/glass/hyposprayvial( src )
-	new /obj/item/weapon/reagent_containers/glass/hyposprayvial( src )
-	return
-
-/obj/item/weapon/storage/syringes/New()
+/obj/item/weapon/storage/firstaid/syringes/New()
 	..()
 	new /obj/item/weapon/reagent_containers/syringe( src )
 	new /obj/item/weapon/reagent_containers/syringe( src )
@@ -36,12 +23,11 @@
 /obj/item/weapon/storage/firstaid/regular/New()
 
 	..()
-	if (empty) return
-	new /obj/item/stack/medical/bruise_pack(src)
-	new /obj/item/stack/medical/bruise_pack(src)
-	new /obj/item/stack/medical/bruise_pack(src)
-	new /obj/item/stack/medical/ointment(src)
-	new /obj/item/stack/medical/ointment(src)
+	new /obj/item/weapon/medical/bruise_pack(src)
+	new /obj/item/weapon/medical/bruise_pack(src)
+	new /obj/item/weapon/medical/bruise_pack(src)
+	new /obj/item/weapon/medical/ointment(src)
+	new /obj/item/weapon/medical/ointment(src)
 	new /obj/item/device/healthanalyzer(src)
 	new /obj/item/weapon/reagent_containers/syringe/inaprovaline( src )
 	return
@@ -49,7 +35,6 @@
 /obj/item/weapon/storage/firstaid/toxin/New()
 
 	..()
-	if (empty) return
 	new /obj/item/weapon/reagent_containers/syringe/antitoxin( src )
 	new /obj/item/weapon/reagent_containers/syringe/antitoxin( src )
 	new /obj/item/weapon/reagent_containers/syringe/antitoxin( src )
@@ -59,26 +44,15 @@
 	new /obj/item/device/healthanalyzer( src )
 	return
 
-/obj/item/weapon/storage/firstaid/o2/New()
+/obj/item/weapon/storage/firstaid/oxydep/New()
 
 	..()
-	if (empty) return
-	new /obj/item/weapon/reagent_containers/pill/dexalin( src )
-	new /obj/item/weapon/reagent_containers/pill/dexalin( src )
-	new /obj/item/weapon/reagent_containers/pill/dexalin( src )
-	new /obj/item/weapon/reagent_containers/pill/dexalin( src )
 	new /obj/item/weapon/reagent_containers/syringe/inaprovaline( src )
 	new /obj/item/weapon/reagent_containers/syringe/inaprovaline( src )
-	new /obj/item/device/healthanalyzer( src )
-	return
-
-/obj/item/weapon/storage/firstaid/addiction/New()
-	..()
-	if (empty) return
-	new /obj/item/weapon/reagent_containers/pill/fixer( src )
-	new /obj/item/weapon/reagent_containers/pill/fixer( src )
-	new /obj/item/weapon/reagent_containers/pill/fixer( src )
-	new /obj/item/weapon/reagent_containers/pill/fixer( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
 	new /obj/item/device/healthanalyzer( src )
 	return
 
@@ -95,6 +69,7 @@
 	new /obj/item/weapon/reagent_containers/pill/kelotane( src )
 	new /obj/item/weapon/reagent_containers/pill/kelotane( src )
 	new /obj/item/weapon/reagent_containers/pill/kelotane( src )
+
 
 /obj/item/weapon/storage/pill_bottle/orlistat
 	name = "Diet Pills"
@@ -125,6 +100,7 @@
 	new /obj/item/weapon/reagent_containers/pill/sildenafil( src )
 	new /obj/item/weapon/reagent_containers/pill/sildenafil( src )
 
+
 /obj/item/weapon/storage/pill_bottle/antitox
 	name = "Pill bottle (Anti-toxin)"
 	desc = "Contains pills used to counter toxins."
@@ -153,3 +129,30 @@
 	new /obj/item/weapon/reagent_containers/pill/inaprovaline( src )
 	new /obj/item/weapon/reagent_containers/pill/inaprovaline( src )
 
+/obj/item/weapon/storage/pill_bottle/dexalinp
+	name = "Pill bottle (Dexalin-P)"
+	desc = "Contains pills used to treat oxygen deprivation."
+
+/obj/item/weapon/storage/pill_bottle/dexalinp/New()
+	..()
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+	new /obj/item/weapon/reagent_containers/pill/dexalinp( src )
+
+/obj/item/weapon/storage/pill_bottle/space_drugs
+	name = "Pill bottle (Space_Drugs)"
+	desc = "Contains the Chief Medical Officers 'Medication'."
+
+/obj/item/weapon/storage/pill_bottle/space_drugs/New()
+	..()
+	new /obj/item/weapon/reagent_containers/pill/space_drugs( src )
+	new /obj/item/weapon/reagent_containers/pill/space_drugs( src )
+	new /obj/item/weapon/reagent_containers/pill/space_drugs( src )
+	new /obj/item/weapon/reagent_containers/pill/space_drugs( src )
+	new /obj/item/weapon/reagent_containers/pill/space_drugs( src )
+	new /obj/item/weapon/reagent_containers/pill/space_drugs( src )
+	new /obj/item/weapon/reagent_containers/pill/space_drugs( src )

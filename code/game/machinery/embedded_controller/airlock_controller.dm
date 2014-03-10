@@ -70,6 +70,7 @@ datum/computer/file/embedded_program/airlock_controller
 							var/datum/signal/signal = new
 							signal.data["tag"] = interior_door_tag
 							signal.data["command"] = "secure_close"
+							sleep(-1)
 							post_signal(signal)
 					else
 						if(memory["pump_status"] != "off")
@@ -79,6 +80,7 @@ datum/computer/file/embedded_program/airlock_controller
 								"power" = 0,
 								"sigtype"="command"
 							)
+							sleep(-1)
 							post_signal(signal)
 
 				if(AIRLOCK_STATE_PRESSURIZE)
@@ -102,6 +104,7 @@ datum/computer/file/embedded_program/airlock_controller
 								signal.data["stabalize"] = 1
 							else if(memory["pump_status"] != "release")
 								signal.data["power"] = 1
+							sleep(-1)
 							post_signal(signal)
 					else if(target_state > state)
 						state = AIRLOCK_STATE_CLOSED
@@ -116,6 +119,7 @@ datum/computer/file/embedded_program/airlock_controller
 							var/datum/signal/signal = new
 							signal.data["tag"] = interior_door_tag
 							signal.data["command"] = "secure_close"
+							sleep(-1)
 							post_signal(signal)
 					else if(target_state < state)
 						if(memory["exterior_status"] == "closed")
@@ -125,6 +129,7 @@ datum/computer/file/embedded_program/airlock_controller
 							var/datum/signal/signal = new
 							signal.data["tag"] = exterior_door_tag
 							signal.data["command"] = "secure_close"
+							sleep(-1)
 							post_signal(signal)
 
 					else
@@ -135,6 +140,7 @@ datum/computer/file/embedded_program/airlock_controller
 								"power" = 0,
 								"sigtype"="command"
 							)
+							sleep(-1)
 							post_signal(signal)
 
 				if(AIRLOCK_STATE_DEPRESSURIZE)
@@ -168,6 +174,7 @@ datum/computer/file/embedded_program/airlock_controller
 							signal.data["purge"] = 1
 						else if(memory["pump_status"] != "siphon")
 							signal.data["power"] = 1
+						sleep(-1)
 						post_signal(signal)
 
 				if(AIRLOCK_STATE_OUTOPEN) //state 2
@@ -192,6 +199,7 @@ datum/computer/file/embedded_program/airlock_controller
 								"power" = 0,
 								"sigtype"="command"
 							)
+							sleep(-1)
 							post_signal(signal)
 
 		memory["sensor_pressure"] = sensor_pressure

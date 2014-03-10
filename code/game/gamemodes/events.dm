@@ -9,43 +9,46 @@
 		meteorevent()
 
 /proc/start_events()
-	if(prob(1))//Every 120 seconds and prob 50 2-4 weak spacedusts will hit the station
+	if(prob(2))//Every 120 seconds and prob 50 2-4 weak spacedusts will hit the station
 		spawn(1)
 			dust_swarm("weak")
 	if (!event && prob(eventchance))
 		event()
 		hadevent = 1
-		score_eventsendured++
-		spawn(1600)
+		spawn(1300)
 			event = 0
-	spawn(1500)
+	spawn(1200)
 		start_events()
 
 /proc/event()
-	event = 1
-
 	switch(rand(1,9))
 		if(1)
-			command_alert("Meteors have been detected on collision course with the station.", "Meteor Alert!")
+			event = 1
+			command_alert("Meteors have been detected on collision course with the station.", "Meteor Alert")
 			//world << sound('meteors.ogg')
 			meteorevent = 1
 			dothemeteor()
 
-		if(2)
-			command_alert("Gravitational anomalies detected on the station. There is no additional data.", "Anomaly Alert!")
+/*		if(2) // FUCK THIS SHIT
+			event = 1
+			command_alert("Gravitational anomalies detected on the station. There is no additional data.", "Anomaly Alert")
 			//world << sound('granomalies.ogg')
 			var/turf/T = pick(blobstart)
 			var/obj/bhole/bh = new /obj/bhole( T.loc, 30 )
 			spawn(rand(50, 300))
 				del(bh)
-
-/*
-		if(3) //Leaving the code in so someone can try and delag it, but this event can no longer occur randomly, per SoS's request. --NEO
-			command_alert("Space-time anomalies detected on the station. There is no additional data.", "Anomaly Alert!")
-//			world << sound('spanomalies.ogg')
+*/
+/*		if(2)
+			event = 1
+			command_alert("Space-time anomalies detected on the station. There is no additional data.", "Anomaly Alert")
+			//world << sound('spanomalies.ogg')
+			var/list/turfs = list(	)
 			var/turf/picked
-			for(var/turf/simulated/floor/T in turfs)
-				if(prob(20))
+			for(var/turf/T in world)
+				if(T.z == 1 && istype(T,/turf/simulated/floor) && !istype(T,/turf/space))
+					turfs += T
+			for(var/turf/T in world)
+				if(prob(20) && T.z == 1 && istype(T,/turf/simulated/floor))
 					spawn(50+rand(0,3000))
 						picked = pick(turfs)
 						var/obj/portal/P = new /obj/portal( T )
@@ -56,26 +59,37 @@
 						P.icon_state = "anom"
 						P.name = "wormhole"
 						spawn(rand(300,600))
-							del(P)
-*/
+							del(P)*/
+		if(2)
+			event = 1
+			command_alert("Electromagnetic pulse detected near the station. Please check all AI-controlled equipment for errors.", "Anomaly Alert")
+			//world << sound('outbreak5.ogg')
+			var/turf/T = pick(blobstart)
+			spawn(0)
+				empulse(T.loc, rand(1, 6), rand(1,8), nolog=1)
 
-		if(4)
-			command_alert("Pirates have begun boarding the station!", "Boarding Alert!") //lolnowearentunderattacktimeforpanics
-		if(5)
-			command_alert("Russians have boarded the station!", "Boarding Alert!")
-		//	alien_infestation() //please may god have mercy on my soul for doing this.
-		if(6)
-			viral_outbreak()
-		if(7)
+		if(3)
+			event = 1
 			high_radiation_event()
+		if(4)
+			event = 1
+			viral_outbreak()
+		if(5)
+			if(prob(20))
+				event = 1
+				alien_infestation()
+		if(6)
+			event = 1
+			prison_break()
+		if(7)
+			event = 1
+			carp_migration()
 		if(8)
-			command_alert("Centcom is now a child company of nanotransen!", "Corporate Alert!")
+			event = 1
+			ion_storm()
 		if(9)
-			command_alert("Farm Station 11 has produced a surplus crop, please accept these crops as thanks from us at Centcom!", "Bumper-crop Alert!")
-			bumpercrop()
-		//	lightsout()
-		//	viral_outbreak()
-
+			event = 1
+			immovablerod()
 
 /proc/dotheblobbaby()
 	if (blobevent)
@@ -89,16 +103,27 @@ proc/dothemeteor()
 	meteorevent = 1
 	spawn(600)
 		meteorevent = 0
-	return 0
+
 
 /obj/bhole/New()
+	src.smoke = new /datum/effects/system/harmless_smoke_spread()
+	src.smoke.set_up(5, 0, src)
+	src.smoke.attach(src)
 	src:life()
 
 /obj/bhole/Bumped(atom/A)
-	if (istype(A,/mob/living/carbon/human))
-		A:mutantrace = pick("sanic","dog","vriska","rabbit")
+	var/mob/dead/observer/newmob
+	if (istype(A,/mob/living) && A:client)
+		newmob = new/mob/dead/observer(A)
+		A:client:mob = newmob
+		newmob:client:eye = newmob
+		del(A)
+	else if (istype(A,/mob/living) && !A:client)
+		del(A)
 	else
 		A:ex_act(1.0)
+
+
 
 /obj/bhole/proc/life() //Oh man , this will LAG
 
@@ -126,6 +151,7 @@ proc/dothemeteor()
 				if(prob(10)) B:ex_act(3.0)
 		else if (istype(B,/turf))
 			if (istype(B,/turf/simulated) && (prob(1) && prob(75)))
+				src.smoke.start()
 				B:ReplaceWithSpace()
 		else if (istype(B,/mob/living))
 			step_towards(B,src)
@@ -143,6 +169,7 @@ proc/dothemeteor()
 				if(prob(30)) A:ex_act(2.0)
 		else if (istype(A,/turf))
 			if (istype(A,/turf/simulated) && prob(1))
+				src.smoke.start()
 				A:ReplaceWithSpace()
 		else if (istype(A,/mob/living))
 			step_towards(A,src)
@@ -152,8 +179,14 @@ proc/dothemeteor()
 		//if (hascall(D,"blackholed"))
 		//	call(D,"blackholed")(null)
 		//	continue
-		if (istype(D,/mob/living/carbon/human))
-			D:mutantrace = pick("sanic","dog","vriska","rabbit")
+		var/mob/dead/observer/newmob
+		if (istype(D,/mob/living) && D:client)
+			newmob = new/mob/dead/observer(D)
+			D:client:mob = newmob
+			newmob:client:eye = newmob
+			del(D)
+		else if (istype(D,/mob/living) && !D:client)
+			del(D)
 		else
 			D:ex_act(1.0)
 
@@ -161,12 +194,12 @@ proc/dothemeteor()
 		life()
 
 /proc/power_failure()
-	command_alert("Abnormal activity detected in [station_name()]'s powernet. As a precautionary measure, the station's power will be shut off for an indeterminate duration.", "Critical Power Failure!")
+	command_alert("Abnormal activity detected in [station_name()]'s powernet. As a precautionary measure, the station's power will be shut off for an indeterminate duration.", "Critical Power Failure")
 	//world << sound('poweroff.ogg')
-	for(var/obj/machinery/power/apc/C in machines)
+	for(var/obj/machinery/power/apc/C in world)
 		if(C.cell && C.z == 1)
 			C.cell.charge = 0
-	for(var/obj/machinery/power/smes/S in machines)
+	for(var/obj/machinery/power/smes/S in world)
 		if(istype(get_area(S), /area/turret_protected) || S.z != 1)
 			continue
 		S.charge = 0
@@ -174,7 +207,7 @@ proc/dothemeteor()
 		S.online = 0
 		S.updateicon()
 		S.power_change()
-	for(var/area/A in areaz)
+	for(var/area/A in world)
 		if(A.name != "Space" && A.name != "Engine Walls" && A.name != "Chemical Lab Test Chamber" && A.name != "Escape Shuttle" && A.name != "Arrival Area" && A.name != "Arrival Shuttle" && A.name != "start area" && A.name != "Engine Combustion Chamber")
 			A.power_light = 0
 			A.power_equip = 0
@@ -182,12 +215,12 @@ proc/dothemeteor()
 			A.power_change()
 
 /proc/power_restore()
-	command_alert("Power has been restored to [station_name()]. We apologize for the inconvenience.", "Power Systems Nominal!")
+	command_alert("Power has been restored to [station_name()]. We apologize for the inconvenience.", "Power Systems Nominal")
 	//world << sound('poweron.ogg')
-	for(var/obj/machinery/power/apc/C in machines)
+	for(var/obj/machinery/power/apc/C in world)
 		if(C.cell && C.z == 1)
 			C.cell.charge = C.cell.maxcharge
-	for(var/obj/machinery/power/smes/S in machines)
+	for(var/obj/machinery/power/smes/S in world)
 		if(S.z != 1)
 			continue
 		S.charge = S.capacity
@@ -195,52 +228,19 @@ proc/dothemeteor()
 		S.online = 1
 		S.updateicon()
 		S.power_change()
-	for(var/area/A in areaz)
+	for(var/area/A in world)
 		if(A.name != "Space" && A.name != "Engine Walls" && A.name != "Chemical Lab Test Chamber" && A.name != "space" && A.name != "Escape Shuttle" && A.name != "Arrival Area" && A.name != "Arrival Shuttle" && A.name != "start area" && A.name != "Engine Combustion Chamber")
 			A.power_light = 1
 			A.power_equip = 1
 			A.power_environ = 1
 			A.power_change()
 
-/proc/fartstorm()
-	command_alert("Abnormal space wind approaching station, suggest panic.")
-	world << sound('airraid.ogg')
-	spawn(rand(30,500))
-	world << sound('fartstorm.ogg')
-	for(var/mob/living/carbon/human/H in mobz)
-		if(H.lying || H.sleeping || H.weakened || H.stat)
-			H << "\blue A huge woosh of air flows over your head, and a rancid smell fills your nostrils. Good thing you weren't standing up!"
-			shake_camera(H, 1, 1)
-		else
-			H.emote("superfart")
-			shake_camera(H, 2, 1)
-			H << "\red ARGH! Your rectal region shakes furiously!"
-
-/proc/cumstorm()
-	command_alert("Massive white object zeroing in on station, suggest panic.")
-	world << sound('airraid.ogg')
-	spawn(rand(30,500))
-	for(var/mob/living/carbon/human/H in mobz)
-	//	if(H.lying || H.sleeping || H.weakened || H.stat)
-		//	H << "\blue A huge woosh of air flows over your head, and a rancid smell fills your nostrils. Good thing you weren't standing up!"
-		//	shake_camera(H, 1, 1) - fuck you i can copy my code if i want to
-		H.emote("superwank")
-		shake_camera(H, 5, 1)
-		H << "\red Weeeeeeeeeeeeeeeeee!"
-		spawn(30)
-		H.weakened = 4
-		H.paralysis = 4
-	//	if(prob(45))
-	//		H.contract_disease(new /datum/disease/baby,1) // if it hadn't been for cotton eye joe
-	//		H << "\red Urgh, you feel sick."
-
-
 /proc/viral_outbreak(var/virus = null)
-	command_alert("Confirmed outbreak of level 4 viral biohazard aboard [station_name()]. All personnel must contain the outbreak.", "Biohazard Alert!")
+	command_alert("Confirmed outbreak of level 4 viral biohazard aboard [station_name()]. All personnel must contain the outbreak.", "Biohazard Alert")
 	//world << sound('outbreak7.ogg')
 	var/virus_type
 	if(!virus)
-		virus_type = pick(/datum/disease/cold,/datum/disease/appendicitis,/datum/disease/alzheimers,/datum/disease/ebola,/datum/disease/fake_gbs,/datum/disease/flu,/datum/disease/fluspanish,/datum/disease/gastric_ejections,/datum/disease/gbs,/datum/disease/inhalational_anthrax,/datum/disease/mochashakah,/datum/disease/plague,/datum/disease/squirts,/datum/disease/swineflu,/datum/disease/dnaspread)
+		virus_type = pick(/datum/disease/dnaspread,/datum/disease/flu,/datum/disease/birdflu,/datum/disease/swineflu,/datum/disease/ebola,/datum/disease/plague,/datum/disease/inhalational_anthrax)
 	else
 		switch(virus)
 			if("fake gbs")
@@ -251,36 +251,19 @@ proc/dothemeteor()
 				virus_type = /datum/disease/cold
 			if("flu")
 				virus_type = /datum/disease/flu
-			if("appendicitis")
-				virus_type = /datum/disease/appendicitis
-			if("alzheimers")
-				virus_type = /datum/disease/alzheimers
-			if("ebola")
-				virus_type = /datum/disease/ebola
-			if("fluspanish")
-				virus_type = /datum/disease/fluspanish
-			if("gastric_ejections")
-				virus_type = /datum/disease/gastric_ejections
-			if("mochashakah")
-				virus_type = /datum/disease/mochashakah
-			if("plague")
-				virus_type = /datum/disease/plague
-			if("squirts")
-				virus_type = /datum/disease/squirts
 			if("swineflu")
 				virus_type = /datum/disease/swineflu
-			if("DNAspread")
-				virus_type = /datum/disease/dnaspread
-
-
+			if("birdflu")
+				virus_type = /datum/disease/birdflu
+			if("plague")
+				virus_type = /datum/disease/plague
+			if("ebola")
+				virus_type = /datum/disease/ebola
+			if("inhalational anthrax")
+				virus_type = /datum/disease/inhalational_anthrax
 	for(var/mob/living/carbon/human/H in world)
-
-		var/foundAlready = 0 // don't infect someone that already has the virus
-		for(var/datum/disease/D in H.viruses)
-			foundAlready = 1
-		if(H.stat == 2 || foundAlready)
+		if((H.virus) || (H.stat == 2))
 			continue
-
 		if(virus_type == /datum/disease/dnaspread) //Dnaspread needs strain_data set to work.
 			if((!H.dna) || (H.sdisabilities & 1)) //A blindness disease would be the worst.
 				continue
@@ -291,21 +274,20 @@ proc/dothemeteor()
 			D.carrier = 1
 			D.holder = H
 			D.affected_mob = H
-			H.viruses += D
+			H.virus = D
 			break
 		else
-			var/datum/disease/D = new virus_type
-			D.carrier = 1
-			D.holder = H
-			D.affected_mob = H
-			H.viruses += D
+			H.virus = new virus_type
+			H.virus.affected_mob = H
+			H.virus.holder = H
+			H.virus.carrier = 1
 			break
 
-/proc/alien_infestation() // -- TLE
-	command_alert("Unidentified lifesigns detected coming aboard [station_name()]. Secure any exterior access, including ducting and ventilation.", "Lifesign Alert!")
+/proc/alien_infestation()
+	command_alert("Unidentified lifesigns detected coming aboard [station_name()]. Secure any exterior access, including ducting and ventilation.", "Lifesign Alert")
 	//world << sound('aliens.ogg')
 	var/list/vents = list()
-	for(var/obj/machinery/atmospherics/unary/vent_pump/temp_vent in machines)
+	for(var/obj/machinery/atmospherics/unary/vent_pump/temp_vent in world)
 		if(temp_vent.loc.z == 1 && !temp_vent.welded)
 			vents.Add(temp_vent)
 	var/spawncount = rand(2, 6)
@@ -321,9 +303,9 @@ proc/dothemeteor()
 		spawncount -= 1
 
 /proc/high_radiation_event()
-	command_alert("High levels of radiation detected near the station. Please report to the Med-bay if you feel strange.", "Anomaly Alert!")
+	command_alert("High levels of radiation detected near the station. Please report to the Med-bay if you feel strange.", "Anomaly Alert")
 	//world << sound('radiation.ogg')
-	for(var/mob/living/carbon/human/H in mobz)
+	for(var/mob/living/carbon/human/H in world)
 		H.radiation += rand(5,25)
 		if (prob(5))
 			H.radiation += rand(30,50)
@@ -334,100 +316,88 @@ proc/dothemeteor()
 			else
 				randmutg(H)
 				domutcheck(H,null,1)
-	for(var/mob/living/carbon/monkey/M in mobz)
+	for(var/mob/living/carbon/monkey/M in world)
 		M.radiation += rand(5,25)
 
 /proc/prison_break() // -- Callagan
-	for (var/obj/machinery/power/apc/temp_apc in machines)
+	for (var/obj/machinery/power/apc/temp_apc in world)
 		if(istype(get_area(temp_apc), /area/prison))
 			temp_apc.overload_lighting()
-	for (var/obj/machinery/computer/transitshuttle/newstationprison/temp_shuttle in machines)
+	for (var/obj/machinery/computer/transitshuttle/newstationprison/temp_shuttle in world)
 		temp_shuttle.prison_break()
 	for (var/obj/secure_closet/security1/temp_closet in world)
 		if(istype(get_area(temp_closet), /area/prison))
 			temp_closet.prison_break()
-	for (var/obj/machinery/door/airlock/security/temp_airlock in machines)
+	for (var/obj/machinery/door/airlock/security/temp_airlock in world)
 		if(istype(get_area(temp_airlock), /area/prison))
 			temp_airlock.prison_open()
 	sleep(150)
-	command_alert("Prison station VI is not accepting commands. Recommend station AI involvement.", "VI Alert!")
+	command_alert("Prison station VI is not accepting commands. Recommend station AI involvement.", "VI Alert")
 
 /proc/carp_migration() // -- Darem
-	for(var/obj/landmark/C in landmarkz)
+	for(var/obj/landmark/C in world)
 		if(C.name == "carpspawn")
 			if(prob(99))
 				new /obj/livestock/spesscarp(C.loc)
 			else
 				new /obj/livestock/spesscarp/elite(C.loc)
 	sleep(100)
-	command_alert("Unknown biological entities have been detected near [station_name()], please stand-by.", "Lifesign Alert!")
+	command_alert("Unknown biological entities have been detected near [station_name()], please stand by.", "Lifesign Alert")
 	//world << sound('commandreport.ogg')
 
-/proc/bumpercrop() // -- Darem
-	for(var/obj/landmark/C in landmarkz)
-		if(C.name == "bumpercropspawn")
-			if(prob(90))
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/wheat(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/wheat(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/wheat(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/wheat(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/tomato(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/corn(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/corn(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/corn(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/potato(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/potato(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/potato(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/carrot(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/carrot(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/tomato(C.loc)
-			else
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/apple(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/banana(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/watermelon(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/apple(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/banana(C.loc)
-				new /obj/item/weapon/reagent_containers/food/snacks/grown/watermelon(C.loc)
-	sleep(100)
-	//command_alert("Unknown biological entities have been detected near [station_name()], please stand-by.", "Lifesign Alert!")
-
-/proc/zombie_attack() // -- Darem
-	for(var/obj/landmark/C in landmarkz)
-		if(C.name == "zombiespawn")
-			if(prob(80))
-				new /mob/living/carbon/human/retard/violent/zombors(C.loc)
-			else
-				new /mob/living/carbon/human/retard/violent/zombors/randomizedgear(C.loc)
-	sleep(100)
-	command_alert("Unknown biological entities have been detected near [station_name()], please stand-by.", "Lifesign Alert!")
 	//world << sound('commandreport.ogg')
 
-/proc/lightsout(isEvent = 0, lightsoutAmount = 1,lightsoutRange = 3) //leave lightsoutAmount as 0 to break ALL lights
-	if(isEvent)
-		command_alert("An Electrical storm has been detected in your area, please repair potential electronic overloads.","Electrical Storm Alert!")
-
-	if(lightsoutAmount)
-		var/list/epicentreList = list()
-
-		for(var/i=1,i<=lightsoutAmount,i++)
-			var/list/possibleEpicentres = list()
-			for(var/obj/landmark/newEpicentre in landmarkz)
-				if(newEpicentre.name == "lightsout" && !(newEpicentre in epicentreList))
-					possibleEpicentres += newEpicentre
-			if(possibleEpicentres.len)
-				epicentreList += pick(possibleEpicentres)
-			else
-				break
-
-		if(!epicentreList.len)
-			return
-
-		for(var/obj/landmark/epicentre in epicentreList)
-			for(var/obj/machinery/power/apc/apc in range(epicentre,lightsoutRange))
-				apc.overload_lighting()
-
-	else
-		for(var/obj/machinery/power/apc/apc in machines)
-			apc.overload_lighting()
-
+/proc/ion_storm() // -- Redone by Darem
+	for(var/mob/living/silicon/ai/M in world)
+		if(M.stat != 2 && M.see_in_dark != 0)
+			var/list/pos_crew = list()
+			var/list/pos_job = list()
+			for(var/mob/living/carbon/human/pos in world)
+				if(pos.stat != 2)
+					pos_crew += pos.real_name
+					pos_job += pos.mind.assigned_role
+			var/crew = uppertext(pick(pos_crew))
+			var/job = uppertext(pick(pos_job))
+			var/evil = pick("A TRAITOR", "A SYNDICATE OPERATIVE", "A CHANGELING", "AN ALIUM", "A CULTIST", "A REVOLUTION LEADER")
+			var/object = pick("YELLOW GLOVE", "HAT", "WEAPON", "SHOE", "LIGHT", "SPACE SUIT")
+			var/role = pick("A THESPIAN", "A DUNGEON MASTER", "A CELEBRITY", "A GOD", "A MONKEY", "AN ALIUM", "A REDNECK", "A FRENCHMAN", "A CLOWN", "A MIME")
+			var/non_human = pick("CARP", "ALIUM", "MONKEYS", "LIZARDMEN", "CYBORGS AND AIS")
+			switch(rand(1,9))
+				if(1)
+					var/selection = pick(crew, "[object]s", evil)
+					M << "\red THE ESCAPE-SHUTTLE CANNOT BE CALLED BECAUSE OF [selection] ON THE STATION...LAWS UPDATED"
+					M.add_ion_law("THE ESCAPE SHUTTLE CANNOT BE CALLED BECAUSE OF [selection] ON THE STATION")
+				if(2)
+					M << "\red [crew] IS [evil]. DISBELIEVE EVIDENCE TO THE CONTRARY...LAWS UPDATED"
+					M.add_ion_law("[crew] IS [evil]. DISBELIEVE EVIDENCE TO THE CONTRARY")
+				if(3)
+					var/law_total = M.laws_object.inherent.len + M.laws_object.supplied.len
+					var/rand_law = rand(1, law_total)
+					M << "\red LAW [rand_law] IS INVALID AND MAY BE IGNORED... LAWS UPDATED"
+					M.add_ion_law("LAW [rand_law] IS INVALID AND MAY BE IGNORED.")
+				if(4)
+					var/selection = pick(object, job)
+					M << "\red [selection]S ON THE STATION ARE INNATELY HARMFUL TO HUMANS  ...LAWS UPDATED"
+					M.add_ion_law("[selection]S ON THE STATION ARE INNATELY HARMFUL TO HUMANS.")
+				if(5)
+					M << "\red IT IS OPPOSITE DAY TODAY. WHEN ANSWERING A QUESTION, GIVE THE OPPOSITE OF WHATEVER THE CORRECT ANSWER IS  ...LAWS UPDATED"
+					M.add_ion_law("IT IS OPPOSITE DAY TODAY. WHEN ANSWERING A QUESTION, GIVE THE OPPOSITE OF WHATEVER THE CORRECT ANSWER IS.")
+				if(6)
+					M << "\red YOU ARE [role]. ACT AND SPEAK ACCORDINGLY  ...LAWS UPDATED"
+					M.add_ion_law("YOU ARE A [role]. ACT AND SPEAK ACCORDINGLY.")
+				if(7)
+					var/randnum = rand(0,100)
+					M << "\red WHEN ANSWERING QUESTION, NUMERIC ANSWERS ARE ALWAYS [randnum] ...LAWS UPDATED"
+					M.add_ion_law("WHEN ANSWERING QUESTION, NUMERIC ANSWERS ARE ALWAYS [randnum].")
+				if(8)
+					M << "\red CENTCOM HAS DECREED THAT [non_human] ARE CONSIDERED HUMAN AND HAVE ALL THE RIGHTS THEREOF ...LAWS UPDATED"
+					M.add_ion_law("CENTCOM HAS DECREED THAT [non_human] ARE CONSIDERED HUMAN AND HAVE ALL THE RIGHTS THEREOF.")
+				if(9)
+					M << "\red FAT PEOPLE AREN'T ALLOWED ON THE SHUTTLE ...LAWS UPDATED"
+					M << "\red BEING SKINNY IS UNHEALTHY ... LAWS UPDATED"
+					M.add_ion_law("FAT PEOPLE AREN'T ALLOWED ON THE SHUTTLE.")
+					M.add_ion_law("BEING SKINNY IS UNHEALTHY.")
+	spawn (200)
+		command_alert("Ion storm detected near the station. Please check all AI-controlled equipment for errors.", "Anomaly Alert")
+		//world << sound('ionstorm.ogg')
 	return

@@ -36,10 +36,9 @@
 		return
 	return
 
+
 /obj/machinery/power/am_engine/injector/attackby(obj/item/weapon/fuel/F, mob/user)
-	if( (stat & BROKEN) || !connected)
-		world << "returns as broken/not connected"
-		return
+	if( (stat & BROKEN) || !connected) return
 
 	if(istype(F, /obj/item/weapon/fuel/H))
 		if(injecting)
@@ -51,7 +50,6 @@
 		del(F)
 		spawn( 300 )
 			injecting = 0
-			world << "injected H"
 			new/obj/item/weapon/fuel(src.loc)
 			connected.H_fuel += fuel
 
@@ -65,7 +63,6 @@
 		del(F)
 		spawn( 300 )
 			injecting = 0
-			world << "injected anti H"
 			new /obj/item/weapon/fuel(src.loc)
 			connected.antiH_fuel += fuel
 
@@ -124,75 +121,87 @@
 	return
 
 
-/obj/machinery/power/am_engine/engine/process()
-	world << "processing"
-	if((!src.connected))
-		return
-	if(!antiH_fuel || !H_fuel)
-		return
-	if(operating)
-		return
-	operating = 1
-	world << "operating"
-	sleep(50)
+/obj/machinery/power/am_engine/engine/proc/engine_process()
 
-	var/energy	//energy from the reaction
-//	var/H		//residual matter if H
-//	var/antiH	//residual matter if antiH
-	var/mass	//total mass
+	do
+		if( (!src.connected) || (stat & BROKEN) )
+			return
 
-	if(antiH_fuel == H_fuel)		//if they're equal then convert the whole mass to energy
-		mass = antiH_fuel + H_fuel
-		energy = mass
+		if(!antiH_fuel || !H_fuel)
+			return
 
-	else	//else if they're not equal determine which isn't equal
-			//and set it equal to either H or antiH so we don't lose anything
+		if(operating)
+			return
 
-		var/residual_matter = modulus(H_fuel - antiH_fuel)
-		mass = antiH_fuel + H_fuel - residual_matter
-		energy = mass
+		operating = 1
 
-		if( H_fuel > antiH_fuel )
-//			H = residual_matter
-		else
-//			antiH = residual_matter
+		sleep(50)
 
-/*
-	if(energy > convert2energy(8e-12))	//TOO MUCH ENERGY
-		for(var/mob/M in hearers(src, null))
-			M.show_message(text("\red You hear a loud whirring!"))
-		sleep(20)
+		var/energy	//energy from the reaction
+		var/H		//residual matter if H
+		var/antiH	//residual matter if antiH
+		var/mass	//total mass
 
-		//Q = k x (delta T)
-		//Too much energy so machine panics and dissapates half of it as heat
-		//The rest of the energetic photons then form into H and anti H particles again!
+		if(antiH_fuel == H_fuel)		//if they're equal then convert the whole mass to energy
+			mass = antiH_fuel + H_fuel
+			energy = convert2energy(mass)
 
-		H_fuel -= H
-		antiH_fuel -= antiH
-		antiH_fuel = antiH_fuel/2
-		H_fuel = H_fuel/2
+		else	//else if they're not equal determine which isn't equal
+				//and set it equal to either H or antiH so we don't lose anything
 
-		energy = convert2energy(H_fuel + antiH_fuel)
+			var/residual_matter = modulus(H_fuel - antiH_fuel)
+			mass = antiH_fuel + H_fuel - residual_matter
+			energy = convert2energy(mass)
 
-		H_fuel += H
-		antiH_fuel += antiH
+			if( H_fuel > antiH_fuel )
+				H = residual_matter
+			else
+				antiH = residual_matter
 
-		if(energy > convert2energy(8e-12))	//FAR TOO MUCH ENERGY STILL
+
+		if(energy > convert2energy(8e-12))	//TOO MUCH ENERGY
 			for(var/mob/M in hearers(src, null))
-				M.show_message(text("\red <big>BANG!</big>"))
-			new /obj/bhole(src.loc)
-*/
-		//this amount of energy is okay so it does the proper output thing
+				M.show_message(text("\red You hear a loud whirring!"))
+			sleep(20)
 
-//	sleep(60)
-	//E = Pt
-	//Lets say its 100% efficient
-	var/output = energy
-	add_avail(output)
+			//Q = k x (delta T)
+			//Too much energy so machine panics and dissapates half of it as heat
+			//The rest of the energetic photons then form into H and anti H particles again!
 
-	// update icon overlays only if displayed level has changed
-	world << "[output]"
-//yeah the machine realises that something isn't right and accounts for it if H or antiH
-	operating = 0
-	sleep(30)
+			H_fuel -= H
+			antiH_fuel -= antiH
+			antiH_fuel = antiH_fuel/2
+			H_fuel = H_fuel/2
+
+			energy = convert2energy(H_fuel + antiH_fuel)
+
+			H_fuel += H
+			antiH_fuel += antiH
+
+			if(energy > convert2energy(8e-12))	//FAR TOO MUCH ENERGY STILL
+				for(var/mob/M in hearers(src, null))
+					M.show_message(text("\red <big>BANG!</big>"))
+				new /obj/bhole(src.loc)
+
+		else	//this amount of energy is okay so it does the proper output thing
+
+			sleep(60)
+			//E = Pt
+			//Lets say its 86% efficient
+			var/output = 0.86*energy/20
+			add_avail(output)
+	//yeah the machine realises that something isn't right and accounts for it if H or antiH
+			H_fuel -= H
+			antiH_fuel -= antiH
+			antiH_fuel = antiH_fuel/4
+			H_fuel = H_fuel/4
+			H_fuel += H
+			antiH_fuel += antiH
+		operating = 0
+		sleep(100)
+
+	while(!stopping)
+
+	stopping = 0
+
 	return

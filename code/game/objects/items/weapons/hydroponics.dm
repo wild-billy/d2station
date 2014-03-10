@@ -66,22 +66,13 @@ Deathnettle
 	..()
 	return
 
-// Sunflower
-/obj/item/weapon/grown/sunflower/attack(mob/M as mob, mob/user as mob)
-	M << "<font color='green'><b> [user] smacks you with a sunflower!</font><font color='yellow'><b>FLOWER POWER<b></font>"
-	user << "<font color='green'> Your sunflower's </font><font color='yellow'><b>FLOWER POWER</b></font><font color='green'> strikes [M]</font>"
 
 // Nettle
 
 /obj/item/weapon/grown/nettle/pickup(mob/living/carbon/human/user as mob)
 	if(!user.gloves)
 		user << "\red The nettle burns your bare hand!"
-		if(istype(user, /mob/living/carbon/human))
-			var/organ = (user.hand ? "l_":"r_") + pick("hand","hand","arm")
-			var/datum/organ/external/affecting = user.organs[organ]
-			affecting.take_damage(0,force)
-		else
-			user.take_organ_damage(0,force)
+		user.fireloss += force
 
 /obj/item/weapon/grown/nettle/afterattack(atom/A as mob|obj, mob/user as mob)
 	if (force > 0)
@@ -90,33 +81,53 @@ Deathnettle
 		usr << "All the leaves have fallen off the nettle from violent whacking."
 		del(src)
 
+/obj/item/weapon/grown/nettle/HasEntered(user as mob|obj)
+	if(ismob(user))
+		var/mob/M = user
+		M << "\red <B>You step on the nettle!</B>"
+		if(ishuman(M))
+			var/mob/living/carbon/human/H = M
+			if(!H.shoes || (!H.wear_suit && (H.wear_suit.flags & SUITSPACE)) || (!H.w_uniform && (H.w_uniform.flags & SUITSPACE)))
+				var/datum/organ/external/affecting = H.organs[pick("l_foot", "r_foot")]
+				H.weakened = max(3, H.weakened)
+				affecting.take_damage(5, 0)
+				H.UpdateDamageIcon()
+				H.updatehealth()
+	..()
+
 
 // Deathnettle
 
 /obj/item/weapon/grown/deathnettle/pickup(mob/living/carbon/human/user as mob)
 	if(!user.gloves)
-		if(istype(user, /mob/living/carbon/human))
-			var/organ = (user.hand ? "l_":"r_") + pick("hand","hand","arm")
-			var/datum/organ/external/affecting = user.organs[organ]
-			affecting.take_damage(0,force)
-		else
-			user.take_organ_damage(0,force)
+		user.fireloss += force
 		if(prob(50))
 			user.paralysis += 5
 			user << "\red You are stunned by the Deathnettle when you try picking it up!"
 
-/obj/item/weapon/grown/deathnettle/attack(mob/living/carbon/M as mob, mob/user as mob)
-	if(!..()) return
-	if(istype(M, /mob/living))
-		M << "\red You are stunned by the powerful acid of the Deathnettle!"
-		M.attack_log += text("<font color='orange'>[world.time] - has had the [src.name] used on them by [user.name] ([user.ckey])</font>")
-		user.attack_log += text("<font color='red'>[world.time] - has used the [src.name] on [M.name] ([M.ckey])</font>")
+/obj/item/weapon/grown/deathnettle/HasEntered(user as mob|obj)
+	if(ismob(user))
+		var/mob/M = user
+		M << "\red <B>You step on the deathnettle!</B>"
+		if(ishuman(M))
+			var/mob/living/carbon/human/H = M
+			if(!H.shoes || (!H.wear_suit && (H.wear_suit.flags & SUITSPACE)) || (!H.w_uniform && (H.w_uniform.flags & SUITSPACE)))
+				var/datum/organ/external/affecting = H.organs[pick("l_foot", "r_foot")]
+				H.weakened = max(4, H.weakened)
+				affecting.take_damage(10, 0)
+				H.UpdateDamageIcon()
+				H.updatehealth()
+	..()
 
-		M.eye_blurry += force/7
+/obj/item/weapon/grown/deathnettle/attack(mob/living/carbon/M as mob, mob/user as mob)
+	if(istype(M, /mob/living/carbon/human))
+		M << "\red You are stunned by the powerful acid of the Deathnettle!"
+		M.eye_blurry += 4
 		if(prob(20))
-			M.paralysis += force/6
-			M.weakened += force/15
+			M.paralysis += 5
+			M.weakened += 2
 		M.drop_item()
+	..()
 
 /obj/item/weapon/grown/deathnettle/afterattack(atom/A as mob|obj, mob/user as mob)
 	if (force > 0)

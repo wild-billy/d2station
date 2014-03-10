@@ -37,6 +37,21 @@
 		for (var/mob/target in motionTargets)
 			if (target.stat == 2) lostTarget(target)
 
+	if (stat & (NOPOWER|BROKEN))
+		src.state = "off"
+		if(src.slave_holo)
+			del(src.slave_holo)
+	if(src.state == "on")
+		if(!(src.slave_holo in view(src,5))) //if the hologram strayed too far, destroy it
+			if(src.slave_holo)
+				del(src.slave_holo) //code for returning the control back to the AI is in the mob's del() code
+			src.state = "off"
+			src.slave_holo = null
+	if(src.state == "off" && src.slave_holo) //usually happens if the power ran out
+		del(src.slave_holo) //code for returning the control back to the AI is in the mob's del() code
+		src.slave_holo = null
+	return 1
+
 /obj/machinery/camera/motion/proc/newTarget(var/mob/target)
 	if (istype(target, /mob/living/silicon/ai)) return 0
 	if (detectTime == 0)
@@ -53,14 +68,14 @@
 
 /obj/machinery/camera/motion/proc/cancelAlarm()
 	if (detectTime == -1)
-		for (var/mob/living/silicon/aiPlayer in mobz)
+		for (var/mob/living/silicon/aiPlayer in world)
 			if (status) aiPlayer.cancelAlarm("Motion", src.loc.loc)
 	detectTime = 0
 	return 1
 
 /obj/machinery/camera/motion/proc/triggerAlarm()
 	if (!detectTime) return 0
-	for (var/mob/living/silicon/aiPlayer in mobz)
+	for (var/mob/living/silicon/aiPlayer in world)
 		if (status) aiPlayer.triggerAlarm("Motion", src.loc.loc, src)
 	detectTime = -1
 	return 1
@@ -82,5 +97,5 @@
 			detectTime = world.time - 301
 			triggerAlarm()
 		else
-			for (var/mob/living/silicon/aiPlayer in mobz) // manually cancel, to not disturb internal state
+			for (var/mob/living/silicon/aiPlayer in world) // manually cancel, to not disturb internal state
 				aiPlayer.cancelAlarm("Motion", src.loc.loc)

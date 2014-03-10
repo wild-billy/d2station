@@ -1,4 +1,3 @@
-
 // Double clicking turfs to move to nearest camera
 
 /turf/proc/move_camera_by_click()
@@ -48,21 +47,14 @@
 	var/list/names = list()
 	var/list/namecounts = list()
 	var/list/creatures = list()
-	for (var/mob/M in mobz)
+	for (var/mob/M in world)
 		if (istype(M, /mob/new_player))
 			continue //cameras can't follow people who haven't started yet DUH OR DIDN'T YOU KNOW THAT
-		//Cameras can't track people wearing an agent card or a ninja hood.
-		if (istype(M, /mob/living/carbon/human))
-			if(istype(M:wear_id, /obj/item/weapon/card/id/syndicate))
-				continue
-		 	if(istype(M:head, /obj/item/clothing/head/helmet/space/space_ninja)&&!M:head:canremove)
-		 		continue
+		if (istype(M, /mob/living/carbon/human) && istype(M:wear_id, /obj/item/weapon/card/id/syndicate))
+			continue
 		if(!istype(M.loc, /turf)) //in a closet or something, AI can't see him anyways
 			continue
-		var/area/wizard_station/A = locate()//So that wizards are not tracked by the AI until they leave their sanctuary. Unless they talk on radio/N
-		if(M in A.contents)
-			continue
-		if(M.invisibility)//cloaked
+		if(M.invisibility) //cloaked
 			continue
 		if(istype(M.loc,/obj/dummy))
 			continue
@@ -100,15 +92,10 @@
 		while (usr:cameraFollow == target)
 			if (usr:cameraFollow == null)
 				return
-			else if (istype(target, /mob/living/carbon/human))
-				if(istype(target:wear_id, /obj/item/weapon/card/id/syndicate))
-					usr << "Follow camera mode terminated."
-					usr:cameraFollow = null
-					return
-		 		if(istype(target:head, /obj/item/clothing/head/helmet/space/space_ninja)&&!target:head:canremove)
-		 			usr << "Follow camera mode terminated."
-					usr:cameraFollow = null
-					return
+			else if (istype(target, /mob/living/carbon/human) && istype(target:wear_id, /obj/item/weapon/card/id/syndicate))
+				usr << "Follow camera mode ended."
+				usr:cameraFollow = null
+				return
 			else if(istype(target.loc,/obj/dummy))
 				usr << "Follow camera mode ended."
 				usr:cameraFollow = null
@@ -130,7 +117,7 @@
 				if (closestDist > 7 || closestDist == -1)
 					//check other cameras
 					var/obj/machinery/camera/closest = C
-					for(var/obj/machinery/camera/C2 in machines)
+					for(var/obj/machinery/camera/C2 in world)
 						if (C2.network == src.network)
 							if (C2.z == target.z)
 								zmatched = 1
@@ -177,7 +164,7 @@
 	user.machine = src
 
 	var/list/L = list()
-	for (var/obj/machinery/camera/C in machines)
+	for (var/obj/machinery/camera/C in world)
 		L.Add(C)
 
 	camera_sort(L)
@@ -185,7 +172,7 @@
 	var/list/D = list()
 	D["Cancel"] = "Cancel"
 	for (var/obj/machinery/camera/C in L)
-		if (C.network == network)
+		if (C.network == src.network)
 			D[text("[][]", C.c_tag, (C.status ? null : " (Deactivated)"))] = C
 
 	var/t = input(user, "Which camera should you change to?") as null|anything in D
@@ -220,7 +207,7 @@
 	user.machine = src
 
 	var/list/L = list()
-	for (var/obj/machinery/camera/C in machines)
+	for (var/obj/machinery/camera/C in world)
 		L.Add(C)
 
 	camera_sort(L)
@@ -244,25 +231,24 @@
 	return
 
 /obj/machinery/camera/emp_act(severity)
-	if(prob(100/(hardened + severity)))
-		icon_state = "cameraemp"
-		network = null                   //Not the best way but it will do. I think.
-		spawn(900)
-			network = initial(network)
-			icon_state = initial(icon_state)
-		for(var/mob/living/silicon/ai/O in mobz)
-			if (O.current == src)
-				O.cancel_camera()
-				O << "Your connection to the camera has been lost."
-		for(var/mob/O in mobz)
-			if (istype(O.machine, /obj/machinery/computer/security))
-				var/obj/machinery/computer/security/S = O.machine
-				if (S.current == src)
-					O.machine = null
-					S.current = null
-					O.reset_view(null)
-					O << "The screen bursts into static."
-		..()
+	icon_state = "cameraemp"
+	network = null                   //Not the best way but it will do. I think.
+	spawn(900)
+		network = initial(network)
+		icon_state = initial(icon_state)
+	for(var/mob/living/silicon/ai/O in world)
+		if (O.current == src)
+			O.cancel_camera()
+			O << "Your connection to the camera has been lost."
+	for(var/mob/O in world)
+		if (istype(O.machine, /obj/machinery/computer/security))
+			var/obj/machinery/computer/security/S = O.machine
+			if (S.current == src)
+				O.machine = null
+				S.current = null
+				O.reset_view(null)
+				O << "The screen bursts into static."
+	..()
 
 /obj/machinery/camera/ex_act(severity)
 	if(src.invuln)
@@ -274,46 +260,116 @@
 /obj/machinery/camera/blob_act()
 	return
 
-/obj/machinery/camera/attack_ai(var/mob/living/silicon/ai/user as mob)
-	if (!istype(user))
+/obj/machinery/camera/attack_ai(user as mob)
+	if (stat & (NOPOWER|BROKEN))
 		return
-	if (src.network != user.network || !(src.status))
+	//branches depending on four things - is the user currently a hologram? does it have power?
+	//is the holopad on? (moot if q2 = 0) is the user the one who is using this holopad? (moot if q3 = 0)
+	if(!istype(user,/mob/living/silicon/aihologram/)) //question number one
+		if(!(stat & NOPOWER)) //question number two
+			if(src.state == "off") //question number three
+				var/mob/living/silicon/aihologram/holo = new /mob/living/silicon/aihologram(src.loc)
+				holo.parent_ai = user
+				holo.ailaws = holo.parent_ai.laws_object
+				holo.client = usr.client //should move the client there
+				holo.name = holo.parent_ai.name
+				holo.real_name = holo.parent_ai.real_name
+				src.state = "on"
+				src.slave_holo = holo
+				holo:cancel_camera()
+				return
+			else
+				if(user != src.slave_holo:parent_ai) //question number four //there is always a slave_holo if it's on
+					user << "\red You're not the one AI who is currently using this holopad!"
+					return
+				else
+					user << "\red \b Something is very wrong, you should be in a hologram by now"
+					return
+		else
+			user << "\red This holopad has no power."
+			return
+
+	else if(!(stat & NOPOWER)) //question number two
+		if(src.state == "off") //question number three
+			user << "\red This holopad is off, you should find your original holopad."
+			return
+		else
+			if(user == src.slave_holo) //question number four
+				del(user) //code for returning the control back to the AI is in the mob's del() code
+				src.state = "off"
+				src.slave_holo = null
+				return
+			else
+				user << "\red You're not the one AI who is currently using this holopad!"
+				return
+	else if(src.state == "on")
+		if(src.slave_holo)
+			del(src.slave_holo)
+		user << "\red Error, Power failure."
+		src.state = "off"
 		return
-	user.current = src
-	user.reset_view(src)
+
+
+/obj/machinery/camera/process()
+	if (stat & (NOPOWER|BROKEN))
+		src.state = "off"
+		if(src.slave_holo)
+			del(src.slave_holo)
+	if(src.state == "on")
+		if(!(src.slave_holo in view(src,5))) //if the hologram strayed too far, destroy it
+			if(src.slave_holo)
+				del(src.slave_holo) //code for returning the control back to the AI is in the mob's del() code
+			src.state = "off"
+			src.slave_holo = null
+	if(src.state == "off" && src.slave_holo) //usually happens if the power ran out
+		del(src.slave_holo) //code for returning the control back to the AI is in the mob's del() code
+		src.slave_holo = null
+	return 1
+/obj/machinery/camera/Del()
+	if(src.slave_holo)
+		del(src.slave_holo) //code for returning the control back to the AI is in the mob's del() code
+	..()
 
 /obj/machinery/camera/attackby(W as obj, user as mob)
 	..()
 	if (istype(W, /obj/item/weapon/wirecutters))
-		deactivate(user)
+		src.status = !( src.status )
+		if (!( src.status ))
+			for(var/mob/O in viewers(user, null))
+				O.show_message(text("\red [] has deactivated []!", user, src), 1)
+				playsound(src.loc, 'Wirecutter.ogg', 100, 1)
+			src.icon_state = "camera1"
+		else
+			for(var/mob/O in viewers(user, null))
+				O.show_message(text("\red [] has reactivated []!", user, src), 1)
+				playsound(src.loc, 'Wirecutter.ogg', 100, 1)
+			src.icon_state = "camera"
+		// now disconnect anyone using the camera
+		for(var/mob/living/silicon/ai/O in world)
+			if (O.current == src)
+				O.cancel_camera()
+				O << "Your connection to the camera has been lost."
+		for(var/mob/O in world)
+			if (istype(O.machine, /obj/machinery/computer/security))
+				var/obj/machinery/computer/security/S = O.machine
+				if (S.current == src)
+					O.machine = null
+					S.current = null
+					O.reset_view(null)
+					O << "The screen bursts into static."
 	else if (istype(W, /obj/item/weapon/paper))
 		var/obj/item/weapon/paper/X = W
 		user << "You hold a paper up to the camera ..."
-		for(var/mob/living/silicon/ai/O in mobz)
+		for(var/mob/living/silicon/ai/O in world)
 			//if (O.current == src)
 			O << "[user] holds a paper up to one of your cameras ..."
-			O << browse(text("<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
-		for(var/mob/O in mobz)
+			O << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
+		for(var/mob/O in world)
 			if (istype(O.machine, /obj/machinery/computer/security))
 				var/obj/machinery/computer/security/S = O.machine
 				if (S.current == src)
 					O << "[user] holds a paper up to one of the cameras ..."
-					O << browse(text("<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
-	else if (istype(W, /obj/item/weapon/wrench)) //Adding dismantlable cameras to go with the constructable ones. --NEO
-		if(src.status)
-			user << "\red You can't dismantle a camera while it is active."
-		else
-			user << "\blue Dismantling camera..."
-			if(do_after(user, 20))
-				var/obj/item/weapon/chem_grenade/case = new /obj/item/weapon/chem_grenade(src.loc)
-				case.name = "Camera Assembly"
-				case.path = 2
-				case.state = 5
-				case.anchored = 1
-				case.circuit = new /obj/item/device/multitool
-				if (istype(src, /obj/machinery/camera/motion))
-					case.motion = 1
-			del(src)
+					O << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
 	else if (istype(W, /obj/item/weapon/camera_bug))
 		if (!src.status)
 			user << "\blue Camera non-functional"
@@ -324,56 +380,8 @@
 		else
 			user << "\blue Camera bugged."
 			src.bugged = 1
-	else if(istype(W, /obj/item/weapon/melee/energy/blade))//Putting it here last since it's a special case. I wonder if there is a better way to do these than type casting.
-		deactivate(user,2)//Here so that you can disconnect anyone viewing the camera, regardless if it's on or off.
-		var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-		spark_system.set_up(5, 0, loc)
-		spark_system.start()
-		playsound(loc, 'blade1.ogg', 50, 1)
-		playsound(loc, "sparks", 50, 1)
-
-		var/obj/item/weapon/chem_grenade/case = new /obj/item/weapon/chem_grenade(loc)
-		case.name = "Camera Assembly"
-		case.path = 2
-		case.state = 5
-		case.anchored = 1
-		case.circuit = new /obj/item/device/multitool
-		if (istype(src, /obj/machinery/camera/motion))
-			case.motion = 1
-
-		for(var/mob/O in viewers(user, 3))
-			O.show_message(text("\blue The camera has been sliced apart by [] with an energy blade!", user), 1, text("\red You hear metal being sliced and sparks flying."), 2)
-		del(src)
 	return
 
-/obj/machinery/camera/proc/deactivate(user as mob, var/choice = 1)
-	if(choice==1)
-		status = !( src.status )
-		if (!(src.status))
-			for(var/mob/O in viewers(user, null))
-				O.show_message(text("\red [] has deactivated []!", user, src), 1)
-				playsound(src.loc, 'Wirecutter.ogg', 100, 1)
-			icon_state = "camera1"
-		else
-			for(var/mob/O in viewers(user, null))
-				O.show_message(text("\red [] has reactivated []!", user, src), 1)
-				playsound(src.loc, 'Wirecutter.ogg', 100, 1)
-			icon_state = "camera"
-	// now disconnect anyone using the camera
-	//Apparently, this will disconnect anyone even if the camera was re-activated.
-	//I guess that doesn't matter since they can't use it anyway?
-	for(var/mob/living/silicon/ai/O in mobz)
-		if (O.current == src)
-			O.cancel_camera()
-			O << "Your connection to the camera has been lost."
-	for(var/mob/O in mobz)
-		if (istype(O.machine, /obj/machinery/computer/security))
-			var/obj/machinery/computer/security/S = O.machine
-			if (S.current == src)
-				O.machine = null
-				S.current = null
-				O.reset_view(null)
-				O << "The screen bursts into static."
 
 //Return a working camera that can see a given mob
 //or null if none

@@ -45,20 +45,6 @@
 	skin = "bezerk"
 	treatment_oxy = "dexalinp"
 
-/obj/machinery/bot/medbot/robust
-	name = "RobustBot"
-	desc = "A Medibot handassembled by Robust Corp. in Space Vietnam. Guaranteed to be at least 125% more robust than the original version."
-	health = 130
-	maxhealth = 150
-	skin = "ointment"
-	botcard_access = list(access_cent_captain) //i believe this will give our proud bot access to everything
-	injection_amount = 30
-	treatment_brute = "cytoglobin" //CYTOGLOBIN GOES WITH EVERYTHING
-	treatment_oxy = "dexalinp" //IDISAGREE-Nernums
-	treatment_fire = "cytoglobin"
-	treatment_tox = "cytoglobin"
-	treatment_virus = "cytoglobin"
-
 /obj/item/weapon/firstaid_arm_assembly
 	name = "first aid/robot arm assembly"
 	desc = "A first aid kit with a robot arm permanently grafted to it."
@@ -143,7 +129,7 @@
 		dat += "Reagent Source: "
 		dat += "<a href='?src=\ref[src];use_beaker=1'>[src.use_beaker ? "Loaded Beaker (When available)" : "Internal Synthesizer"]</a><br>"
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Medibot v1.0 controls</TITLE></HEAD>[dat]", "window=automed")
+	user << browse("<HEAD><TITLE>Medibot v1.0 controls</TITLE></HEAD>[dat]", "window=automed")
 	onclose(user, "automed")
 	return
 
@@ -354,12 +340,9 @@
 	if((C.toxloss >= heal_threshold) && (!C.reagents.has_reagent(src.treatment_tox)))
 		return 1
 
-
-	for(var/datum/disease/D in C.viruses)
-		if((D.stage > 1) || (D.spread_type == AIRBORNE))
-
-			if (!C.reagents.has_reagent(src.treatment_virus))
-				return 1 //STOP DISEASE FOREVER
+//	if(C.virus && ((C.virus.stage > 1) || (C.virus.spread_type == AIRBORNE)))
+//		if (!C.reagents.has_reagent(src.treatment_virus))
+//			return 1 //STOP DISEASE FOREVER
 
 	return 0
 
@@ -392,13 +375,9 @@
 	if(src.emagged) //Emagged! Time to poison everybody.
 		reagent_id = "toxin"
 
-	var/virus = 0
-	for(var/datum/disease/D in C.viruses)
-		virus = 1
-
-	if (!reagent_id && (virus))
-		if(!C.reagents.has_reagent(src.treatment_virus))
-			reagent_id = src.treatment_virus
+//	if (!reagent_id && (C.virus))
+//		if(!C.reagents.has_reagent(src.treatment_virus))
+//			reagent_id = src.treatment_virus
 
 	if (!reagent_id && (C.bruteloss >= heal_threshold))
 		if(!C.reagents.has_reagent(src.treatment_brute))
@@ -454,8 +433,8 @@
 		O.show_message("<span class='game say'><span class='name'>[src]</span> beeps, \"[message]\"",2)
 	return
 
-/obj/machinery/bot/medbot/bullet_act(var/obj/item/projectile/Proj)
-	if (Proj.flag == "taser")
+/obj/machinery/bot/medbot/bullet_act(flag, A as obj)
+	if (flag == PROJECTILE_TASER)
 		src.stunned = min(stunned+10,20)
 	..()
 
@@ -503,11 +482,11 @@
 		return
 	return
 
-/obj/machinery/bot/medbot/Bumped(atom/movable/M as mob|obj)
+/obj/machinery/bot/medbot/Bumped(M as mob|obj)
 	spawn(0)
-		if (M)
-			var/turf/T = get_turf(src)
-			M:loc = T
+		var/turf/T = get_turf(src)
+		M:loc = T
+
 
 /*
  *	Pathfinding procs, allow the medibot to path through doors it has access to.
@@ -544,38 +523,42 @@
  */
 
 /obj/item/weapon/storage/firstaid/attackby(var/obj/item/robot_parts/S, mob/user as mob)
-
+	//..()
 	if ((!istype(S, /obj/item/robot_parts/l_arm)) && (!istype(S, /obj/item/robot_parts/r_arm)))
+		if (src.contents.len >= 7)
+			return
+		if ((S.w_class >= 2 || istype(S, /obj/item/weapon/storage)))
+			return
 		..()
 		return
 
-	//Making a medibot!
+	//Syringekit doesn't count EVER.
+	if(src.type == /obj/item/weapon/storage/firstaid/syringes)
+		return
+
 	if(src.contents.len >= 1)
 		user << "\red You need to empty [src] out first!"
 		return
-
-	var/obj/item/weapon/firstaid_arm_assembly/A = new /obj/item/weapon/firstaid_arm_assembly
-	if(istype(src,/obj/item/weapon/storage/firstaid/fire))
-		A.skin = "ointment"
-	else if(istype(src,/obj/item/weapon/storage/firstaid/toxin))
-		A.skin = "tox"
-	else if(istype(src,/obj/item/weapon/storage/firstaid/o2))
-		A.skin = "o2"
-	else if(istype(src,/obj/item/weapon/storage/firstaid/addiction))
-		A.skin = "addiction"
-
-	A.loc = user
-	if (user.r_hand == S)
-		user.u_equip(S)
-		user.r_hand = A
 	else
-		user.u_equip(S)
-		user.l_hand = A
-	A.layer = 20
-	user << "You add the robot arm to the first aid kit"
-	del(S)
-	del(src)
+		var/obj/item/weapon/firstaid_arm_assembly/A = new /obj/item/weapon/firstaid_arm_assembly
+		if(istype(src,/obj/item/weapon/storage/firstaid/fire))
+			A.skin = "ointment"
+		else if(istype(src,/obj/item/weapon/storage/firstaid/toxin))
+			A.skin = "tox"
+		else if(istype(src,/obj/item/weapon/storage/firstaid/oxydep))
+			A.skin = "o2"
 
+		A.loc = user
+		if (user.r_hand == S)
+			user.u_equip(S)
+			user.r_hand = A
+		else
+			user.u_equip(S)
+			user.l_hand = A
+		A.layer = 20
+		user << "You add the robot arm to the first aid kit"
+		del(S)
+		del(src)
 
 /obj/item/weapon/firstaid_arm_assembly/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	..()
@@ -597,7 +580,7 @@
 		del(src)
 
 	else if (istype(W, /obj/item/weapon/pen))
-		var/t = strip_html(input(user, "Enter new robot name", src.name, src.created_name)) as text
+		var/t = input(user, "Enter new robot name", src.name, src.created_name) as text
 		t = copytext(sanitize(t), 1, MAX_MESSAGE_LEN)
 		if (!t)
 			return

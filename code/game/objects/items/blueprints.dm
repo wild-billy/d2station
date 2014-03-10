@@ -3,13 +3,13 @@
 	var/const/AREA_STATION = 1
 	var/const/AREA_SPACE =   2
 	var/const/AREA_SPECIAL = 3
-
+	
 	var/const/BORDER_ERROR = 0
 	var/const/BORDER_NONE = 1
 	var/const/BORDER_BETWEEN =   2
 	var/const/BORDER_2NDTILE = 3
 	var/const/BORDER_SPACE = 4
-
+	
 	var/const/ROOM_ERR_LOLWAT = 0
 	var/const/ROOM_ERR_SPACE = -1
 	var/const/ROOM_ERR_TOOLARGE = -2
@@ -20,7 +20,7 @@
 		return
 	interact()
 	return
-
+	
 /obj/item/blueprints/Topic(href, href_list)
 	..()
 	if ((usr.restrained() || usr.stat || usr.equipped() != src))
@@ -41,7 +41,7 @@
 
 /obj/item/blueprints/proc/interact()
 	var/area/A = get_area()
-	var/text = {"<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><head><title>[src]</title></head><BODY>
+	var/text = {"<HTML><head><title>[src]</title></head><BODY>
 <h2>[station_name()] blueprints</h2>
 <small>Property of Nanotrasen. For heads of staff only. Store in high-secure storage.</small><hr>
 "}
@@ -93,7 +93,7 @@ move an amendment</a> to the drawing.</p>
 		if ( istype(A,type) )
 			return AREA_SPECIAL
 	return AREA_STATION
-
+	
 /obj/item/blueprints/proc/create_area()
 	//world << "DEBUG: create_area"
 	var/res = detect_room(get_turf_loc(usr))
@@ -109,7 +109,7 @@ move an amendment</a> to the drawing.</p>
 				usr << "\red Error! Please notify administration!"
 				return
 	var/list/turf/turfs = res
-	var/str = strip_html(sanitize(trim(input(usr,"New area title","Blueprints editing"))))
+	var/str = sanitize(trim(input(usr,"New area title","Blueprints editing")))
 	if(!str || !length(str)) //cancel
 		return
 	if(length(str) > 50)
@@ -142,7 +142,7 @@ move an amendment</a> to the drawing.</p>
 	var/area/A = get_area()
 	//world << "DEBUG: edit_area"
 	var/prevname = A.name
-	var/str = strip_html(sanitize(trim(input(usr,"New area title","Blueprints editing",prevname))))
+	var/str = sanitize(trim(input(usr,"New area title","Blueprints editing",prevname)))
 	if(!str || !length(str) || str==prevname) //cancel
 		return
 	if(length(str) > 50)
@@ -184,7 +184,7 @@ move an amendment</a> to the drawing.</p>
 		return BORDER_2NDTILE
 	if (!istype(T2, /turf/simulated))
 		return BORDER_BETWEEN
-
+		
 	for (var/obj/window/W in T2)
 		if(turn(dir,180) == W.dir)
 			return BORDER_BETWEEN
@@ -199,14 +199,14 @@ move an amendment</a> to the drawing.</p>
 		return BORDER_2NDTILE
 	if (locate(/obj/falserwall) in T2)
 		return BORDER_2NDTILE
-
+	
 	return BORDER_NONE
 
 /obj/item/blueprints/proc/detect_room(var/turf/first)
 	var/list/turf/found = new
 	var/list/turf/pending = list(first)
 	while(pending.len)
-		if (found.len+pending.len > 300)
+		if (found.len+pending.len > 100)
 			return ROOM_ERR_TOOLARGE
 		var/turf/T = pending[1] //why byond havent list::pop()?
 		pending -= T
@@ -263,5 +263,5 @@ move an amendment</a> to the drawing.</p>
 		if (!check_apc(A))
 			world << "DEBUG: @[machine.x],[machine.y],[machine.z] ([A.name]) machine \"[machine.name]\" ([machine.type]) work without APC!"
 	world << "\red END ====="
-
+ 
 */

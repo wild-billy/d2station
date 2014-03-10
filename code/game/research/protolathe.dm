@@ -21,7 +21,6 @@ Note: Must be placed west/left of and R&D console to function.
 		uranium_amount = 0.0
 		diamond_amount = 0.0
 		clown_amount = 0.0
-		adamantine_amount = 0.0
 
 
 	New()
@@ -35,6 +34,12 @@ Note: Must be placed west/left of and R&D console to function.
 		component_parts += new /obj/item/weapon/reagent_containers/glass/beaker(src)
 		component_parts += new /obj/item/weapon/reagent_containers/glass/beaker(src)
 		RefreshParts()
+	/*	SoundLoop()
+
+	proc/SoundLoop()
+		playsound(src.loc, 'research_loop.ogg', 15, 0)
+		spawn(18)
+			SoundLoop()*/
 
 	proc/TotalMaterials() //returns the total of all the stored materials. Makes code neater.
 		return m_amount + g_amount + gold_amount + silver_amount + plasma_amount + uranium_amount + diamond_amount + clown_amount
@@ -105,9 +110,6 @@ Note: Must be placed west/left of and R&D console to function.
 				if(clown_amount >= 3750)
 					var/obj/item/stack/sheet/clown/G = new /obj/item/stack/sheet/clown(src.loc)
 					G.amount = round(clown_amount / 3750)
-				if(adamantine_amount >= 3750)
-					var/obj/item/stack/sheet/adamantine/G = new /obj/item/stack/sheet/adamantine(src.loc)
-					G.amount = round(adamantine_amount / 3750)
 				del(src)
 				return 1
 			else
@@ -155,8 +157,6 @@ Note: Must be placed west/left of and R&D console to function.
 			flick("protolathe_o",src)
 			if(istype(stack, /obj/item/stack/sheet/metal))
 				m_amount += amount * 3750
-			else if(istype(stack, /obj/item/stack/sheet/r_metal))
-				m_amount += amount * 7500
 			else if(istype(stack, /obj/item/stack/sheet/glass))
 				g_amount += amount * 3750
 			else if(istype(stack, /obj/item/stack/sheet/gold))
@@ -171,8 +171,6 @@ Note: Must be placed west/left of and R&D console to function.
 				diamond_amount += amount * 3750
 			else if(istype(stack, /obj/item/stack/sheet/clown))
 				clown_amount += amount * 3750
-			else if(istype(stack, /obj/item/stack/sheet/adamantine))
-				adamantine_amount += amount * 3750
 			stack.use(amount)
 			busy = 0
 			src.updateUsrDialog()

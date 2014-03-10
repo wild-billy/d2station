@@ -1,6 +1,6 @@
 /mob/verb/adminhelp(msg as text)
-	set category = "Admin"
-	set name = "Adminhelp"
+	set category = "Commands"
+	set name = "-Adminhelp"
 	if(!usr.client.authenticated)
 		src << "Please authorize before sending these messages."
 		return
@@ -10,13 +10,23 @@
 	if (!msg)
 		return
 
-	if (usr.client.muted)
+	if (usr.muted)
 		return
 
-	for (var/mob/M in mobz)
+	for (var/mob/M in world)
 		if (M.client && M.client.holder)
 			M << "\blue <b><font color=red>HELP: </font>[key_name(src, M)](<A HREF='?src=\ref[M.client.holder];adminplayeropts=\ref[src]'>X</A>):</b> [msg]"
 
-	usr << "Your message has been broadcast to administrators and relayed to the IRC."
-	world.Export("http://78.47.53.54/requester.php?url=http://lemon.d2k5.com/adminhelp/adminhelp.php@vals@name=[key_name(src)]@and@msg=[msg]")
+
+	usr << "Your message has been broadcast to administrators."
 	log_admin("HELP: [key_name(src)]: [msg]")
+
+	var/sqltime = time2text(world.realtime, "YYYY-MM-DD hh:mm:ss")
+	var/DBConnection/dbcon = new()
+	dbcon.Connect("dbi:mysql:[sqldb]:[sqladdress]:[sqlport]","[sqllogin]","[sqlpass]")
+	if(dbcon.IsConnected())
+		var/DBQuery/query = dbcon.NewQuery("INSERT INTO adminhelp (name, message, time) VALUES ('[key_name(src)]', '[msg]', '[sqltime]')")
+		query.Execute()
+		return
+	dbcon.Disconnect()
+	return

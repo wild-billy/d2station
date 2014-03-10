@@ -422,7 +422,7 @@ var/linenums = 0
 	return
 /*
 	var/strength = (((plasma + oxygen/2.0) / 1600000.0) * sqrt(temp) ) / 10
-	message_admins("Robustmin: Pipe explosion strength: [strength], Temperature: [temp], Plasma: [plasma], Oxygen: [oxygen]")
+	message_admins("CODER: Pipe explosion strength: [strength], Temperature: [temp], Plasma: [plasma], Oxygen: [oxygen]")
 	//lets say hypothetically it uses up 9/10 of its energy in bursting the pipe
 
 	if (strength < 773.0)

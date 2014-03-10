@@ -11,7 +11,9 @@
 			return
 	else
 		for(var/mob/O in hearers(null, null))
-			O.show_message(text("\icon[] *beep* *beep*", src), 3, "*beep* *beep*", 2)
+			O.show_message(text("\icon[] *beep*", src), 3, "*beep*", 2)
+		playsound(src.loc, 'dep.ogg', 10, 0)
+		sleep(240)
 	return
 
 //*****RM
@@ -103,7 +105,7 @@
 		user.machine = src
 		var/second = src.time % 60
 		var/minute = (src.time - second) / 60
-		var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Timing Unit</B>\n[] []:[]\n<A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT>", (src.timing ? text("<A href='?src=\ref[];time=0'>Timing</A>", src) : text("<A href='?src=\ref[];time=1'>Not Timing</A>", src)), minute, second, src, src, src, src)
+		var/dat = text("<TT><B>Timing Unit</B>\n[] []:[]\n<A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT>", (src.timing ? text("<A href='?src=\ref[];time=0'>Timing</A>", src) : text("<A href='?src=\ref[];time=1'>Not Timing</A>", src)), minute, second, src, src, src, src)
 		dat += "<BR><BR><A href='?src=\ref[src];close=1'>Close</A>"
 		user << browse(dat, "window=timer")
 		onclose(user, "timer")

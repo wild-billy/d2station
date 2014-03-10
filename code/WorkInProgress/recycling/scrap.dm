@@ -9,7 +9,6 @@
 	icon_state = "1metal0"
 	item_state = "scrap-metal"
 	desc = "A piece of scrap"
-	anchored = 0
 	var/classtext = ""
 	throwforce = 14.0
 	m_amt = 0
@@ -32,17 +31,6 @@
 	..()
 	update()
 
-/obj/item/scrap/temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
-	if(exposed_temperature > 1000)
-		if(prob(20))
-			if(m_amt > g_amt)
-				new/obj/item/stack/sheet/molten_metal( src.loc )
-			else
-				new/obj/item/stack/sheet/molten_glass( src.loc )
-			for(var/mob/M in viewers(5, src))
-				M << "\red \the [src] melts."
-			del(src)
-
 // return a copy
 /obj/item/scrap/proc/copy()
 	var/obj/item/scrap/ret = new()
@@ -59,7 +47,7 @@
 
 // returns the total amount of scrap in this pile
 /obj/item/scrap/proc/total()
-	return m_amt + g_amt + w_amt + 0.1
+	return m_amt + g_amt + w_amt
 
 
 // sets the size, appearance, and description of the scrap depending on component amounts
@@ -298,43 +286,4 @@
 
 	return S
 
-/obj/machinery/recycling/crusher
-	icon = 'recycling.dmi'
-	icon_state = "crusherroller_on"
-	density = 1
-	health = INFINITY //FFFFFFFFFFFUCK YOU -soyuz
-	anchored = 1
 
-	Bump(atom/A)
-		consume(A)
-		return
-
-	Bumped(atom/A)
-		consume(A)
-		return
-
-	proc/consume(var/atom/A)
-		if (istype(A,/mob/living/carbon/human))
-			if(!A:mutantrace)
-				A:removePart(pick("hand_right", "hand_left", "arm_right", "arm_left", "leg_right", "leg_left", "foot_right", "foot_left"))
-				A:bruteloss += rand(1,10)
-				sleep(5)
-			else
-				var/list/L = A:get_contents()
-				for(var/obj/O in L)
-					consume(O)
-				A:gib()
-				return
-		else if (istype(A,/mob))
-			var/list/L = A:get_contents()
-			for(var/obj/O in L)
-				consume(O)
-			A:gib()
-			return
-		else if(istype(A,/obj/) && !istype(A,/obj/item/scrap))
-			var/obj/item/scrap/S = new(src.loc)
-			S.set_components(A:m_amt,A:g_amt,A:w_amt)
-			A:ex_act(1.0)
-			if(A) del(A)
-			return
-		return

@@ -1,3 +1,4 @@
+
 /obj/machinery/containment_field
 	name = "Containment Field"
 	desc = "An energy field."
@@ -13,8 +14,7 @@
 
 	New()
 		spawn(1)
-			src.ul_SetLuminosity(5)
-
+			src.sd_SetLuminosity(5)
 
 	Del()
 		if(FG1 && !FG1.clean_up)
@@ -50,23 +50,11 @@
 
 
 	proc
-		shock(mob/living/user as mob)
+		shock(mob/user as mob)
 			if(!FG1 || !FG2)
 				del(src)
 				return 0
-			if(iscarbon(user) && (user.mutations & 16384))
-				var/shock_damage = min(rand(10,20),rand(25,35))
-				user.heal_overall_damage(shock_damage,shock_damage)
-				user << "\blue Ahhhh, you feel much better."
-				user.visible_message("\red [user.name] was shocked by the [src.name]!", \
-					"\blue <B>You feel a powerful healing energy shoot through your body!</B>", \
-					"\red You hear a heavy electrical crack")
-				var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
-				s.set_up(5, 1, user.loc)
-				s.start()
-				return
-
-			if(iscarbon(user && !user.mutations & 16384))
+			if(iscarbon(user))
 				var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
 				s.set_up(5, 1, user.loc)
 				s.start()
@@ -76,6 +64,9 @@
 				user.visible_message("\red [user.name] was shocked by the [src.name]!", \
 					"\red <B>You feel a powerful shock course through your body sending you flying!</B>", \
 					"\red You hear a heavy electrical crack")
+				if(prob(1))
+					new /obj/decal/cleanable/urine(user.loc)
+					user.achievement_give("Danger Danger! High Voltage!", 16, 70)
 				var/stun = min(shock_damage, 15)
 				if(user.stunned < shock_damage)	user.stunned = stun
 				if(user.weakened < 10)	user.weakened = 10
@@ -88,10 +79,14 @@
 				s.set_up(5, 1, user.loc)
 				s.start()
 				var/shock_damage = rand(15,30)
-				user.take_overall_damage(0,shock_damage)
+				user.fireloss += shock_damage
+				user.updatehealth()
 				user.visible_message("\red [user.name] was shocked by the [src.name]!", \
 					"\red <B>Energy pulse detected, system damaged!</B>", \
 					"\red You hear an electrical crack")
+				if(prob(1))
+					new /obj/decal/cleanable/urine(user.loc)
+					user.achievement_give("Danger Danger! High Voltage!", 16, 70)
 				if(prob(20))
 					if(user.stunned < 2)
 						user.stunned = 2

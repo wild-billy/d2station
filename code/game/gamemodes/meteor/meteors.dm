@@ -24,6 +24,7 @@
 
 /proc/spawn_meteor()
 
+	var/startside = pick(cardinal)
 	var/startx
 	var/starty
 	var/endx
@@ -34,23 +35,23 @@
 
 
 	do
-		switch(pick(1,2,3,4))
-			if(1) //NORTH
+		switch(startside)
+			if(NORTH)
 				starty = world.maxy-1
 				startx = rand(1, world.maxx-1)
 				endy = 1
 				endx = rand(1, world.maxx-1)
-			if(2) //EAST
+			if(EAST)
 				starty = rand(1,world.maxy-1)
 				startx = world.maxx-1
 				endy = rand(1, world.maxy-1)
 				endx = 1
-			if(3) //SOUTH
+			if(SOUTH)
 				starty = 1
 				startx = rand(1, world.maxx-1)
 				endy = world.maxy-1
 				endx = rand(1, world.maxx-1)
-			if(4) //WEST
+			if(WEST)
 				starty = rand(1, world.maxy-1)
 				startx = 1
 				endy = rand(1,world.maxy-1)
@@ -61,16 +62,16 @@
 		max_i--
 		if(max_i<=0) return
 
-	while (!istype(pickedstart, /turf/space) || pickedstart.loc.name != "Space" ) //FUUUCK, should never happen.
+	while (!istype(pickedstart, /turf/space) || /*locate(/obj/shield in pickedstart) || */pickedstart.loc.name != "Space" ) //FUUUCK, should never happen.
 
 
 	var/obj/meteor/M
 	switch(rand(1, 100))
 
 		if(1 to 10)
-			M = new /obj/meteor/small( pickedstart )
+			M = new /obj/meteor/big( pickedstart )
 		if(11 to 75)
-			M = new /obj/meteor/small( pickedstart )
+			M = new /obj/meteor( pickedstart )
 		if(76 to 100)
 			M = new /obj/meteor/small( pickedstart )
 
@@ -88,12 +89,13 @@
 	anchored = 1.0
 	var/hits = 1
 	var/dest
-	pass_flags = PASSTABLE
 
 /obj/meteor/small
 	name = "small meteor"
 	icon_state = "smallf"
-	pass_flags = PASSTABLE | PASSGRILLE
+
+/obj/meteor/invincible
+	name = "strange meteor"
 
 /obj/meteor/Move()
 	var/turf/T = src.loc
@@ -109,12 +111,14 @@
 				shake_camera(M, 3, 1)
 		if (A)
 			A.meteorhit(src)
-			playsound(src.loc, 'meteorimpact.ogg', 40, 1)
-
+			playsound(src.loc, "explosion", 40,0)
+			playsound(src.loc, "destruction", 60,0)
+			playsound(src.loc, "collision", 30,0)
+			if(prob(50))
+				world << sound('distantexplosion.ogg', volume=90)
 		if (--src.hits <= 0)
-			if(prob(15) && !istype(A, /obj/machinery/shield) && !istype(A, /obj/meteor))
-				//explosion(src.loc, 4, 5, 6, 7, 0)
-				playsound(src.loc, "explosion", 50, 1)
+			if(istype(src, /obj/meteor/invincible))
+				del(src)
 			del(src)
 	return
 
@@ -124,6 +128,7 @@
 	if (severity < 4)
 		del(src)
 	return
+
 
 /obj/meteor/big
 	name = "big meteor"
@@ -137,13 +142,10 @@
 			for(var/mob/M in range(10, src))
 				if(!M.stat && !istype(M, /mob/living/silicon/ai)) //bad idea to shake an ai's view
 					shake_camera(M, 3, 1)
-			if(A)// && !istype(A, /obj/machinery/shield))
-				//explosion(src.loc, 0, 1, 2, 3, 0)
-				playsound(src.loc, 'meteorimpact.ogg', 40, 1)
-
 			if (--src.hits <= 0)
-				if(prob(15) && !istype(A, /obj/grille) && !istype(A, /obj/machinery/shield) && !istype(A, /obj/meteor))
-					//explosion(src.loc, 1, 2, 3, 4, 0)
-					playsound(src.loc, "explosion", 50, 1)
+				if(prob(4) && !istype(A, /obj/grille))
+					explosion(src.loc, 1, 2, 3, 4, 0)
+					playsound(src.loc, "explosion", 50, 0)
 				del(src)
 		return
+

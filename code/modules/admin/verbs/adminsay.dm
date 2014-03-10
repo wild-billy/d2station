@@ -9,7 +9,7 @@
 		src << "Only administrators may use this command."
 		return
 
-	if (!src.mob || src.muted)
+	if (!src.mob || src.mob.muted)
 		return
 
 	msg = copytext(sanitize(msg), 1, MAX_MESSAGE_LEN)
@@ -19,10 +19,10 @@
 	if (!msg)
 		return
 
-	for (var/mob/M in mobz)
+	for (var/mob/M in world)
 		if (M.client && M.client.holder)
-			if (src.holder.rank == "Host")
-				M << "<span class=\"hostadmin\"><span class=\"prefix\">ADMIN:</span> <span class=\"name\">[key_name(usr, M)]:</span> <span class=\"message\">[msg]</span></span>"
+			if (src.holder.rank == "Filthy Xeno")
+				M << "<span class=\"gfartadmin\"><span class=\"prefix\">ADMIN:</span> <span class=\"name\">[key_name(usr, M)]:</span> <span class=\"message\">[msg]</span></span>"
 			else
-				M << "<span class=\"admin\"><span class=\"prefix\">ADMIN:</span> <span class=\"name\">[key_name(usr, M)]</span><a href='?src=\ref[M.client.holder];jumpto=\ref[mob]'>X</a>: <span class=\"message\">[msg]</span></span>"
+				M << "<span class=\"admin\"><span class=\"prefix\">ADMIN:</span> <span class=\"name\">[key_name(usr, M)]:</span> <span class=\"message\">[msg]</span></span>"
 

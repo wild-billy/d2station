@@ -29,7 +29,7 @@ var/reportingpower = 0  //this tracks whether this power monitoring computer is 
 
 
 	user.machine = src
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Power Monitoring</B><HR>"
+	var/t = "<TT><B>Power Monitoring</B><HR>"
 
 	t += "<BR><HR><A href='?src=\ref[src];update=1'>Refresh</A>"
 	t += "<BR><HR><A href='?src=\ref[src];close=1'>Close</A>"
@@ -43,14 +43,9 @@ var/reportingpower = 0  //this tracks whether this power monitoring computer is 
 			if(istype(term.master, /obj/machinery/power/apc))
 				var/obj/machinery/power/apc/A = term.master
 				L += A
-		if(powernet.avail < 1000000)
-			t += "<PRE>Total power: [num2text(powernet.avail,6)] W<BR>"
-		else
-			t += "<PRE>Total power: [(powernet.avail / 1000)] KW<BR>"
-		if(powernet.viewload < 1000000)
-			t += "Total load:  [num2text(powernet.viewload,6)] W<BR>"
-		else
-			t += "Total load:  [(powernet.viewload / 1000)] KW<BR>"
+
+		t += "<PRE>Total power: [powernet.avail] W<BR>Total load:  [num2text(powernet.viewload,10)] W<BR>"
+
 		t += "<FONT SIZE=-1>"
 
 		if(L.len > 0)
@@ -81,7 +76,6 @@ var/reportingpower = 0  //this tracks whether this power monitoring computer is 
 		src.updateDialog()
 		return
 
-
 /obj/machinery/power/monitor/process()
 	if(!(stat & (NOPOWER|BROKEN)) )
 		use_power(250)
@@ -106,7 +100,6 @@ var/reportingpower = 0  //this tracks whether this power monitoring computer is 
 
 	if(stat & BROKEN)
 		icon_state = "broken"
-		ul_SetLuminosity(0,0,2)
 		// the following four lines reset the pda power monitoring globals if the computer breaks
 		// this is to stop PDAs reporting incorrect information and to allow another computer to easily take over -- muskets
 		powerreport = null
@@ -117,10 +110,8 @@ var/reportingpower = 0  //this tracks whether this power monitoring computer is 
 		if( powered() )
 			icon_state = initial(icon_state)
 			stat &= ~NOPOWER
-			ul_SetLuminosity(0,0,2)
 		else
 			spawn(rand(0, 15))
 				src.icon_state = "c_unpowered"
 				stat |= NOPOWER
-				ul_SetLuminosity(0,0,0)
 

@@ -32,6 +32,8 @@
 		overlays = null
 
 /obj/machinery/cell_charger/attack_hand(mob/user)
+	if(..())
+		return
 
 	if(charging)
 		usr.put_in_hand(charging)

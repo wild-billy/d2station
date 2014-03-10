@@ -6,13 +6,13 @@
 	cure = "Ryetalin"
 	cure = "ryetalyn"
 	curable = 0
+	agent = "S4E1 retrovirus"
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
 	var/list/original_dna = list()
 	var/transformed = 0
 	desc = "This disease transplants the genetic code of the intial vector into new hosts."
 	severity = "Medium"
-	why_so_serious = 5
+
 
 /datum/disease/dnaspread/stage_act()
 	..()
@@ -25,7 +25,8 @@
 			if(prob(1))
 				affected_mob << "\red Your muscles ache."
 				if(prob(20))
-					affected_mob.take_organ_damage(1)
+					affected_mob.bruteloss += 1
+					affected_mob.updatehealth()
 			if(prob(1))
 				affected_mob << "\red Your stomach hurts."
 				if(prob(20))

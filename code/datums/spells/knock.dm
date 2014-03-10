@@ -1,19 +1,24 @@
-/obj/proc_holder/spell/aoe_turf/knock
+/obj/spell/knock
 	name = "Knock"
 	desc = "This spell opens nearby doors and does not require wizard garb."
 
 	school = "transmutation"
-	charge_max = 100
+	recharge = 100
 	clothes_req = 0
 	invocation = "AULIE OXIN FIERA"
 	invocation_type = "whisper"
 	range = 3
 
-/obj/proc_holder/spell/aoe_turf/knock/cast(list/targets)
-	for(var/turf/T in targets)
-		for(var/obj/machinery/door/door in T.contents)
-			spawn(1)
-				if(istype(door,/obj/machinery/door/airlock))
-					door:locked = 0
-				door.open()
+/obj/spell/knock/Click()
+	..()
+
+	if(!cast_check())
+		return
+
+	invocation()
+
+	for(var/obj/machinery/door/G in oview(usr,range))
+		spawn(1)
+			G:locked = 0
+			G.open()
 	return

@@ -1,8 +1,8 @@
 // the SMES
 // stores power
 
-#define SMESMAXCHARGELEVEL 500000 //FUCK YOU GUYS SO HARD -soyuz
-#define SMESMAXOUTPUT 500000
+#define SMESMAXCHARGELEVEL 200000
+#define SMESMAXOUTPUT 200000
 
 /obj/machinery/power/smes/magical
 	name = "magical power storage unit"
@@ -21,34 +21,33 @@
 	var/output = 50000
 	var/lastout = 0
 	var/loaddemand = 0
-	var/capacity = 100000
-	var/charge = 100000
+	var/capacity = 5e6
+	var/charge = 1e6
 	var/charging = 0
 	var/chargemode = 0
 	var/chargecount = 0
 	var/chargelevel = 50000
 	var/online = 1
 	var/n_tag = null
-	var/list/obj/machinery/power/terminal/terminals = list()
-
+	var/obj/machinery/power/terminal/terminal = null
 
 /obj/machinery/power/smes/New()
 	..()
 
 	spawn(5)
-		for(var/d in cardinal)
-			var/turf/T = get_step(src, d)
-			for(var/obj/machinery/power/terminal/term in T)
-				if(term)
-					terminals += term
+		dir_loop:
+			for(var/d in cardinal)
+				var/turf/T = get_step(src, d)
+				for(var/obj/machinery/power/terminal/term in T)
+					if(term && term.dir == turn(d, 180))
+						terminal = term
+						break dir_loop
 
-
-		if(terminals.len < 1)
+		if(!terminal)
 			stat |= BROKEN
 			return
 
-		for(var/obj/machinery/power/terminal/terminal in terminals)
-			terminal.master = src
+		terminal.master = src
 
 		updateicon()
 
@@ -79,7 +78,7 @@
 
 
 /obj/machinery/power/smes/process()
-	var/excess
+
 	if(stat & BROKEN)
 		return
 
@@ -88,14 +87,9 @@
 	var/last_disp = chargedisplay()
 	var/last_chrg = charging
 	var/last_onln = online
-	var/calculate = 0
 
-	if(terminals.len > 0)
-		for(var/obj/machinery/power/terminal/terminal in terminals)
-			calculate += terminal.surplus()
-
-		excess = calculate
-		calculate = 0
+	if(terminal)
+		var/excess = terminal.surplus()
 
 		if(charging)
 			if(excess >= 0)		// if there's power available, try to charge
@@ -173,9 +167,8 @@
 
 
 /obj/machinery/power/smes/add_load(var/amount)
-	for(var/obj/machinery/power/terminal/terminal in terminals)
-		if(terminal && terminal.powernet)
-			terminal.powernet.newload += amount
+	if(terminal && terminal.powernet)
+		terminal.powernet.newload += amount
 
 /obj/machinery/power/smes/attack_ai(mob/user)
 
@@ -186,10 +179,14 @@
 	interact(user)
 
 /obj/machinery/power/smes/attack_hand(mob/user)
+
 	add_fingerprint(user)
+
 	if(stat & BROKEN) return
 
 	interact(user)
+
+
 
 /obj/machinery/power/smes/proc/interact(mob/user)
 
@@ -202,7 +199,7 @@
 	user.machine = src
 
 
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>SMES Power Storage Unit</B> [n_tag? "([n_tag])" : null]<HR><PRE>"
+	var/t = "<TT><B>SMES Power Storage Unit</B> [n_tag? "([n_tag])" : null]<HR><PRE>"
 
 	t += "Stored capacity : [round(100.0*charge/capacity, 0.1)]%<BR><BR>"
 
@@ -317,36 +314,6 @@
 		usr.machine = null
 
 	return
-
-/obj/machinery/power/smes/proc/ion_act()
-	if(src.z == 1)
-		if(prob(1)) //explosion
-			world << "\red SMES explosion in [src.loc.loc]"
-			for(var/mob/M in viewers(src))
-				M.show_message("\red The [src.name] is making strange noises!", 3, "\red You hear sizzling electronics.", 2)
-			sleep(10*pick(4,5,6,7,10,14))
-			var/datum/effects/system/harmless_smoke_spread/smoke = new /datum/effects/system/harmless_smoke_spread()
-			smoke.set_up(1, 0, src.loc)
-			smoke.attach(src)
-			smoke.start()
-			explosion(src.loc, -1, 0, 1, 3, 0)
-			del(src)
-			return
-		if(prob(15)) //Power drain
-			world << "\red SMES power drain in [src.loc.loc]"
-			var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
-			s.set_up(3, 1, src)
-			s.start()
-			if(prob(50))
-				emp_act(1)
-			else
-				emp_act(2)
-		if(prob(5)) //smoke only
-			world << "\red SMES smoke in [src.loc.loc]"
-			var/datum/effects/system/harmless_smoke_spread/smoke = new /datum/effects/system/harmless_smoke_spread()
-			smoke.set_up(1, 0, src.loc)
-			smoke.attach(src)
-			smoke.start()
 
 /obj/machinery/power/smes/emp_act(severity)
 	online = 0

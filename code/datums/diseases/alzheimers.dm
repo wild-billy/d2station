@@ -1,15 +1,15 @@
 /datum/disease/alzheimers
-	name = "Alzheimers Disease"
+	name = "Alzheimer's Disease"
 	max_stages = 2
-	spread = "Acute"
-	cure = "Alkysine and Ryetalyn"
+	spread = "On contact"
+	spread_type = CONTACT_GENERAL
+	cure = "Alkysine & Ryetalyn"
 	cure_id = list("alkysine", "Ryetalyn")
 	cure_chance = 20
 	affected_species = list("Human", "Monkey")
-	affected_species2 = list(/mob/living/carbon/monkey, /mob/living/carbon/human)
 	desc = "Subjects affected show the signs of memory loss and disorientation."
 	severity = "Low"
-	why_so_serious = 4
+
 /datum/disease/alzheimers/stage_act()
 	..()
 	switch(stage)

@@ -83,10 +83,10 @@
 	var/holding_text
 
 	if(holding)
-		holding_text = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Tank Pressure</B>: [holding.air_contents.return_pressure()] KPa<BR>
+		holding_text = {"<BR><B>Tank Pressure</B>: [holding.air_contents.return_pressure()] KPa<BR>
 <A href='?src=\ref[src];remove_tank=1'>Remove Tank</A><BR>
 "}
-	var/output_text = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>[name]</B><BR>
+	var/output_text = {"<TT><B>[name]</B><BR>
 Pressure: [air_contents.return_pressure()] KPa<BR>
 Port Status: [(connected_port)?("Connected"):("Disconnected")]
 [holding_text]

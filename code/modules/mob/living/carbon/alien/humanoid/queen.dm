@@ -1,20 +1,21 @@
 /mob/living/carbon/alien/humanoid/queen/New()
-	var/datum/reagents/R = new/datum/reagents(100)
-	reagents = R
-	R.my_atom = src
-//there should only be one queen
-//	if(src.name == "alien")
-//		src.name = text("alien ([rand(1, 1000)])")
-	src.real_name = src.name
 	spawn (1)
 		src.verbs += /mob/living/carbon/alien/humanoid/proc/corrode_target
 		src.verbs += /mob/living/carbon/alien/humanoid/sentinel/verb/spit
 		src.verbs -= /mob/living/carbon/alien/humanoid/verb/ventcrawl
+		var/datum/reagents/R = new/datum/reagents(100)
+		reagents = R
+		R.my_atom = src
 		src.stand_icon = new /icon('alien.dmi', "queen_s")
 		src.lying_icon = new /icon('alien.dmi', "queen_l")
 		src.icon = src.stand_icon
+
+//there should only be one queen
+//		if(src.name == "alien") src.name = text("alien ([rand(1, 1000)])")
+		src.real_name = src.name
+		src << "\blue Your icons have been generated!"
+
 		update_clothing()
-		//src << "\blue Your icons have been generated!"
 
 
 /mob/living/carbon/alien/humanoid/queen
@@ -30,12 +31,15 @@
 
 	handle_regular_hud_updates()
 
-		if (src.stat == 2 || src.mutations & XRAY)
+		if (src.stat == 2 || src.mutations & 4)
 			src.sight |= SEE_TURFS
 			src.sight |= SEE_MOBS
 			src.sight |= SEE_OBJS
 			src.see_in_dark = 8
 			src.see_invisible = 2
+		else if(src.reagents.has_reagent("psilocybin"))
+			if (src.druggy > 30)
+				src.see_invisible = 10
 		else if (src.stat != 2)
 			src.sight |= SEE_MOBS
 			src.sight |= SEE_TURFS
@@ -78,7 +82,7 @@
 
 	handle_regular_status_updates()
 
-		health = 250 - (oxyloss + fireloss + bruteloss + cloneloss)
+		health = 250 - (oxyloss + fireloss + bruteloss)
 
 		if(oxyloss > 50) paralysis = max(paralysis, 3)
 
@@ -167,9 +171,15 @@
 	set desc = "Plants an egg"
 	set category = "Alien"
 
-	if(powerc(50,1))//Can't plant eggs on spess tiles. That's silly.
-		toxloss -= 200
+	if(src.stat)
+		src << "You must be concious to do this"
+		return
+	if(src.toxloss >= 200)
+		src.toxloss -= 200
 		for(var/mob/O in viewers(src, null))
 			O.show_message(text("\green <B>[src] has laid an egg!</B>"), 1)
-		new /obj/alien/egg(loc)
+		new /obj/alien/egg(src.loc)
+
+	else
+		src << "\green Not enough plasma stored"
 	return

@@ -35,13 +35,14 @@
 	var/name_part1
 	var/name_part2
 
-	name_action = pick("Defeat ", "Annihilate ", "Save ", "Strike ", "Stop ", "Destroy ", "Robust ", "Romance ", "Rape ")
+	name_action = pick("Defeat ", "Annihilate ", "Save ", "Strike ", "Stop ", "Destroy ", "Robust ", "Romance ")
 
-	name_part1 = pick("the Automatic ", "Farmer ", "Lord ", "Professor ", "the Cuban ", "the Evil ", "the Dread King ", "the Space ", "Lord ", "the Gay", "the Terrible", "the Autistic", "Rebecca")
-	name_part2 = pick("Melonoid", "Murdertron", "Sorcerer", "Ruin", "Jeff", "Ectoplasm", "Crushulon", "Uhangoid", "Vhakoid", "Peteoid", "Erika", "Emily", "GameBro", "ChrisChan", "FireIce", "Rebecca", "Pilcrow")
+	name_part1 = pick("the Automatic ", "Farmer ", "Lord ", "Professor ", "the Evil ", "the Dread King ", "the Space ", "Lord ")
+	name_part2 = pick("Melonoid", "Murdertron", "Sorcerer", "Ruin", "Jeff", "Ectoplasm", "Crushulon")
 
 	src.enemy_name = dd_replacetext((name_part1 + name_part2), "the ", "")
 	src.name = (name_action + name_part1 + name_part2)
+
 
 /obj/machinery/computer/arcade/attack_ai(mob/user as mob)
 	return src.attack_hand(user)
@@ -53,7 +54,7 @@
 	if(..())
 		return
 	user.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><a href='byond://?src=\ref[src];close=1'>Close</a>"
+	var/dat = "<a href='byond://?src=\ref[src];close=1'>Close</a>"
 	dat += "<center><h4>[src.enemy_name]</h4></center>"
 
 	dat += "<br><center><h3>[src.temp]</h3></center>"
@@ -132,13 +133,13 @@
 		src.gameover = 1
 		src.temp = "[src.enemy_name] has fallen! Rejoice!"
 		var/obj/item/prize
-		var/prizeselect = pick(1,2,3,4,5,6,7,8)
+		var/prizeselect = pick(1,2,3,4,5,6,7)
 		switch(prizeselect)
 			if(1)
-				prize = new /obj/item/weapon/money(src.loc)
-				prize.name = "10 D2S"
-				prize:value = "10"
-				prize:currency = "Ð"
+				prize = new /obj/item/weapon/spacecash(src.loc)
+				prize.name = "50 space euros"
+				prize.moneyvalue = "50"
+				prize.icon_state = "50"
 			if(2)
 				prize = new /obj/item/toy/blink(src.loc)
 			if(3)
@@ -151,11 +152,8 @@
 			if(6)
 				prize = new /obj/item/toy/crossbow(src.loc)
 			if(7)
-				prize = new /obj/item/clothing/suit/syndicatefake(src.loc)
-				prize = new /obj/item/clothing/head/syndicatefake(src.loc)
-			if(8)
-				prize = new /obj/item/toy/crayonbox(loc)
-
+				prize = new /obj/item/clothing/suit/syndicatefake
+				prize = new /obj/item/clothing/head/syndicatefake
 
 	else if ((src.enemy_mp <= 5) && (prob(70)))
 		var/stealamt = rand(2,3)
@@ -186,35 +184,6 @@
 	return
 
 /obj/machinery/computer/arcade/power_change()
-
-	if(stat & BROKEN)
-		icon_state = "arcadeb"
-	else
-		if( powered() )
-			icon_state = initial(icon_state)
-			stat &= ~NOPOWER
-		else
-			spawn(rand(0, 15))
-				src.icon_state = "arcade0"
-				stat |= NOPOWER
-
-/obj/machinery/computer/arcadepuzzle/attack_ai(mob/user as mob)
-	return src.attack_hand(user)
-
-/obj/machinery/computer/arcadepuzzle/attack_paw(mob/user as mob)
-	return src.attack_hand(user)
-
-/obj/machinery/computer/arcadepuzzle/attack_hand(mob/user as mob)
-	if(..())
-		return
-	var/dat = "<meta HTTP-EQUIV='REFRESH' content='0; url="
-	dat += "http://somethingdickful.com/ss13resources/fifteenpuzzle/"
-	dat += "'>Loading arcade..."
-	user << browse("[dat]","window=puzzle;size=900x650")
-	onclose(user, "puzzle")
-	return
-
-/obj/machinery/computer/arcadepuzzle/power_change()
 
 	if(stat & BROKEN)
 		icon_state = "arcadeb"

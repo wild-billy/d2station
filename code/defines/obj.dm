@@ -8,9 +8,7 @@
 	var/crit_fail = 0
 	var/unacidable = 0 //universal "unacidabliness" var, here so you can use it in any obj.
 	animate_movement = 2
-	var/throwforce = 1
-	var/explosionstrength = 0
-	var/datum/marked_datum
+	var/throwforce = 0
 	proc
 		handle_internal_lifeform(mob/lifeform_inside_me, breath_request)
 			//Return: (NONSTANDARD)
@@ -24,48 +22,11 @@
 
 		initialize()
 
-/obj/signpost
-	icon = 'stationobjs.dmi'
-	icon_state = "signpost"
-	anchored = 1
-	density = 1
-
-	attackby(obj/item/weapon/W as obj, mob/user as mob)
-		return attack_hand(user)
-
-	attack_hand(mob/user as mob)
-		switch(alert("Travel back to ss13?",,"Yes","No"))
-			if("Yes")
-				user.loc.loc.Exited(user)
-				user.loc = pick(latejoin)
-			if("No")
-				return
-
-	telepad
-		icon = 'tutorial.dmi'
-		icon_state = "telepad"
-
-		New()
-			src.overlays += icon('tutorial.dmi', "telepad_overlay")
-
-/obj/boxingring
-	icon = 'stationobjs.dmi'
-	icon_state = "boxingring"
-	anchored = 1
-	density = 0
-	layer = 4
-
-/obj/chesspiece
-	icon = 'chesspieces.dmi'
-	icon_state = "pawn"
-	anchored = 0
-	density = 1
-
 /obj/blob
 		name = "magma"
 		icon = 'blob.dmi'
 		icon_state = "bloba0"
-		var/health = 40
+		var/health = 1
 		density = 1
 		opacity = 0
 		anchored = 1
@@ -101,12 +62,47 @@
 	unacidable = 1
 	density = 0
 	anchored = 1
+	var/datum/effects/system/harmless_smoke_spread/smoke
+
+/obj/solarbeacon
+	name = "Beacon"
+	icon = 'device.dmi'
+	icon_state = "solarbeacon"
+	anchored = 1.0
+	opacity = 0
+	density = 0
+
+/obj/solarbeacon/New()
+	src.overlays += icon('device.dmi', "solarbeacon_led")
 
 /obj/beam
 	name = "beam"
 	unacidable = 1//Just to be sure.
 	var/def_zone
-	pass_flags = PASSTABLE
+
+/obj/beam/a_laser
+	name = "a laser"
+	icon = 'projectiles.dmi'
+	icon_state = "laser"
+	density = 1
+	var/yo = null
+	var/xo = null
+	var/current = null
+	var/life = 50.0
+	anchored = 1.0
+	flags = TABLEPASS
+
+/obj/beam/a_plasma
+	name = "a plasma pulse"
+	icon = 'projectiles.dmi'
+	icon_state = "plasmawep"
+	density = 1
+	var/yo = null
+	var/xo = null
+	var/current = null
+	var/life = 50.0
+	anchored = 1.0
+	flags = TABLEPASS
 
 /obj/beam/i_beam
 	name = "i beam"
@@ -120,10 +116,9 @@
 	anchored = 1.0
 	flags = TABLEPASS
 
-
 /obj/bedsheetbin
 	name = "linen bin"
-	desc = "A bin for containing bedsheets. It looks rather cosy."
+	desc = "A bin for containing bedsheets."
 	icon = 'items.dmi'
 	icon_state = "bedbin"
 	var/amount = 23.0
@@ -136,14 +131,45 @@
 	anchored = 1.0
 	unacidable = 1
 
+/obj/bullet
+	name = "bullet"
+	icon = 'projectiles.dmi'
+	icon_state = "bullet"
+	throwforce = 0.1 //an attempt to make it possible to shoot your way through space
+	density = 1
+	unacidable = 1//Just to be sure.
+	var/yo = null
+	var/xo = null
+	var/current = null
+	var/def_zone
+	anchored = 1.0
+	flags = TABLEPASS
+
+/obj/bullet/weakbullet
+
+/obj/bullet/electrode
+	name = "electrode"
+	icon_state = "spark"
+
+/obj/bullet/teleshot
+	name = "teleshot"
+	icon_state = "spark"
+	var/failchance = 5
+	var/obj/item/target = null
+
+/obj/bullet/cbbolt
+	name = "crossbow bolt"
+	icon_state = "cbbolt"
+
+/obj/bullet/neurodart
+	name = "acid"
+	icon_state = "toxin"
+
 /obj/datacore
 	name = "datacore"
-	var/medical[] = list()
-	var/general[] = list()
-	var/security[] = list()
-//	var/bank[] = list()
-	//This list tracks characters spawned in the world and cannot be modified in-game. Currently referenced by respawn_character().
-	var/locked[] = list()
+	var/list/medical = list(  )
+	var/list/general = list(  )
+	var/list/security = list(  )
 
 /obj/equip_e
 	name = "equip e"
@@ -162,7 +188,7 @@
 	var/mob/living/carbon/monkey/target = null
 
 /obj/grille
-	desc = "A piece of metal with evenly spaced gridlike holes in it. Blocks large object but lets small items, gas, or energy beams through. Strangely enough these grilles also lets meteors pass through them, whether they be small or huge station breaking death stones."
+	desc = "A piece of metal with evenly spaced gridlike holes in it. Blocks large object but lets small items, gas, or energy beams through."
 	name = "grille"
 	icon = 'structures.dmi'
 	icon_state = "grille"
@@ -172,116 +198,79 @@
 	anchored = 1.0
 	flags = FPRINT | CONDUCT
 	pressure_resistance = 5*ONE_ATMOSPHERE
-	layer = 2.9
+	layer = 3
 
 /obj/sign
 	icon = 'decals.dmi'
-	anchored = 1
+	icon_state = "securearea"
+	anchored = 1.0
+	opacity = 0
 	density = 0
 
-/obj/sign/departments/library
+/obj/sign/library
 	desc = "Library"
 	name = "Library"
 	icon_state = "library"
 
-/obj/sign/departments/lounge
-	desc = "The Lounge"
-	name = "The Lounge"
-	icon_state = "lounge"
-
-/obj/sign/departments/Storage
-	desc = "Storage"
-	name = "Storage"
-	icon_state = "Storage"
-
-/obj/sign/departments/AI
-	desc = "AI"
-	name = "AI"
-	icon_state = "AI"
-
-/obj/sign/departments/kitchen
+/obj/sign/kitchen
 	desc = "Kitchen"
 	name = "Kitchen"
 	icon_state = "kitchen"
 
-/obj/sign/departments/bar
+/obj/sign/bar
 	desc = "Bar"
 	name = "Bar"
 	icon_state = "bar"
 
-/obj/sign/departments/medbay
+/obj/sign/medbay
 	desc = "Medbay"
 	name = "Medbay"
 	icon_state = "medbay"
 
-/obj/sign/departments/hydroponics
+/obj/sign/hydroponics
 	desc = "Hydroponics"
 	name = "Hydroponics"
 	icon_state = "hydroponics"
 
-/obj/sign/departments/engineering
+/obj/sign/engineering
 	desc = "Engineering"
 	name = "Engineering"
 	icon_state = "engineering"
 
-/obj/sign/departments/bridge
+/obj/sign/bridge
 	desc = "Bridge"
 	name = "Bridge"
 	icon_state = "bridge"
 
-/obj/sign/departments/brig
+/obj/sign/brig
 	desc = "Brig"
 	name = "Brig"
 	icon_state = "brig"
 
-/obj/sign/departments/atmos
+/obj/sign/atmos
 	desc = "Atmospherics"
 	name = "Atmospherics"
 	icon_state = "atmos"
 
-/obj/sign/departments/crew
+/obj/sign/crew
 	desc = "Dormitory"
 	name = "Dormitory"
 	icon_state = "crew"
-/obj/sign/departments/tele
-	desc = "Teleporter"
-	name = "Teleporter"
-	icon_state = "Teleporter"
 
-/obj/sign/departments/qm
-	desc = "Quatermaster"
-	name = "Quatermaster"
-	icon_state = "Quatermaster"
-
-/obj/sign/departments/gas
-	desc = "Gas Storage"
-	name = "Gas Storage"
-	icon_state = "Gas Storage"
-/obj/sign/sign_silenceplease
+/obj/sign/silenceplease
 	desc = "A sign which indicates 'Silence Please'"
 	name = "Silence Please"
 	icon_state = "silenceplease"
 
-/obj/sign/sign_noshitlers
+/obj/sign/noshitlers
 	desc = "A sign which reads 'No shitlers allowed'"
 	name = "No shitlers allowed"
 	icon_state = "noshitlers"
 
-/obj/sign/sign_cleanhands
+/obj/sign/cleanhands
 	desc = "A sign which reads 'Clean hands save lives'"
 	name = "Clean hands save lives"
 	icon_state = "cleanhands"
-
-/obj/sign/sign_stabilizer
-	desc = "A sign which reads 'IF IN DOUBT, ADD MORE STABILIZER'"
-	name = "Always more stabilizer"
-	icon_state = "secureareaOLD"
-
-/obj/sign/airtunnel
-	desc = "A sign which reads 'IF IN DOUBT, ADD MORE STABILIZER'"
-	name = "Always more stabilizer"
-	icon = 'walls.dmi'
-	icon_state = "secureareaOLD"
 
 /obj/sign/nsm1
 	desc = "Punch-out!!"
@@ -292,11 +281,6 @@
 	desc = "Punch-out!!"
 	name = "Punch-out!!"
 	icon_state = "nsm2"
-
-/obj/sign/nofuckingshit
-	desc = "NO SHIT"
-	name = "Public Announcement"
-	icon_state = "noshit"
 
 /obj/sign/sign_securearea
 	desc = "A warning sign which reads 'SECURE AREA'"
@@ -313,17 +297,19 @@
 	name = "BIOLOGICAL HAZARD AREA"
 	icon_state = "bio"
 
-/obj/sign/sign_redcross
+/obj/sign/redcross
 	desc = "A sign that marks an area, Medical Bay in this case."
 	name = "Medical"
 	icon_state = "redcross"
 
-/obj/sign/sign_examroom
+/obj/sign/examroom
 	desc = "A sign that marks an area, Exam Room in this case."
 	name = "EXAM"
 	icon = 'decals.dmi'
 	icon_state = "examroom"
 	anchored = 1.0
+	opacity = 0
+	density = 0
 
 /obj/sign/goldenplaque
 	desc = "To be Robust is not an action or a way of life, but a mental state. Only those with the force of Will strong enough to act during a crisis, saving friend from foe, are truly Robust. Stay Robust my friends."
@@ -338,7 +324,7 @@
 
 /obj/item/weapon/plaque_assembly/afterattack(atom/A as mob|obj|turf|area, mob/user as mob)
 	if(istype(A,/turf/simulated/wall) || istype(A,/turf/simulated/shuttle/wall) || istype(A,/turf/unsimulated/wall))
-		var/epitaph = strip_html(input("What would you like to engrave", null))
+		var/epitaph = input("What would you like to engrave", null)
 		if(epitaph)
 			var/obj/sign/goldenplaque/gp = new/obj/sign/goldenplaque(A)
 			gp.name = epitaph
@@ -379,93 +365,6 @@
 	desc = "A sign which indicates an air output port."
 	name = "CANISTER OUTPUT"
 	icon_state = "output_port"
-
-/obj/sign/sign_bio
-	desc = "A warning sign which reads 'BIOLOGICAL HAZARD AREA'"
-	name = "BIOLOGICAL HAZARD AREA"
-	icon_state = "bio"
-
-/obj/sign/sign_securearea
-	desc = "A warning sign which reads 'SECURE AREA'"
-	name = "SECURE AREA"
-	icon_state = "securearea"
-
-/obj/sign/sign_shock
-	desc = "A warning sign which reads 'ELECTRICAL HAZARD AREA'"
-	name = "ELECTRICAL HAZARD AREA"
-	icon = 'decals.dmi'
-	icon_state = "shock"
-	anchored = 1.0
-	opacity = 0
-	density = 0
-
-/obj/sign/sign_examroom
-	desc = "A guidance sign which reads 'EXAM ROOM'"
-	name = "EXAM"
-	icon = 'decals.dmi'
-	icon_state = "examroom"
-	anchored = 1.0
-	opacity = 0
-	density = 0
-
-/obj/sign/sign_vacuum
-	desc = "A warning sign which reads 'HARD VACUUM AHEAD'"
-	name = "HARD VACUUM AHEAD"
-	icon = 'decals.dmi'
-	icon_state = "space"
-	anchored = 1.0
-	opacity = 0
-	density = 0
-	pixel_x = -1
-	pixel_y = -1
-
-
-/obj/sign/street
-	desc = "street sign"
-	name = "street sign"
-	icon = 'miscobj.dmi'
-	icon_state = "stop"
-	anchored = 1.0
-	opacity = 0
-	density = 0
-	pixel_x = -1
-	pixel_y = -1
-
-/obj/sign/maltesefalcon1         //The sign is 64x32, so it needs two tiles. ;3
-	desc = "The Maltese Falcon, Space Bar and Grill. Now with added monkey."
-	name = "The Maltese Falcon"
-	icon = 'decals.dmi'
-	icon_state = "maltesefalcon1"
-	anchored = 1.0
-	opacity = 0
-	density = 0
-
-/obj/sign/rapemonger
-	desc = "The Rapemonger, Bar and Grill. Limbs not guaranteed."
-	name = "The Rapemonger"
-	icon = 'barsigns.dmi'
-	icon_state = "rapemonger"
-	anchored = 1.0
-	opacity = 0
-	density = 0
-
-/obj/sign/laundromat
-	desc = "The Laundromat"
-	name = "Laundromat"
-	icon = 'barsigns.dmi'
-	icon_state = "laundromat"
-	anchored = 1.0
-	opacity = 0
-	density = 0
-
-/obj/sign/maltesefalcon2
-	desc = "The Maltese Falcon, Space Bar and Grill. Now with added monkey."
-	name = "The Maltese Falcon"
-	icon = 'decals.dmi'
-	icon_state = "maltesefalcon2"
-	anchored = 1.0
-	opacity = 0
-	density = 0
 
 /obj/sign/pipemarker/no2
 	desc = "A small marker that indicates the preferred content of a pipe line"
@@ -510,19 +409,14 @@
 	name = "Tutorial sign"
 	icon_state = "tutsign"
 
-/obj/mapboard
-	name = "Map of Space Station 13"
+/obj/showcase
+	name = "Showcase"
 	icon = 'stationobjs.dmi'
-	icon_state = "mapboard"
-	flags = FPRINT
-	desc = "A map of the station. Click to view it."
-	density = 0
+	icon_state = "showcase_1"
+	desc = "A stand with the empty body of a cyborg bolted to it."
+	density = 1
 	anchored = 1
-
-/obj/mapboard/New()
-	spawn(-1)
-		name = "Map of [station_name]"
-		desc = "A map of [station_name]. Click to view it."
+	unacidable = 1//temporary until I decide whether the borg can be removed. -veyveyr
 
 /obj/hud
 	name = "hud"
@@ -544,13 +438,12 @@
 	var/obj/screen/ectoglasses = null
 	var/list/darkMask = null
 	var/obj/screen/station_explosion = null
-
 	var/h_type = /obj/screen
 
 /obj/item
 	name = "item"
 	icon = 'items.dmi'
-	var/icon_old = null//For when weapons get bloodied this saves their old icon.
+	var/icon_old = null
 	var/abstract = 0.0
 	var/force = null
 	var/item_state = null
@@ -561,12 +454,9 @@
 	var/burning = null
 	var/hitsound = null
 	var/w_class = 3.0
-	var/wielded = 0
-	var/twohanded = 0 ///Two handed and wielded off by default, nyoro~n -Agouri
-	var/force_unwielded = 0
-	var/force_wielded = 0
+	var/gay = 0
+	var/moneyvalue = 0
 	flags = FPRINT | TABLEPASS
-	pass_flags = PASSTABLE
 	pressure_resistance = 50
 	var/obj/item/master = null
 
@@ -575,18 +465,17 @@
 
 /obj/item/device/detective_scanner
 	name = "Scanner"
-	desc = "Used to scan objects for DNA and fingerprints."
+	desc = "Used to scan objects for DNA and fingerprints"
 	icon_state = "forensic0"
 	var/amount = 20.0
 	var/printing = 0.0
 	w_class = 3.0
 	item_state = "electronic"
 	flags = FPRINT | TABLEPASS | ONBELT | CONDUCT | USEDELAY
-
+	origin_tech = "materials=1;magnets=3"
 
 /obj/item/device/flash
 	name = "flash"
-	desc = "Used for blinding and being an asshole."
 	icon_state = "flash"
 	var/l_time = 1.0
 	var/shots = 5.0
@@ -594,64 +483,47 @@
 	w_class = 1.0
 	throw_speed = 4
 	throw_range = 10
-	flags = FPRINT | TABLEPASS | ONBELT | CONDUCT
+	flags = FPRINT | TABLEPASS| CONDUCT
 	item_state = "electronic"
 	var/status = 1
-	origin_tech = "magnets=2;combat=1"
-
+	origin_tech = "materials=1;magnets=1"
 /obj/item/device/flashlight
 	name = "flashlight"
 	desc = "A hand-held emergency light."
 	icon_state = "flight0"
 	var/on = 0
-	var/brightness_on = null //luminosity when on
+	var/brightness_on = 4 //luminosity when on
 	var/icon_on = "flight1"
 	var/icon_off = "flight0"
-	var/obj/item/weapon/cell/power = null
 	w_class = 2
 	item_state = "flight"
 	flags = FPRINT | ONBELT | TABLEPASS | CONDUCT
 	m_amt = 50
 	g_amt = 20
-	var/max_lum
-
+	origin_tech = "materials=1"
 /obj/item/device/flashlight/pen
 	name = "penlight"
-	desc = "A pen-sized light. It shines as well as a flashlight."
+	desc = "A pen-sized light."
 	icon_state = "plight0"
 	flags = FPRINT | TABLEPASS | CONDUCT
 	item_state = ""
 	icon_on = "plight1"
 	icon_off = "plight0"
 	brightness_on = 3
+	origin_tech = "materials=1"
+/obj/gloryhole
+	name = "a hole"
+	desc = "A strange hole of some sorts."
+	icon = 'stationobjs.dmi'
+	icon_state = "gloryhole"
+	anchored = 1
+	density = 0
 
-/obj/item/device/analyzer
-	desc = "A hand-held environmental scanner which reports current gas levels."
-	name = "analyzer"
-	icon_state = "atmos"
-	item_state = "analyzer"
-	w_class = 2.0
-	flags = FPRINT | TABLEPASS| CONDUCT | ONBELT
-	throwforce = 5
-	throw_speed = 4
-	throw_range = 20
-	m_amt = 30
-	g_amt = 20
-	origin_tech = "magnets=1;engineering=1"
-
-/obj/item/device/rd_analyzer
-	desc = "A hand-held scanner which reports technology levels."
-	name = "analyzer"
-	icon_state = "atmos"
-	item_state = "analyzer"
-	w_class = 2.0
-	flags = FPRINT | TABLEPASS| CONDUCT | ONBELT
-	throwforce = 5
-	throw_speed = 4
-	throw_range = 20
-	m_amt = 30
-	g_amt = 20
-	origin_tech = "magnets=4;engineering=4"
+/obj/gloryhole/cock
+	name = "a hole"
+	desc = "A strange hole of some sorts."
+	icon = 'stationobjs.dmi'
+	icon_state = "gloryhole_cockmove"
 
 /obj/item/device/healthanalyzer
 	name = "Health Analyzer"
@@ -664,144 +536,22 @@
 	throw_speed = 5
 	throw_range = 10
 	m_amt = 200
-	origin_tech = "magnets=1;biotech=1"
-
-/obj/item/device/healthanalyzer/tricorder
-	name = "Advanced Health Analyzer"
-	icon_state = "tricorder_0"
+	origin_tech = "materials=1;magnets=3;biotech=3"
+/obj/item/device/Tricorder
+	name = "Medical Tricorder"
+	icon_state = "healthimproved"
 	item_state = "analyzer"
-	desc = "An advanced hand-held body scanner able to distinguish vital signs of the subject."
+	desc = "The medical tricorder is used by doctors to help diagnose diseases and collect bodily information about a patient."
 	flags = FPRINT | ONBELT | TABLEPASS | CONDUCT
 	throwforce = 3
 	w_class = 1.0
 	throw_speed = 5
 	throw_range = 10
 	m_amt = 200
-	origin_tech = "magnets=4;biotech=4"
-	var/results
-	var/DNA
-	var/list/Resistances = list()
-	var/bloodtype
-	var/list/tempchem
-	var/list/temp_chem = list()
-	var/dat
-	var/obj/item/weapon/reagent_containers/hypospray/hypospray = null
-/*
-/obj/item/device/healthanalyzer/tricorder/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if (istype(W, /obj/item/weapon/reagent_containers/hypospray) && src.hypospray == null)
-		src.hypospray = W
-		user << "You insert [W]."
-		del(W)
-		icon_state = "tricorder_1"
-		spawn(3)
-		return
-*/
-/obj/item/device/healthanalyzer/tricorder/attack_self(mob/user as mob)
-	user.machine = src
-	var/temp_text = ""
-	if(!hypospray)
-		user << "\red No hypospray is connected."
-		return
-	temp_text = "Hypospray Interface achieved..<BR>"
-	temp_text = "Currently loaded with [hypospray.hyposprayvial.reagents.get_master_reagent_name()]<BR>"
-
-	var/dat = {"[temp_text]
-	<a href="?src=\ref[src]&tricordrazine=1">M</a><br>
-	<a href="?src=\ref[src]&epinephrine=1">M</a><br>
-	<a href="?src=\ref[src]&chloromydride=1">M</a><br>
-	<a href="?src=\ref[src]&mynoglobin=1">M</a><br>
-	"}
-
-	user << browse(dat, "window=tricorder;size=450x300")
-	onclose(user, "tricorder")
-
-
-/obj/item/device/healthanalyzer/tricorder/Topic(href, href_list)
-	src.add_fingerprint(usr)
-	if(href_list["tricordrazine"])
-		hypospray.reagents.add_reagent("tricordrazine", 5) //uncomment this to make it start with stuff in
-		spawn(5)
-		hypospray.icon_state = "hypocolor"
-		hypospray.main_reagent = hypospray.reagents.get_master_reagent_reference()
-		var/icon/hypoc = new/icon("icon" = 'chemical.dmi', "icon_state" = "hypocolormod")
-		hypoc.Blend(rgb(hypospray.main_reagent:color_r, hypospray.main_reagent:color_g, hypospray.main_reagent:color_b), ICON_ADD)
-		hypospray.overlays += hypoc
-		hypospray.main_reagent = ""
-
-		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
-			if(user.hand)
-				user.l_hand = hypospray
-			else
-				user.r_hand = hypospray
-		src.hypospray = null
-		icon_state = "tricorder_0"
-		spawn(3)
-		return
-	if(href_list["epinephrine"])
-		hypospray.reagents.add_reagent("epinephrine", 5) //uncomment this to make it start with stuff in
-		spawn(5)
-		hypospray.icon_state = "hypocolor"
-		hypospray.main_reagent = hypospray.reagents.get_master_reagent_reference()
-		var/icon/hypoc = new/icon("icon" = 'chemical.dmi', "icon_state" = "hypocolormod")
-		hypoc.Blend(rgb(hypospray.main_reagent:color_r, hypospray.main_reagent:color_g, hypospray.main_reagent:color_b), ICON_ADD)
-		hypospray.overlays += hypoc
-		hypospray.main_reagent = ""
-
-		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
-			if(user.hand)
-				user.l_hand = hypospray
-			else
-				user.r_hand = hypospray
-		src.hypospray = null
-		icon_state = "tricorder_0"
-		spawn(3)
-		return
-	if(href_list["chloromydride"])
-		hypospray.reagents.add_reagent("chloromydride", 5) //uncomment this to make it start with stuff in
-		spawn(5)
-		hypospray.icon_state = "hypocolor"
-		hypospray.main_reagent = hypospray.reagents.get_master_reagent_reference()
-		var/icon/hypoc = new/icon("icon" = 'chemical.dmi', "icon_state" = "hypocolormod")
-		hypoc.Blend(rgb(hypospray.main_reagent:color_r, hypospray.main_reagent:color_g, hypospray.main_reagent:color_b), ICON_ADD)
-		hypospray.overlays += hypoc
-		hypospray.main_reagent = ""
-
-		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
-			if(user.hand)
-				user.l_hand = hypospray
-			else
-				user.r_hand = hypospray
-		src.hypospray = null
-		icon_state = "tricorder_0"
-		spawn(3)
-		return
-	if(href_list["mynoglobin"])
-		hypospray.reagents.add_reagent("mynoglobin", 5) //uncomment this to make it start with stuff in
-		spawn(5)
-		hypospray.icon_state = "hypocolor"
-		hypospray.main_reagent = hypospray.reagents.get_master_reagent_reference()
-		var/icon/hypoc = new/icon("icon" = 'chemical.dmi', "icon_state" = "hypocolormod")
-		hypoc.Blend(rgb(hypospray.main_reagent:color_r, hypospray.main_reagent:color_g, hypospray.main_reagent:color_b), ICON_ADD)
-		hypospray.overlays += hypoc
-		hypospray.main_reagent = ""
-
-		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
-			if(user.hand)
-				user.l_hand = hypospray
-			else
-				user.r_hand = hypospray
-		src.hypospray = null
-		icon_state = "tricorder_0"
-		spawn(3)
-		return
-	return
+	origin_tech = "materials=2;magnets=4;biotech=4"
 /obj/item/device/igniter
 	name = "igniter"
-	desc = "A small electronic device able to ignite combustable substances. Does not function well as a lighter."
+	desc = "A small electronic device able to ignite combustable substances."
 	icon_state = "igniter"
 	var/status = 1.0
 	flags = FPRINT | TABLEPASS| CONDUCT
@@ -811,7 +561,7 @@
 	w_class = 1.0
 	throw_speed = 3
 	throw_range = 10
-	origin_tech = "magnets=1"
+	origin_tech = "materials=2"
 
 /obj/item/device/infra
 	name = "Infrared Beam (Security)"
@@ -824,8 +574,7 @@
 	w_class = 2.0
 	item_state = "electronic"
 	m_amt = 150
-	origin_tech = "magnets=2"
-
+	origin_tech = "materials=2"
 /obj/item/device/infra_sensor
 	name = "Infrared Sensor"
 	desc = "Scans for infrared beams in the vicinity."
@@ -834,8 +583,7 @@
 	flags = FPRINT | TABLEPASS| CONDUCT
 	item_state = "electronic"
 	m_amt = 150
-	origin_tech = "magnets=2"
-
+	origin_tech = "materials=2"
 /obj/item/device/t_scanner
 	name = "T-ray scanner"
 	desc = "A terahertz-ray emitter and scanner used to detect underfloor objects such as cables and pipes."
@@ -845,147 +593,10 @@
 	w_class = 2
 	item_state = "electronic"
 	m_amt = 150
-	origin_tech = "magnets=3;engineering=3"
-
-//portable jammer
-/obj/item/device/radio/portajammer
-	name = "signal jammer"
-	desc = "Used for jamming signals in a small radius."
-	icon = 'device.dmi'
-	icon_state = "portajammer"
-	flags = FPRINT | TABLEPASS | ONBELT | CONDUCT
-	force = 5.0
-	w_class = 2.0
-	throwforce = 5.0
-	throw_range = 15
-	throw_speed = 3
-	m_amt = 50
-	g_amt = 20
-	var/on = 0
-	origin_tech = "magnets=3;engineering=3"
-
-/obj/item/device/signalermotion
-	name = "proximity sensor and signaler assembly"
-	desc = "Used for detecting signals"
-	icon_state = "signalermotion"
-	flags = FPRINT | TABLEPASS| CONDUCT
-	force = 5.0
-	w_class = 2.0
-	throwforce = 5.0
-	throw_range = 15
-	throw_speed = 3
-	m_amt = 50
-	g_amt = 20
-	origin_tech = "engineering=5"
-
-/obj/item/device/radio/signaler/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	..()
-	if (istype(W, /obj/item/device/prox_sensor/))
-		var/obj/item/device/prox_sensor/S = W
-		var/obj/item/device/signalermotion/R = new /obj/item/device/signalermotion( user )
-		S.loc = R
-		S.layer = initial(S.layer)
-		if (user.client)
-			user.client.screen -= S
-		if (user.r_hand == S)
-			user.u_equip(S)
-			user.r_hand = R
-		else
-			user.u_equip(S)
-			user.l_hand = R
-		S.master = R
-		src.master = R
-		src.layer = initial(src.layer)
-		user.u_equip(src)
-		if (user.client)
-			user.client.screen -= src
-		src.loc = R
-		R.layer = 20
-		R.loc = user
-		src.add_fingerprint(user)
-		src << "\red You attach the signaler to the proximity sensor"
-
-/obj/item/device/signalermotion/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	..()
-	if (istype(W, /obj/item/device/radio/headset/))
-		var/obj/item/device/prox_sensor/S = W
-		var/obj/item/device/radio/portajammer/R = new /obj/item/device/radio/portajammer( user )
-		S.loc = R
-		S.layer = initial(S.layer)
-		if (user.client)
-			user.client.screen -= S
-		if (user.r_hand == S)
-			user.u_equip(S)
-			user.r_hand = R
-		else
-			user.u_equip(S)
-			user.l_hand = R
-		S.master = R
-		src.master = R
-		src.layer = initial(src.layer)
-		user.u_equip(src)
-		if (user.client)
-			user.client.screen -= src
-		src.loc = R
-		R.layer = 20
-		R.loc = user
-		src.add_fingerprint(user)
-		src << "\red You attach the headset to the proximity sensor and signaler assembly"
-
-/obj/item/device/radio/portajammer/Topic(href, href_list)
-	//..()
-	if (usr.stat || usr.restrained())
-		return
-	if (((istype(usr, /mob/living/carbon/human) && ((!( ticker ) || (ticker && ticker.mode != "monkey")) && usr.contents.Find(src))) || (usr.contents.Find(src.master) || (in_range(src, usr) && istype(src.loc, /turf)))))
-		usr.machine = src
-		if (href_list["freq"])
-			var/new_frequency = sanitize_frequency(frequency + text2num(href_list["freq"]))
-			set_frequency(new_frequency)
-		else
-			if (href_list["power"])
-				src.on = !( src.on )
-		if (!( src.master ))
-			if (istype(src.loc, /mob))
-				attack_self(src.loc)
-			else
-				for(var/mob/M in viewers(1, src))
-					if (M.client)
-						src.attack_self(M)
-					//Foreach goto(308)
-		else
-			if (istype(src.master.loc, /mob))
-				src.attack_self(src.master.loc)
-			else
-				for(var/mob/M in viewers(1, src.master))
-					if (M.client)
-						src.attack_self(M)
-					//Foreach goto(384)
-	else
-		usr << browse(null, "window=jammer")
-		return
-	return
-
-/obj/item/device/radio/portajammer/attack_self(mob/user as mob, flag1)
-
-	if (!( istype(user, /mob/living/carbon/human) ))
-		return
-	user.machine = src
-	var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT>
-<A href='?src=\ref[src];power=1'>Turn [src.on ? "Off" : "On"]</A><BR>
-Frequency:
-<A href='byond://?src=\ref[src];freq=-10'>-</A>
-<A href='byond://?src=\ref[src];freq=-2'>-</A> [format_frequency(src.frequency)]
-<A href='byond://?src=\ref[src];freq=2'>+</A>
-<A href='byond://?src=\ref[src];freq=10'>+</A><BR>
-</TT>"}
-	user << browse(dat, "window=jammer")
-	onclose(user, "jammer")
-	return
-//end portable jammer
+	origin_tech = "materials=2;magnets=2"
 
 /obj/item/device/multitool
 	name = "multitool"
-	desc = "Used for pulsing wires to test which to cut. Not recommended by doctors."
 	icon_state = "multitool"
 	flags = FPRINT | TABLEPASS| CONDUCT
 	force = 5.0
@@ -993,14 +604,13 @@ Frequency:
 	throwforce = 5.0
 	throw_range = 15
 	throw_speed = 3
+	desc = "You can use this on airlocks or APCs to try to hack them without cutting wires."
 	m_amt = 50
 	g_amt = 20
-	origin_tech = "magnets=2;engineering=2"
-
+	origin_tech = "materials=2;magnets=2"
 
 /obj/item/device/prox_sensor
 	name = "Proximity Sensor"
-	desc = "Used for scanning and alerting when someone enters a certain proximity."
 	icon_state = "motion0"
 	var/state = 0.0
 	var/timing = 0.0
@@ -1009,12 +619,10 @@ Frequency:
 	w_class = 2.0
 	item_state = "electronic"
 	m_amt = 300
-	origin_tech = "magnets=1"
-
+	origin_tech = "materials=2;magnets=2"
 
 /obj/item/device/shield
 	name = "shield"
-	desc = "This is an item which is specially crafted to shield you. It is much like a visible version of the outdated cloaking device."
 	icon_state = "shield0"
 	var/active = 0.0
 	flags = FPRINT | TABLEPASS| CONDUCT
@@ -1023,10 +631,10 @@ Frequency:
 	throw_speed = 1
 	throw_range = 5
 	w_class = 2.0
+	origin_tech = "materials=2;magnets=5"
 
 /obj/item/device/timer
 	name = "timer"
-	desc = "Used to time things. Works well with contraptions which has to count down. Tick tock."
 	icon_state = "timer0"
 	item_state = "electronic"
 	var/timing = 0.0
@@ -1034,6 +642,7 @@ Frequency:
 	flags = FPRINT | TABLEPASS| CONDUCT
 	w_class = 2.0
 	m_amt = 100
+	origin_tech = "materials=1;magnets=1"
 
 /obj/item/blueprints
 	name = "station blueprints"
@@ -1055,15 +664,11 @@ Frequency:
 	anchored = 1.0
 	unacidable = 1
 
-/obj/landmark/New()
-	landmarkz += src
-
 /obj/landmark/alterations
 	name = "alterations"
 
 /obj/laser
 	name = "laser"
-	desc = "IT BURNS!!!"
 	icon = 'projectiles.dmi'
 	var/damage = 0.0
 	var/range = 10.0
@@ -1080,20 +685,18 @@ Frequency:
 
 /obj/lattice/New()
 	..()
-//	if(!(istype(src.loc, /turf/space)))
-//		del(src)
+	if(!(istype(src.loc, /turf/space)))
+		del(src)
 	for(var/obj/lattice/LAT in src.loc)
 		if(LAT != src)
 			del(LAT)
-	if(icon_state == "latticefull")
-		icon = 'smoothlattice.dmi'
-		icon_state = "latticeblank"
-		updateOverlays()
-		for (var/dir in cardinal)
-			var/obj/lattice/L
-			if(locate(/obj/lattice, get_step(src, dir)))
-				L = locate(/obj/lattice, get_step(src, dir))
-				L.updateOverlays()
+	icon_state = "latticeblank"
+	updateOverlays()
+	for (var/dir in cardinal)
+		var/obj/lattice/L
+		if(locate(/obj/lattice, get_step(src, dir)))
+			L = locate(/obj/lattice, get_step(src, dir))
+			L.updateOverlays()
 
 /obj/lattice/Del()
 	for (var/dir in cardinal)
@@ -1104,75 +707,30 @@ Frequency:
 	..()
 
 /obj/lattice/proc/updateOverlays()
-	if(icon == 'smoothlattice.dmi')
-		//if(!(istype(src.loc, /turf/space)))
-		//	del(src)
-		spawn(1)
-			overlays = list()
+	//if(!(istype(src.loc, /turf/space)))
+	//	del(src)
+	spawn(1)
+		overlays = list()
+		overlays += icon(icon,"lattice-middlebar") //the nw-se bar in the cneter
+		for (var/dir in cardinal)
+			if(locate(/obj/lattice, get_step(src, dir)))
+				src.overlays += icon(icon,"lattice-[dir2text(dir)]")
+			else
+				src.overlays += icon(icon,"lattice-nc-[dir2text(dir)]") //t for turf
+				if(!(istype(get_step(src, dir), /turf/space)))
+					src.overlays += icon(icon,"lattice-t-[dir2text(dir)]") //t for turf
 
-			var/dir_sum = 0
+		//if ( !( (locate(/obj/lattice, get_step(src, SOUTH))) || (locate(/obj/lattice, get_step(src, EAST))) ))
+		//	src.overlays += icon(icon,"lattice-c-se")
+		if ( !( (locate(/obj/lattice, get_step(src, NORTH))) || (locate(/obj/lattice, get_step(src, WEST))) ))
+			src.overlays += icon(icon,"lattice-c-nw")
+		if ( !( (locate(/obj/lattice, get_step(src, NORTH))) || (locate(/obj/lattice, get_step(src, EAST))) ))
+			src.overlays += icon(icon,"lattice-c-ne")
+		if ( !( (locate(/obj/lattice, get_step(src, SOUTH))) || (locate(/obj/lattice, get_step(src, WEST))) ))
+			src.overlays += icon(icon,"lattice-c-sw")
 
-			for (var/direction in cardinal)
-				if(locate(/obj/lattice, get_step(src, direction)))
-					dir_sum += direction
-				else
-					if(!(istype(get_step(src, direction), /turf/space)))
-						dir_sum += direction
-
-			icon_state = "lattice[dir_sum]"
-			return
-
-			/*
-			overlays += icon(icon,"lattice-middlebar") //the nw-se bar in the cneter
-			for (var/dir in cardinal)
-				if(locate(/obj/lattice, get_step(src, dir)))
-					src.overlays += icon(icon,"lattice-[dir2text(dir)]")
-				else
-					src.overlays += icon(icon,"lattice-nc-[dir2text(dir)]") //t for turf
-					if(!(istype(get_step(src, dir), /turf/space)))
-						src.overlays += icon(icon,"lattice-t-[dir2text(dir)]") //t for turf
-
-			//if ( !( (locate(/obj/lattice, get_step(src, SOUTH))) || (locate(/obj/lattice, get_step(src, EAST))) ))
-			//	src.overlays += icon(icon,"lattice-c-se")
-			if ( !( (locate(/obj/lattice, get_step(src, NORTH))) || (locate(/obj/lattice, get_step(src, WEST))) ))
-				src.overlays += icon(icon,"lattice-c-nw")
-			if ( !( (locate(/obj/lattice, get_step(src, NORTH))) || (locate(/obj/lattice, get_step(src, EAST))) ))
-				src.overlays += icon(icon,"lattice-c-ne")
-			if ( !( (locate(/obj/lattice, get_step(src, SOUTH))) || (locate(/obj/lattice, get_step(src, WEST))) ))
-				src.overlays += icon(icon,"lattice-c-sw")
-
-			if(!(overlays))
-				icon_state = "latticefull"
-			*/
-
-/obj/thinwall
-	name = "wall"
-	icon = 'structures.dmi'
-	icon_state = "thinwall"
-	desc = "Looks simply like a thin version of a metal wall."
-	density = 0
-	opacity = 1
-	var/ini_dir = null
-	var/state = 0
-	var/health = 200
-	pressure_resistance = 4*ONE_ATMOSPHERE
-	anchored = 1.0
-	flags = ON_BORDER
-
-/obj/thinwall/north
-	dir = NORTH
-
-/obj/thinwall/east
-	dir = EAST
-
-/obj/thinwall/west
-	dir = WEST
-
-/obj/thinwall/south
-	dir = SOUTH
-
-/obj/thinwall/glass
-	opacity = 0
+		if(!(overlays))
+			icon_state = "latticefull"
 
 /obj/list_container
 	name = "list container"
@@ -1185,7 +743,6 @@ Frequency:
 
 /obj/m_tray
 	name = "morgue tray"
-	desc = "Apply corpse before closing."
 	icon = 'stationobjs.dmi'
 	icon_state = "morguet"
 	density = 1
@@ -1195,7 +752,6 @@ Frequency:
 
 /obj/c_tray
 	name = "crematorium tray"
-	desc = "Apply body before burning."
 	icon = 'stationobjs.dmi'
 	icon_state = "cremat"
 	density = 1
@@ -1212,29 +768,12 @@ Frequency:
 	anchored =1
 	var/netnum = 0
 	name = "power cable"
-	desc = "A flexible superconducting cable for heavy-duty power transfer. Comes in clown colors now."
-	icon = 'power_cond_red.dmi'
+	desc = "A flexible superconducting cable for heavy-duty power transfer."
+	icon = 'power_cond.dmi'
 	icon_state = "0-1"
 	var/d1 = 0
 	var/d2 = 1
 	layer = 2.5
-	var/colour="red"
-
-/obj/cable/yellow
-	colour="yellow"
-	icon = 'power_cond_yellow.dmi'
-
-/obj/cable/green
-	colour="green"
-	icon = 'power_cond_green.dmi'
-
-/obj/cable/blue
-	colour="blue"
-	icon = 'power_cond_blue.dmi'
-
-/obj/cable/pink
-	colour="red"
-	icon = 'power_cond_pink.dmi'
 
 /obj/manifest
 	name = "manifest"
@@ -1244,7 +783,6 @@ Frequency:
 
 /obj/morgue
 	name = "morgue"
-	desc = "Used to keep bodies in untill someone fetches them."
 	icon = 'stationobjs.dmi'
 	icon_state = "morgue1"
 	density = 1
@@ -1253,7 +791,7 @@ Frequency:
 
 /obj/crematorium
 	name = "crematorium"
-	desc = "A human incinerator. Works well on barbeque nights."
+	desc = "A human incinerator."
 	icon = 'stationobjs.dmi'
 	icon_state = "crema1"
 	density = 1
@@ -1302,20 +840,23 @@ Frequency:
 /obj/overlay
 	name = "overlay"
 	unacidable = 1
-	var/i_attached//Added for possible image attachments to objects. For hallucinations and the like.
 
-/obj/overlay/beam//Not actually a projectile, just an effect.
-	name="beam"
-	icon='beam.dmi'
-	icon_state="b_beam"
-	var/tmp/atom/BeamSource
-	New()
-		..()
-		spawn(10) del src
+/obj/overlay/gas
+	name = "particulate"
+	unacidable = 1
+	mouse_opacity = 0
+	icon = 'tile_effects.dmi'
+
+/obj/overlay/gas/plasma
+	name = "particulate"
+	icon_state = "plasma"
+
+/obj/overlay/gas/sleeping_agent
+	name = "particulate"
+	icon_state = "sleeping_agent"
 
 /obj/portal
 	name = "portal"
-	desc = "Looks unstable. Best to test it with the clown."
 	icon = 'stationobjs.dmi'
 	icon_state = "portal"
 	density = 1
@@ -1327,12 +868,10 @@ Frequency:
 
 /obj/projection
 	name = "Projection"
-	desc = "This looks like a projection of something."
 	anchored = 1.0
 
 /obj/rack
 	name = "rack"
-	desc = "Different from the Middle Ages version."
 	icon = 'objects.dmi'
 	icon_state = "rack"
 	density = 1
@@ -1377,50 +916,30 @@ Frequency:
 	icon_state = "x"
 	anchored = 1.0
 
-/obj/brigbed
-	name = "bed"
-	desc = "A prison bed."
-	icon = 'objects.dmi'
-	icon_state = "bed"
-	flags = FPRINT
-	pressure_resistance = 3*ONE_ATMOSPHERE
-
 /obj/stool
 	name = "stool"
-	desc = "Apply butt."
 	icon = 'objects.dmi'
 	icon_state = "stool"
 	flags = FPRINT
 	pressure_resistance = 3*ONE_ATMOSPHERE
 
-/obj/stool/bar
-	name = "stool"
-	desc = "Apply butt."
-	icon = 'objects.dmi'
-	icon_state = "barstool"
-	flags = FPRINT
-	pressure_resistance = 3*ONE_ATMOSPHERE
-
 /obj/stool/bed
 	name = "bed"
-	desc = "This is used to lie in, sleep in or strap on."
 	icon_state = "bed"
+	desc = "Suprisingly it's more comfortable than sleeping on the floor."
 	anchored = 1.0
 	var/list/buckled_mobs = list(  )
 
 /obj/stool/chair
 	name = "chair"
-	desc = "You sit in this. Either by will or force."
 	icon_state = "chair"
 	var/status = 0.0
-	anchored = 1
+	anchored = 1.0
 	var/list/buckled_mobs = list(  )
 
 /obj/stool/chair/e_chair
 	name = "electrified chair"
-	desc = "Looks absolutely SHOCKING!"
 	icon_state = "e_chair0"
-	anchored = 1
 	var/atom/movable/overlay/overl = null
 	var/on = 0.0
 	var/obj/item/assembly/shock_kit/part1 = null
@@ -1428,229 +947,30 @@ Frequency:
 
 /obj/table
 	name = "table"
-	desc = "A square piece of metal standing on four metal legs. It can not move."
 	icon = 'structures.dmi'
 	icon_state = "table"
+	desc = "Some people actually put things on tables, did you know that?"
 	density = 1
 	anchored = 1.0
-	layer = 2.8
-
-	New()
-		..()
-		for(var/obj/table/T in src.loc)
-			if(T != src)
-				del(T)
-		update_icon()
-		for(var/direction in list(1,2,4,8,5,6,9,10))
-			if(locate(/obj/table,get_step(src,direction)))
-				var/obj/table/T = locate(/obj/table,get_step(src,direction))
-				T.update_icon()
-
-	Del()
-		for(var/direction in list(1,2,4,8,5,6,9,10))
-			if(locate(/obj/table,get_step(src,direction)))
-				var/obj/table/T = locate(/obj/table,get_step(src,direction))
-				T.update_icon()
-		..()
-
-	update_icon()
-		spawn(2) //So it properly updates when deleting
-			var/dir_sum = 0
-			for(var/direction in cardinal)
-				var/skip_sum = 0
-				for(var/obj/window/W in src.loc)
-					if(W.dir == direction) //So smooth tables don't go smooth through windows
-						skip_sum = 1
-						continue
-				var/inv_direction //inverse direction
-				switch(direction)
-					if(1)
-						inv_direction = 2
-					if(2)
-						inv_direction = 1
-					if(4)
-						inv_direction = 8
-					if(8)
-						inv_direction = 4
-				for(var/obj/window/W in get_step(src,direction))
-					if(W.dir == inv_direction) //So smooth tables don't go smooth through windows when the window is on the other table's tile
-						skip_sum = 1
-						continue
-				if(!skip_sum) //means there is a window between the two tiles in this direction
-					if(locate(/obj/table,get_step(src,direction)))
-						dir_sum += direction
-
-			//dir_sum:
-			//  1,2,4,8 = endtable
-			//  3,12 = streight 1 tile thick table
-			//  5,6,9,10 = corner, if it finds a table in get_step(src,dir_sum) then it's a full corner table, else it's a 1 tile chick corner table
-			//  7,11,13,14 = three way intersection = full side table piece (north ,south, east or west)
-			//  15 = four way intersection = center (aka middle) table piece
-			//
-			//table_type:
-			//  0 = stand-alone table
-			//  1 = end table (1 tile thick, 1 connection)
-			//  2 = 1 tile thick table (1 tile thick, 2 connections)
-			//  3 = full table (full, 3 connections)
-			//  4 = middle table (full, 4 connections)
-
-			var/table_type = 0 //stand_alone table
-			if(dir_sum in cardinal)
-				table_type = 1 //endtable
-			if(dir_sum in list(3,12))
-				table_type = 2 //1 tile thick, streight table
-				if(dir_sum == 3) //3 doesn't exist as a dir
-					dir_sum = 2
-				if(dir_sum == 12) //12 doesn't exist as a dir.
-					dir_sum = 4
-			if(dir_sum in list(5,6,9,10))
-				if(locate(/obj/table,get_step(src.loc,dir_sum)))
-					table_type = 3 //full table (not the 1 tile thick one, but one of the 'tabledir' tables)
-				else
-					table_type = 2 //1 tile thick, corner table (treated the same as streight tables in code later on)
-			if(dir_sum in list(13,14,7,11)) //Three-way intersection
-				table_type = 3 //full table as three-way intersections are not sprited, would require 64 sprites to handle all combinations
-				switch(dir_sum)
-					if(7)
-						dir_sum = 4
-					if(11)
-						dir_sum = 8
-					if(13)
-						dir_sum = 1
-					if(14)
-						dir_sum = 2 //These translate the dir_sum to the correct dirs from the 'tabledir' icon_state.
-			if(dir_sum == 15)
-				table_type = 4 //4-way intersection, the 'middle' table sprites will be used.
-
-			if(istype(src,/obj/table/reinforced/wood))
-				switch(table_type)
-					if(0)
-						icon_state = "reinfwood_table"
-					if(1)
-						icon_state = "reinfwood_1tileendtable"
-					if(2)
-						icon_state = "reinfwood_1tilethick"
-					if(3)
-						icon_state = "reinfwood_tabledir"
-					if(4)
-						icon_state = "reinfwood_middle"
-			else if(istype(src,/obj/table/reinforced))
-				switch(table_type)
-					if(0)
-						icon_state = "reinf_table"
-					if(1)
-						icon_state = "reinf_1tileendtable"
-					if(2)
-						icon_state = "reinf_1tilethick"
-					if(3)
-						icon_state = "reinf_tabledir"
-					if(4)
-						icon_state = "reinf_middle"
-			else if(istype(src,/obj/table/woodentable))
-				switch(table_type)
-					if(0)
-						icon_state = "wood_table"
-					if(1)
-						icon_state = "wood_1tileendtable"
-					if(2)
-						icon_state = "wood_1tilethick"
-					if(3)
-						icon_state = "wood_tabledir"
-					if(4)
-						icon_state = "wood_middle"
-			else if(istype(src,/obj/table/tutorial))
-				return
-			else if(istype(src,/obj/table/shelf))
-				return
-			else
-				switch(table_type)
-					if(0)
-						icon_state = "table"
-					if(1)
-						icon_state = "table_1tileendtable"
-					if(2)
-						icon_state = "table_1tilethick"
-					if(3)
-						icon_state = "tabledir"
-					if(4)
-						icon_state = "table_middle"
-			if (dir_sum in list(1,2,4,8,5,6,9,10))
-				dir = dir_sum
-			else
-				dir = 2
 
 /obj/table/reinforced
 	name = "reinforced table"
-	desc = "A version of the four legged table. It is stronger."
 	icon_state = "reinf_table"
 	var/status = 2
 
-/obj/table/reinforced/wood
+/obj/table/reinforcedb
 	name = "reinforced table"
-	desc = "A version of the four legged table. It is stronger."
-	icon_state = "reinfwood_table"
-	status = 2
+	icon_state = "reinf_tabledir1"
+	var/status = 2
 
 /obj/table/woodentable
 	name = "wooden table"
-	desc = "Do not apply fire to this. Rumour says it burns easily."
-	icon_state = "wood_table"
+	icon_state = "woodentable"
 
-/obj/table/tutorial
-	name = "virtual table"
-	desc = "If you're holding something, and you click a table while standing next to it, you'll set your item on the table."
-	icon = 'tutorial.dmi'
-	icon_state = "table"
-	density = 1
-	anchored = 1.0
-	layer = 2.8
+/obj/table/cheftable
+	name = "reinforced table"
+	icon_state = "reinf_cheftable"
 
-/obj/table/shelf
-	name = "shelving unit"
-	desc = "An efficient surface area management system. It can not move."
-	icon_state = "metalshelf"
-/*
-	proc
-		addbottle(var/obj/item/weapon/book/b)
-			for(var/i=1,i<=14,i++)
-				if(!stored_books[1][i])
-					stored_books[1][i]=b
-					generateBook(i)
-					return 1
-			return 0
-		removebottle(var/obj/item/weapon/book/b)
-			for(var/i=1,i<=14,i++)
-				if(stored_books[1][i]==b)
-					stored_books[1][i]=null
-					stored_books[2][i]=null
-					updateIcons()
-
-		generatebottle(var/i)
-			var/icon/shelf_icon = new/icon("icon" = initial(icon), "icon_state" = "shelf_book")
-			var/colour_min=0
-			var/colour_max=50
-			shelf_icon.Blend(rgb(rand(colour_min,colour_max), rand(colour_min,colour_max), rand(colour_min,colour_max)), ICON_ADD)
-			var/icon/shelf_band = new/icon("icon" = initial(icon), "icon_state" = "shelf_band[rand(0,5)]")
-			colour_min=50
-			colour_max=150
-			shelf_band.Blend(rgb(rand(colour_min,colour_max), rand(colour_min,colour_max), rand(colour_min,colour_max)), ICON_ADD)
-			shelf_icon.Blend(shelf_band, ICON_OVERLAY)
-			//NORTH 2||14
-			var/north_shift=2
-			if(i%2)north_shift=14
-			var/east_shift=2+( (i+(i%2))*1.5 )
-			shelf_icon.Shift(NORTH,north_shift)
-			shelf_icon.Shift(EAST,east_shift)
-			stored_books[2][i]=shelf_icon
-			updateIcons()
-
-		updateIcons()
-			var/icon/bookshelf_icon=new/icon("icon" = initial(icon), "icon_state" = initial(icon_state))
-			for(var/i=1,i<=14,i++)
-				if(stored_books[2][i])
-					bookshelf_icon.Blend(stored_books[2][i],ICON_OVERLAY)
-			icon=bookshelf_icon
-*/
 /obj/mopbucket
 	desc = "Fill it with water, but don't forget a mop!"
 	name = "mop bucket"
@@ -1660,7 +980,7 @@ Frequency:
 	flags = FPRINT
 	pressure_resistance = ONE_ATMOSPHERE
 	flags = FPRINT | TABLEPASS | OPENCONTAINER
-	var/amount_per_transfer_from_this = 5 //shit I dunno, adding this so syringes stop runtime erroring. --NeoFite
+	var/amount_per_transfer_from_this = 5
 
 /obj/kitchenspike
 	name = "a meat spike"
@@ -1673,11 +993,30 @@ Frequency:
 	var/occupied = 0
 	var/meattype = 0 // 0 - Nothing, 1 - Monkey, 2 - Xeno
 
+/obj/tree
+	name = "tree"
+	icon = 'trees.dmi'
+	icon_state = "winterpine"
+	desc = "A tree."
+	density = 1
+	anchored = 1
+	opacity = 1
+	pixel_x = -16
+	layer = 6
+
+/obj/datablade
+	name = "datacore"
+	icon = 'stationobjs.dmi'
+	icon_state = "ai-ambience"
+	density = 1
+	anchored = 1
+	opacity = 0
+
 /obj/displaycase
 	name = "Display Case"
 	icon = 'stationobjs.dmi'
 	icon_state = "glassbox1"
-	desc = "A display case for prized possessions. It taunts you to kick it."
+	desc = "A display case for prized possessions."
 	density = 1
 	anchored = 1
 	unacidable = 1//Dissolving the case would also delete the gun.
@@ -1685,19 +1024,8 @@ Frequency:
 	var/occupied = 1
 	var/destroyed = 0
 
-/obj/showcase
-	name = "Showcase"
-	icon = 'stationobjs.dmi'
-	icon_state = "showcase_1"
-	desc = "A stand with the empty body of a cyborg bolted to it."
-	density = 1
-	anchored = 1
-	unacidable = 1//temporary until I decide whether the borg can be removed. -veyveyr
-
-//BEGIN BRAINS=====================================================
 /obj/item/brain
 	name = "brain"
-	desc = "A piece of juicy meat found in a persons head."
 	icon = 'surgery.dmi'
 	icon_state = "brain2"
 	flags = TABLEPASS
@@ -1707,70 +1035,35 @@ Frequency:
 	throw_speed = 3
 	throw_range = 5
 	origin_tech = "biotech=3"
+	var/mob/living/carbon/human/owner = null
+	var/mob/living/carbon/brain/brainmob = null
 
-	var
-		mob/living/carbon/brain/brainmob = null
-
-	New()
-		..()
-		//Shifting the brain "mob" over to the brain object so it's easier to keep track of. --NEO
-		//WASSSSSUUUPPPP /N
-		spawn(5)
-			if(brainmob&&brainmob.client)
+/obj/item/brain/New()
+	..()
+	spawn(5)
+		if(src.owner)
+			src.name = "[src.owner]'s brain"
+			//Shifting the brain "mob" over to the brain object so it's easier to keep track of. --NEO
+			brainmob = new /mob/living/carbon/brain
+			brainmob.loc = src
+			brainmob.name = owner.real_name
+			brainmob.real_name = owner.real_name
+			if(src.owner.mind)
+				src.owner.mind.transfer_to(brainmob)
+			brainmob.death() //the brain is dead until stuffed into an MMI. In which case it might still be dead if it's been beat up.
+			if(brainmob.client)
 				brainmob.client.screen.len = null //clear the hud
+			brainmob << "\blue You might feel slightly disoriented."
 
-	proc
-		transfer_identity(var/mob/living/carbon/human/H)
-			name = "[H]'s brain"
-			brainmob = new(src)
-			brainmob.name = H.real_name
-			brainmob.real_name = H.real_name
-			brainmob.dna = H.dna
-			if(H.mind)
-				H.mind.transfer_to(brainmob)
-			brainmob << "\blue You might feel slightly disoriented. That's normal when your brain gets cut out."
-			return
-
-//END BRAINS=====================================================
-
-
-
-// Basically this Metroid Core catalyzes reactions that normally wouldn't happen anywhere
-/obj/item/metroid_core
-	name = "metroid core"
-	desc = "A very slimy and tender part of a Metroid. They also legended to have \"magical powers\"."
-	icon = 'surgery.dmi'
-	icon_state = "metroid core"
-	flags = TABLEPASS
-	force = 1.0
-	w_class = 1.0
-	throwforce = 1.0
-	throw_speed = 3
-	throw_range = 6
-	origin_tech = "biotech=4"
-	var/POWERFLAG = 0 // sshhhhhhh
-	var/Flush = 30
-
-	New()
-		..()
-		var/datum/reagents/R = new/datum/reagents(100)
-		reagents = R
-		R.my_atom = src
-		POWERFLAG = rand(1,10)
-		//flags |= NOREACT
-
-		spawn()
-			Life()
-
-	proc/Life()
-		while(src)
-			sleep(10)
-			Flush--
-			if(Flush <= 0)
-				reagents.clear_reagents()
-				Flush = 30
-
-
+/obj/item/brain/Del()
+	if(src.brainmob)
+		if(src.brainmob.client)
+			var/mob/dead/observer/newmob
+			newmob = new/mob/dead/observer
+			newmob.loc = get_turf(src)
+			src.brainmob:client:mob = newmob
+			newmob:client:eye = newmob
+	..()
 
 
 /obj/noticeboard
@@ -1783,6 +1076,29 @@ Frequency:
 	anchored = 1
 	var/notices = 0
 
+/obj/priceboard
+	name = "pricing board"
+	icon = 'stationobjs.dmi'
+	icon_state = "priceboard"
+	flags = FPRINT
+	desc = "A price board, click to view it."
+	density = 0
+	anchored = 1
+	var/items = "none"
+
+/obj/mapboard
+	name = "Map of Space Station 13"
+	icon = 'stationobjs.dmi'
+	icon_state = "mapboard"
+	flags = FPRINT
+	desc = "A map of the station. Click to view it."
+	density = 0
+	anchored = 1
+
+/obj/mapboard/New()
+	name = "Map of [station_name]"
+	desc = "A map of [station_name]. Click to view it."
+
 /obj/deskclutter
 	name = "desk clutter"
 	icon = 'items.dmi'
@@ -1792,35 +1108,9 @@ Frequency:
 
 /obj/item/mouse_drag_pointer = MOUSE_ACTIVE_POINTER
 
-/obj/item/mechadoll
-	name = "doll"
-	icon = 'items.dmi'
-	desc = "A mecha doll, straight from one of your Japanese animes!"
-
-	New()
-		pixel_y = rand(-5,5)
-		pixel_x = rand(-5,5)
-
-/obj/item/mechadoll/durand
-	icon_state = "duranddoll"
-
-/obj/item/mechadoll/ripley
-	icon_state = "ripleydoll"
-
-/obj/item/mechadoll/gygax
-	icon_state = "gygaxdoll"
-
-/obj/item/mechadoll/marauder
-	icon_state = "marauderdoll"
-
-/obj/item/mechadoll/mining
-	icon_state = "miningrigdoll"
-
-
 // TODO: robust mixology system! (and merge with beakers, maybe)
 /obj/item/weapon/glass
 	name = "empty glass"
-	desc = "Emptysville."
 	icon = 'kitchen.dmi'
 	icon_state = "glass_empty"
 	item_state = "beaker"
@@ -1833,37 +1123,19 @@ Frequency:
 		src.pixel_x = rand(-5, 5)
 		src.pixel_y = rand(-5, 5)
 
-/obj/item/weapon/storage
-	icon = 'storage.dmi'
-	name = "storage"
-	var/list/can_hold = new/list() //List of objects which this item can store (if set, it can't store anything else)
-	var/list/cant_hold = new/list() //List of objects which this item can't store (in effect only if can_hold isn't set)
-	var/max_w_class = 2 //Max size of objects that this object can store (in effect only if can_hold isn't set)
-	var/max_combined_w_class = 14 //The sum of the w_classes of all the items in this storage item.
-	var/storage_slots = 7 //The number of storage slots in this container.
-	var/obj/screen/storage/boxes = null
-	var/obj/screen/close/closer = null
-	w_class = 3.0
+/obj/item/weapon/storage/glassbox
+	name = "Glassware Box"
+	icon_state = "beakerbox"
+	item_state = "syringe_kit"
 	New()
 		..()
-		src.pixel_x = rand(-3.0, 3)
-		src.pixel_y = rand(-3.0, 3)
-
-
-/obj/item/weapon/storage/glasswarebox
-	name = "Glassware Box"
-	icon_state = "glassware"
-	item_state = "syringe_kit"
-
-/obj/item/weapon/storage/glasswarebox/New()
-	..()
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
+		new /obj/item/weapon/glass( src )
+		new /obj/item/weapon/glass( src )
+		new /obj/item/weapon/glass( src )
+		new /obj/item/weapon/glass( src )
+		new /obj/item/weapon/glass( src )
+		new /obj/item/weapon/glass( src )
+		new /obj/item/weapon/glass( src )
 
 /obj/item/weapon/storage/cupbox
 	name = "Paper-cup Box"
@@ -1871,33 +1143,16 @@ Frequency:
 	item_state = "syringe_kit"
 	New()
 		..()
-		new /obj/item/weapon/reagent_containers/food/drinks/papercup( src )
-		new /obj/item/weapon/reagent_containers/food/drinks/papercup( src )
-		new /obj/item/weapon/reagent_containers/food/drinks/papercup( src )
-		new /obj/item/weapon/reagent_containers/food/drinks/papercup( src )
-		new /obj/item/weapon/reagent_containers/food/drinks/papercup( src )
-		new /obj/item/weapon/reagent_containers/food/drinks/papercup( src )
-		new /obj/item/weapon/reagent_containers/food/drinks/papercup( src )
-
-/obj/item/weapon/storage/silverwarebox
-	name = "Silverware"
-	icon_state = "silverware"
-	item_state = "syringe_kit"
-
-/obj/item/weapon/storage/silverwarebox/New()
-	new /obj/item/weapon/kitchen/utensil/fork( src )
-	new /obj/item/weapon/kitchen/utensil/fork( src )
-	new /obj/item/weapon/kitchen/utensil/fork( src )
-	new /obj/item/weapon/kitchen/utensil/spoon( src )
-	new /obj/item/weapon/kitchen/utensil/spoon( src )
-	new /obj/item/weapon/kitchen/utensil/knife( src )
-	new /obj/item/weapon/kitchen/utensil/knife( src )
-	..()
-	return
+		new /obj/item/weapon/reagent_containers/food/drinks/sillycup( src )
+		new /obj/item/weapon/reagent_containers/food/drinks/sillycup( src )
+		new /obj/item/weapon/reagent_containers/food/drinks/sillycup( src )
+		new /obj/item/weapon/reagent_containers/food/drinks/sillycup( src )
+		new /obj/item/weapon/reagent_containers/food/drinks/sillycup( src )
+		new /obj/item/weapon/reagent_containers/food/drinks/sillycup( src )
+		new /obj/item/weapon/reagent_containers/food/drinks/sillycup( src )
 
 /obj/falsewall
 	name = "wall"
-	desc = "A huge chunk of metal used to seperate rooms."
 	icon = 'walls.dmi'
 	icon_state = ""
 	density = 1
@@ -1906,16 +1161,6 @@ Frequency:
 
 /obj/falserwall
 	name = "r wall"
-	desc = "A huge chunk of reinforced metal used to seperate rooms."
-	icon = 'walls.dmi'
-	icon_state = "r_wall"
-	density = 1
-	opacity = 1
-	anchored = 1
-
-/obj/nanowall
-	name = "r wall"
-	desc = "A huge chunk of reinforced metal used to seperate rooms."
 	icon = 'walls.dmi'
 	icon_state = "r_wall"
 	density = 1
@@ -1929,7 +1174,6 @@ Frequency:
 
 /obj/item/stack/rods
 	name = "metal rods"
-	desc = "Some rods. Can be used for building, or something."
 	singular_name = "metal rod"
 	icon_state = "rods"
 	flags = FPRINT | TABLEPASS| CONDUCT
@@ -1951,31 +1195,8 @@ Frequency:
 	max_amount = 50
 	var/perunit = 3750
 
-/obj/item/stack/sheet/wood
-	name = "Wood Planks"
-	desc = "One can only guess that this is a bunch of wood."
-	singular_name = "wood plank"
-	icon_state = "sheet-wood"
-	force = 5.0
-	throwforce = 5
-	throw_speed = 3
-	throw_range = 3
-	origin_tech = "materials=1;biotech=1"
-
-/obj/item/stack/sheet/sandstone
-	name = "Sandstone Bricks"
-	desc = "This appears to be a combination of both sand and stone."
-	singular_name = "sandstone brick"
-	icon_state = "sheet-sandstone"
-	force = 5.0
-	throwforce = 5
-	throw_speed = 4
-	throw_range = 5
-	origin_tech = "materials=1"
-
 /obj/item/stack/sheet/glass
 	name = "glass"
-	desc = "HOLY HELL! That is a lot of glass."
 	singular_name = "glass sheet"
 	icon_state = "sheet-glass"
 	force = 5.0
@@ -1983,14 +1204,9 @@ Frequency:
 	throwforce = 5
 	throw_speed = 3
 	throw_range = 3
-	origin_tech = "materials=1"
-
-/obj/item/stack/sheet/glass/m50
-	amount = 50
 
 /obj/item/stack/sheet/rglass
 	name = "reinforced glass"
-	desc = "Glass which seems to have rods or something stuck in them."
 	singular_name = "reinforced glass sheet"
 	icon_state = "sheet-rglass"
 	force = 6.0
@@ -1999,12 +1215,11 @@ Frequency:
 	throwforce = 5
 	throw_speed = 3
 	throw_range = 3
-	origin_tech = "materials=2"
 
 /obj/item/stack/sheet/metal
 	name = "metal"
-	desc = "Sheets made out off metal. It has been dubbed Metal Sheets."
 	singular_name = "metal sheet"
+	desc = "A heavy sheet of metal."
 	icon_state = "sheet-metal"
 	force = 5.0
 	m_amt = 3750
@@ -2012,10 +1227,6 @@ Frequency:
 	throw_speed = 1
 	throw_range = 4
 	flags = FPRINT | TABLEPASS | CONDUCT
-	origin_tech = "materials=1"
-
-/obj/item/stack/sheet/metal/m50
-	amount = 50
 
 /obj/item/stack/sheet/r_metal
 	name = "reinforced metal"
@@ -2029,123 +1240,17 @@ Frequency:
 	throw_speed = 1
 	throw_range = 4
 	flags = FPRINT | TABLEPASS | CONDUCT
-	origin_tech = "materials=2"
 
-/obj/item/stack/tile/steel
-	name = "Steel floor tile"
-	singular_name = "Steel floor tile"
-	desc = "Those could work as a pretty decent close range throwing weapon"
+/obj/item/stack/tile
+	name = "steel floor tile"
+	singular_name = "steel floor tile"
+	desc = "Those could work as a pretty decent throwing weapon"
 	icon_state = "tile"
 	w_class = 3.0
 	force = 6.0
 	m_amt = 937.5
 	throwforce = 15.0
-	throw_speed = 3
-	throw_range = 10
-	flags = FPRINT | TABLEPASS | CONDUCT
-	max_amount = 60
-
-/obj/item/stack/tile/grass
-	name = "Grass tile"
-	singular_name = "Grass floor tile"
-	desc = "A patch of grass like they often use on golf courses"
-	icon_state = "tile_grass"
-	w_class = 3.0
-	force = 1.0
-	throwforce = 1.0
 	throw_speed = 5
 	throw_range = 20
 	flags = FPRINT | TABLEPASS | CONDUCT
-	max_amount = 60
-	origin_tech = "biotech=1"
-
-/obj/item/stack/light_w
-	name = "Wired glass tile"
-	singular_name = "Wired glass tile"
-	desc = "A glass tile, which is wired, somehow."
-	icon_state = "glass_wire"
-	w_class = 3.0
-	force = 3.0
-	throwforce = 5.0
-	throw_speed = 5
-	throw_range = 20
-	flags = FPRINT | TABLEPASS | CONDUCT
-	max_amount = 60
-
-	attackby(var/obj/item/O as obj, var/mob/user as mob)
-		..()
-		if(istype(O,/obj/item/weapon/wirecutters))
-			var/obj/item/weapon/cable_coil/CC = new/obj/item/weapon/cable_coil(user.loc)
-			CC.amount = 5
-			amount--
-			new/obj/item/stack/sheet/glass(user.loc)
-			if(amount <= 0)
-				user.u_equip(src)
-				del(src)
-
-		if(istype(O,/obj/item/stack/sheet/metal))
-			var/obj/item/stack/sheet/metal/M = O
-			M.amount--
-			if(M.amount <= 0)
-				user.u_equip(M)
-				del(M)
-			amount--
-			new/obj/item/stack/tile/light(user.loc)
-			if(amount <= 0)
-				user.u_equip(src)
-				del(src)
-
-/obj/item/stack/tile/light
-	name = "Light floor tile"
-	singular_name = "Light floor tile"
-	desc = "A floor tile, made out off glass. It produces light."
-	icon_state = "tile_e"
-	w_class = 3.0
-	force = 3.0
-	throwforce = 5.0
-	throw_speed = 5
-	throw_range = 20
-	flags = FPRINT | TABLEPASS | CONDUCT
-	max_amount = 60
-	var/on = 1
-	var/state //0 = fine, 1 = flickering, 2 = breaking, 3 = broken
-
-	New()
-		..()
-		if(prob(5))
-			state = 3 //broken
-		else if(prob(5))
-			state = 2 //breaking
-		else if(prob(10))
-			state = 1 //flickering occasionally
-		else
-			state = 0 //fine
-
-	attackby(var/obj/item/O as obj, var/mob/user as mob)
-		..()
-		if(istype(O,/obj/item/weapon/crowbar))
-			new/obj/item/stack/sheet/metal(user.loc)
-			amount--
-			new/obj/item/stack/light_w(user.loc)
-			if(amount <= 0)
-				user.u_equip(src)
-				del(src)
-
-
-/obj/item/weapon/beach_ball
-	icon = 'beach.dmi'
-	icon_state = "ball"
-	name = "beach ball"
-	item_state = "clown"
-	density = 0
-	anchored = 0
-	w_class = 1.0
-	force = 0.0
-	throwforce = 0.0
-	throw_speed = 1
-	throw_range = 20
-	flags = FPRINT | USEDELAY | TABLEPASS | CONDUCT
-	afterattack(atom/target as mob|obj|turf|area, mob/user as mob)
-		user.drop_item()
-		src.throw_at(target, throw_range, throw_speed)
-
+	max_amount = 20

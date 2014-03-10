@@ -11,10 +11,6 @@
 	var/stop = 0.0
 	var/screen = 0 // 0 - Main Menu, 1 - Cyborg Status, 2 - Kill 'em All! -- In text
 
-	ScreenColorRed = 0
-	ScreenColorGreen = 0.3
-	ScreenColorBlue = 0
-
 /obj/machinery/computer/robotics/attackby(I as obj, user as mob)
 	if(istype(I, /obj/item/weapon/screwdriver))
 		playsound(src.loc, 'Screwdriver.ogg', 50, 1)
@@ -63,14 +59,14 @@
 	user.machine = src
 	var/dat
 	if (src.temp)
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT>[src.temp]</TT><BR><BR><A href='?src=\ref[src];temp=1'>Clear Screen</A>"
+		dat = "<TT>[src.temp]</TT><BR><BR><A href='?src=\ref[src];temp=1'>Clear Screen</A>"
 	else
 		if(screen == 0)
 			dat += "<h3>Cyborg Control Console</h3><BR>"
 			dat += "<A href='?src=\ref[src];screen=1'>1. Cyborg Status</A><BR>"
 			dat += "<A href='?src=\ref[src];screen=2'>2. Emergency Full Destruct</A><BR>"
 		if(screen == 1)
-			for(var/mob/living/silicon/robot/R in mobz)
+			for(var/mob/living/silicon/robot/R in world)
 				if(istype(user, /mob/living/silicon/ai))
 					if (R.connected_ai != user) continue
 				if(istype(user, /mob/living/silicon/robot))
@@ -151,7 +147,6 @@
 				if(src.check_access(I))
 					if (!status)
 						message_admins("\blue [key_name_admin(usr)] has initiated the global cyborg killswitch!")
-						log_game("\blue [key_name(usr)] has initiated the global cyborg killswitch!")
 						src.status = 1
 						src.start_sequence()
 						src.temp = null
@@ -187,11 +182,10 @@
 			if(src.allowed(usr))
 				var/mob/living/silicon/robot/R = locate(href_list["killbot"])
 				if(R)
-					var/choice = strip_html(input("Are you certain you wish to detonate [R.name]?")) in list("Confirm", "Abort")
+					var/choice = input("Are you certain you wish to detonate [R.name]?") in list("Confirm", "Abort")
 					if(choice == "Confirm")
 						if(R)
 							message_admins("\blue [key_name_admin(usr)] detonated [R.name]!")
-							log_game("\blue [key_name_admin(usr)] detonated [R.name]!")
 							R.self_destruct()
 			else
 				usr << "\red Access Denied."
@@ -200,11 +194,10 @@
 			if(src.allowed(usr))
 				var/mob/living/silicon/robot/R = locate(href_list["stopbot"])
 				if(R)
-					var/choice = strip_html(input("Are you certain you wish to [R.canmove ? "lock down" : "release"] [R.name]?")) in list("Confirm", "Abort")
+					var/choice = input("Are you certain you wish to [R.canmove ? "lock down" : "release"] [R.name]?") in list("Confirm", "Abort")
 					if(choice == "Confirm")
 						if(R)
-							message_admins("\blue [key_name_admin(usr)] [R.canmove ? "locked down" : "released"] [R.name]!")
-							log_game("[key_name(usr)] [R.canmove ? "locked down" : "released"] [R.name]!")
+//							message_admins("\blue [key_name_admin(usr)] [R.canmove ? "locked down" : "released"] [R.name]!")
 							R.canmove = !R.canmove
 							if (R.lockcharge)
 							//	R.cell.charge = R.lockcharge
@@ -222,11 +215,9 @@
 			if(src.allowed(usr))
 				var/mob/living/silicon/robot/R = locate(href_list["magbot"])
 				if(R)
-					var/choice = strip_html(input("Are you certain you wish to hack [R.name]?")) in list("Confirm", "Abort")
+					var/choice = input("Are you certain you wish to hack [R.name]?") in list("Confirm", "Abort")
 					if(choice == "Confirm")
 						if(R)
-							message_admins("\blue [key_name_admin(usr)] emagged [R.name] using robotic console!")
-							log_game("[key_name(usr)] emagged [R.name] using robotic console!")
 							R.emagged = 1
 
 		src.add_fingerprint(usr)
@@ -243,7 +234,7 @@
 		sleep(10)
 	while(src.timeleft)
 
-	for(var/mob/living/silicon/robot/R in mobz)
+	for(var/mob/living/silicon/robot/R in world)
 		R.self_destruct()
 
 	return

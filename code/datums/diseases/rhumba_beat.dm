@@ -1,20 +1,19 @@
 /datum/disease/rhumba_beat
 	name = "The Rhumba Beat"
 	max_stages = 5
-	spread = "Via ingestion"
-	spread_type = SPECIAL
+	spread = "On contact"
+	spread_type = CONTACT_GENERAL
 	cure = "Chick Chicky Boom!"
 	cure_id = list("plasma")
 	agent = "Unknown"
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
 	permeability_mod = 1
-	why_so_serious = 1
+
 /datum/disease/rhumba_beat/stage_act()
 	..()
 	switch(stage)
 		if(1)
-			if(affected_mob.ckey == "rosham") //no idea who rosham supposedly is, but keeping it in in case it's revelant
+			if(affected_mob.ckey == "rosham")
 				src.cure()
 		if(2)
 			if(affected_mob.ckey == "rosham")

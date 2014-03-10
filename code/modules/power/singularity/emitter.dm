@@ -18,7 +18,6 @@
 
 	verb/rotate()
 		set name = "Rotate"
-		set category = "Object"
 		set src in oview(1)
 
 		if (src.anchored || usr:stat)
@@ -86,9 +85,9 @@
 				src.fire_delay = rand(20,100)
 				src.shot_number = 0
 			use_power(1000)
-			var/obj/item/projectile/beam/A = new /obj/item/projectile/beam( src.loc )
+			var/obj/beam/a_laser/A = new /obj/beam/a_laser( src.loc )
 			A.icon_state = "u_laser"
-			playsound(src.loc, 'emitter.ogg', 25, 1)
+			playsound(src.loc, 'emitter.ogg', 30, 1)
 			if(prob(35))
 				var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
 				s.set_up(5, 1, src)
@@ -146,7 +145,6 @@
 					return
 				if(1)
 					if (W:remove_fuel(0,user))
-						W:welding = 2
 						playsound(src.loc, 'Welder2.ogg', 50, 1)
 						user.visible_message("[user.name] starts to weld the [src.name] to the floor.", \
 							"You start to weld the [src] to the floor.", \
@@ -154,13 +152,11 @@
 						if (do_after(user,20))
 							state = 2
 							user << "You weld the [src] to the floor."
-						W:welding = 1
 					else
 						user << "\blue You need more welding fuel to complete this task."
 						return
 				if(2)
 					if (W:remove_fuel(0,user))
-						W:welding = 2
 						playsound(src.loc, 'Welder2.ogg', 50, 1)
 						user.visible_message("[user.name] starts to cut the [src.name] free from the floor.", \
 							"You start to cut the [src] free from the floor.", \
@@ -168,7 +164,6 @@
 						if (do_after(user,20))
 							state = 1
 							user << "You cut the [src] free from the floor."
-						W:welding = 1
 					else
 						user << "\blue You need more welding fuel to complete this task."
 						return

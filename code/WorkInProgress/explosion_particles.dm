@@ -27,14 +27,14 @@
 	else location = get_turf(loca)
 
 /datum/effects/system/expl_particles/proc/start()
-	//var/i = 0
-	//for(i=0, i<src.number, i++)
-	//	spawn(0)
-	//		var/obj/effects/expl_particles/expl = new /obj/effects/expl_particles(src.location)
-	//		var/direct = pick(alldirs)
-	//		for(i=0, i<pick(1;25,2;50,3,4;200), i++)
-	//			sleep(1)
-	//			step(expl,direct)
+	var/i = 0
+	for(i=0, i<src.number, i++)
+		spawn(0)
+			var/obj/effects/expl_particles/expl = new /obj/effects/expl_particles(src.location)
+			var/direct = pick(alldirs)
+			for(i=0, i<pick(1;25,2;50,3,4;200), i++)
+				sleep(1)
+				step(expl,direct)
 
 /obj/effects/explosion
 	name = "fire"
@@ -66,5 +66,5 @@
 	P.start()
 	spawn(5)
 		var/datum/effects/system/harmless_smoke_spread/S = new/datum/effects/system/harmless_smoke_spread()
-		S.set_up(1,0,location,null)
+		S.set_up(5,0,location,null)
 		S.start()

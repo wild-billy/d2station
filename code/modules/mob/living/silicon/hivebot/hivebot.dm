@@ -1,5 +1,5 @@
 /mob/living/silicon/hivebot/New(loc,mainframe)
-	//src << "\blue Your icons have been generated!"
+	src << "\blue Your icons have been generated!"
 	updateicon()
 
 	if(mainframe)
@@ -161,13 +161,13 @@
 		src.now_pushing = 1
 		if(ismob(AM))
 			var/mob/tmob = AM
-			if(istype(tmob, /mob/living/carbon/human) && tmob.mutations & FAT)
+			if(istype(tmob, /mob/living/carbon/human) && tmob.mutations & 32)
 				if(prob(20))
 					for(var/mob/M in viewers(src, null))
 						if(M.client)
 							M << M << "\red <B>[src] fails to push [tmob]'s fat ass out of the way.</B>"
-					src.achievement_give("That's No Moon, That's A Gourmand!", 67)
 					src.now_pushing = 0
+					src.achievement_give("That's No Moon, That's A Gourmand!", 12, 20)
 					return
 		src.now_pushing = 0
 		..()
@@ -294,7 +294,7 @@
 	if(!src.module)
 		src.pick_module()
 		return
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>Modules</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
+	var/dat = "<HEAD><TITLE>Modules</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
 	dat += {"<A HREF='?src=\ref[src];mach_close=robotmod'>Close</A>
 	<BR>
 	<BR>
@@ -410,7 +410,6 @@
 
 /mob/living/silicon/hivebot/proc/radio_menu()
 	var/dat = {"
-<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />
 <TT>
 Microphone: [src.radio.broadcasting ? "<A href='byond://?src=\ref[src.radio];talk=0'>Engaged</A>" : "<A href='byond://?src=\ref[src.radio];talk=1'>Disengaged</A>"]<BR>
 Speaker: [src.radio.listening ? "<A href='byond://?src=\ref[src.radio];listen=0'>Engaged</A>" : "<A href='byond://?src=\ref[src.radio];listen=1'>Disengaged</A>"]<BR>

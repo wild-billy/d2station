@@ -1,49 +1,44 @@
-/obj/proc_holder/spell/aoe_turf/conjure
-	name = "Conjure"
-	desc = "This spell conjures objs of the specified types in range."
+/obj/spell/conjure
+	name = "Summon Bigger Carp"
+	desc = "This spell conjures an elite carp."
 
-	var/list/summon_type = list() //determines what exactly will be summoned
-	//should be text, like list("/obj/machinery/bot/ed209")
-
-	var/summon_lifespan = 0 // 0=permanent, any other time in deciseconds
+	school = "conjuration"
+	recharge = 1200
+	clothes_req = 1
+	invocation = "NOUK FHUNMM SACP RISSKA"
+	invocation_type = "shout"
+	range = 1 //radius in which objects are randomly summoned
+	var/list/summon_type = list("/obj/livestock/spesscarp/elite") //determines what exactly will be summoned
+	var/summon_duration = 0 // 0=permanent, any other time in deciseconds
 	var/summon_amt = 1 //amount of objects summoned
 	var/summon_ignore_density = 0 //if set to 1, adds dense tiles to possible spawn places
 	var/summon_ignore_prev_spawn_points = 0 //if set to 1, each new object is summoned on a new spawn point
 
-	var/list/newVars = list() //vars of the summoned objects will be replaced with those where they meet
-	//should have format of list("emagged" = 1,"name" = "Wizard's Justicebot"), for example
+/obj/spell/conjure/Click()
+	..()
 
-/obj/proc_holder/spell/aoe_turf/conjure/cast(list/targets)
+	if(!cast_check())
+		return
 
-	for(var/turf/T in targets)
-		if(T.density && !summon_ignore_density)
-			targets -= T
+	invocation()
+
+	var/list/possible_spawn_points = list()
+
+	for(var/turf/T in oview(usr,range))
+		if(!T.density || summon_ignore_density)
+			possible_spawn_points += T
 
 	for(var/i=0,i<summon_amt,i++)
-		if(!targets.len)
+		if(!possible_spawn_points.len)
 			break
 		var/summoned_object_type = text2path(pick(summon_type))
-		var/spawn_place = pick(targets)
+		var/spawn_place = pick(possible_spawn_points)
 		if(summon_ignore_prev_spawn_points)
-			targets -= spawn_place
-		var/atom/summoned_object = new summoned_object_type(spawn_place)
-
-		for(var/varName in newVars)
-			if(varName in summoned_object.vars)
-				summoned_object.vars[varName] = newVars[varName]
-
-		if(summon_lifespan)
-			spawn(summon_lifespan)
+			possible_spawn_points -= spawn_place
+		var/summoned_object = new summoned_object_type(spawn_place)
+		if(summon_duration)
+			spawn(summon_duration)
 				if(summoned_object)
 					del(summoned_object)
 
 	return
-
-/obj/proc_holder/spell/aoe_turf/conjure/summonEdSwarm //test purposes
-	name = "Dispense Wizard Justice"
-	desc = "This spell dispenses wizard justice."
-
-	summon_type = list("/obj/machinery/bot/ed209")
-	summon_amt = 10
-	range = 3
-	newVars = list("emagged" = 1,"name" = "Wizard's Justicebot")

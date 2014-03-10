@@ -4,11 +4,9 @@
 	spread = "Contact" //ie shot bees
 	agent = "Sci-Fi"
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
 	curable = 0
 	var/sound/mysound = null
 	var/sound/S = null
-	why_so_serious = 4
 	New()
 		..()
 		S = new/sound()

@@ -33,7 +33,7 @@
 
 /datum/vote/proc/getvotes()
 	var/list/L = list()
-	for(var/mob/M in mobz)
+	for(var/mob/M in world)
 		if(M.client && M.client.inactivity < 1200)		// clients inactive for 2 minutes don't count
 			L[M.client.vote] += 1
 
@@ -51,7 +51,7 @@
 	voting = 0
 	nextvotetime = world.timeofday + 10*config.vote_delay
 
-	for(var/mob/M in mobz)		// clear vote window from all clients
+	for(var/mob/M in world)		// clear vote window from all clients
 		if(M.client)
 			M << browse(null, "window=vote")
 			M.client.showvote = 0
@@ -157,18 +157,15 @@
 
 
 /mob/verb/vote()
-	set category = "OOC"
 	set name = "Vote"
-	if(usr.client.prisoner)
-		usr << "You're not authenticated, you can't vote."
-		return
+	set category = "OOC"
 	if(!usr.client.authenticated)
 		usr << "You're not authenticated, you can't vote."
 		return
 	usr.client.showvote = 1
 
 
-	var/text = "<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Voting</TITLE></HEAD><BODY scroll=no>"
+	var/text = "<HTML><HEAD><TITLE>Voting</TITLE></HEAD><BODY scroll=no>"
 
 	var/footer = "<HR><A href='?src=\ref[vote];voter=\ref[src];vclose=1'>Close</A></BODY></HTML>"
 
@@ -310,15 +307,14 @@
 		spawn(config.vote_period*10)
 			vote.endvote()
 
-		world << "\red<B>*** A vote to [vote.mode?"change game mode":"restart"] has been initiated by [M.key]. To vote, go to the OOC tab and hit \"Vote\".</B>"
+		world << "\red<B>*** A vote to [vote.mode?"change game mode":"restart"] has been initiated by [M.key].</B>"
 		world << "\red     You have [vote.timetext(config.vote_period)] to vote."
 
 		log_vote("Voting to [vote.mode ? "change mode" : "restart round"] started by [M.name]/[M.key]")
-		M << browse(null, "window=vote")
-		for(var/mob/CM in mobz)
+
+		for(var/mob/CM in world)
 			if(CM.client)
-				//CM << browse(output, "window=vote")
-				if(config.vote_no_default || (config.vote_no_dead && CM.stat == 2) || !CM.client.authenticated || CM.client.prisoner)
+				if(config.vote_no_default || (config.vote_no_dead && CM.stat == 2) || !CM.client.authenticated)
 					CM.client.vote = "none"
 				else
 					CM.client.vote = "default"

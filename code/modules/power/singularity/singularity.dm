@@ -1,11 +1,11 @@
 var/global/list/uneatable = list(
 	/obj/machinery/singularity,
-	/turf/space,
-	/obj/effects,
-	/obj/overlay,
-	/obj/decal/cleanable,
-	/obj/rune,
-	)
+	/turf/space,/obj/effects,
+	/obj/overlay)
+
+/obj/machinery/singularity/old
+	icon = '160x160.dmi'
+	icon_state = "Singularity"
 
 /obj/machinery/singularity/
 	name = "Gravitational Singularity"
@@ -30,19 +30,16 @@ var/global/list/uneatable = list(
 		grav_pull = 4 //How many tiles out do we pull?
 		consume_range = 0 //How many tiles out do we eat
 		event_chance = 15 //Prob for event each tick
-		target = null //its target. moves towards the target if it has one
-
+		active = 0
 
 	New(loc, var/starting_energy = 50, var/temp = 0)
 		src.energy = starting_energy
+//		pixel_x = -64
+//		pixel_y = -64
 		if(temp)
 			spawn(temp)
 				del(src)
 		..()
-		for(var/obj/machinery/singularity_beacon/singubeacon in machines)
-			if(singubeacon.active)
-				target = singubeacon
-				break
 		return
 
 
@@ -86,7 +83,8 @@ var/global/list/uneatable = list(
 
 	process()
 		eat()
-		dissipate()
+		if(!istype(src, /obj/machinery/singularity/old))
+			dissipate()
 		check_energy()
 		if(current_size >= 3)
 			move()
@@ -109,7 +107,6 @@ var/global/list/uneatable = list(
 				dissipate_track = 0
 			else
 				dissipate_track++
-
 
 		expand(var/force_size = 0)
 			var/temp_allowed_size = src.allowed_size
@@ -178,7 +175,6 @@ var/global/list/uneatable = list(
 			else
 				return 0
 
-
 		check_energy()
 			if(energy <= 0)
 				del(src)
@@ -199,31 +195,38 @@ var/global/list/uneatable = list(
 			return 1
 
 
+//		is_eatable(atom/X)
+//			for (var/Type in uneatable)
+//				if (istype(X, Type))
+//					return 0
+//			return 1
+
+
 		eat()
-			for(var/atom/movable/X in orange(consume_range,src))
+			for(var/atom/X in orange(consume_range,src))
+				if(isarea(X))
+					continue
 				consume(X)
-			for(var/turf/X in orange(consume_range,src))
-				consume(X)
-			for(var/atom/movable/X in orange(grav_pull,src))
+			for(var/atom/X in orange(grav_pull,src))
+				if(isarea(X))
+					continue
 				if(is_type_in_list(X, uneatable))
 					continue
-				if((!X:anchored && (!istype(X,/mob/living/carbon/human)))|| (src.current_size >= 9))
-					step_towards(X,src)
-				else if(istype(X,/mob/living/carbon/human))
-					var/mob/living/carbon/human/H = X
-					if(istype(H.shoes,/obj/item/clothing/shoes/magboots))
-						var/obj/item/clothing/shoes/magboots/M = H.shoes
-						if(M.magpulse)
-							continue
-					step_towards(H,src)
+				if(!isturf(X))
+					if((!X:anchored && (!istype(X,/mob/living/carbon/human))) || (src.current_size >= 9) || (istype(X,/obj/decal/cleanable)))
+						step_towards(X,src)
+					else if(istype(X,/mob/living/carbon/human))
+						var/mob/living/carbon/human/H = X
+						if(istype(H.shoes,/obj/item/clothing/shoes/magboots))
+							var/obj/item/clothing/shoes/magboots/M = H.shoes
+							if(M.magpulse)
+								continue
+						step_towards(H,src)
 			return
 
 
 		consume(var/atom/A)
 			if (istype(A,/obj/item/weapon/storage/backpack/holding))
-				var/log_str = "\The [src] was exploded in [get_area(src)] due to consumption of [A], last touched by: [A.fingerprintslast]"
-				message_admins(log_str)
-				log_game(log_str)
 				del(A)
 				explosion(src.loc,10,15,20,40)
 				if(src) del(src)
@@ -255,14 +258,11 @@ var/global/list/uneatable = list(
 			src.energy += gain
 			return
 
-
 		move(var/movement_dir = 0)
 			if(!move_self)
 				return 0
-			if(!target && !(movement_dir in cardinal))
+			if(!(movement_dir in cardinal))
 				movement_dir = pick(NORTH, SOUTH, EAST, WEST)
-			else if(target)
-				movement_dir = get_dir(src,target) //moves to a singulo beacon, if there is one
 			if(current_size >= 9)//The superlarge one does not care about things in its way
 				spawn(0)
 					step(src, movement_dir)
@@ -274,7 +274,6 @@ var/global/list/uneatable = list(
 					step(src, movement_dir)
 				return 1
 			return 0
-
 
 		check_turfs_in(var/direction = 0, var/step = 0)
 			if(!direction)
@@ -327,7 +326,6 @@ var/global/list/uneatable = list(
 				if(!can_move(T3))
 					return 0
 			return 1
-
 
 		can_move(var/turf/T)
 			if(!T)
@@ -422,96 +420,11 @@ var/global/list/uneatable = list(
 					O.show_message(text("\red <B>[] stares blankly at The []!</B>", M, src), 1)
 			return
 
-
 		emp_area()
 			empulse(src, 6, 8, nolog=1)
-			return
-
 
 		pulse()
-			for(var/obj/machinery/power/rad_collector/R in orange(15,src))
-				if(istype(R,/obj/machinery/power/rad_collector))
+			for(var/obj/machinery/power/collector_array/R in orange(15,src))
+				if(istype(R,/obj/machinery/power/collector_array))
 					R.receive_pulse(energy)
 			return
-
-
-
-	narsie //Moving narsie to a child object of the singularity so it can be made to function differently. --NEO
-		name = "Tear in the Fabric of Reality"
-		desc = "Your mind begins to bubble and ooze as it tries to comprehend what it sees."
-		icon = 'magic_terror.dmi'
-		pixel_x = -89
-		pixel_y = -85
-		current_size = 9 //It moves/eats like a max-size singulo, aside from range. --NEO
-		contained = 0 //Are we going to move around?
-		dissipate = 0 //Do we lose energy over time?
-		move_self = 1 //Do we move on our own?
-		grav_pull = 10 //How many tiles out do we pull?
-		consume_range = 3 //How many tiles out do we eat
-
-		process()
-			eat()
-			if(!target || prob(5))
-				pickcultist()
-			move()
-			if(prob(25))
-				mezzer()
-
-		consume(var/atom/A) //Has its own consume proc because it doesn't need energy and I don't want BoHs to explode it. --NEO
-			if(is_type_in_list(A, uneatable))
-				return 0
-			if (istype(A,/mob/living))//Mobs get gibbed
-				A:gib()
-			else if(istype(A,/obj/))
-				A:ex_act(1.0)
-				if(A) del(A)
-			else if(isturf(A))
-				var/turf/T = A
-				if(T.intact)
-					for(var/obj/O in T.contents)
-						if(O.level != 1)
-							continue
-						if(O.invisibility == 101)
-							src.consume(O)
-				A:ReplaceWithSpace()
-			return
-
-		ex_act() //No throwing bombs at it either. --NEO
-			return
-
-		proc/pickcultist() //Narsie rewards his cultists with being devoured first, then picks a ghost to follow. --NEO
-			var/list/cultists = list()
-			for(var/datum/mind/cult_nh_mind in ticker.mode.cult)
-				if(!cult_nh_mind.current)
-					continue
-				if(cult_nh_mind.current.stat)
-					continue
-				cultists += cult_nh_mind.current
-			if(cultists.len)
-				acquire(pick(cultists))
-				return
-				//If there was living cultists, it picks one to follow.
-			for(var/mob/living/carbon/human/food in mobz)
-				if(food.stat)
-					continue
-				cultists += food
-			if(cultists.len)
-				acquire(pick(cultists))
-				return
-				//no living cultists, pick a living human instead.
-			for(var/mob/dead/observer/ghost in mobz)
-				if(!ghost.client)
-					continue
-				cultists += ghost
-			if(cultists.len)
-				acquire(pick(cultists))
-				return
-				//no living humans, follow a ghost instead.
-
-		proc/acquire(var/mob/food)
-			target << "\blue <b>NAR-SIE HAS LOST INTEREST IN YOU</b>"
-			target = food
-			if(ishuman(target))
-				target << "\red <b>NAR-SIE HUNGERS FOR YOUR SOUL</b>"
-			else
-				target << "\red <b>NAR-SIE HAS CHOSEN YOU TO LEAD HIM TO HIS NEXT MEAL</b>"

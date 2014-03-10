@@ -1,17 +1,18 @@
 /obj/machinery/r_n_d/server
 	name = "R&D Server"
+	icon = 'serverrack.dmi'
 	icon_state = "server"
-	health = 100
 	var
 		datum/research/files
+		health = 100
 		list
 			id_with_upload = list()		//List of R&D consoles with upload to server access.
 			id_with_download = list()	//List of R&D consoles with download from server access.
 		id_with_upload_string = ""		//String versions for easy editing in map editor.
 		id_with_download_string = ""
 		server_id = 0
-		heat_gen = 100
-		heating_power = 40000
+		heat_gen = 10
+		heating_power = 2000
 		delay = 10
 	req_access = list(access_rd) //Only the R&D can change server settings.
 
@@ -23,7 +24,6 @@
 		component_parts += new /obj/item/weapon/cable_coil(src)
 		component_parts += new /obj/item/weapon/cable_coil(src)
 		RefreshParts()
-		src.initialize(); //Agouri
 
 	RefreshParts()
 		var/tot_rating = 0
@@ -116,13 +116,6 @@
 				del(src)
 				return 1
 
-	attack_hand(mob/user as mob)
-		if (disabled)
-			return
-		if (shocked)
-			shock(user,50)
-		return
-
 /obj/machinery/r_n_d/server/centcom
 	name = "Centcom Central R&D Database"
 	server_id = -1
@@ -131,7 +124,7 @@
 		..()
 		var/list/no_id_servers = list()
 		var/list/server_ids = list()
-		for(var/obj/machinery/r_n_d/server/S in machines)
+		for(var/obj/machinery/r_n_d/server/S in world)
 			switch(S.server_id)
 				if(-1)
 					continue
@@ -163,6 +156,7 @@
 			servers = list()
 			consoles = list()
 		badmin = 0
+		emagged = 0
 
 	Topic(href, href_list)
 		if(..())
@@ -170,7 +164,7 @@
 
 		add_fingerprint(usr)
 		usr.machine = src
-		if(!src.allowed(usr))
+		if(!src.allowed(usr) && !emagged)
 			usr << "\red You do not have the required access level"
 			return
 
@@ -181,20 +175,20 @@
 			temp_server = null
 			consoles = list()
 			servers = list()
-			for(var/obj/machinery/r_n_d/server/S in machines)
+			for(var/obj/machinery/r_n_d/server/S in world)
 				if(S.server_id == text2num(href_list["access"]) || S.server_id == text2num(href_list["data"]) || S.server_id == text2num(href_list["transfer"]))
 					temp_server = S
 					break
 			if(href_list["access"])
 				screen = 1
-				for(var/obj/machinery/computer/rdconsole/C in machines)
+				for(var/obj/machinery/computer/rdconsole/C in world)
 					if(C.sync)
 						consoles += C
 			else if(href_list["data"])
 				screen = 2
 			else if(href_list["transfer"])
 				screen = 3
-				for(var/obj/machinery/r_n_d/server/S in machines)
+				for(var/obj/machinery/r_n_d/server/S in world)
 					if(S == src)
 						continue
 					servers += S
@@ -214,7 +208,7 @@
 				temp_server.id_with_download += num
 
 		else if(href_list["reset_tech"])
-			var/choice = alert("Technology Data Rest", "Are you sure you want to reset this technology to its default data? Data lost cannot be recovered.", "Continue", "Cancel")
+			var/choice = alert("Technology Data Rest", "Are you sure you want to reset this technology to it's default data? Data lost cannot be recovered.", "Continue", "Cancel")
 			if(choice == "Continue")
 				for(var/datum/tech/T in temp_server.files.known_tech)
 					if(T.id == href_list["reset_tech"])
@@ -223,7 +217,7 @@
 			temp_server.files.RefreshResearch()
 
 		else if(href_list["reset_design"])
-			var/choice = alert("Design Data Deletion", "Are you sure you want to delete this design? If you still have the prerequisites for the design, it'll reset to its base reliability. Data lost cannot be recovered.", "Continue", "Cancel")
+			var/choice = alert("Design Data Deletion", "Are you sure you want to delete this design? If you still have the prerequisites for the design, it'll reset to it's base reliability. Data lost cannot be recovered.", "Continue", "Cancel")
 			if(choice == "Continue")
 				for(var/datum/design/D in temp_server.files.known_designs)
 					if(D.id == href_list["reset_design"])
@@ -245,7 +239,7 @@
 			if(0) //Main Menu
 				dat += "Connected Servers:<BR><BR>"
 
-				for(var/obj/machinery/r_n_d/server/S in machines)
+				for(var/obj/machinery/r_n_d/server/S in world)
 					if(istype(S, /obj/machinery/r_n_d/server/centcom) && !badmin)
 						continue
 					dat += "[S.name] || "
@@ -323,9 +317,9 @@
 					A.icon_state = "4"
 					A.anchored = 1
 					del(src)
-//		else if(istype(D, /obj/item/weapon/card/emag) && !emagged)
-//			playsound(src.loc, 'sparks4.ogg', 75, 1)
-//			emagged = 1
-//			user << "\blue You you disable the security protocols"
+		else if(istype(D, /obj/item/weapon/card/emag) && !emagged)
+			playsound(src.loc, 'sparks4.ogg', 75, 1)
+			emagged = 1
+			user << "\blue You you disable the security protocols"
 		src.updateUsrDialog()
 		return

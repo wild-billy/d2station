@@ -44,7 +44,7 @@
 /obj/machinery/message_server
 	icon = 'stationobjs.dmi'
 	icon_state = "server"
-	name = "Messaging Server"
+	name = "Messanging Server"
 	density = 1
 	anchored = 1.0
 	use_power = 1
@@ -53,6 +53,19 @@
 
 	var/list/datum/data_pda_msg/pda_msgs = list()
 	var/list/datum/data_rc_msg/rc_msgs = list()
+
+
+
+/obj/machinery/transporter/pad
+	icon = 'stationobjs.dmi'
+	icon_state = "pad"
+	name = "Transporter Pad"
+	density = 1
+	anchored = 1.0
+	use_power = 1
+	idle_power_usage = 10
+	active_power_usage = 100
+
 
 /obj/machinery/message_server/proc/send_pda_message(var/recipient = "",var/sender = "",var/message = "")
 	pda_msgs += new/datum/data_pda_msg(recipient,sender,message)
@@ -65,64 +78,6 @@
 
 
 
-/datum/feedback_variable
-	var/variable
-	var/value
-	var/details
-
-	New(var/param_variable,var/param_value = 0)
-		variable = param_variable
-		value = param_value
-
-	proc/inc(var/num = 1)
-		if(isnum(value))
-			value += num
-		else
-			value = text2num(value)
-			if(isnum(value))
-				value += num
-			else
-				value = num
-
-	proc/dec(var/num = 1)
-		if(isnum(value))
-			value -= num
-		else
-			value = text2num(value)
-			if(isnum(value))
-				value -= num
-			else
-				value = -num
-
-	proc/set_value(var/num)
-		if(isnum(num))
-			value = num
-
-	proc/get_value()
-		return value
-
-	proc/get_variable()
-		return variable
-
-	proc/set_details(var/text)
-		if(istext(text))
-			details = text
-
-	proc/add_details(var/text)
-		if(istext(text))
-			if(!details)
-				details = text
-			else
-				details += " [text]"
-
-	proc/get_details()
-		return details
-
-	proc/get_parsed()
-		return list(variable,value,details)
-
-var/obj/machinery/blackbox_recorder/blackbox
-
 /obj/machinery/blackbox_recorder
 	icon = 'stationobjs.dmi'
 	icon_state = "blackbox"
@@ -132,70 +87,16 @@ var/obj/machinery/blackbox_recorder/blackbox
 	use_power = 1
 	idle_power_usage = 10
 	active_power_usage = 100
-	var/list/messages = list()		//Stores messages of non-standard frequencies
-	var/list/messages_admin = list()
+	var/messages = list()
+	var/messages_admin = list()
 
-	var/list/msg_common = list()
-	var/list/msg_science = list()
-	var/list/msg_command = list()
-	var/list/msg_medical = list()
-	var/list/msg_engineering = list()
-	var/list/msg_security = list()
-	var/list/msg_deathsquad = list()
-	var/list/msg_syndicate = list()
-	var/list/msg_mining = list()
-	var/list/msg_cargo = list()
-
-	var/list/datum/feedback_variable/feedback = new()
-
-	//Only one can exsist in the world!
-	New()
-		if(blackbox)
-			if(istype(blackbox,/obj/machinery/blackbox_recorder))
-				del(src)
-		blackbox = src
-
-	Del()
-		var/turf/T = locate(1,1,2)
-		if(T)
-			blackbox = null
-			var/obj/machinery/blackbox_recorder/BR = new/obj/machinery/blackbox_recorder(T)
-			BR.msg_common = msg_common
-			BR.msg_science = msg_science
-			BR.msg_command = msg_command
-			BR.msg_medical = msg_medical
-			BR.msg_engineering = msg_engineering
-			BR.msg_security = msg_security
-			BR.msg_deathsquad = msg_deathsquad
-			BR.msg_syndicate = msg_syndicate
-			BR.msg_mining = msg_mining
-			BR.msg_cargo = msg_cargo
-			BR.feedback = feedback
-			BR.messages = messages
-			BR.messages_admin = messages_admin
-			if(blackbox != BR)
-				blackbox = BR
-		..()
-
-	proc/find_feedback_datum(var/variable)
-		for(var/datum/feedback_variable/FV in feedback)
-			if(FV.get_variable() == variable)
-				return FV
-		var/datum/feedback_variable/FV = new(variable)
-		feedback += FV
-		return FV
-
-	proc/get_round_feedback()
-		return feedback
-
-	proc/round_end_data_gathering()
-
-		var/pda_msg_amt = 0
-		var/rc_msg_amt = 0
-
-		for(var/obj/machinery/message_server/MS in machines)
-			if(MS.pda_msgs.len > pda_msg_amt)
-				pda_msg_amt = MS.pda_msgs.len
-			if(MS.rc_msgs.len > rc_msg_amt)
-				rc_msg_amt = MS.rc_msgs.len
-
+	var/msg_common = list()
+	var/msg_science = list()
+	var/msg_command = list()
+	var/msg_medical = list()
+	var/msg_engineering = list()
+	var/msg_security = list()
+	var/msg_deathsquad = list()
+	var/msg_syndicate = list()
+	var/msg_mining = list()
+	var/msg_cargo = list()

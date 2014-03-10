@@ -14,87 +14,74 @@
 	if (src.monkeyizing)
 		return
 
-	if(changeling_level > 0)
-		if(toxloss > 0)
-			toxloss -= 1
-		if(oxyloss > 0)
-			oxyloss -= 1
-		if(bruteloss > 0)
-			bruteloss -= 1
-		if(src.flaming > 0)
-			fireloss += 15
-		if(src.cloneloss > 0)
-			cloneloss -= 1
-
 	var/datum/gas_mixture/environment // Added to prevent null location errors-- TLE
 	if(src.loc)
 		environment = loc.return_air()
 
-	if (stat != 2 || controlleriteration%3==2)
-		if (src.stat != 2) //still breathing
+	if (src.stat != 2) //still breathing
 
-			//First, resolve location and get a breath
+		//First, resolve location and get a breath
 
-			if(air_master.current_cycle%4==2)
-				//Only try to take a breath every 4 seconds, unless suffocating
-				breathe()
+		if(air_master.current_cycle%4==2)
+			//Only try to take a breath every 4 seconds, unless suffocating
+			breathe()
 
-			else //Still give containing object the chance to interact
-				if(istype(loc, /obj/))
-					var/obj/location_as_object = loc
-					location_as_object.handle_internal_lifeform(src, 0)
+		else //Still give containing object the chance to interact
+			if(istype(loc, /obj/))
+				var/obj/location_as_object = loc
+				location_as_object.handle_internal_lifeform(src, 0)
 
-		//Apparently, the person who wrote this code designed it so that
-		//blinded get reset each cycle and then get activated later in the
-		//code. Very ugly. I dont care. Moving this stuff here so its easy
-		//to find it.
-		src.blinded = null
+	//Apparently, the person who wrote this code designed it so that
+	//blinded get reset each cycle and then get activated later in the
+	//code. Very ugly. I dont care. Moving this stuff here so its easy
+	//to find it.
+	src.blinded = null
 
-		//Disease Check
-		handle_virus_updates()
+	//Disease Check
+	handle_virus_updates()
 
-		//Changeling things
-		handle_changeling()
+	//Changeling things
+	handle_changeling()
 
-		//Handle temperature/pressure differences between body and environment
-		if(environment)	// More error checking -- TLE
-			handle_environment(environment)
+	//Handle temperature/pressure differences between body and environment
+	if(environment)	// More error checking -- TLE
+		handle_environment(environment)
 
-		//Mutations and radiation
-		handle_mutations_and_radiation()
+	//Mutations and radiation
+	handle_mutations_and_radiation()
 
-		//Chemicals in the body
-		handle_chemicals_in_body()
+	//Chemicals in the body
+	handle_chemicals_in_body()
 
-		//Disabilities
-		handle_disabilities()
+	//Disabilities
+	handle_disabilities()
 
-		//Status updates, death etc.
-		handle_regular_status_updates()
+	//Status updates, death etc.
+	handle_regular_status_updates()
 
-		if(client)
-			handle_regular_hud_updates()
+	if(client)
+		handle_regular_hud_updates()
 
-		//Being buckled to a chair or bed
-		check_if_buckled()
+	//Being buckled to a chair or bed
+	check_if_buckled()
 
-		// Yup.
-		update_canmove()
+	// Yup.
+	update_canmove()
 
-		// Update clothing
-		update_clothing()
+	// Update clothing
+	update_clothing()
 
-		clamp_values()
+	clamp_values()
 
-		// Grabbing
-		for(var/obj/item/weapon/grab/G in src)
-			G.process()
+	// Grabbing
+	for(var/obj/item/weapon/grab/G in src)
+		G.process()
 
-		if(!client && !stat)
-			if(prob(33) && canmove && isturf(loc))
-				step(src, pick(cardinal))
-			if(prob(1))
-				emote(pick("scratch","jump","roll","tail"))
+	if(!client && !stat)
+		if(prob(33) && canmove && isturf(loc))
+			step(src, pick(cardinal))
+		if(prob(1))
+			emote(pick("scratch","jump","roll","tail"))
 
 
 /mob/living/carbon/monkey
@@ -131,15 +118,15 @@
 		handle_mutations_and_radiation()
 
 			if(src.fireloss)
-				if(src.mutations & COLD_RESISTANCE || prob(50))
+				if(src.mutations & 2 || prob(50))
 					switch(src.fireloss)
 						if(1 to 50)
 							src.fireloss--
 						if(51 to 100)
 							src.fireloss -= 5
 
-			if (src.mutations & HULK && src.health <= 25)
-				src.mutations &= ~HULK
+			if (src.mutations & 8 && src.health <= 25)
+				src.mutations &= ~8
 				src << "\red You suddenly feel very weak."
 				src.weakened = 3
 				emote("collapse")
@@ -180,7 +167,6 @@
 
 
 		breathe()
-			if(mutations & 32 || src.client && (src.mind.special_role == "Changeling" ))	return
 			if(src.reagents)
 
 				if(src.reagents.has_reagent("lexorin")) return
@@ -255,8 +241,8 @@
 			//var/safe_oxygen_max = 140 // Maximum safe partial pressure of O2, in kPa (Not used for now)
 			var/safe_co2_max = 10 // Yes it's an arbitrary value who cares?
 			var/safe_toxins_max = 0.5
-			var/SA_para_min = 15
-			var/SA_sleep_min = 30
+			var/SA_para_min = 0.5
+			var/SA_sleep_min = 5
 			var/oxygen_used = 0
 			var/breath_pressure = (breath.total_moles()*R_IDEAL_GAS_EQUATION*breath.temperature)/BREATH_VOLUME
 
@@ -387,7 +373,7 @@
 
 		handle_regular_status_updates()
 
-			health = 100 - (oxyloss + toxloss + fireloss + bruteloss + cloneloss)
+			health = 100 - (oxyloss + toxloss + fireloss + bruteloss)
 
 			if(oxyloss > 25) paralysis = max(paralysis, 3)
 
@@ -470,12 +456,15 @@
 
 		handle_regular_hud_updates()
 
-			if (src.stat == 2 || src.mutations & XRAY)
+			if (src.stat == 2 || src.mutations & 4)
 				src.sight |= SEE_TURFS
 				src.sight |= SEE_MOBS
 				src.sight |= SEE_OBJS
 				src.see_in_dark = 8
 				src.see_invisible = 2
+			else if(src.reagents.has_reagent("psilocybin"))
+				if (src.druggy > 30)
+					src.see_invisible = 10
 			else if (src.stat != 2)
 				src.sight &= ~SEE_TURFS
 				src.sight &= ~SEE_MOBS
@@ -572,9 +561,8 @@
 					return
 
 		handle_virus_updates()
-			if(src.bodytemperature > 406)
-				for(var/datum/disease/D in viruses)
-					D.cure()
+			if(src.bodytemperature > 406 && src.virus)
+				src.virus.cure()
 			return
 
 		check_if_buckled()

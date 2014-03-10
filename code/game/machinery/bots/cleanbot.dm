@@ -83,7 +83,7 @@ Weird button pressed: []"},
 text("<A href='?src=\ref[src];operation=screw'>[src.screwloose ? "Yes" : "No"]</A>"),
 text("<A href='?src=\ref[src];operation=oddbutton'>[src.oddbutton ? "Yes" : "No"]</A>"))
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Cleaner v1.0 controls</TITLE></HEAD>[dat]", "window=autocleaner")
+	user << browse("<HEAD><TITLE>Cleaner v1.0 controls</TITLE></HEAD>[dat]", "window=autocleaner")
 	onclose(user, "autocleaner")
 	return
 
@@ -140,7 +140,7 @@ text("<A href='?src=\ref[src];operation=oddbutton'>[src.oddbutton ? "Yes" : "No"
 		return
 	var/list/cleanbottargets = list()
 	if(!src.target || src.target == null)
-		for(var/obj/machinery/bot/cleanbot/bot in machines)
+		for(var/obj/machinery/bot/cleanbot/bot in world)
 			if(bot != src)
 				cleanbottargets += bot.target
 
@@ -203,26 +203,12 @@ text("<A href='?src=\ref[src];operation=oddbutton'>[src.oddbutton ? "Yes" : "No"
 	src.target_types = new/list()
 	if(src.blood)
 
-		target_types += /obj/decal/cleanable/xenoblood
+		target_types += /obj/decal/cleanable/xenoblood/
 		target_types += /obj/decal/cleanable/xenoblood/xgibs
-		target_types += /obj/decal/cleanable/blood
-		target_types += /obj/decal/cleanable/blood/gibs
+		target_types += /obj/decal/cleanable/blood/
+		target_types += /obj/decal/cleanable/blood/gibs/
 		target_types += /obj/decal/cleanable/oil
 		target_types += /obj/decal/cleanable/robot_debris
-		target_types += /obj/decal/cleanable/crayon
-		target_types += /obj/decal/cleanable //why didn't they just use the cleanable subclass holyshit. -Nernums
-		target_types += /obj/decal/cleanable/poo // Ah thats why, it doesnt want to pick up subtypes of subtypes, this should get the drips and footprints though.
-		target_types += /obj/decal/cleanable/vomit
-		target_types += /obj/decal/cleanable/urine
-		target_types += /obj/decal/cleanable/cum
-		target_types += /obj/item/weapon/reagent_containers/food/snacks/poo //poop too
-
-		target_types += /obj/item/weapon/shard
-		target_types += /obj/item/weapon/bananapeel
-		target_types += /obj/decal/remains
-		target_types += /obj/decal/ash
-
-
 
 /obj/machinery/bot/cleanbot/proc/clean(var/obj/decal/cleanable/target)
 	src.anchored = 1
@@ -232,7 +218,6 @@ text("<A href='?src=\ref[src];operation=oddbutton'>[src.oddbutton ? "Yes" : "No"
 	src.cleaning = 1
 	spawn(50)
 		src.cleaning = 0
-		//target.loc = src  //works but doesnt drop on death yet. -Nernums
 		del(target)
 		src.icon_state = "cleanbot[src.on]"
 		src.anchored = 0
@@ -270,7 +255,7 @@ text("<A href='?src=\ref[src];operation=oddbutton'>[src.oddbutton ? "Yes" : "No"
 		del(src)
 
 	else if (istype(W, /obj/item/weapon/pen))
-		var/t = strip_html(input(user, "Enter new robot name", src.name, src.created_name)) as text
+		var/t = input(user, "Enter new robot name", src.name, src.created_name) as text
 		t = copytext(sanitize(t), 1, MAX_MESSAGE_LEN)
 		if (!t)
 			return

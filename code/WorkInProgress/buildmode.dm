@@ -1,4 +1,4 @@
-/proc/togglebuildmode(mob/M as mob in mobz)
+/proc/togglebuildmode(mob/M as mob in world)
 	set name = "Toggle Build Mode"
 	set category = "Special Verbs"
 	if(M.client)
@@ -151,13 +151,13 @@
 				if(objholder in removed_paths)
 					alert("That path is not allowed.")
 					objholder = "/obj/closet"
-				else if (dd_hasprefix(objholder, "/mob") && !(usr.client.holder.rank in list("Host", "Robustmin", "Badmin")))
+				else if (dd_hasprefix(objholder, "/mob") && !(usr.client.holder.rank in list("Host", "Coder", "Shit Guy")))
 					objholder = "/obj/closet"
 			if(3)
-				var/list/locked = list("vars", "key", "ckey", "client", "firemut", "ishulk", "telekinesis", "xray", "virus", "viruses", "cuffed", "ka", "last_eaten", "urine")
+				var/list/locked = list("vars", "key", "ckey", "client", "firemut", "ishulk", "telekinesis", "xray", "virus", "cuffed", "ka", "last_eaten", "urine")
 
 				master.buildmode.varholder = input(usr,"Enter variable name:" ,"Name", "name")
-				if(master.buildmode.varholder in locked && !(usr.client.holder.rank in list("Host", "Robustmin")))
+				if(master.buildmode.varholder in locked && !(usr.client.holder.rank in list("Host", "Coder")))
 					return
 				var/thetype = input(usr,"Select variable type:" ,"Type") in list("text","number","mob-reference","obj-reference","turf-reference")
 				if(!thetype) return
@@ -227,20 +227,15 @@
 			else if(istype(object,/turf) && pa.Find("ctrl") && pa.Find("left"))
 				switch(holder.builddir.dir)
 					if(NORTH)
-						var/obj/window/reinforced/WIN = new/obj/window/reinforced(get_turf(object))
-						WIN.dir = NORTH
-					if(SOUTH)
-						var/obj/window/reinforced/WIN = new/obj/window/reinforced(get_turf(object))
-						WIN.dir = SOUTH
+						new/obj/window/reinforced/north(get_turf(object))
 					if(EAST)
-						var/obj/window/reinforced/WIN = new/obj/window/reinforced(get_turf(object))
-						WIN.dir = EAST
+						new/obj/window/reinforced/east(get_turf(object))
+					if(SOUTH)
+						new/obj/window/reinforced/south(get_turf(object))
 					if(WEST)
-						var/obj/window/reinforced/WIN = new/obj/window/reinforced(get_turf(object))
-						WIN.dir = WEST
+						new/obj/window/reinforced/west(get_turf(object))
 					if(NORTHWEST)
-						var/obj/window/reinforced/WIN = new/obj/window/reinforced(get_turf(object))
-						WIN.dir = NORTHWEST
+						new/obj/window/reinforced/northwest(get_turf(object))
 		if(2)
 			if(pa.Find("left"))
 				var/obj/A = new holder.buildmode.objholder (get_turf(object))

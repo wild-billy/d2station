@@ -2,7 +2,7 @@
 	name = "Magnetic Storage Ring"
 	desc = "A magnetic storage ring."
 	icon = 'items.dmi'
-	icon_state = "spacecash"
+	icon_state = "rcdammo"
 	opacity = 0
 	density = 0
 	anchored = 0.0

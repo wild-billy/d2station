@@ -36,15 +36,13 @@
 			if(!istype(C))
 				return
 
-			var/dat = "<meta HTTP-EQUIV='REFRESH' content='0; url="
-			dat += "http://vps.d2k5.com/d2station/medscanner/?name=[C]&health=[C.stat > 1 ? "dead" : "[C.health]% healthy"]&bloodlevel=300&suffocation=[C.oxyloss]&toxin=[C.toxloss]&burn=[C.fireloss ]&brute=[C.bruteloss]&btemp=[C.bodytemperature-T0C]&deg;C ([C.bodytemperature*1.8-459.67]&deg;F&oxystatus=1&toxstatus=1&burnstatus=1&brutestatus=1&r_armbrute=1&l_armbrute=1&l_handbrute=1&r_handbrute=1&headbrute=1&neckbrute=1&torsobrute=1&crotchbrute=1&l_legbrute=1&r_legbrute=1&l_footbrute=1&r_footbrute=1
+			var/dat = "\blue Analyzing Results for [C]:\n"
+			dat += "\blue \t Overall Status: [C.stat > 1 ? "dead" : "[C.health]% healthy"]\n"
+			dat += "\blue \t Damage Specifics: [C.oxyloss > 50 ? "\red" : "\blue"][C.oxyloss]-[C.toxloss > 50 ? "\red" : "\blue"][C.toxloss]-[C.fireloss > 50 ? "\red" : "\blue"][C.fireloss]-[C.bruteloss > 50 ? "\red" : "\blue"][C.bruteloss]\n"
+			dat += "\blue \t Key: Suffocation/Toxin/Burns/Brute\n"
+			dat += "\blue \t Body Temperature: [C.bodytemperature-T0C]&deg;C ([C.bodytemperature*1.8-459.67]&deg;F)"
 			if(C.virus)
-				dat += "&virus="
-				dat += "\red \n<b>Warning: Ailment Detected.</b>\nName: [C.virus.name].\nType: [C.virus.spread].\nStage: [C.virus.stage]/[C.virus.max_stages].\nPossible Cure: [C.virus.cure]"
-
-			dat += "'>Scanning..."
-			user << browse("[dat]","window=healthscan;size=600x360")
-			onclose(user, "healthscan")
+				dat += "\red \n<b>Warning Virus Detected.</b>\nName: [C.virus.name].\nType: [C.virus.spread].\nStage: [C.virus.stage]/[C.virus.max_stages].\nPossible Cure: [C.virus.cure]"
 
 			return dat
 

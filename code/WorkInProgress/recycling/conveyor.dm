@@ -9,7 +9,6 @@
 	name = "conveyor belt"
 	desc = "A conveyor belt."
 	anchored = 1
-	layer = 2.2
 	var/operating = 0	// 1 if running forward, -1 if backwards, 0 if off
 	var/operable = 1	// true if can operate (no broken segments in this belt run)
 	var/basedir			// this is the default (forward) direction, set by the map dir
@@ -340,7 +339,7 @@
 
 	spawn(5)		// allow map load
 		conveyors = list()
-		for(var/obj/machinery/conveyor/C in machines)
+		for(var/obj/machinery/conveyor/C in world)
 			if(C.id == id)
 				conveyors += C
 
@@ -384,7 +383,7 @@
 	update()
 
 	// find any switches with same id as this one, and set their positions to match us
-	for(var/obj/machinery/conveyor_switch/S in machines)
+	for(var/obj/machinery/conveyor_switch/S in world)
 		if(S.id == src.id)
 			S.position = position
 			S.update()

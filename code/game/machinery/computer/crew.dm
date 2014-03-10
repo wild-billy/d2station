@@ -62,7 +62,7 @@
 					return
 			user.machine = src
 			src.scan()
-			var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Crew Monitoring</B><HR>"
+			var/t = "<TT><B>Crew Monitoring</B><HR>"
 			t += "<BR><A href='?src=\ref[src];update=1'>Refresh</A>"
 			t += "<BR><A href='?src=\ref[src];close=1'>Close</A>"
 			t += "<table><tr><td>Name</td><td>Vitals</td><td>Position</td></tr>"
@@ -88,7 +88,7 @@
 									t += "<tr><td>Unknown:</td><td>"
 								t += "[H.stat > 1 ? "<font color=red>Deceased</font>" : "Living"], [dam1] - [dam2] - [dam3] - [dam4]</td><td>Not Available</td></tr>"
 							if(3)
-								t += "<tr><td>[H.name]</td><td>[H.stat > 1 ? "<font color=red>Deceased</font>" : "Living"], [dam2] - [dam2] - [dam3] - [dam4]</td><td>[get_area(H)] : ([H.x], [H.y])</td></tr>"
+								t += "<tr><td>[H.name]</td><td>[H.stat > 1 ? "<font color=red>Deceased</font>" : "Living"], [dam2] - [dam2] - [dam3] - [dam4]</td><td>[get_area(H)] ([H.x], [H.y])</td></tr>"
 			t += "</table>"
 			t += "</FONT></PRE></TT>"
 			user << browse(t, "window=crewcomp;size=500x800")

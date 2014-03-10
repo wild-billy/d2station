@@ -68,7 +68,7 @@
 		return
 	user.machine = src
 	var/dat
-	dat += "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Prisoner Implant Manager System</B><BR>"
+	dat += "<B>Prisoner Implant Manager System</B><BR>"
 	if(screen == 0)
 		dat += "<HR><A href='?src=\ref[src];lock=1'>Unlock Console</A>"
 	else if(screen == 1)
@@ -120,12 +120,11 @@
 					if(prob(95))
 						R.gib()
 						message_admins("\blue [key_name_admin(usr)] killswitched [R.name]")
-						log_game("[key_name(usr)] killswitched [R.name]")
 					else
 						R << "\blue you hear a click as the implant fails to detonate and disintegrates."
 
 		else if (href_list["disable"])
-			var/choice = strip_html(input("Are you certain you wish to deactivate the implant?")) in list("Confirm", "Abort")
+			var/choice = input("Are you certain you wish to deactivate the implant?") in list("Confirm", "Abort")
 			if(choice == "Confirm")
 				var/obj/item/weapon/implant/I = locate(href_list["disable"])
 				var/mob/living/carbon/R = I.imp_in
@@ -168,7 +167,7 @@
 				usr << "Unauthorized Access."
 
 		else if (href_list["warn"])
-			var/warning = strip_html(input(usr,"Message:","Enter your message here!",""))
+			var/warning = input(usr,"Message:","Enter your message here!","")
 			var/obj/item/weapon/implant/I = locate(href_list["warn"])
 			var/mob/living/carbon/R = I.imp_in
 			R << "\green You hear a voice in your head saying: '[warning]'"

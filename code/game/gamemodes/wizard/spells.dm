@@ -48,7 +48,7 @@
 	usr.say("FORTI GY AMA")
 	usr.spellvoice()
 
-	for (var/mob/living/M as mob in oview())
+	for (var/mob/M as mob in oview())
 		spawn(0)
 			var/obj/overlay/A = new /obj/overlay( usr.loc )
 			A.icon_state = "magicm"
@@ -59,8 +59,6 @@
 			A.layer = 4
 			var/i
 			for(i=0, i<20, i++)
-				if (!istype(M)) //it happens sometimes --rastaf0
-					break
 				var/obj/overlay/B = new /obj/overlay( A.loc )
 				B.icon_state = "magicmd"
 				B.icon = 'wizard.dmi'
@@ -73,7 +71,7 @@
 				step_to(A,M,0)
 				if (get_dist(A,M) == 0)
 					M.weakened += 5
-					M.take_overall_damage(0,10)
+					M.fireloss += 10
 					del(A)
 					return
 				sleep(5)
@@ -101,32 +99,13 @@
 	smoke.set_up(10, 0, usr.loc)
 	smoke.start()
 
-
-//SLEEP SMOKE
-
-///client/proc/smokecloud()
-//
-//	set category = "Spells"
-//	set name = "Sleep Smoke"
-//	set desc = "This spell spawns a cloud of choking smoke at your location and does not require wizard garb. But, without the robes, you have no protection against the magic."
-//	if(usr.stat)
-//		src << "Not when you are incapacitated."
-//		return
-//	if(!usr.casting()) return
-//	usr.verbs -= /client/proc/smokecloud
-//	spawn(120)
-//		usr.verbs += /client/proc/smokecloud
-//	var/datum/effects/system/sleep_smoke_spread/smoke = new /datum/effects/system/sleep_smoke_spread()
-//	smoke.set_up(10, 0, usr.loc)
-//	smoke.start()
-
 //FORCE WALL
 
 /obj/forcefield
 	desc = "A space wizard's magic wall."
 	name = "FORCEWALL"
-	icon = 'effects.dmi'
-	icon_state = "m_shield"
+	icon = 'mob.dmi'
+	icon_state = "shield"
 	anchored = 1.0
 	opacity = 0
 	density = 1
@@ -157,7 +136,7 @@
 
 //FIREBALLAN
 
-/client/proc/fireball(mob/living/T as mob in oview())
+/client/proc/fireball(mob/T as mob in oview())
 	set category = "Spells"
 	set name = "Fireball"
 	set desc = "This spell fires a fireball at a target and does not require wizard garb."
@@ -183,7 +162,9 @@
 	for(i=0, i<100, i++)
 		step_to(A,T,0)
 		if (get_dist(A,T) <= 1)
-			T.take_overall_damage(20,25)
+			T.bruteloss += 20
+			T.fireloss += 25
+
 			explosion(T.loc, -1, -1, 2, 2)
 			del(A)
 			return
@@ -279,12 +260,13 @@
 				fuckthis:ignite()
 
 
-	for(var/mob/living/M in viewers(world.view-1, myturf))
+	for(var/mob/M in viewers(world.view-1, myturf))
 
+		if(!istype(M, /mob/living)) continue
 		if(M == usr) continue
 
 		if (istype(M, /mob/living/silicon))
-			M.take_overall_damage(0,25)
+			M.fireloss += 25
 			flick("noise", M:flash)
 			M << "\red <B>*BZZZT*</B>"
 			M << "\red Warning: Electromagnetic pulse detected."
@@ -310,7 +292,7 @@
 
 		if (locate(/obj/item/weapon/gun/energy, M))
 			for(var/obj/item/weapon/gun/energy/G in M)
-				G.power_supply.charge = 0
+				G.charges = 0
 				G.update_icon()
 
 		if ((istype(M, /mob/living/carbon/human)) && (istype(M:glasses, /obj/item/clothing/glasses/thermal)))
@@ -330,8 +312,8 @@
 			for(var/obj/item/device/flash/F in M) //Add something for the intercoms.
 				F.attack_self()
 
-		if (locate(/obj/item/weapon/melee/baton, M))
-			for(var/obj/item/weapon/melee/baton/B in M) //Add something for the intercoms.
+		if (locate(/obj/item/weapon/baton, M))
+			for(var/obj/item/weapon/baton/B in M) //Add something for the intercoms.
 				B.charges = 0
 
 		if(locate(/obj/item/clothing/under/chameleon, M))
@@ -412,11 +394,11 @@
 			spawn(600)
 				A:network = initial(A:network)
 				A:icon_state = initial(A:icon_state)
-			for(var/mob/living/silicon/ai/O in mobz)
+			for(var/mob/living/silicon/ai/O in world)
 				if (O.current == A)
 					O.cancel_camera()
 					O << "Your connection to the camera has been lost."
-			for(var/mob/O in mobz)
+			for(var/mob/O in world)
 				if (istype(O.machine, /obj/machinery/computer/security))
 					var/obj/machinery/computer/security/S = O.machine
 					if (S.current == A)
@@ -503,10 +485,8 @@
 					break
 			if(clear)
 				L+=T
-	if(L.len)
-		usr.loc = pick(L)
-	else
-		usr <<"The spell matrix was unable to locate a suitable teleport destination for an unknown reason. Sorry."
+
+	usr.loc = pick(L)
 
 	smoke.start()
 
@@ -533,8 +513,10 @@
 					break
 			if(clear)
 				L+=T
-
-	usr.loc = pick(L)
+	if(L.len)
+		usr.loc = pick(L)
+	else
+		usr <<"The spell matrix was unable to locate a suitable teleport destination for an unknown reason."
 
 	smoke.start()
 
@@ -586,30 +568,6 @@
 		H.client.eye = H
 		del(animation)
 		del(holder)
-
-// SLYTHA --deadsnipe
-/client/proc/sleepify(mob/living/ST as mob in oview(4))
-	set category = "Spells"
-	set name = "Sleep"
-	set desc = "This spell puts the target into a magical sleep. NOTE: May contain traces of Chloral hydrate."
-	if(usr.stat || usr.stunned || usr.lying)
-		src << "Not when you are incapacitated."
-		return
-//	if(!usr.casting()) return
-
-	usr.verbs -= /client/proc/sleepify
-	spawn(800)
-		usr.verbs += /client/proc/sleepify
-
-	usr.whisper(pick("WUNG'GREL GRI'FIN", "GO'RG APP'COT GRIFF'N", "ERIKAUM", "ADM'IN BUSE", "SLYTHA"))
-	usr.spellvoice()
-	ST << "\red A wave of exhaustion hits you"
-	spawn(60)
-		ST << "\red Aaaaaah..."
-		ST.reagents.add_reagent("chloralhydrate", 15) // nerf if OP
-	return
-
-
 /*
 /obj/dummy/spell_jaunt
 	name = "water"
@@ -647,7 +605,7 @@
 
 /obj/dummy/spell_jaunt/ex_act(blah)
 	return
-/obj/dummy/spell_jaunt/bullet_act(blah)
+/obj/dummy/spell_jaunt/bullet_act(blah,blah)
 	return
 */
 //MUTATE
@@ -668,13 +626,13 @@
 	usr.spellvoice()
 
 	usr << text("\blue You feel strong! Your mind expands!")
-	if (!(usr.mutations & HULK))
-		usr.mutations |= HULK
-	if (!(usr.mutations & PORTALS))
-		usr.mutations |= PORTALS
+	if (!(usr.mutations & 8))
+		usr.mutations |= 8
+	if (!(usr.mutations & 1))
+		usr.mutations |= 1
 	spawn (300)
-		if (usr.mutations & PORTALS) usr.mutations &= ~PORTALS
-		if (usr.mutations & HULK) usr.mutations &= ~HULK
+		if (usr.mutations & 1) usr.mutations &= ~1
+		if (usr.mutations & 8) usr.mutations &= ~8
 	return
 
 //BODY SWAP /N
@@ -688,8 +646,8 @@
 		return
 
 	if(M.client && M.mind)
-		if(M.mind.special_role != "Wizard" || "Fake Wizard" || "Changeling" || "Cultist" || "Space Ninja")//Wizards, changelings, ninjas, and cultists are protected.
-			if( (istype(M, /mob/living/carbon/human)) || (istype(M, /mob/living/carbon/alien)) || (istype(M, /mob/living/carbon/metroid)) || (istype(M, /mob/living/carbon/monkey)) && M.stat != 2)
+		if(M.mind.special_role != "Wizard" || "Fake Wizard" || "Changeling" || "Cultist")//Wizards, changelings, and cultists are protected.
+			if( (istype(M, /mob/living/carbon/human)) || (istype(M, /mob/living/carbon/monkey)) && M.stat != 2)
 				var/mob/living/carbon/human/H = M //so it does not freak out when looking at the variables.
 				var/mob/living/carbon/human/U = src
 
@@ -724,8 +682,7 @@
 								H.mind.special_verbs -= V
 								spawn(500)
 									H << "The mind transfer has robbed you of a spell."
-
-			/*	//This code SHOULD work to prevent Mind Swap spam since the spell transfer code above instantly resets it.
+				/*//This code SHOULD work to prevent Mind Swap spam since the spell transfer code above instantly resets it.
 				//I can't test this code because I can't test mind stuff on my own :x -- Darem.
 				if(hascall(H, /mob/proc/swap))
 					H.verbs -= /mob/proc/swap

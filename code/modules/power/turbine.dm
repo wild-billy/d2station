@@ -11,7 +11,7 @@
 	var/starter = 0
 	var/rpm = 0
 	var/rpmtarget = 0
-	var/capacity = 1e9
+	var/capacity = 1e6
 	var/comp_id = 0
 
 /obj/machinery/power/turbine
@@ -52,7 +52,7 @@
 			stat |= BROKEN
 
 
-#define COMPFRICTION 3e5
+#define COMPFRICTION 5e5
 #define COMPSTARTERLOAD 2800
 
 /obj/machinery/compressor/process()
@@ -67,7 +67,7 @@
 	rpm = 0.9* rpm + 0.1 * rpmtarget
 	var/datum/gas_mixture/environment = inturf.return_air()
 	var/transfer_moles = environment.total_moles()/10
-//	var/transfer_moles = rpm/10000*capacity
+	//var/transfer_moles = rpm/10000*capacity
 	var/datum/gas_mixture/removed = inturf.remove_air(transfer_moles)
 	gas_contained.merge(removed)
 
@@ -107,8 +107,8 @@
 
 
 #define TURBPRES 9000000
-#define TURBGENQ 26
-#define TURBGENG 0.9
+#define TURBGENQ 400000
+#define TURBGENG 0.3
 
 /obj/machinery/power/turbine/process()
 	if(!compressor.starter)
@@ -119,10 +119,10 @@
 	if(!compressor)
 		stat |= BROKEN
 		return
-	lastgen = round(compressor.rpm * TURBGENQ, 0.1)
+	lastgen = ((compressor.rpm / TURBGENQ)**TURBGENG) *TURBGENQ
 
 	add_avail(lastgen)
-	var/newrpm = ((compressor.gas_contained.temperature * compressor.gas_contained.total_moles()) + 300)
+	var/newrpm = ((compressor.gas_contained.temperature) * compressor.gas_contained.total_moles())/4
 	newrpm = max(0, newrpm)
 
 	if(!compressor.starter || newrpm > 1000)
@@ -168,7 +168,7 @@
 
 	user.machine = src
 
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Gas Turbine Generator</B><HR><PRE>"
+	var/t = "<TT><B>Gas Turbine Generator</B><HR><PRE>"
 
 	t += "Generated power : [round(lastgen)] W<BR><BR>"
 
@@ -229,11 +229,11 @@
 /obj/machinery/computer/turbine_computer/New()
 	..()
 	spawn(5)
-		for(var/obj/machinery/compressor/C in machines)
+		for(var/obj/machinery/compressor/C in world)
 			if(id == C.comp_id)
 				compressor = C
 		doors = new /list()
-		for(var/obj/machinery/door/poddoor/P in machines)
+		for(var/obj/machinery/door/poddoor/P in world)
 			if(P.id == id)
 				doors += P
 

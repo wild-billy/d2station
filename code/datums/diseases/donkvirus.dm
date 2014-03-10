@@ -7,10 +7,9 @@
 	cure_id = list("jenkem")
 	cure_chance = 20
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
 	desc = "Subjects affected show the signs of wanting some donk pockets."
 	severity = "Medium"
-	why_so_serious = 1
+
 /datum/disease/donkvirus/stage_act()
 	..()
 	switch(stage)

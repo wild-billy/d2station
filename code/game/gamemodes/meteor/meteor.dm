@@ -25,7 +25,7 @@
 	var/list/survivors = list()
 	var/area/escape_zone = locate(/area/shuttle/escape/centcom)
 
-	for(var/mob/living/player in mobz)
+	for(var/mob/living/player in world)
 		if (player.client)
 			if (player.stat != 2)
 				var/turf/location = get_turf(player.loc)
@@ -51,8 +51,8 @@
 	else
 		world << "\blue <B>No one survived the meteor attack!</B>"
 
-	..()
 	return 1
+
 
 /datum/game_mode/meteor/send_intercept()
 	var/intercepttext = "<FONT size = 3><B>Cent. Com. Update</B> Requested staus information:</FONT><HR>"
@@ -69,7 +69,7 @@
 	for(var/A in possible_modes)
 		intercepttext += i_text.build(A, pick(ticker.minds))
 
-	for (var/obj/machinery/computer/communications/comm in machines)
+	for (var/obj/machinery/computer/communications/comm in world)
 		if (!(comm.stat & (BROKEN | NOPOWER)) && comm.prints_intercept)
 			var/obj/item/weapon/paper/intercept = new /obj/item/weapon/paper( comm.loc )
 			intercept.name = "paper- 'Cent. Com. Status Summary'"
@@ -79,4 +79,3 @@
 			comm.messagetext.Add(intercepttext)
 
 	command_alert("Summary downloaded and printed out at all communications consoles.", "Enemy communication intercept. Security Level Elevated.")
-	//world << sound('intercept.ogg')

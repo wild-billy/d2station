@@ -51,3 +51,69 @@
 
 	voice_message = "says"
 	say_message = "says"
+
+
+/mob/living/carbon/human/mooninite/update_clothing()
+	if(istype(src, /mob/living/carbon/human/mooninite/inigknot))
+		icon = 'alien.dmi'
+		if(src.buckled)
+			if(istype(src.buckled, /obj/stool/bed))
+				src.lying = 1
+			else
+				src.lying = 0
+
+		if(src.update_icon) // Skie
+			..()
+			for(var/i in src.overlays)
+				src.overlays -= i
+
+			if (!( src.lying ))
+				src.icon_state = "Inigknot_l"
+			else
+				src.icon_state = "Inigknot_s"
+		return
+	if(istype(src, /mob/living/carbon/human/mooninite/err))
+		icon = 'alien.dmi'
+		if(src.buckled)
+			if(istype(src.buckled, /obj/stool/bed))
+				src.lying = 1
+			else
+				src.lying = 0
+
+		if(src.update_icon) // Skie
+			..()
+			for(var/i in src.overlays)
+				src.overlays -= i
+
+			if (!( src.lying ))
+				src.icon_state = "Inigknot_l"
+			else
+				src.icon_state = "Inigknot_s"
+		return
+
+
+/mob/living/carbon/human/mooninite/inigknot
+	name = "Inigknot"
+	real_name = "Inigknot"
+	icon = 'alien.dmi'
+	voice_name = "Inigknot"
+	voice_message = "says"
+	say_message = "says"
+	health = 150
+	toxloss = 100
+	icon_state = "Inigknot_s"
+	update_icon = 0
+	alien_talk_understand = 1
+
+/mob/living/carbon/human/mooninite/err
+	name = "Err"
+	real_name = "Err"
+	icon = 'alien.dmi'
+	voice_name = "Err"
+	voice_message = null
+	say_message = null
+	health = 150
+	toxloss = 100
+	icon_state = "Err_s"
+	update_icon = 0
+	alien_talk_understand = 1

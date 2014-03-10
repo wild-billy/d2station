@@ -5,12 +5,12 @@
 	cure = "milk"
 	cure_id = "milk"
 	cure_chance = 15
+	agent = "B14K flu virion"
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
 	permeability_mod = 0.75
 	desc = "Effects are unknown."
 	severity = "Medium"
-	why_so_serious = 2
+
 /datum/disease/mochashakah/stage_act()
 	..()
 	switch(stage)
@@ -72,7 +72,7 @@
 					affected_mob.toxloss += 1
 					affected_mob.updatehealth()
 			if(prob(1))
-				affected_mob << "\red You feel tired."
+				affected_mob << "\red Your feel tired."
 				if(prob(20))
 					affected_mob.toxloss += 1
 					affected_mob.bodytemperature += 1

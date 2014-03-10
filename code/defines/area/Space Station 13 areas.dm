@@ -9,29 +9,23 @@
 	requires_power = 0 				(defaults to 1)
 	music = "music/music.ogg"		(defaults to "music/music.ogg")
 
-NOTE: there are two lists of areas in the end of this file: centcom and station itself. Please maintain these lists valid. --rastaf0
-buttes
 */
 
 
 /area
 	var/fire = null
 	var/atmos = 1
-	var/atmosalm = 0
+	var/atmosalm = null
 	var/poweralm = 1
 	var/party = null
-	var/air_doors_activated = 0
-	var/air_door_close_delay = 0
 	level = null
-	name = "\proper space"
+	name = "Space"
 	icon = 'areas.dmi'
 	icon_state = "unknown"
 	layer = 10
 	mouse_opacity = 0
+	luminosity = 0
 	var/lightswitch = 1
-	var/smell = 0
-	var/redalert = 0
-	var/applyalertstatus = 1
 
 	var/eject = null
 
@@ -49,15 +43,6 @@ buttes
 	var/area/master				// master area used for power calcluations
 								// (original area before splitting due to sd_DAL)
 	var/list/related			// the other areas of the same type as this
-	var/list/lights				// list of all lights on this area
-
-	var/list/alldoors         // Doors which are not in the area, but should still be closed in case of emergency.
-	var/auxdoors = list()		//Added by Strumpetplaya - Alarm Change - Contains a list of doors adjacent to this area
-
-	New()
-		..()
-		areaz -= src
-		areaz += src
 
 /*Adding a wizard area teleport list because motherfucking lag -- Urist*/
 /*I am far too lazy to make it a proper list of areas so I'll just make it run the usual telepot routine at the start of the game*/
@@ -72,45 +57,24 @@ proc/process_teleport_locs()
 			teleportlocs += AR.name
 			teleportlocs[AR.name] = AR
 
-	var/not_in_order = 0
-	do
-		not_in_order = 0
-		if(teleportlocs.len <= 1)
-			break
-		for(var/i = 1, i <= (teleportlocs.len - 1), i++)
-			if(sorttext(teleportlocs[i], teleportlocs[i+1]) == -1)
-				teleportlocs.Swap(i, i+1)
-				not_in_order = 1
-	while(not_in_order)
-
 var/list/ghostteleportlocs = list()
 
 proc/process_ghost_teleport_locs()
 	for(var/area/AR in world)
 		if(ghostteleportlocs.Find(AR.name)) continue
-		if(istype(AR, /area/))
+		if(istype(AR, /area/turret_protected/aisat) || istype(AR, /area/derelict) || istype(AR, /area/tdome))
 			ghostteleportlocs += AR.name
 			ghostteleportlocs[AR.name] = AR
 		var/turf/picked = pick(get_area_turfs(AR.type))
-		if (picked.z == 1 || picked.z == 5)
+		if (picked.z == 1 || picked.z == 8)
 			ghostteleportlocs += AR.name
 			ghostteleportlocs[AR.name] = AR
-
-	var/not_in_order = 0
-	do
-		not_in_order = 0
-		if(ghostteleportlocs.len <= 1)
-			break
-		for(var/i = 1, i <= (ghostteleportlocs.len - 1), i++)
-			if(sorttext(ghostteleportlocs[i], ghostteleportlocs[i+1]) == -1)
-				ghostteleportlocs.Swap(i, i+1)
-				not_in_order = 1
-	while(not_in_order)
-
 
 /*-----------------------------------------------------------------------------*/
 
 /area/engine/
+
+/area/engine/heatengine
 
 /area/turret_protected/
 
@@ -125,11 +89,6 @@ proc/process_ghost_teleport_locs()
 	name = "Admin room"
 	icon_state = "start"
 
-/area/shieldgen
-	name = "Shield Generation"
-	icon_state = "shield"
-	music = 'hiss.ogg'
-
 //These are shuttle areas, they must contain two areas in a subgroup if you want to move a shuttle from one
 //place to another. Look at escape shuttle for example.
 //All shuttles show now be under shuttle since we have smooth-wall code.
@@ -137,8 +96,7 @@ proc/process_ghost_teleport_locs()
 /area/shuttle //DO NOT TURN THE SD_LIGHTING STUFF ON FOR SHUTTLES. IT BREAKS THINGS.
 	requires_power = 0
 	luminosity = 1
-//	sd_lighting = 0
-	ul_Lighting = 0
+	sd_lighting = 0
 
 /area/shuttle/arrival
 	name = "Arrival Shuttle"
@@ -149,6 +107,48 @@ proc/process_ghost_teleport_locs()
 /area/shuttle/arrival/station
 	icon_state = "shuttle"
 
+/area/shuttle/heatengine/dock
+	icon_state = "shuttle5"
+
+/area/shuttle/heatengine/satellite
+	icon_state = "shuttle5"
+
+/area/shuttle/dock2
+	icon_state = "shuttle6"
+
+/area/shuttle/dock2/ss13
+	icon_state = "shuttle6"
+
+/area/shuttle/dock2/derelic
+	icon_state = "shuttle6"
+
+/area/shuttle/dock2/Journey
+	icon_state = "shuttle6"
+
+/area/shuttle/dock2/syndi
+	icon_state = "shuttle6"
+
+/area/shuttle/derelict
+	icon_state = "shuttle6"
+
+/area/shuttle/derelict/station
+	icon_state = "shuttle6"
+
+/area/shuttle/derelict/derelict
+	icon_state = "shuttle6"
+
+/area/shuttle/derelict/transit
+	icon_state = "shuttle6"
+
+/area/shuttle/rdsat/station
+	icon_state = "shuttle5"
+
+/area/shuttle/rdsat/transit
+	icon_state = "shuttle5"
+
+/area/shuttle/rdsat/satellite
+	icon_state = "shuttle5"
+
 /area/shuttle/escape
 	name = "Emergency Shuttle"
 	music = "music/escape.ogg"
@@ -156,26 +156,36 @@ proc/process_ghost_teleport_locs()
 /area/shuttle/escape/station
 	icon_state = "shuttle2"
 
+/area/shuttle/escape/transit
+	icon_state = "shuttle2"
+
 /area/shuttle/escape/centcom
 	icon_state = "shuttle"
 
 /area/shuttle/mining
 	name = "Mining Shuttle"
-	music = "music/escape.ogg"
+	icon_state = "miningshuttlestat"
+
+/area/shuttle/mining/asteroid
+	name = "Mining Shuttle"
+	icon_state = "miningshuttlestat"
 
 /area/shuttle/mining/station
-	icon_state = "shuttle2"
+	name = "Mining Shuttle"
+	icon_state = "miningshuttledock"
 
-/area/shuttle/mining/outpost
-	icon_state = "shuttle"
+/area/shuttle/mining/transit
+	name = "Mining Shuttle"
+	icon_state = "miningshuttlestat"
+
+/area/shuttle/nori/
+	name = "Nori's Shuttle"
+
+/area/shuttle/nori/norishuttle
+	icon_state = "shuttle5"
 
 /area/shuttle/transport1/centcom
 	icon_state = "shuttle"
-	name = "Transport Shuttle Centcom"
-
-/area/shuttle/transport1/station
-	icon_state = "shuttle"
-	name = "Transport Shuttle"
 
 /area/shuttle/transport2/centcom
 	icon_state = "shuttle"
@@ -192,32 +202,12 @@ proc/process_ghost_teleport_locs()
 /area/shuttle/prison/transit
 	icon_state = "shuttle2"
 
-/area/shuttle/derelict
-	icon_state = "shuttle6"
-
-/area/shuttle/derelict/station
-	icon_state = "shuttle6"
-
-/area/shuttle/derelict/derelict
-	icon_state = "shuttle6"
-
-/area/shuttle/derelict/transit
-	icon_state = "shuttle6"
-
 /area/shuttle/specops/centcom
 	name = "Special Ops Shuttle"
 	icon_state = "shuttlered"
 
 /area/shuttle/specops/station
 	name = "Special Ops Shuttle"
-	icon_state = "shuttlered2"
-
-/area/shuttle/administration/centcom
-	name = "Administration Shuttle Centcom"
-	icon_state = "shuttlered"
-
-/area/shuttle/administration/station
-	name = "Administration Shuttle"
 	icon_state = "shuttlered2"
 
 /area/shuttle/thunderdome
@@ -247,37 +237,17 @@ proc/process_ghost_teleport_locs()
 	name = "RED Station"
 	icon_state = "shuttlered2"
 
-/area/shuttle/rdsat/station
-	icon_state = "shuttle5"
+/area/shuttle/pdock2
+	icon_state = "shuttle6"
 
-/area/shuttle/rdsat/transit
-	icon_state = "shuttle5"
+/area/shuttle/pdock2/ss13
+	icon_state = "shuttle6"
 
-/area/shuttle/rdsat/satellite
-	icon_state = "shuttle5"
+/area/shuttle/pdock2/prison
+	icon_state = "shuttle6"
 
-/area/shuttle/mining
-	name = "Mining Shuttle"
-	icon_state = "miningshuttlestat"
-
-/area/shuttle/mining/asteroid
-	name = "Mining Shuttle"
-	icon_state = "miningshuttlestat"
-
-/area/shuttle/mining/station
-	name = "Mining Shuttle"
-	icon_state = "miningshuttledock"
-
-/area/shuttle/mining/transit
-	name = "Mining Shuttle"
-	icon_state = "miningshuttlestat"
-
-/area/shuttle/nori/
-	name = "Nori's Shuttle"
-
-/area/shuttle/nori/norishuttle
-	icon_state = "shuttle5"
-
+/area/shuttle/pdock2/Journey
+	icon_state = "shuttle6"
 // === Trying to remove these areas:
 
 /area/airtunnel1/      // referenced in airtunnel.dm:759
@@ -293,46 +263,71 @@ proc/process_ghost_teleport_locs()
 /area/puzzlechamber
 	name = "Puzzle Area"
 	icon_state = "puzzle"
+	requires_power = 0
 
 // CENTCOM
 
-/area/centcom
-	name = "Centcom"
-	icon_state = "centcom"
+/area/centcom/adminquarts
+	name = "Centcom Administration Quarters"
+	icon_state = "purple"
 	requires_power = 0
 
-/area/centcom/clown
-	name = "Clownstation"
+/area/centcom
+	name = "Centcom"
+	icon_state = "purple"
+	requires_power = 0
 
-/area/centcom/control
-	name = "Centcom Control"
+/area/winterretreat
+	name = "Winter Valley"
+	icon_state = "puzzle"
+	requires_power = 0
+	luminosity = 1
+	sd_lighting = 0
+
+/area/winterretreat/hiddengrove
+	name = "Christmas Clearing"
+	icon_state = "puzzle"
+	requires_power = 0
 
 /area/centcom/evac
 	name = "Centcom Emergency Shuttle"
+	icon_state = "purple"
+	requires_power = 0
 
 /area/centcom/suppy
 	name = "Centcom Supply Shuttle"
+	icon_state = "purple"
+	requires_power = 0
 
 /area/centcom/ferry
 	name = "Centcom Transport Shuttle"
+	icon_state = "purple"
+	requires_power = 0
 
 /area/centcom/shuttle
 	name = "Centcom Administration Shuttle"
+	icon_state = "purple"
+	requires_power = 0
 
 /area/centcom/test
 	name = "Centcom Testing Facility"
+	icon_state = "purple"
+	requires_power = 0
 
 /area/centcom/living
 	name = "Centcom Living Quarters"
+	icon_state = "purple"
+	requires_power = 0
 
 /area/centcom/specops
 	name = "Centcom Special Ops"
+	icon_state = "purple"
+	requires_power = 0
 
 /area/centcom/creed
 	name = "Creed's Office"
-
-/area/centcom/holding
-	name = "Holding Facility"
+	icon_state = "purple"
+	requires_power = 0
 
 //EXTRA
 
@@ -353,7 +348,7 @@ proc/process_ghost_teleport_locs()
 
 /area/tdome
 	name = "Thunderdome"
-	icon_state = "thunder"
+	icon_state = "medbay"
 	requires_power = 0
 
 /area/tdome/tdome1
@@ -378,8 +373,6 @@ proc/process_ghost_teleport_locs()
 	name = "Syndicate Station"
 	icon_state = "yellow"
 	requires_power = 0
-	luminosity = 1
-	ul_Lighting = 0
 
 /area/syndicate_station/start
 	name = "Syndicate Station Start"
@@ -411,7 +404,6 @@ proc/process_ghost_teleport_locs()
 /area/prison/arrival_airlock
 	name = "Prison Station Airlock"
 	icon_state = "green"
-	requires_power = 0
 
 /area/prison/control
 	name = "Prison Security Checkpoint"
@@ -420,10 +412,6 @@ proc/process_ghost_teleport_locs()
 /area/prison/crew_quarters
 	name = "Prison Security Quarters"
 	icon_state = "security"
-
-/area/prison/rec_room
-	name = "Prison Rec Room"
-	icon_state = "green"
 
 /area/prison/closet
 	name = "Prison Supply Closet"
@@ -487,7 +475,6 @@ proc/process_ghost_teleport_locs()
 	icon_state = "brig"
 
 //STATION13
-
 /area/commsat
 	name = "Communications Satellite"
 	icon_state = "commsat"
@@ -501,18 +488,6 @@ proc/process_ghost_teleport_locs()
 /area/atmos
  	name = "Atmospherics"
  	icon_state = "atmos"
-
-/area/store
-	name = "General Store"
-	icon_state = "store"
-
-/area/store/gasstation
-	name = "Gas Station"
-	icon_state = "store"
-
-/area/store/repairs
-	name = "Repair Shop"
-	icon_state = "store"
 
 //Maintenance
 
@@ -544,6 +519,9 @@ proc/process_ghost_teleport_locs()
 	name = "Central Maintenance"
 	icon_state = "maintcentral"
 
+/area/maintenance/bathroom
+	name = "Bathroom"
+	icon_state = "bathroom"
 /area/maintenance/fore
 	name = "Fore Maintenance"
 	icon_state = "fmaint"
@@ -560,99 +538,75 @@ proc/process_ghost_teleport_locs()
 	name = "Aft Maintenance"
 	icon_state = "amaint"
 
+/area/maintenance/auxsolarport
+	name = "Port Auxiliary Solar Maintenance"
+	icon_state = "SolarcontrolA"
+
+/area/maintenance/starboardsolar
+	name = "Starboard Solar Maintenance"
+	icon_state = "SolarcontrolS"
+
+/area/maintenance/portsolar
+	name = "Port Solar Maintenance"
+	icon_state = "SolarcontrolP"
+
+/area/maintenance/auxsolarstarboard
+	name = "Starboard Auxiliary Solar Maintenance"
+	icon_state = "SolarcontrolA"
+
 /area/maintenance/storage
 	name = "Atmospherics"
 	icon_state = "green"
-
-/area/maintenance/incinerator
-	name = "Incinerator"
-	icon_state = "disposal"
 
 /area/maintenance/disposal
 	name = "Waste Disposal"
 	icon_state = "disposal"
 
+/area/maintenance/incinerator
+	name = "Incinerator"
+	icon_state = "disposal"
+
 //Hallway
 
-/area/hallway/fore1
-	name = "Fore Primary Hallway part 1"
-	icon_state = "A1"
+/area/hallway/primary/fore
+	name = "Fore Primary Hallway"
+	icon_state = "hallF"
 
-/area/hallway/fore2
-	name = "Fore Primary Hallway part 2"
-	icon_state = "A2"
-
-/area/hallway/fore3
-	name = "Fore Primary Hallway part 3"
-	icon_state = "A3"
-
-/area/hallway/fore4
-	name = "Fore Primary Hallway part 4"
-	icon_state = "A4"
-
-/area/hallway/fore5
-	name = "Fore Primary Hallway part 5"
-	icon_state = "B1"
-
-/area/hallway/fore6
-	name = "Fore Primary Hallway part 6"
-	icon_state = "B2"
-
-/area/hallway/cent1
-	name = "Central Primary Hallway part 1"
-	icon_state = "B3"
-
-/area/hallway/cent4
-	name = "Central Primary Hallway part 2"
-	icon_state = "B4"
-
-/area/hallway/starboard
+/area/hallway/primary/starboard
 	name = "Starboard Primary Hallway"
 	icon_state = "hallS"
 
-/area/hallway/aft
+/area/hallway/primary/aft
 	name = "Aft Primary Hallway"
 	icon_state = "hallA"
 
-/area/hallway/RD
-	name = "R&D Primary Hallway"
-	icon_state = "hallA"
-
-/area/hallway/port
-	name = "Port Primary Hallway"
-	icon_state = "hallP"
-
-/area/hallway/central
-	name = "Central Primary Hallway"
-	icon_state = "hallC"
-
-/area/hallway/exit
-	name = "Escape Shuttle Hallway"
-	icon_state = "escape"
-
-/area/hallway/construction
-	name = "Construction Area"
-	icon_state = "construction"
-
-/area/hallway/bridgeentry
-	name = "Bridge Entry"
-	icon_state = "construction"
-
-/area/hallway/entry
-	name = "Arrival Shuttle Hallway"
-	icon_state = "entry"
-
-/area/hallway/docking
+/area/hallway/secondary/docking
 	name = "Shuttle Docking Area"
 	icon_state = "docking"
 
-/area/hallway/entryagora
-	name = "Shuttle Agora"
+/area/hallway/primary/port
+	name = "Port Primary Hallway"
+	icon_state = "hallP"
+
+/area/hallway/primary/central
+	name = "Central Primary Hallway"
+	icon_state = "hallC"
+
+/area/hallway/secondary/exit
+	name = "Escape Shuttle Hallway"
+	icon_state = "escape"
+
+/area/hallway/secondary/construction
+	name = "Construction Area"
+	icon_state = "construction"
+
+/area/hallway/secondary/entry
+	name = "Arrival Shuttle Hallway"
 	icon_state = "entry"
 
-/area/hallway/entrycheckpoint
-	name = "Arrival Shuttle Checkpoint"
-	icon_state = "entrycheckpoint"
+/area/store
+ 	name = "Mech Bay"
+ 	icon_state = "store"
 
 //Command
 
@@ -661,9 +615,23 @@ proc/process_ghost_teleport_locs()
 	icon_state = "bridge"
 	music = "signal"
 
+/area/commsat
+	name = "Communications Satellite"
+	icon_state = "commshuttle"
+	requires_power = 1
+
+/area/commsat/solar
+	name = "Communications Sattelite"
+	icon_state = "yellow"
+	requires_power = 0
+
 /area/crew_quarters/captain
 	name = "Captain's Quarters"
 	icon_state = "captain"
+
+/area/crew_quarters/crew
+	name = "Crew Quarters"
+	icon_state = "crewqrtrs"
 
 /area/crew_quarters/courtroom
 	name = "Courtroom"
@@ -680,10 +648,6 @@ proc/process_ghost_teleport_locs()
 /area/crew_quarters/chief
 	name = "Chief Engineer's Office"
 	icon_state = "head_quarters"
-
-/area/mint
-	name = "Mint"
-	icon_state = "green"
 
 //Crew
 
@@ -723,183 +687,25 @@ proc/process_ghost_teleport_locs()
 	name = "Fitness Room"
 	icon_state = "fitness"
 
-/area/crew_quarters/miners
-	name = "Miner's Quarters"
-	icon_state = "miners"
-
 /area/crew_quarters/cafeteria
 	name = "Cafeteria"
-	icon_state = "cafeteria"
-
-/area/crew_quarters/mess_hall
-	name = "Mess Hall"
 	icon_state = "cafeteria"
 
 /area/crew_quarters/kitchen
 	name = "Kitchen"
 	icon_state = "kitchen"
 
-/area/crew_quarters/houses/house1
-	name = "House #1"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house2
-	name = "House #2"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house3
-	name = "House #3"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house4
-	name = "House #4"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house5
-	name = "House #5"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house6
-	name = "House #6"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house7
-	name = "House #7"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house8
-	name = "House #8"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house9
-	name = "House #9"
-	icon_state = "courtroom"
-
-/area/crew_quarters/houses/house10
-	name = "House #10"
-	icon_state = "courtroom"
-
-//Markets
-
-/area/market
-	name = "Market"
-	icon_state = "market"
-
-/* dicks */
-
-/area/market/a
-
-/area/market/b
-
-	name = "Ice Cream Parlor"
-
-/area/market/c
-
-/area/market/d
-
-
-//hi guys smell code
-/*
-/datum/hook_handler/areasmell
-	proc
-		HookMobAreaChange(var/list/args)
-			var/mob/M = args["mob"]
-			var/list/L = list()
-			var/itemcount = 0
-			world << "command ran"
-			if(ismob(M))
-				world << "command ran 2"
-				if(M:client)
-					world << "command ran 3"
-					for(var/obj/I in src)
-						world << I:name
-						L += I
-						itemcount++
-					M << "This area smells like [L]"
-					world << "This area smells like [L]"
-
-			..()
-*/
-
-
-/*
 /area/crew_quarters/bar
-	name = "Bar"
+	name= "Bar"
 	icon_state = "bar"
-	var/sound/mysound = null
 
-	New()
-		..()
-		var/sound/S = new/sound()
-		mysound = S
-		S.repeat = 0
-		S.wait = 0
-		S.channel = 250
-		S.volume = 50
-		S.priority = 255
-		S.status = SOUND_UPDATE
-
-		process()
-
-
-	//failed attempt at doing synchtube
-	//the reason behind is the fact byond uses internet explorer 5 controls and this happens: http://s1.d2k5.com/Erika1/Screenshot-2012-01-03_00.21.03.jpgo
-	//Entered(atom/movable/Obj,atom/OldLoc)
-	//	if(ismob(Obj))
-	//		var/synchtube = "<meta HTTP-EQUIV=\"REFRESH\" content=\"0; url=http://vps.d2k5.com/synchlube.php\">Loading SynchTube..."
-	//		Obj << browse(synchtube, "window=rpane.hosttracker")
-	//	return
-
-	//Exited(atom/movable/Obj)
-	//	if(ismob(Obj))
-	//		if(Obj:client)
-	//			Obj << browse("about:blank", "window=rpane.hosttracker")
-	//failed attempt at doing synchtube
-
- 	Entered(atom/movable/Obj,atom/OldLoc)
-		if(ismob(Obj))
-			if(Obj:client)
-				mysound.status = SOUND_UPDATE
-				Obj << mysound
-		return
-
-	Exited(atom/movable/Obj)
-		if(ismob(Obj))
-			if(Obj:client)
-				mysound.status = SOUND_PAUSED | SOUND_UPDATE
-				Obj << mysound
-
-	proc/process()
-		set background = 1
-
-		var/sound/S = null
-		var/sound_delay = 0
-
-		mysound.file = pick('diner (1).ogg','diner (2).ogg','diner (3).ogg','diner (4).ogg','diner (5).ogg','diner (6).ogg','diner (7).ogg','diner (8).ogg','diner (9).ogg','diner (10).ogg','diner (11).ogg','diner (12).ogg','diner (13).ogg','diner (14).ogg','diner (15).ogg','diner (16).ogg')
-
-		for(var/mob/living/carbon/human/H in src)
-			if(H.client)
-				mysound.status = SOUND_UPDATE
-				if(mysound.status == SOUND_PAUSED)
-					mysound.file = pick('diner (1).ogg','diner (2).ogg','diner (3).ogg','diner (4).ogg','diner (5).ogg','diner (6).ogg','diner (7).ogg','diner (8).ogg','diner (9).ogg','diner (10).ogg','diner (11).ogg','diner (12).ogg','diner (13).ogg','diner (14).ogg','diner (15).ogg','diner (16).ogg')
-					mysound.status = SOUND_UPDATE
-				H << mysound
-				if(S)
-					spawn(sound_delay)
-						H << S
-		spawn(60) .()
-
-
-*/
-/area/crew_quarters/bar
-	name = "Bar"
+/area/crew_quarters/barber
+	name= "Barbershop"
 	icon_state = "bar"
-	var/currentsong
 
-
-/area/crew_quarters/theatre
-	name = "Theatre"
-	icon_state = "Theatre"
+/area/crew_quarters/miner
+	name = "Miners' Quarters"
+	icon_state = "mine"
 
 /area/library
  	name = "Library"
@@ -920,50 +726,32 @@ proc/process_ghost_teleport_locs()
 //Engineering
 
 /area/engine/engine_smes
-	name = "Engineering SMES"
-	icon_state = "engine_smes"
-	requires_power = 0//This area only covers the batteries and they deal with their own power
+	name = "Engine SMES Room"
+	icon_state = "enginesmes"
 
-/area/engine/engineering/centre
-	name = "Engineering"
+/area/engine/engine
+	name = "Engine Chambre"
 	icon_state = "engine"
 
-/area/engine/engineering/west
-	name = "Engineering"
+/area/engine/mechwork
+	name = "Mechanics Workshop"
 	icon_state = "engine"
 
-/area/engine/engineering/controlroom
-	name = "Engineering Control Room"
+/area/engine/engine_walls
+	name = "Engine Walls"
 	icon_state = "engine"
 
-/area/engine/engineering/east
-	name = "Engineering"
-	icon_state = "engine"
-
-/area/engine/singularty
-	name = "Singularty Research"
-	icon_state = "engine"
-
-/area/engine/chiefs_office
-	name = "Chief Engineers office"
-	icon_state = "engine_control"
+/area/engine/engine_gas_storage
+	name = "Engine Storage"
+	icon_state = "engine_gas_storage"
 
 /area/engine/heat_engine
 	name = "Heat Distribution Engine"
 	icon_state = "heatengine"
 
-/area/engine/heat_engine/Port
-	name = "Port Heat Distribution Engine"
-	icon_state = "heatengine"
-
-/area/engine/heat_engine/Starboard
-	name = "Starboard Heat Distribution Engine"
-	icon_state = "heatengine"
-
 /area/engine/engine_hallway
-	name = "Auxiliary power control room"
+	name = "Engine Hallway"
 	icon_state = "enginehall"
-
 /area/engine/engine_mon
 	name = "Engine Storage"
 	icon_state = "enginemon"
@@ -978,66 +766,17 @@ proc/process_ghost_teleport_locs()
 	music = "signal"
 
 
-//Solars
+/area/engine/engine_control
+	name = "Engine Control"
+	icon_state = "engine_control"
 
-/area/solar
-	requires_power = 0
-	luminosity = 1
-//	sd_lighting = 0
-	ul_Lighting = 0
+/area/engine/launcher
+	name = "Engine Launcher Room"
+	icon_state = "engine_monitoring"
 
-	auxport
-		name = "Port Auxiliary Solar Array"
-		icon_state = "panelsA"
-
-	bridge
-		name = "Bridge Solar Array"
-		icon_state = "yellow"
-
-	auxstarboard
-		name = "Starboard Auxiliary Solar Array"
-		icon_state = "panelsA"
-
-	fore
-		name = "Fore Solar Array"
-		icon_state = "yellow"
-
-	aft
-		name = "Aft Solar Array"
-		icon_state = "aft"
-
-	mining
-		name = "Mining Station Solar Array"
-		icon_state = "yellow"
-
-	starboard
-		name = "Starboard Solar Array"
-		icon_state = "panelsS"
-
-	port
-		name = "Port Solar Array"
-		icon_state = "panelsP"
-
-/area/maintenance/auxsolarport
-	name = "Port Auxiliary Solar Maintenance"
-	icon_state = "SolarcontrolA"
-
-/area/maintenance/auxsolarfore
-	name = "Fore Auxiliary Solar Maintenance"
-	icon_state = "SolarcontrolA"
-
-/area/maintenance/starboardsolar
-	name = "Starboard Solar Maintenance"
-	icon_state = "SolarcontrolS"
-
-/area/maintenance/portsolar
-	name = "Port Solar Maintenance"
-	icon_state = "SolarcontrolP"
-
-/area/maintenance/auxsolarstarboard
-	name = "Starboard Auxiliary Solar Maintenance"
-	icon_state = "SolarcontrolA"
-
+/area/miningasteroid
+	name = "Mining Satellite"
+	icon_state = "mine"
 
 /area/assembly/chargebay
 	name = "Recharging Bay"
@@ -1051,18 +790,9 @@ proc/process_ghost_teleport_locs()
 	name = "Assembly Line"
 	icon_state = "ass_line"
 
-/area/miningasteroid
-	name = "Mining Satellite"
-	icon_state = "mine"
-
 //Teleporter
 
-/area/teleporter/alpha
-	name = "Teleporter"
-	icon_state = "teleporter"
-	music = "signal"
-
-/area/teleporter/beta
+/area/teleporter
 	name = "Teleporter"
 	icon_state = "teleporter"
 	music = "signal"
@@ -1072,6 +802,12 @@ proc/process_ghost_teleport_locs()
 	icon_state = "teleporter"
 	music = "signal"
 
+/area/Emilytest
+	name = "Emily's test room"
+	icon_state = "teleporter"
+	music = "signal"
+	requires_power = 0
+
 //MedBay
 
 /area/medical/medbay
@@ -1079,28 +815,10 @@ proc/process_ghost_teleport_locs()
 	icon_state = "medbay"
 	music = 'signal.ogg'
 
-/area/medical/medbaylobby
-	name = "Medbay Reception"
-	icon_state = "medbay"
-	music = 'signal.ogg'
-
-/area/medical/medbaystorage
-	name = "Medbay Storage"
-	icon_state = "medbay"
-	music = 'signal.ogg'
-
-area/medical/medbaystorage2
-	name = "Medbay Blood Bank"
-	icon_state = "medbay"
-	music = 'signal.ogg'
-
-/area/medical/patients_rooms
-	name = "Patients Rooms"
-	icon_state = "patients"
-
 /area/medical/cmo
 	name = "Chief Medical Officer's office"
-	icon_state = "CMO"
+	icon_state = "medbay"
+	music = 'signal.ogg'
 
 /area/medical/robotics
 	name = "Robotics"
@@ -1112,31 +830,15 @@ area/medical/medbaystorage2
 
 /area/medical/virology
 	name = "Virology"
-	icon_state = "virology"
+	icon_state = "viral_lab"
 
 /area/medical/morgue
-	name = "DEAD NIGGER STORAGE"
+	name = "Morgue"
 	icon_state = "morgue"
 
 /area/medical/chemistry
 	name = "Chemistry"
 	icon_state = "chem"
-
-/area/medical/surgery
-	name = "Surgery"
-	icon_state = "surgery"
-
-/area/medical/cryo
-	name = "Cryo"
-	icon_state = "cryo"
-
-/area/medical/exam_room
-	name = "Exam Room"
-	icon_state = "exam_room"
-
-/area/medical/genetics
-	name = "Genetics"
-	icon_state = "genetics"
 
 /area/medical/oproom
 	name = "Operating Room"
@@ -1152,6 +854,14 @@ area/medical/medbaystorage2
 	name = "Security"
 	icon_state = "security"
 
+/area/security/armory
+	name = "Armory"
+	icon_state = "security"
+
+/area/security/guardquarters
+	name = "Guard's Quarters"
+	icon_state = "security"
+
 /area/security/brig
 	name = "Brig"
 	icon_state = "brig"
@@ -1163,7 +873,6 @@ area/medical/medbaystorage2
 /area/security/brig/cell2
 	name = "Cell 2"
 	icon_state = "cell2"
-
 /area/security/brig/cell3
 	name = "Cell 3"
 	icon_state = "cell3"
@@ -1171,19 +880,12 @@ area/medical/medbaystorage2
 /area/security/brig/cell4
 	name = "Cell 4"
 	icon_state = "cell4"
-
 /area/security/brig/cell5
 	name = "Cell 5"
 	icon_state = "cell5"
-
 /area/security/brig/cell6
 	name = "Cell 6"
 	icon_state = "cell6"
-
-/area/security/armory
-	name = "Armory"
-	icon_state = "brig"
-
 /area/security/warden
 	name = "Warden"
 	icon_state = "Warden"
@@ -1192,33 +894,15 @@ area/medical/medbaystorage2
 	name = "Head of Security"
 	icon_state = "security"
 
-/area/security/guardquarters
-	name = "Guard's Quarters"
-	icon_state = "security"
-
+/area/security/weaponlabS
+	name = "Weapon Lab Sercurity Checkpoint"
+	icon_state = "weaponlabS"
 /area/security/detectives_office
 	name = "Detectives Office"
 	icon_state = "detective"
 
-/*
-	New()
-		..()
-
-		spawn(10) //let objects set up first
-			for(var/turf/turfToGrayscale in src)
-				if(turfToGrayscale.icon)
-					var/icon/newIcon = icon(turfToGrayscale.icon)
-					newIcon.GrayScale()
-					turfToGrayscale.icon = newIcon
-				for(var/obj/objectToGrayscale in turfToGrayscale) //1 level deep, means tables, apcs, locker, etc, but not locker contents
-					if(objectToGrayscale.icon)
-						var/icon/newIcon = icon(objectToGrayscale.icon)
-						newIcon.GrayScale()
-						objectToGrayscale.icon = newIcon
-*/
-
 /area/security/nuke_storage
-	name = "Vault"
+	name = "Nuke Storage"
 	icon_state = "nuke_storage"
 
 /area/security/checkpoint
@@ -1233,17 +917,49 @@ area/medical/medbaystorage2
 	name = "Vacant Office"
 	icon_state = "security"
 
+//Solars
+
+/area/solar
+	requires_power = 0
+	luminosity = 1
+	sd_lighting = 0
+
+/area/solar/auxport
+	name = "Port Auxiliary Solar Array"
+	icon_state = "panelsA"
+
+/area/solar/auxstarboard
+	name = "Starboard Auxiliary Solar Array"
+	icon_state = "panelsA"
+
+/area/solar/fore
+	name = "Fore Solar Array"
+	icon_state = "yellow"
+
+/area/solar/aft
+	name = "Aft Solar Array"
+	icon_state = "aft"
+
+/area/solar/starboard
+	name = "Starboard Solar Array"
+	icon_state = "panelsS"
+
+/area/solar/port
+	name = "Port Solar Array"
+	icon_state = "panelsP"
+
+/area/syndicate_station2
+	name = "Syndicate Station"
+	icon_state = "yellow"
+	requires_power = 0
+
+/area/syndicate_wreck
+	name = "Syndicate Station"
+	icon_state = "yellow"
+
 /area/quartermaster
 	name = "Quartermasters"
 	icon_state = "quart"
-
-///////////WORK IN PROGRESS//////////
-
-/area/quartermaster/sorting
-	name = "Delivery Office"
-	icon_state = "quartstorage"
-
-////////////WORK IN PROGRESS//////////
 
 /area/quartermaster/office
 	name = "Cargo Office"
@@ -1257,30 +973,25 @@ area/medical/medbaystorage2
 	name = "Quartermaster's Office"
 	icon_state = "quart"
 
+/area/quartermaster/sorting
+	name = "Delivery Office"
+	icon_state = "quartstorage"
+
 /area/quartermaster/miningdock
 	name = "Mining Dock"
-	icon_state = "mining"
-
-/area/quartermaster/miningstorage
-	name = "Mining Storage"
-	icon_state = "green"
+	icon_state = "yellow"
 
 /area/quartermaster/mechbay
 	name = "Mech Bay"
 	icon_state = "yellow"
 
-/area/janitor
+/area/janitor/
 	name = "Janitors Closet"
 	icon_state = "janitor"
 
-
-/area/laundromat
-	name = "Laundromat"
-	icon_state = "janitor"
-
-/area/janitorr
-	name = "Janitors Room"
-	icon_state = "janitor"
+/area/store
+ 	name = "Store"
+ 	icon_state = "store"
 
 /area/hydroponics
 	name = "Hydroponics"
@@ -1298,26 +1009,55 @@ area/medical/medbaystorage2
 	name = "Virology"
 	icon_state = "viral_lab"
 
+/area/science/Server
+	name = "Server Room"
+	icon_state = "chem"
+
+/area/science/Server2
+	name = "Server's Core"
+	icon_state = "viral_lab"
+
+/area/science/viral_cell2
+	name = "Virology"
+	icon_state = "viral_lab"
+
+/area/science/viral_cell3
+	name = "Virology"
+	icon_state = "viral_lab"
+
+/area/science/viral_decon
+	name = "Virology Decontamination"
+	icon_state = "viral_lab"
+
+
+/area/science/heatlab
+	name = "Heated Environment Lab"
+	icon_state = "heatlab"
+
+/area/science/chemistry
+	name = "Chemistry"
+	icon_state = "chem"
+
 //Toxins
 
 /area/toxins/lab
-	name = "Science Lab 1"
+	name = "Toxin Lab"
 	icon_state = "toxlab"
 
 /area/toxins/lab2
-	name = "Science Lab 2"
+	name = "Toxin Lab 2"
 	icon_state = "toxlab"
 
 /area/toxins/xenobiology
-	name = "Xenobiology Lab"
+	name = "Secure Storage"
+	icon_state = "toxlab"
+
+/area/toxins/lockerroom
+	name = "Locker Room"
 	icon_state = "toxlab"
 
 /area/toxins/storage
 	name = "Toxin Storage"
-	icon_state = "toxstorage"
-
-/area/toxins/materialstorage
-	name = "Material Storage"
 	icon_state = "toxstorage"
 
 /area/toxins/test_area
@@ -1326,10 +1066,6 @@ area/medical/medbaystorage2
 
 /area/toxins/mixing
 	name = "Toxin Mixing Room"
-	icon_state = "toxmix"
-
-/area/toxins/crystalcore
-	name = "Crystal Testing Room"
 	icon_state = "toxmix"
 
 /area/toxins/server
@@ -1349,10 +1085,6 @@ area/medical/medbaystorage2
 /area/rdsat/toxins
 	name = "Toxin Research"
 	icon_state = "toxlab"
-
-/area/rdsat/tele
-	name = "Science Station - Teleporter Room"
-	icon_state = "teleporter"
 
 /area/rdsat/gasstorage
 	name = "Toxin Research Storage"
@@ -1382,10 +1114,6 @@ area/medical/medbaystorage2
 	name = "Materials Research"
 	icon_state = "research"
 
-/area/rdsat/artifact
-	name = "Artifact Research"
-	icon_state = "research"
-
 /area/rdsat/quarters
 	name = "Scientists' Quarters"
 	icon_state = "crewqrtrs"
@@ -1401,16 +1129,8 @@ area/medical/medbaystorage2
 	name = "Tool Storage"
 	icon_state = "storage"
 
-/area/storage/tools_mirror
-	name = "Tool Storage"
-	icon_state = "storage"
-
 /area/storage/primary
 	name = "Primary Tool Storage"
-	icon_state = "primarystorage"
-
-/area/storage/engineeringstools
-	name = "Engineering Tool Storage"
 	icon_state = "primarystorage"
 
 /area/storage/autolathe
@@ -1423,10 +1143,6 @@ area/medical/medbaystorage2
 
 /area/storage/eva
 	name = "EVA Storage"
-	icon_state = "eva"
-
-/area/storage/evasecondary
-	name = "Secondary EVA Storage"
 	icon_state = "eva"
 
 /area/storage/secure
@@ -1449,14 +1165,6 @@ area/medical/medbaystorage2
 	requires_power = 0
 	name = "Test Room"
 	icon_state = "storage"
-
-/area/storage/medical_storage
-	name = "Medical Storage"
-	icon_state = "storage"
-
-/area/lounge/
-	name = "The Gentleman's Lounge"
-	icon_state = "DJ"
 
 //DJSTATION
 
@@ -1481,12 +1189,9 @@ area/medical/medbaystorage2
 /area/derelict/hallway/secondary
 	name = "Derelict Secondary Hallway"
 	icon_state = "hallS"
-/area/derelict/hallway/engine
-	name = "Derelict Engine Hallway"
-	icon_state = "hallS"
 
 /area/derelict/arrival
-	name = "Derelict Arrival Centre"
+	name = "Arrival Centre"
 	icon_state = "yellow"
 
 /area/derelict/storage/equipment
@@ -1500,27 +1205,23 @@ area/medical/medbaystorage2
 	icon_state = "green"
 
 /area/derelict/bridge
-	name = "Derelict Control Room"
+	name = "Control Room"
 	icon_state = "bridge"
 
 /area/derelict/secret
-	name = "Derelict Secret Room"
+	name = "Secret Room"
 	icon_state = "library"
 
 /area/derelict/bridge/access
-	name = "Derelict Control Room Access"
-	icon_state = "auxstorage"
-
-/area/derelict/sec
-	name = "Derelict Security and Brig"
+	name = "Control Room Access"
 	icon_state = "auxstorage"
 
 /area/derelict/bridge/ai_upload
-	name = "Derelict Ruined Computer Core"
+	name = "Ruined Computer Core"
 	icon_state = "ai"
 
 /area/derelict/solar_control
-	name = "Derelict Solar Control"
+	name = "Solar Control"
 	icon_state = "engine"
 
 /area/derelict/crew_quarters
@@ -1551,15 +1252,6 @@ area/medical/medbaystorage2
 	name = "Abandoned ship"
 	icon_state = "yellow"
 
-/area/derelict/science
-	name = "Derelict Science"
-	icon_state = "yellow"
-
-
-/area/derelict/Courtroom
-	name = "Derelict Courtroom"
-	icon_state = "yellow"
-
 /area/solar/derelict_starboard
 	name = "Derelict Starboard Solar Array"
 	icon_state = "panelsS"
@@ -1567,10 +1259,6 @@ area/medical/medbaystorage2
 /area/solar/derelict_aft
 	name = "Derelict Aft Solar Array"
 	icon_state = "aft"
-
-/area/derelict/singularity_engine
-	name = "Derelict Singularity Engine"
-	icon_state = "engine"
 
 //Construction
 
@@ -1606,27 +1294,11 @@ area/medical/medbaystorage2
 	name = "Construction Site Storage"
 	icon_state = "yellow"
 
-/area/construction/depot
-	name = "Construction Depot"
-	icon_state = "yellow"
-
-/area/construction/mech
-	name = "Mech Bay"
-	icon_state = "yellow"
-
 //AI
 
 /area/ai_monitored/storage/eva
 	name = "EVA Storage"
 	icon_state = "eva"
-
-/area/ai_monitored/upload/uploadentry
-	name = "AI upload Outer Door"
-	icon_state = "ai_foyer"
-
-/area/ai_monitored/virology/virologyentry
-	name = "Virology Airlock"
-	icon_state = "ai_foyer"
 
 /area/ai_monitored/storage/secure
 	name = "Secure Storage"
@@ -1648,10 +1320,6 @@ area/medical/medbaystorage2
 	name = "AI Chamber"
 	icon_state = "ai_chamber"
 
-/area/turret_protected/aifoyer
-	name = "AI Chamber Foyer"
-	icon_state = "ai_chamber"
-
 /area/turret_protected/aisat
 	name = "AI Satellite"
 	icon_state = "ai"
@@ -1660,202 +1328,34 @@ area/medical/medbaystorage2
 	name = "AI Satellite"
 	icon_state = "ai"
 
-/area/turret_protected/cannoncontrols
-	name = "Laser Cannon Controls"
-	icon_state = "ai"
-
 /area/turret_protected/AIsatextFP
 	name = "AI Sat Ext"
 	icon_state = "storage"
 	luminosity = 1
-//	sd_lighting = 0
-	ul_Lighting = 0
+	sd_lighting = 0
 
 /area/turret_protected/AIsatextFS
 	name = "AI Sat Ext"
 	icon_state = "storage"
 	luminosity = 1
-//	sd_lighting = 0
-	ul_Lighting = 0
+	sd_lighting = 0
 
 /area/turret_protected/AIsatextAS
 	name = "AI Sat Ext"
 	icon_state = "storage"
 	luminosity = 1
-//	sd_lighting = 0
-	ul_Lighting = 0
+	sd_lighting = 0
 
 /area/turret_protected/AIsatextAP
 	name = "AI Sat Ext"
 	icon_state = "storage"
 	luminosity = 1
-//	sd_lighting = 0
-	ul_Lighting = 0
-
-/area/turret_protected/NewAIMain
-	name = "AI Main New"
-	icon_state = "storage"
+	sd_lighting = 0
 
 /area/turret_protected/weaplab
 	name = "Weapons Lab"
 	icon_state = "weaponlabT"
 
-//AI Satellite areas not covered with turret_protected
-
-/area/AISat/porthallwayN
-	name = "Port Hallway North"
-	icon_state = "storage"
-
-/area/AISat/porthallwayS
-	name = "Port Hallway South"
-	icon_state = "storage"
-
-/area/AISat/starboardhallwayN
-	name = "Starboard Hallway North"
-	icon_state = "storage"
-
-/area/AISat/starboardhallwayS
-	name = "Starboard Hallway South"
-	icon_state = "storage"
-
-/area/AISat/atmosA
-	name = "Atmospherics A"
-	icon_state = "docking"
-
-/area/AISat/atmosB
-	name = "Atmospherics B"
-	icon_state = "docking"
-
-/area/AISat/bar
-	name = "McPubbies' Bar and Grill"
-	icon_state = "green"
-
-/area/AISat/barhydro
-	name = "McPubbies' Hydroponics"
-	icon_state = "green"
-
-/area/AISat/barkitchen
-	name = "McPubbies' Kitchen"
-	icon_state = "green"
-
-/area/AISat/maint
-	name = "Satellite Maintenance"
-	icon_state = "yellow"
-	requires_power = 0 //two reasons for this: designing it would be a nightmare and it's only batteries and such crap anyway
-
-/area/AISat/cyborgbayp
-	name = "Cyborg Bay Port"
-	icon_state = "auxstorage"
-
-/area/AISat/cyborgbays
-	name = "Cyborg Bay Starboard"
-	icon_state = "auxstorage"
-
-/area/AISat/auxstoragep
-	name = "Auxiliary Storage Port"
-	icon_state = "auxstorage"
-
-/area/AISat/auxstorages
-	name = "Auxiliary Storage Starboard"
-	icon_state = "auxstorage"
-
-/area/AISat/engineering
-	name = "Engineering"
-	icon_state = "engine"
-
-
-/////////////////////////////////////////////////////////////////////
-/*
- Lists of areas to be used with is_type_in_list.
- Used in gamemodes code at the moment. --rastaf0
-*/
-
-// CENTCOM
-var/list/centcom_areas = list (
-	/area/centcom,
-	/area/shuttle/escape/centcom,
-	/area/shuttle/transport1/centcom,
-	/area/shuttle/transport2/centcom,
-	/area/shuttle/administration/centcom,
-	/area/shuttle/specops/centcom,
-)
-
-//SPACE STATION 13
-var/list/the_station_areas = list (
-	/area/shuttle/arrival,
-	/area/shuttle/escape/station,
-	/area/shuttle/mining/station,
-	/area/shuttle/transport1/station,
-	// /area/shuttle/transport2/station,
-	/area/shuttle/prison/station,
-	/area/shuttle/administration/station,
-	/area/shuttle/specops/station,
-	/area/atmos,
-	/area/maintenance,
-	/area/hallway,
-	/area/bridge,
-	/area/crew_quarters,
-	/area/mint,
-	/area/library,
-	/area/chapel,
-	/area/lawoffice,
-	/area/engine,
-	/area/solar,
-	/area/assembly,
-	/area/teleporter,
-	/area/medical,
-	/area/security,
-	/area/quartermaster,
-	/area/janitor,
-	/area/hydroponics,
-	/area/toxins,
-	/area/storage,
-	/area/construction,
-	/area/ai_monitored/storage/eva, //do not try to simplify to "/area/ai_monitored" --rastaf0
-	/area/ai_monitored/storage/secure,
-	/area/ai_monitored/storage/emergency,
-	/area/turret_protected/ai_upload, //do not try to simplify to "/area/turret_protected" --rastaf0
-	/area/turret_protected/ai_upload_foyer,
-	/area/turret_protected/ai,
-)
-
-
-/area/beach
-	name = "Keelin's private beach"
-	icon_state = "null"
-	luminosity = 1
-//	sd_lighting = 0
-	ul_Lighting = 0
-	requires_power = 0
-
-/area/FTLship
- 	name = "unknown location"
- 	icon_state = "atmos"
-
-/area/FTLship/tele
- 	name = "Teleporter Room (unknown location)"
- 	icon_state = "atmos"
-
-/area/FTLship/bridge
- 	name = "Bridge (unknown location)"
- 	icon_state = "atmos"
-
-/area/FTLship/hallways
- 	name = "Hallway (unknown location)"
- 	icon_state = "atmos"
-
-/area/FTLship/engineroom
- 	name = "Engine Room (unknown location)"
- 	icon_state = "atmos"
-
-/area/FTLship/Sciencelab1
- 	name = "Science Lab 1 (unknown location)"
- 	icon_state = "atmos"
-
-/area/FTLship/Sciencelab2
- 	name = "Science Lab 2 (unknown location)"
- 	icon_state = "atmos"
-
-/area/FTLship/medical
- 	name = "Medbay (unknown location)"
- 	icon_state = "storage"
+/area/turret_protected/prisonstation
+	name = "Cell Block Automated Guard"
+	icon_state = "weaponlabT"

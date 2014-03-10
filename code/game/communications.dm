@@ -2,7 +2,7 @@
   HOW IT WORKS
 
   The radio_controller is a global object maintaining all radio transmissions, think about it as about "ether".
-  Note that walkie-talkie, intercoms and headsets handle transmission using nonstandard way.
+  Note that /obj/item/device/radio handles transmission using nonstandard way.
   procs:
 
     add_object(obj/device as obj, var/new_frequency as num, var/filter as text|null = null)
@@ -63,7 +63,7 @@
 
 /*
 Frequency range: 1200 to 1600
-Radiochat range: 1441 to 1489 (most devices refuse to be tune to other frequency, even during mapmaking)
+Radiochat range: 1441 to 1489
 
 Radio:
 1459 - standard radio chat
@@ -74,8 +74,6 @@ Radio:
 1359 - Security
 1441 - death squad
 1443 - Confession Intercom
-1349 - Miners
-1347 - Cargo techs
 
 Devices:
 1451 - tracking implant
@@ -106,12 +104,10 @@ var/list/radiochannels = list(
 	"Security" = 1359,
 	"Deathsquad" = 1441,
 	"Syndicate" = 1213,
-	"Mining" = 1349,
-	"Cargo" = 1347,
 )
 //depenging helpers
-var/list/DEPT_FREQS = list(1351,1355,1357,1359,1213,1441,1349,1347)
-var/const/COMM_FREQ = 1353 //command, colored gold in chat window
+var/list/DEPT_FREQS = list(1351,1355,1357,1359,1213,1441)
+var/const/COMM_FREQ = 1353
 var/const/SYND_FREQ = 1213
 
 #define TRANSMISSION_WIRE	0
@@ -161,25 +157,9 @@ datum/controller/radio
 		var/f_text = num2text(frequency)
 		return frequencies[f_text]
 
-	proc/RegisterScrambler(var/Frequency)
-		var/datum/radio_frequency/frequency = frequencies[Frequency]
-		frequency.scrambled++
-		frequency.devices_scrambled |= frequency.devices
-		frequency.devices = list( )
-
-	proc/UnregisterScrambler(var/Frequency)
-		var/datum/radio_frequency/frequency = frequencies[Frequency]
-		frequency.scrambled--
-		if (!frequency.scrambled)
-			frequency.devices = frequency.devices_scrambled
-			frequency.devices_scrambled = list()
-
 datum/radio_frequency
 	var/frequency as num
 	var/list/list/obj/devices = list()
-	var/scrambled
-	var/list/obj/devices_scrambled = list()
-
 
 	proc
 		post_signal(obj/source as obj|null, datum/signal/signal, var/filter = null as text|null, var/range = null as num|null)
@@ -233,7 +213,6 @@ datum/radio_frequency
 								continue
 						device.receive_signal(signal, TRANSMISSION_RADIO, frequency)
 //						N_nf++
-
 //			log_admin("DEBUG: post_signal(source=[source] ([source.x], [source.y], [source.z]),filter=[filter]) frequency=[frequency], N_f=[N_f], N_nf=[N_nf]")
 
 
@@ -262,7 +241,6 @@ datum/radio_frequency
 				if (devices_line.len==0)
 					devices -= devices_filter
 					del(devices_line)
-
 
 obj/proc
 	receive_signal(datum/signal/signal, receive_method, receive_param)

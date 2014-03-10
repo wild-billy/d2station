@@ -3,8 +3,7 @@
 	max_stages = 1
 	cure = "None"
 	spread = "Airborne"
-	affected_species = list("Human", "Monkey")
-	affected_species2 = list(/mob/living/carbon/monkey, /mob/living/carbon/human)
+	affected_species = list("Monkey", "Human")
 	curable = 0
 	var/list/phrases = list("This 'gay disease' stuff is kind of offensive, despite it being intended as tongue in cheek. ",\
 	 "And the nazi uniform is A-Okay? Well, admittedly, the nazi uniform is so rarely brought out and jews are so rarely eliminated, but hey. Take it for what it is. Stupid in an amusing way as opposed to hateful.",\
@@ -22,9 +21,16 @@
 	 "You just act like a dick in general. If it bothers you that much to spend all of your free time on this game then why even do it? And I'm sorry I hurt your feelings back--I like your game and I like most of the admins who spend their time on it, for better or worse, because even when they do grief its pretty funny. My suggestion was a throw-away comment that you decided would be awesome to troll me over for some reason. I won't bother you anymore if you're going to be that butt hurt when someone makes a suggestion that might not be brilliant to you. That's probably why they're just suggestions and not binding commands on what you should do with YOUR GAME that you spend all your time on. Also, please show me where I have trolled you before.",\
 	 "I can see how poo is funny if you're in grade school, but after that \"HE POOPED HIMSELF HAHAHA\" goes away. At least it should.",\
 	 "Ugh, Honestly this whole poo argument just feels like the clown/bartender/janitor argument all over again, \"Why would a clown/bartender/janitor be on a space station?!\" for a few months, and then it gets to be the underused thing that only crazy people do")
-	why_so_serious = 0
+
 /datum/disease/gay/stage_act()
 	..()
+	if(istype(affected_mob:l_hand, /obj/item/weapon))
+		if(!affected_mob:l_hand.gay)
+			affected_mob:l_hand.gay = 1
+	if(istype(affected_mob:r_hand, /obj/item/weapon))
+		if(!affected_mob:r_hand.gay)
+			affected_mob:r_hand.gay = 1
+
 	if(affected_mob.stat >= 1)
 		return
 

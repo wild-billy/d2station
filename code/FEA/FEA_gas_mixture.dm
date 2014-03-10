@@ -2,8 +2,6 @@
 What are the archived variables for?
 	Calculations are done using the archived variables with the results merged into the regular variables.
 	This prevents race conditions that arise based on the order of tile processing.
-
-	okay so, this file breaks things.
 */
 
 #define SPECIFIC_HEAT_TOXIN		200
@@ -12,8 +10,8 @@ What are the archived variables for?
 #define HEAT_CAPACITY_CALCULATION(oxygen,carbon_dioxide,nitrogen,toxins) \
 	(carbon_dioxide*SPECIFIC_HEAT_CDO + (oxygen+nitrogen)*SPECIFIC_HEAT_AIR + toxins*SPECIFIC_HEAT_TOXIN)
 
-#define MINIMUM_HEAT_CAPACITY	0.01
-#define QUANTIZE(variable)		(round(variable,0.01))
+#define MINIMUM_HEAT_CAPACITY	0.0003
+#define QUANTIZE(variable)		(round(variable,0.0001))
 
 datum
 	gas
@@ -34,20 +32,10 @@ datum
 
 	gas_mixture
 		var
-
 			oxygen = 0
 			carbon_dioxide = 0
 			nitrogen = 0
 			toxins = 0
-			var/list/datum/reagent/reagent_list = new/list()
-			var/total_volume = 0
-			var/maximum_volume = 100
-			var/atom/my_atom = null
-			var/list/viruses = list()
-			//If this was added to a zone's mixture update list, these are the zone's vars at the time it was retreived.
-			zone_oxygen = 0
-			zone_nitrogen = 0
-			zone_co2 = 0
 
 			volume = CELL_VOLUME
 
@@ -75,24 +63,12 @@ datum
 		proc //PV=nRT - related procedures
 			heat_capacity()
 				var/heat_capacity = HEAT_CAPACITY_CALCULATION(oxygen,carbon_dioxide,nitrogen,toxins)
-				oxygen = round(oxygen , 0.01)
-				if(oxygen > 100000000)
-					oxygen = 99999999
-				carbon_dioxide = round(carbon_dioxide , 0.01)
-				if(carbon_dioxide > 100000000)
-					carbon_dioxide = 99999999
-				nitrogen = round(nitrogen , 0.01)
-				if(nitrogen > 100000000)
-					nitrogen = 99999999
-				toxins = round(toxins , 0.01)
-				if(toxins > 100000000)
-					toxins = 99999999
 
 				if(trace_gases.len)
 					for(var/datum/gas/trace_gas in trace_gases)
 						heat_capacity += trace_gas.moles*trace_gas.specific_heat
 
-				return round(heat_capacity, 0.01)
+				return heat_capacity
 
 			heat_capacity_archived()
 				var/heat_capacity_archived = HEAT_CAPACITY_CALCULATION(oxygen_archived,carbon_dioxide_archived,nitrogen_archived,toxins_archived)
@@ -101,61 +77,21 @@ datum
 					for(var/datum/gas/trace_gas in trace_gases)
 						heat_capacity_archived += trace_gas.moles_archived*trace_gas.specific_heat
 
-				return round(heat_capacity_archived, 0.01)
+				return heat_capacity_archived
 
 			total_moles()
-				var/moles = round(oxygen + carbon_dioxide + nitrogen + toxins, 0.01)
-				oxygen = round(oxygen , 0.01)
-				if(oxygen > 100000000)
-					oxygen = 99999999
-				carbon_dioxide = round(carbon_dioxide , 0.01)
-				if(carbon_dioxide > 100000000)
-					carbon_dioxide = 99999999
-				nitrogen = round(nitrogen , 0.01)
-				if(nitrogen > 100000000)
-					nitrogen = 99999999
-				toxins = round(toxins , 0.01)
-				if(toxins > 100000000)
-					toxins = 99999999
-
+				var/moles = oxygen + carbon_dioxide + nitrogen + toxins
 
 				if(trace_gases.len)
 					for(var/datum/gas/trace_gas in trace_gases)
 						moles += trace_gas.moles
-				moles = round(moles, 0.01)
 
-				return max(moles,0.01)
+				return moles
 
 			return_pressure()
-				oxygen = round(oxygen , 0.01)
-				if(oxygen > 100000000)
-					oxygen = 99999999
-				carbon_dioxide = round(carbon_dioxide , 0.01)
-				if(carbon_dioxide > 100000000)
-					carbon_dioxide = 99999999
-				nitrogen = round(nitrogen , 0.01)
-				if(nitrogen > 100000000)
-					nitrogen = 99999999
-				toxins = round(toxins , 0.01)
-				if(toxins > 100000000)
-					toxins = 99999999
 				return total_moles()*R_IDEAL_GAS_EQUATION*temperature/volume
 
 			thermal_energy()
-				oxygen = round(oxygen , 0.01)
-				if(oxygen > 100000000)
-					oxygen = 99999999
-				carbon_dioxide = round(carbon_dioxide , 0.01)
-				if(carbon_dioxide > 100000000)
-					carbon_dioxide = 99999999
-				nitrogen = round(nitrogen , 0.01)
-				if(nitrogen > 100000000)
-					nitrogen = 99999999
-				toxins = round(toxins , 0.01)
-				if(toxins > 100000000)
-					toxins = 99999999
-
-
 				return temperature*heat_capacity()
 
 		proc //Procedures used for very specific events
@@ -251,24 +187,14 @@ datum
 					var/new_heat_capacity = heat_capacity()
 					if(new_heat_capacity > MINIMUM_HEAT_CAPACITY)
 						temperature = (temperature*old_heat_capacity + energy_released)/new_heat_capacity
-				oxygen = round(oxygen , 0.01)
-				if(oxygen > 100000000)
-					oxygen = 99999999
-				carbon_dioxide = round(carbon_dioxide , 0.01)
-				if(carbon_dioxide > 100000000)
-					carbon_dioxide = 99999999
-				nitrogen = round(nitrogen , 0.01)
-				if(nitrogen > 100000000)
-					nitrogen = 99999999
-				toxins = round(toxins , 0.01)
-				if(toxins > 100000000)
-					toxins = 99999999
+
 				return fuel_burnt
 
 		proc
 			archive()
 				//Update archived versions of variables
 				//Returns: 1 in all cases
+
 			merge(datum/gas_mixture/giver)
 				//Merges all air from giver into self. Deletes giver.
 				//Returns: 1 on success (no failure cases yet)
@@ -350,12 +276,15 @@ datum
 			carbon_dioxide_archived = carbon_dioxide
 			nitrogen_archived =  nitrogen
 			toxins_archived = toxins
+
 			if(trace_gases.len)
 				for(var/datum/gas/trace_gas in trace_gases)
 					trace_gas.moles_archived = trace_gas.moles
 
 			temperature_archived = temperature
+
 			graphic_archived = graphic
+
 			return 1
 
 		check_then_merge(datum/gas_mixture/giver)
@@ -398,8 +327,7 @@ datum
 				carbon_dioxide += giver.carbon_dioxide
 				nitrogen += giver.nitrogen
 				toxins += giver.toxins
-				viruses -= giver.viruses
-				viruses += giver.viruses
+
 			if(giver.trace_gases.len)
 				for(var/datum/gas/trace_gas in giver.trace_gases)
 					var/datum/gas/corresponding = locate(trace_gas.type) in trace_gases
@@ -430,11 +358,6 @@ datum
 			nitrogen -= removed.nitrogen/group_multiplier
 			carbon_dioxide -= removed.carbon_dioxide/group_multiplier
 			toxins -= removed.toxins/group_multiplier
-
-			oxygen = QUANTIZE(oxygen)
-			nitrogen = QUANTIZE(nitrogen)
-			carbon_dioxide = QUANTIZE(carbon_dioxide)
-			toxins = QUANTIZE(toxins)
 
 			if(trace_gases.len)
 				for(var/datum/gas/trace_gas in trace_gases)
@@ -467,11 +390,6 @@ datum
 			carbon_dioxide -= removed.carbon_dioxide/group_multiplier
 			toxins -= removed.toxins/group_multiplier
 
-			oxygen = QUANTIZE(oxygen)
-			nitrogen = QUANTIZE(nitrogen)
-			carbon_dioxide = QUANTIZE(carbon_dioxide)
-			toxins = QUANTIZE(toxins)
-
 			if(trace_gases.len)
 				for(var/datum/gas/trace_gas in trace_gases)
 					var/datum/gas/corresponding = new trace_gas.type()
@@ -501,11 +419,6 @@ datum
 			nitrogen = sample.nitrogen
 			toxins = sample.toxins
 
-			oxygen = QUANTIZE(oxygen)
-			nitrogen = QUANTIZE(nitrogen)
-			carbon_dioxide = QUANTIZE(carbon_dioxide)
-			toxins = QUANTIZE(toxins)
-
 			trace_gases.len=null
 			if(sample.trace_gases.len > 0)
 				for(var/datum/gas/trace_gas in sample.trace_gases)
@@ -523,11 +436,6 @@ datum
 			carbon_dioxide -= right_side.carbon_dioxide
 			nitrogen -= right_side.nitrogen
 			toxins -= right_side.toxins
-
-			oxygen = QUANTIZE(oxygen)
-			nitrogen = QUANTIZE(nitrogen)
-			carbon_dioxide = QUANTIZE(carbon_dioxide)
-			toxins = QUANTIZE(toxins)
 
 			if((trace_gases.len > 0)||(right_side.trace_gases.len > 0))
 				for(var/datum/gas/trace_gas in right_side.trace_gases)
@@ -633,7 +541,6 @@ datum
 			return 1
 
 		share(datum/gas_mixture/sharer)
-			if(!sharer) return
 			var/delta_oxygen = QUANTIZE(oxygen_archived - sharer.oxygen_archived)/5
 			var/delta_carbon_dioxide = QUANTIZE(carbon_dioxide_archived - sharer.carbon_dioxide_archived)/5
 			var/delta_nitrogen = QUANTIZE(nitrogen_archived - sharer.nitrogen_archived)/5
@@ -809,19 +716,11 @@ datum
 				carbon_dioxide -= delta_carbon_dioxide*border_multiplier/group_multiplier
 				nitrogen -= delta_nitrogen*border_multiplier/group_multiplier
 				toxins -= delta_toxins*border_multiplier/group_multiplier
-				oxygen = QUANTIZE(oxygen)
-				nitrogen = QUANTIZE(nitrogen)
-				carbon_dioxide = QUANTIZE(carbon_dioxide)
-				toxins = QUANTIZE(toxins)
 			else
 				oxygen -= delta_oxygen/group_multiplier
 				carbon_dioxide -= delta_carbon_dioxide/group_multiplier
 				nitrogen -= delta_nitrogen/group_multiplier
 				toxins -= delta_toxins/group_multiplier
-				oxygen = QUANTIZE(oxygen)
-				nitrogen = QUANTIZE(nitrogen)
-				carbon_dioxide = QUANTIZE(carbon_dioxide)
-				toxins = QUANTIZE(toxins)
 
 			var/moved_moles = (delta_oxygen + delta_carbon_dioxide + delta_nitrogen + delta_toxins)
 
@@ -968,7 +867,6 @@ datum
 			//Logic integrated from: temperature_mimic(model, conduction_coefficient) for efficiency
 
 		temperature_share(datum/gas_mixture/sharer, conduction_coefficient)
-			if(!sharer) return
 
 			var/delta_temperature = (temperature_archived - sharer.temperature_archived)
 			if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER)

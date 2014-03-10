@@ -1,9 +1,8 @@
 /obj/item/weapon/storage/photo_album
 	name = "Photo album"
-	icon = 'items.dmi'
+	icon = 'old_or_unused.dmi'
 	icon_state = "album"
 	item_state = "briefcase"
-	can_hold = list("/obj/item/weapon/photo",)
 
 /obj/item/weapon/storage/photo_album/MouseDrop(obj/over_object as obj)
 
@@ -35,9 +34,33 @@
 /obj/item/weapon/storage/photo_album/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	..()
 
-/obj/item/weapon/camera
+	if (src.contents.len >= 7)
+		return
+
+	if (!istype(W,/obj/item/weapon/photo))
+		user << "\red You can only put photos in a photo album."
+		return
+
+	var/t
+	for(var/obj/item/weapon/O in src)
+		t += O.w_class
+
+	playsound(src.loc, "rustle", 50, 1, -5)
+	user.u_equip(W)
+	W.loc = src
+	if ((user.client && user.s_active != src))
+		user.client.screen -= W
+	src.orient2hud(user)
+	W.dropped(user)
+	add_fingerprint(user)
+	for(var/mob/O in viewers(user, null))
+		O.show_message(text("\blue [] has added [] to []!", user, W, src), 1)
+
+	return
+
+/obj/item/weapon/camera_test
 	name = "camera"
-	icon = 'items.dmi'
+	icon = 'old_or_unused.dmi'
 	desc = "A one use - polaroid camera. 10 photos left."
 	icon_state = "camera"
 	item_state = "electropack"
@@ -50,28 +73,35 @@
 	var/pictures_left = 10
 	var/can_use = 1
 
-/obj/item/weapon/camera/tourist
-	desc = "A one use - polaroid camera. 10 photos left."
-	pictures_left = 10 //not 200 please
-
 /obj/item/weapon/photo
 	name = "photo"
-	icon = 'items.dmi'
+	icon = 'old_or_unused.dmi'
 	icon_state = "photo"
 	item_state = "clipboard"
 	w_class = 1.0
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/obj/item/weapon/camera/attack(mob/living/carbon/human/M as mob, mob/user as mob)
+/obj/item/weapon/camera_test/proc/build_composite_icon(var/atom/C)
+	var/icon/composite = icon(C.icon, C.icon_state, C.dir, 1)
+	for(var/O in C.overlays)
+		var/image/I = O
+		composite.Blend(icon(I.icon, I.icon_state, I.dir, 1), ICON_OVERLAY)
+	return composite
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/obj/item/weapon/camera_test/attack(mob/living/carbon/human/M as mob, mob/user as mob)
 	return
 
-/obj/item/weapon/camera/afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
+/obj/item/weapon/camera_test/afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
 	if (!can_use || !pictures_left || ismob(target.loc)) return
 
-	var/turf/the_turf = locate(round((target.x * 32 + target.pixel_x) / 32 + 0.5), round((target.y * 32 + target.pixel_y) / 32 + 0.5), target.z) // APC shinegans
+	var/turf/the_turf = get_turf(target)
 
-	var/icon/photo = build_composite_icon(the_turf)
+	var/icon/photo = icon('old_or_unused.dmi',"photo")
+
+	var/icon/turficon = build_composite_icon(the_turf)
+	turficon.Scale(22,20)
+
+	photo.Blend(turficon,ICON_OVERLAY,6,8)
 
 	var/mob_title = null
 	var/mob_detail = null
@@ -84,7 +114,8 @@
 		if(A.invisibility) continue
 		if(ismob(A))
 			var/icon/X = build_composite_icon(A)
-			photo.Blend(X,ICON_OVERLAY)
+			X.Scale(22,20)
+			photo.Blend(X,ICON_OVERLAY,6,8)
 			del(X)
 
 			if(!mob_title)
@@ -113,7 +144,8 @@
 		else
 			if(itemnumber < 5)
 				var/icon/X = build_composite_icon(A)
-				photo.Blend(X,ICON_OVERLAY)
+				X.Scale(22,20)
+				photo.Blend(X,ICON_OVERLAY,6,8)
 				del(X)
 				itemnumber++
 
@@ -143,13 +175,7 @@
 
 	var/obj/item/weapon/photo/P = new/obj/item/weapon/photo( get_turf(src) )
 
-	var/icon/photo_final = icon('blank.dmi')
-	photo.Scale(22, 22)
-	photo_final.Blend(photo, ICON_OVERLAY, 6, 7)
-	photo_final.Blend(icon('items.dmi', "photo_mask"), ICON_MULTIPLY)
-	var/icon/icon_final = icon('items.dmi', "photo")
-	icon_final.Blend(photo_final, ICON_OVERLAY)
-	P.icon = icon_final
+	P.icon = photo
 	P.name = finished_title
 	P.desc = finished_detail
 

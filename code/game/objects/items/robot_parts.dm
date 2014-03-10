@@ -4,67 +4,45 @@
 	item_state = "buildpipe"
 	icon_state = "blank"
 	flags = FPRINT | ONBELT | TABLEPASS | CONDUCT
-	var/construction_time = 100
-	var/list/construction_cost = list("metal"=20000,"glass"=5000)
 
 /obj/item/robot_parts/l_arm
-	name = "Robotic Left Arm"
-	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	name = "robot left arm"
 	icon_state = "l_arm"
-	construction_time = 200
-	construction_cost = list("metal"=18000)
 
 /obj/item/robot_parts/r_arm
-	name = "Robotic Right Arm"
-	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	name = "robot right arm"
 	icon_state = "r_arm"
-	construction_time = 200
-	construction_cost = list("metal"=18000)
 
 /obj/item/robot_parts/l_leg
-	name = "Robotic Left Leg"
-	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	name = "robot left leg"
 	icon_state = "l_leg"
-	construction_time = 200
-	construction_cost = list("metal"=15000)
 
 /obj/item/robot_parts/r_leg
-	name = "Robotic Right Leg"
-	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	name = "robot right leg"
 	icon_state = "r_leg"
-	construction_time = 200
-	construction_cost = list("metal"=15000)
 
 /obj/item/robot_parts/chest
-	name = "Robotic Torso"
-	desc = "A heavily reinforced case containing cyborg logic boards, with space for a standard power cell."
+	name = "robot chest"
 	icon_state = "chest"
-	construction_time = 350
-	construction_cost = list("metal"=40000)
 	var/wires = 0.0
 	var/obj/item/weapon/cell/cell = null
 
 /obj/item/robot_parts/head
-	name = "Robotic Head"
-	desc = "A standard reinforced braincase, with spine-plugged neural socket and sensor gimbals."
+	name = "robot head"
 	icon_state = "head"
-	construction_time = 350
-	construction_cost = list("metal"=25000)
 	var/obj/item/device/flash/flash1 = null
 	var/obj/item/device/flash/flash2 = null
 
 /obj/item/robot_parts/robot_suit
-	name = "Robotic Endoskeleton"
-	desc = "A complex metal backbone with standard limb sockets and pseudomuscle anchors."
+	name = "robot suit"
 	icon_state = "robo_suit"
-	construction_time = 500
-	construction_cost = list("metal"=50000)
 	var/obj/item/robot_parts/l_arm/l_arm = null
 	var/obj/item/robot_parts/r_arm/r_arm = null
 	var/obj/item/robot_parts/l_leg/l_leg = null
 	var/obj/item/robot_parts/r_leg/r_leg = null
 	var/obj/item/robot_parts/chest/chest = null
 	var/obj/item/robot_parts/head/head = null
+	var/obj/item/brain/brain = null
 	var/created_name = "Cyborg"
 
 /obj/item/robot_parts/robot_suit/New()
@@ -96,13 +74,13 @@
 /obj/item/robot_parts/robot_suit/attackby(obj/item/W as obj, mob/user as mob)
 	..()
 	if(istype(W, /obj/item/stack/sheet/metal))
-		var/obj/item/weapon/ed209_assembly/B = new /obj/item/weapon/ed209_assembly
-		B.loc = get_turf(src)
+//		var/obj/item/weapon/ed209_assembly/B = new /obj/item/weapon/ed209_assembly
+//		B.loc = get_turf(src)
 		user << "You armed the robot frame"
 		W:use(1)
 		if (user.get_inactive_hand()==src)
 			user.before_take_item(src)
-			user.put_in_inactive_hand(B)
+//			user.put_in_inactive_hand(B)
 		del(src)
 	if(istype(W, /obj/item/robot_parts/l_leg))
 		user.drop_item()
@@ -150,56 +128,55 @@
 			user << "\blue You need to attach a flash to it first!"
 
 	if(istype(W, /obj/item/device/mmi))
-		var/obj/item/device/mmi/M = W
-		if(check_completion())
-			if(!istype(loc,/turf))
+		if(src.check_completion())
+			if(!istype(src.loc,/turf))
 				user << "\red You can't put the MMI in, the frame has to be standing on the ground to be perfectly precise."
 				return
-			if(!M.brainmob)
+			if(!W:brain)
 				user << "\red Sticking an empty MMI into the frame would sort of defeat the purpose."
 				return
-			if(M.brainmob.stat == 2)
+			if(W:brain.brainmob.stat == 2)
 				user << "\red Sticking a dead brain into the frame would sort of defeat the purpose."
 				return
-
-			var/mob/living/silicon/robot/O = new /mob/living/silicon/robot(get_turf(loc))
-			if(!O)	return
-
 			user.drop_item()
-
+			W.loc = src
+			src.brain = W
+			var/mob/living/silicon/robot/O = new /mob/living/silicon/robot(get_turf(src.loc))
+			//O.start = 1
 			O.invisibility = 0
-			O.name = created_name
-			O.real_name = created_name
+			O.name = src.created_name
+			O.real_name = src.created_name
 
-			if (M.brainmob && M.brainmob.mind)
-				M.brainmob.mind.transfer_to(O)
+			if (W:brain.brainmob)
+				W:brain.brainmob.mind.transfer_to(O)
 			else
-				for(var/mob/dead/observer/G in mobz)
-					if(G.corpse == M.brainmob && G.client && G.corpse.mind)
+				for(var/mob/dead/observer/G in world)
+					if(G.corpse == W:brain.brainmob && G.client)
 						G.corpse.mind.transfer_to(O)
 						del(G)
 						break
-			if(O.mind && O.mind.special_role)
-				O.mind.store_memory("In case you look at this after being borged, the objectives are only here until I find a way to make them not show up for you, as I can't simply delete them without screwing up round-end reporting. --NeoFite")
+			if(O.mind)
+				if(O.mind.special_role) O.mind.store_memory("In case you look at this after being borged, the objectives are only here until I find a way to make them not show up for you, as I can't simply delete them without screwing up round-end reporting. --NeoFite")
 
+			O.loc = src.loc
 			O << "<B>You are playing a Robot. The Robot can interact with most electronic objects in its view point.</B>"
 			O << "<B>You must follow the laws that the AI has. You are the AI's assistant to the station basically.</B>"
 			O << "To use something, simply double-click it."
 			O << {"Use say ":s to speak to fellow cyborgs and the AI through binary."}
 
+			//SN src = null
 			O.job = "Cyborg"
 
-			O.cell = chest.cell
+			O.cell = src.chest.cell
 			O.cell.loc = O
-			W.loc = O//Should fix cybros run time erroring when blown up. It got deleted before, along with the frame.
-			O.mmi = W
+			O.brain = W
 
 			del(src)
 		else
 			user << "\blue The MMI must go in after everything else!"
 
 	if (istype(W, /obj/item/weapon/pen))
-		var/t = strip_html(input(user, "Enter new robot name", src.name, src.created_name)) as text
+		var/t = input(user, "Enter new robot name", src.name, src.created_name) as text
 		t = copytext(sanitize(t), 1, MAX_MESSAGE_LEN)
 		if (!t)
 			return

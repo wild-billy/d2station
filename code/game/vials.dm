@@ -1,4 +1,3 @@
-var/global/ishighrank = "r"
 //NOTE:
 //This file contains the worst code ive ever written.
 //I dont fucking care. It looks pretty awesome.
@@ -91,11 +90,11 @@ var/global/ishighrank = "r"
 	O2.icon = 'objects.dmi'
 	O2.icon_state = "shards"
 	for(var/mob/living/carbon/human/H in view(5, sourceloc))
-		H.contract_disease(new /datum/disease/gbs,1)
+		if(!H.virus) H.contract_disease(new /datum/disease/gbs,1)
 	var/i
 	for(i=0, i<5, i++)
 		for(var/mob/living/carbon/human/H in view(5, sourceloc))
-			H.contract_disease(new /datum/disease/gbs,1)
+			if(!H.virus) H.contract_disease(new /datum/disease/gbs,1)
 		sleep(20)
 	flick("greenshatter2",O)
 	O.icon_state = "nothing"
@@ -258,7 +257,7 @@ var/global/ishighrank = "r"
 
 /obj/dummy/liquid/ex_act(blah)
 	return
-/obj/dummy/liquid/bullet_act(blah)
+/obj/dummy/liquid/bullet_act(blah,blah)
 	return
 
 

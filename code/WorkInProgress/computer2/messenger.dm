@@ -34,7 +34,7 @@
 			return
 
 		if(href_list["send_msg"])
-			var/t = strip_html(input(usr, "Please enter messenger", src.id_tag, null) as text)
+			var/t = input(usr, "Please enter messenger", src.id_tag, null) as text
 			t = copytext(sanitize(t), 1, MAX_MESSAGE_LEN)
 			if (!t)
 				return
@@ -64,7 +64,7 @@
 
 
 		if(href_list["set_name"])
-			var/t = strip_html(input(usr, "Please enter screen name", src.id_tag, null) as text)
+			var/t = input(usr, "Please enter screen name", src.id_tag, null) as text
 			t = copytext(sanitize(t), 1, 20)
 			if (!t)
 				return

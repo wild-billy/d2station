@@ -1,4 +1,3 @@
-var/global/canviewmind = "a"
 /mob/var/suiciding = 0
 
 /*/mob/living/carbon/human/verb/suicide()
@@ -18,18 +17,16 @@ var/global/canviewmind = "a"
 
 	var/confirm = alert("Are you sure you want to commit suicide?", "Confirm Suicide", "Yes", "No")
 
-	if(confirm == "Yes" && (istype(l_hand, /obj/item/weapon/shard) || (istype(r_hand, /obj/item/weapon/shard))))
+	if(confirm == "Yes")
 		suiciding = 1
-		viewers(src) << "\red <b>[src] slides the shard across \his throat!</b>"
-		src.bruteloss = max(175 - src.toxloss - src.fireloss - src.oxyloss, src.bruteloss)
+		//instead of killing them instantly, just put them at -175 health and let 'em gasp for a while
+		viewers(src) << "\red <b>[src] is holding \his breath. It looks like \he's trying to commit suicide.</b>"
+		src.oxyloss = max(175 - src.toxloss - src.fireloss - src.bruteloss, src.oxyloss)
 		src.updatehealth()
-		new /obj/decal/cleanable/blood(usr.loc)
-
 		spawn(200) //in case they get revived by cryo chamber or something stupid like that, let them suicide again in 20 seconds
-			src.suiciding = 0*/ // scratch that can't be arsed
+			src.suiciding = 0
 
-
-/*/mob/living/carbon/monkey/verb/suicide()
+/mob/living/carbon/monkey/verb/suicide()
 	set hidden = 1
 
 	if (src.stat == 2)
@@ -112,5 +109,4 @@ var/global/canviewmind = "a"
 		viewers(src) << "\red <b>[src] is holding his breath. It looks like \he's trying to commit suicide.</b>"
 		//put em at -175
 		src.oxyloss = max(100 - src.fireloss - src.bruteloss, src.oxyloss)
-		src.updatehealth()
-		*/
+		src.updatehealth()*/

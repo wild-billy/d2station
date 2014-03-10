@@ -1,9 +1,9 @@
 /obj/mecha/combat/marauder
-	desc = "Heavy-duty, combat exosuit, developed after the Durand model. Rarely found among civilian populations."
+	desc = "Heavy duty combat exosuit."
 	name = "Marauder"
 	icon_state = "marauder"
-	step_in = 5
-	health = 500
+	step_in = 7
+	health = 400
 	deflect_chance = 25
 	max_temperature = 5000
 	infra_luminosity = 3
@@ -13,24 +13,11 @@
 	var/smoke_ready = 1
 	var/smoke_cooldown = 100
 	var/datum/effects/system/harmless_smoke_spread/smoke_system = new
-	operation_req_access = list(access_cent_specops)
+	operation_req_access = list(access_heads)
 	wreckage = "/obj/decal/mecha_wreckage/marauder"
 	add_req_access = 0
 	internal_damage_threshold = 25
 	force = 45
-	max_equip = 4
-
-/obj/mecha/combat/marauder/seraph
-	desc = "Heavy-duty, command-type exosuit. This is a custom model, utilized only by high-ranking military personnel."
-	name = "Seraph"
-	icon_state = "seraph"
-	operation_req_access = list(access_cent_creed)
-	step_in = 3
-	health = 550
-	wreckage = "/obj/decal/mecha_wreckage/seraph"
-	internal_damage_threshold = 20
-	force = 55
-	max_equip = 5
 
 /obj/mecha/combat/marauder/New()
 	..()
@@ -38,38 +25,11 @@
 	ME.attach(src)
 	ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack
 	ME.attach(src)
-	ME = new /obj/item/mecha_parts/mecha_equipment/tesla_energy_relay(src)
-	ME.attach(src)
-	ME = new /obj/item/mecha_parts/mecha_equipment/antiproj_armor_booster(src)
-	ME.attach(src)
 	src.smoke_system.set_up(3, 0, src)
 	src.smoke_system.attach(src)
 	return
 
-/obj/mecha/combat/marauder/seraph/New()
-	..()//Let it equip whatever is needed.
-	var/obj/item/mecha_parts/mecha_equipment/ME
-	if(equipment.len)//Now to remove it and equip anew.
-		for(ME in equipment)
-			equipment -= ME
-			del(ME)
-	ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/scattershot(src)
-	ME.attach(src)
-	ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack(src)
-	ME.attach(src)
-	ME = new /obj/item/mecha_parts/mecha_equipment/teleporter(src)
-	ME.attach(src)
-	ME = new /obj/item/mecha_parts/mecha_equipment/tesla_energy_relay(src)
-	ME.attach(src)
-	ME = new /obj/item/mecha_parts/mecha_equipment/antiproj_armor_booster(src)
-	ME.attach(src)
-	return
-
 /obj/mecha/combat/marauder/relaymove(mob/user,direction)
-	if(user != src.occupant) //While not "realistic", this piece is player friendly.
-		user.loc = get_turf(src)
-		user << "You climb out from [src]"
-		return 0
 	if(!can_move)
 		return 0
 	if(zoom)
@@ -106,7 +66,7 @@
 
 		can_move = 0
 		spawn(tmp_step_in) can_move = 1
-		use_power(tmp_step_energy_drain)
+		cell.use(tmp_step_energy_drain)
 		return 1
 	return 0
 
@@ -175,15 +135,10 @@
 
 
 /obj/mecha/combat/marauder/get_commands()
-	var/output = {"<div class='wr'>
-						<div class='header'>Special</div>
-						<div class='links'>
-						<a href='?src=\ref[src];toggle_thrusters=1'>Toggle thrusters</a><br>
+	var/output = {"<a href='?src=\ref[src];toggle_thrusters=1'>Toggle thrusters</a><br>
 						<a href='?src=\ref[src];toggle_zoom=1'>Toggle zoom mode</a><br>
 						<a href='?src=\ref[src];smoke=1'>Smoke</a>
-						</div>
-						</div>
-						"}
+						<hr>"}
 	output += ..()
 	return output
 

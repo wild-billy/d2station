@@ -27,8 +27,6 @@
 	var/setup_frequency = 1411
 	var/obj/machinery/camera/current = null
 	var/authenticated = 0.0										//For ID changer, etc
-	var/moneyinserted = 0
-	var/pincode
 
 	/*New()
 		SoundLoop()
@@ -74,7 +72,7 @@
 		src.root.add_file( new /datum/computer/file/computer_program/idcard(src))
 		src.root.add_file( new /datum/computer/file/computer_program/securitycam(src))
 //		src.root.add_file( new /datum/computer/file/computer_program/power(src))
-		src.root.add_file( new /datum/computer/file/computer_program/atm(src))
+//		src.root.add_file( new /datum/computer/file/computer_program/atm(src))
 
 /obj/item/weapon/disk/data/progman
 	name = "File Manager Programme Diskette"
@@ -121,6 +119,30 @@
 	setup_has_radio = 1
 	setup_starting_program = /datum/computer/file/computer_program/idcard
 	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
+
+/obj/machinery/computer2/atm
+	name = "ATM"
+	desc = "An automatic teller machine, it prints money!"
+	icon_state = "computer_atm"
+	density = 0
+	setup_has_radio = 1
+	setup_starting_program = /datum/computer/file/computer_program/atm
+
+/obj/machinery/computer2/atm/attackby(obj/item/W as obj, mob/user as mob)
+	if (istype(W, /obj/item/weapon/disk/data)) //INSERT SOME DISKETTES
+		if ((!src.diskette) && W:portable)
+			user.machine = src
+			user.drop_item()
+			W.loc = src
+			src.diskette = W
+			user << "You insert [W]."
+			src.updateUsrDialog()
+			return
+
+	else
+		src.attack_hand(user)
+	return
+
 
 /obj/machinery/computer2/sec
 	name = "Security Records"
@@ -183,7 +205,7 @@
 	if((src.active_program) && (src.active_program.master == src) && (src.active_program.holder in src))
 		dat = src.active_program.return_text()
 	else
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><b>Kinesthesia Labs BIOS V1.4</b><br><br>"
+		dat = "<TT><b>Kinesthesia Labs BIOS V1.4</b><br><br>"
 		src.icon_state = base_icon_state
 		dat += "Current ID: <a href='?src=\ref[src];id=auth'>[src.authid ? "[src.authid.name]" : "----------"]</a><br>"
 		dat += "Auxiliary ID: <a href='?src=\ref[src];id=aux'>[src.auxid ? "[src.auxid.name]" : "----------"]</a><br><br>"
@@ -295,8 +317,6 @@
 						usr.drop_item()
 						I.loc = src
 						src.authid = I
-			if("pincode")
-				pincode = input("Enter your PIN:", "PIN", null) as num
 			if("aux")
 				if(!isnull(src.auxid))
 					src.auxid.loc = get_turf(src)

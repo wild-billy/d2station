@@ -1,13 +1,13 @@
 /obj/mecha/working/ripley
-	desc = "Autonomous Power Loader Unit. The workhorse of the exosuit world."
+	desc = "Autonomous Power Loader Unit."
 	name = "APLU \"Ripley\""
 	icon_state = "ripley"
-	step_in = 2
+	step_in = 8
 	max_temperature = 1000
 	health = 200
 	wreckage = "/obj/decal/mecha_wreckage/ripley"
 	var/list/cargo = new
-	state = 1
+	var/cargo_capacity = 15
 
 /*
 /obj/mecha/working/ripley/New()

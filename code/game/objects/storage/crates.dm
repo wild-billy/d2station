@@ -22,25 +22,6 @@
 	openicon = "o2crateopen"
 	closedicon = "o2crate"
 
-/obj/crate/trashcart
-	desc = "A heavy, metal trashcart with wheels."
-	name = "Trash Cart"
-	icon = 'storage.dmi'
-	icon_state = "trashcart"
-	density = 1
-	openicon = "trashcartopen"
-	closedicon = "trashcart"
-
-/obj/crate/cupboard
-	desc = "A cupboard."
-	name = "Cupboard"
-	icon = 'shelf.dmi'
-	icon_state = "cupboard"
-	density = 0
-	openicon = "cupboardopen"
-	closedicon = "cupboard"
-	anchored=1
-
 /obj/crate/medical
 	desc = "A medical crate."
 	name = "Medical crate"
@@ -50,15 +31,6 @@
 	openicon = "medicalcrateopen"
 	closedicon = "medicalcrate"
 
-/obj/crate/viro
-	desc = "A medical crate."
-	name = "Virology crate"
-	icon = 'storage.dmi'
-	icon_state = "virocrate"
-	density = 1
-	openicon = "virocrateopen"
-	closedicon = "virocrate"
-
 /obj/crate/rcd
 	desc = "A crate for the storage of the RCD."
 	name = "RCD crate"
@@ -67,6 +39,15 @@
 	density = 1
 	openicon = "crateopen"
 	closedicon = "crate"
+
+/obj/crate/trashcart
+	desc = "A wheeled trash recepticle."
+	name = "Dumpster"
+	icon = 'janitor.dmi'
+	icon_state = "trashcart"
+	density = 1
+	openicon = "trashcartopen"
+	closedicon = "trashcart"
 
 /obj/crate/freezer
 	desc = "A freezer."
@@ -85,17 +66,7 @@
 	density = 1
 	openicon = "largebinopen"
 	closedicon = "largebin"
-
-/obj/crate/radiation
-	desc = "A crate with a radiation sign on it."
-	name = "Radioactive gear crate"
-	icon = 'storage.dmi'
-	icon_state = "radiation"
-	density = 1
-	openicon = "radiationopen"
-	closedicon = "radiation"
-
-/obj/item/clothing/suit/radiation
+	anchored = 1
 
 /obj/crate/secure/weapon
 	desc = "A secure weapons crate."
@@ -213,17 +184,6 @@
 	new /obj/item/weapon/rcd_ammo(src)
 	new /obj/item/weapon/rcd(src)
 
-/obj/crate/radiation/New()
-	..()
-	new /obj/item/clothing/suit/radiation(src)
-	new /obj/item/clothing/head/radiation(src)
-	new /obj/item/clothing/suit/radiation(src)
-	new /obj/item/clothing/head/radiation(src)
-	new /obj/item/clothing/suit/radiation(src)
-	new /obj/item/clothing/head/radiation(src)
-	new /obj/item/clothing/suit/radiation(src)
-	new /obj/item/clothing/head/radiation(src)
-
 /obj/crate/proc/open()
 	playsound(src.loc, 'click.ogg', 15, 1, -3)
 
@@ -260,21 +220,19 @@
 	return ..()
 
 /obj/crate/secure/attackby(obj/item/weapon/W as obj, mob/user as mob)
+	..()
 	if(istype(W, /obj/item/weapon/card) && src.allowed(user) && !locked && !opened && !broken)
 		user << "\red You lock the [src]."
 		src.locked = 1
 		overlays = null
 		overlays += redlight
 		return
-	if (istype(W, /obj/item/weapon/cargotele))
-		var/obj/item/weapon/cargotele/O = W
-		O.cargoteleport(src, user)
-	else if ( (istype(W, /obj/item/weapon/card/emag)||istype(W, /obj/item/weapon/melee/energy/blade)) && locked &&!broken)
+	else if (istype(W, /obj/item/weapon/card/emag) && locked &&!broken)
 		overlays = null
 		overlays += emag
 		overlays += sparks
 		spawn(6) overlays -= sparks //Tried lots of stuff but nothing works right. so i have to use this *sadface*
-		playsound(src.loc, "sparks", 60, 1)
+		playsound(src.loc, 'sparks4.ogg', 75, 1)
 		src.locked = 0
 		src.broken = 1
 		user << "\blue You unlock the [src]."
@@ -286,20 +244,8 @@
 	return attack_hand(user)
 
 /obj/crate/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if (istype(W, /obj/item/weapon/packageWrap))
-		var/obj/item/weapon/packageWrap/O = W
-		if (O.amount > 3)
-			var/obj/bigDelivery/P = new /obj/bigDelivery(get_turf(src.loc))
-			P.wrapped = src
-			src.loc = P
-			O.amount -= 3
-	if (istype(W, /obj/item/weapon/cargotele))
-		var/obj/item/weapon/cargotele/O = W
-		O.cargoteleport(src, user)
-
-	else if(opened)
-		if(isrobot(user))
-			return
+	..()
+	if(opened)
 		user.drop_item()
 		if(W)
 			W.loc = src.loc
@@ -327,7 +273,6 @@
 			src.req_access = list()
 			src.req_access += pick(get_all_accesses())
 	..()
-
 
 /obj/crate/ex_act(severity)
 	switch(severity)

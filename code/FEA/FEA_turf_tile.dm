@@ -7,11 +7,10 @@ atom/movable/proc/experience_pressure_difference(pressure_difference, direction)
 	else if(!anchored)
 		if(pressure_difference > pressure_resistance)
 			last_forced_movement = air_master.current_cycle
-			spawn step(src, direction)
+			step(src, direction)
 		return 1
 
 turf
-
 	assume_air(datum/gas_mixture/giver) //use this for machines to adjust air
 		//First, ensure there is no movable shuttle or what not on tile that is taking over
 //		var/obj/movable/floor/movable_on_me = locate(/obj/movable/floor) in src
@@ -21,8 +20,6 @@ turf
 		del(giver)
 		return 0
 
-
-turf
 	return_air()
 		//First, ensure there is no movable shuttle or what not on tile that is taking over
 //		var/obj/movable/floor/movable_on_me = locate(/obj/movable/floor) in src
@@ -32,12 +29,13 @@ turf
 		//Create gas mixture to hold data for passing
 		var/datum/gas_mixture/GM = new
 
-		GM.oxygen = round(oxygen , 0.01)
-		GM.toxins = round(toxins , 0.01)
-		GM.nitrogen = round(nitrogen , 0.01)
-		GM.carbon_dioxide = round(carbon_dioxide , 0.01)
-		GM.viruses = viruses
+		GM.oxygen = oxygen
+		GM.carbon_dioxide = carbon_dioxide
+		GM.nitrogen = nitrogen
+		GM.toxins = toxins
+
 		GM.temperature = temperature
+
 		return GM
 
 	remove_air(amount as num)
@@ -50,10 +48,11 @@ turf
 
 		var/sum = oxygen + carbon_dioxide + nitrogen + toxins
 		if(sum>0)
-			GM.oxygen = round((oxygen/sum)*amount, 0.01)
-			GM.carbon_dioxide = round((carbon_dioxide/sum)*amount, 0.01)
-			GM.nitrogen = round((nitrogen/sum)*amount, 0.01)
-			GM.toxins = round((toxins/sum)*amount, 0.01)
+			GM.oxygen = (oxygen/sum)*amount
+			GM.carbon_dioxide = (carbon_dioxide/sum)*amount
+			GM.nitrogen = (nitrogen/sum)*amount
+			GM.toxins = (toxins/sum)*amount
+
 		GM.temperature = temperature
 
 		return GM
@@ -61,11 +60,10 @@ turf
 turf
 	var/pressure_difference = 0
 	var/pressure_direction = 0
-	var/list/viruses = list()
 
 	proc
 		high_pressure_movements()
-			sleep(-1)
+
 			for(var/atom/movable/in_tile in src)
 				in_tile.experience_pressure_difference(pressure_difference, pressure_direction)
 
@@ -117,8 +115,6 @@ turf
 			temperature_archived //USED ONLY FOR SOLIDS
 			being_superconductive = 0
 
-			dbg_processing = 0
-
 
 		proc
 			process_cell()
@@ -150,18 +146,17 @@ turf
 			if(!blocks_air)
 				air = new
 
-				air.oxygen = round(oxygen , 0.01)
-				air.carbon_dioxide = round(carbon_dioxide , 0.01)
-				air.nitrogen = round(nitrogen , 0.01)
-				air.toxins = round(toxins , 0.01)
-				air.viruses = viruses
+				air.oxygen = oxygen
+				air.carbon_dioxide = carbon_dioxide
+				air.nitrogen = nitrogen
+				air.toxins = toxins
+
 				air.temperature = temperature
 
 				if(air_master)
 					air_master.tiles_to_update.Add(src)
 
 					find_group()
-					if(!zone && !stop_zones) add_to_other_zone()
 
 //				air.parent = src //TODO DEBUG REMOVE
 
@@ -174,8 +169,6 @@ turf
 
 		Del()
 			if(air_master)
-				if(zone && !stop_zones)
-					zone.RemoveTurf(src)
 				if(parent)
 					air_master.groups_to_rebuild.Add(parent)
 					parent.members.Remove(src)
@@ -184,55 +177,18 @@ turf
 			if(active_hotspot)
 				del(active_hotspot)
 			if(blocks_air)
-				for(var/direction in list(NORTH, SOUTH, EAST, WEST, UP, DOWN))
+				for(var/direction in list(NORTH, SOUTH, EAST, WEST))
 					var/turf/simulated/tile = get_step(src,direction)
 					if(istype(tile) && !tile.blocks_air)
 						air_master.tiles_to_update.Add(tile)
 			..()
 
 		assume_air(datum/gas_mixture/giver)
-			if(!giver) return
-			if(zone) //Update zone values.
-				zone.add_oxygen(round(giver.oxygen, 0.01))
-				zone.add_nitrogen(round(giver.nitrogen, 0.01))
-				zone.add_co2(round(giver.carbon_dioxide, 0.01))
-
-				for(var/datum/disease/D in giver.viruses)
-					for(var/datum/disease/C in zone.viruses)
-						if(!istype(D, C.type))
-							zone.viruses += D
 			if(air)
 				if(parent&&parent.group_processing)
-					// always merge with the parent
-					parent.air.merge(giver)
-				else
-					air.merge(giver)
-
-					if(!processing)
-						if(air.check_tile_graphic())
-							update_visuals(air)
-
-				return 1
-
-			else return ..()
-
-		// assume air, and do more individual processing
-		// WARNING: LOTS OF CPU
-		assume_air_individual(datum/gas_mixture/giver)
-			if(!giver) return
-			if(zone) //Update zone values.
-				zone.add_oxygen(round(giver.oxygen, 0.01))
-				zone.add_nitrogen(round(giver.nitrogen, 0.01))
-				zone.add_co2(round(giver.carbon_dioxide, 0.01))
-				for(var/datum/disease/D in giver.viruses)
-					for(var/datum/disease/C in zone.viruses)
-						if(!istype(D, C.type))
-							zone.viruses += D
-
-			if(air)
-				if(parent&&parent.group_processing)
-					parent.suspend_group_processing()
-					air.merge(giver)
+					if(!parent.air.check_then_merge(giver))
+						parent.suspend_group_processing()
+						air.merge(giver)
 				else
 					air.merge(giver)
 
@@ -248,7 +204,7 @@ turf
 			if(air) //For open space like floors
 				air.archive()
 
-			temperature_archived =  temperature
+			temperature_archived = temperature
 			archived_cycle = air_master.current_cycle
 
 		share_air_with_tile(turf/simulated/T)
@@ -257,30 +213,11 @@ turf
 		mimic_air_with_tile(turf/T)
 			return air.mimic(T)
 
-		return_air(observe_only)
+		return_air()
 			if(air)
-				if(parent && parent.group_processing)
-					if(zone)
-						parent.air.oxygen = round(zone.oxygen(), 0.01)
-						parent.air.nitrogen = round(zone.nitrogen(), 0.01)
-						parent.air.carbon_dioxide = round(zone.co2(), 0.01)
-						if(!observe_only)
-							parent.air.zone_oxygen = round(parent.air.oxygen, 0.01)
-							parent.air.zone_nitrogen = round(parent.air.nitrogen, 0.01)
-							parent.air.zone_co2 = round(parent.air.carbon_dioxide, 0.01)
-							zone.update_mixtures.Add(parent.air)
+				if(parent&&parent.group_processing)
 					return parent.air
-				else
-					if(zone)
-						air.oxygen = round(zone.oxygen(), 0.01)
-						air.nitrogen = round(zone.nitrogen(), 0.01)
-						air.carbon_dioxide = round(zone.co2(), 0.01)
-						if(!observe_only)
-							air.zone_oxygen = round(air.oxygen, 0.01)
-							air.zone_nitrogen = round(air.nitrogen, 0.01)
-							air.zone_co2 = round(air.carbon_dioxide, 0.01)
-							zone.update_mixtures.Add(air)
-					return air
+				else return air
 
 			else
 				return ..()
@@ -289,13 +226,8 @@ turf
 			if(air)
 				var/datum/gas_mixture/removed = null
 
-				if(zone)
-					air.oxygen = round(zone.oxygen(), 0.01)
-					air.nitrogen = round(zone.nitrogen(), 0.01)
-					air.carbon_dioxide = round(zone.co2(), 0.01)
-
 				if(parent&&parent.group_processing)
-					removed = parent.air.remove(amount)
+					removed = parent.air.check_then_remove(amount)
 					if(!removed)
 						parent.suspend_group_processing()
 						removed = air.remove(amount)
@@ -306,96 +238,18 @@ turf
 						if(air.check_tile_graphic())
 							update_visuals(air)
 
-				if(removed && zone)
-					zone.add_oxygen(-removed.oxygen)
-					zone.add_nitrogen(-removed.nitrogen)
-					zone.add_co2(-removed.carbon_dioxide)
-
-				return removed
-
-			else
-				return ..()
-
-		remove_air_individual(amount as num)
-			if(air)
-				var/datum/gas_mixture/removed = null
-
-				if(zone)
-					air.oxygen = round(zone.oxygen(), 0.01)
-					air.nitrogen = round(zone.nitrogen(), 0.01)
-					air.carbon_dioxide = round(zone.co2(), 0.01)
-
-				if(parent&&parent.group_processing)
-					parent.suspend_group_processing()
-					removed = air.remove(amount)
-				else
-					removed = air.remove(amount)
-
-					if(!processing)
-						if(air.check_tile_graphic())
-							update_visuals(air)
-
-				if(removed && zone)
-					zone.add_oxygen(-removed.oxygen)
-					zone.add_nitrogen(-removed.nitrogen)
-					zone.add_co2(-removed.carbon_dioxide)
-
 				return removed
 
 			else
 				return ..()
 
 		update_air_properties()//OPTIMIZE
-			//var/old_air_directions = air_check_directions
 			air_check_directions = 0
-			floodupdate = 1
-			//if(!zone && !blocks_air)
-			//	if(CanPass(null,src,0,1))
-			//		add_to_other_zone()
-			//		if(!zone)
-			//			spawn new/zone(src)
 
 			for(var/direction in cardinal)
 				if(CanPass(null, get_step(src,direction), 0, 0))
 					air_check_directions |= direction
 
-		//	if(ticker) overlayss += 'debug_update.dmi'
-
-			if(zone)
-				for(var/direction in cardinal)
-					if(air_check_directions&direction)
-					//	if(ticker) overlayss += image('turf_analysis.dmi',src,"arrow",dir=direction)
-						var/turf/simulated/T = get_step(src,direction)
-
-						//See if actually a border
-						//if(istype(T,/turf/space) && direction & (16|32)) continue
-						if(!istype(T))
-							//if(ticker) world << "Update: Non-simulated T detected."
-
-							//See what kind of border it is
-						//if(istype(T,/turf/space) || istype(T,/turf/simulated/floor/engine/shieldmarker))
-							if(istype(T,/turf/space))
-								//if(ticker) world << "Space connections handled."
-								zone.space_connections -= T
-								zone.space_connections += T
-
-						else
-							if(T.zone != src.zone)
-								//if(!T.zone && CanPass(null,T,0,1))
-								//	zone.AddTurf(T)
-								if(!(T.zone in zone.connections))
-									zone.Connect(src,T)
-					else
-					//	if(ticker) overlayss += image('turf_analysis.dmi',src,"red_arrow",dir=direction)
-						var/turf/simulated/T = get_step(src,direction)
-						if(T)
-							//if((T in zone.members) && !(T.HasDoor() && !T.blocks_air))
-							//	zone.RemoveTurf(T)
-							if(T.zone in zone.connections)
-								zone.Disconnect(src,T)
-							if(istype(T,/turf/space))
-								//if(!CanPass(null,T,0,0))
-								zone.space_connections -= T
 			if(parent)
 				if(parent.borders)
 					parent.borders -= src
@@ -406,28 +260,19 @@ turf
 				group_border = 0
 				for(var/direction in cardinal)
 					if(air_check_directions&direction)
-						//(ticker) overlayss += image('turf_analysis.dmi',src,"arrow",dir=direction)
 						var/turf/simulated/T = get_step(src,direction)
 
 						//See if actually a border
-						//if(istype(T,/turf/space) && direction & (16|32)) continue
 						if(!istype(T) || (T.parent!=parent))
-							//if(ticker) world << "Update: Non-simulated T detected."
 
 							//See what kind of border it is
 							if(istype(T,/turf/space))
-								//if(ticker) world << "Update: Space tile handled."
 								if(parent.space_borders)
 									parent.space_borders -= src
 									parent.space_borders += src
 								else
 									parent.space_borders = list(src)
 								length_space_border++
-
-								if(zone)
-									//if(ticker) world << "Space connections handled."
-									zone.space_connections -= T
-									zone.space_connections += T
 
 							else
 								if(parent.borders)
@@ -436,43 +281,7 @@ turf
 								else
 									parent.borders = list(src)
 
-
 							group_border |= direction
-
-						else if(zone)
-							if(T.zone != src.zone)
-								//if(!T.zone && CanPass(null,T,0,1))
-								//	zone.AddTurf(T)
-								if(!(T.zone in zone.connections))
-									zone.Connect(src,T)
-					else
-						//if(ticker) overlayss += image('turf_analysis.dmi',src,"red_arrow",dir=direction)
-						if(zone)
-							var/turf/simulated/T = get_step(src,direction)
-							if(T)
-								//if((T in zone.members) && !(T.HasDoor() && !T.blocks_air))
-								//	zone.RemoveTurf(T)
-								if(T.zone in zone.connections)
-									zone.Disconnect(src,T)
-								if(istype(T,/turf/space))
-									//if(!CanPass(null,T,0,0))
-									zone.space_connections -= T
-							//if(direction & old_air_directions)
-								//if(!ticker || !old_air_directions || !air_check_directions) return
-								//else
-									//SplitCheck(T)
-								//world << "Space connection removed."
-				/*if(istype(src,/turf/simulated/floor/open))
-					var/turf/simulated/D = get_step(src,DOWN)
-					if(D)
-						world << "Connection occurred between z-levels."
-						zone.Connect(src,D)
-				else
-					var/turf/simulated/D = get_step(src,DOWN)
-					if(D)
-						if(D.zone in zone.connections)
-							world << "Disconnection occurred between z-levels."
-							zone.Disconnect(src,D)*/
 
 				parent.length_space_border += length_space_border
 
@@ -482,8 +291,6 @@ turf
 					air_master.add_singleton(src)
 			else
 				processing = 0
-				//if(zone)
-					//overlayss += ad_process
 
 		process_cell()
 			var/turf/simulated/list/possible_fire_spreads = list()
@@ -495,8 +302,6 @@ turf
 				for(var/direction in cardinal)
 					if(air_check_directions&direction) //Grab all valid bordering tiles
 						var/turf/simulated/enemy_tile = get_step(src, direction)
-						if(dbg_processing && (direction == 16 || direction == 32))
-							world << "Direction [direction]: [enemy_tile]"
 						var/connection_difference = 0
 
 						if(istype(enemy_tile))
@@ -516,6 +321,29 @@ turf
 							if(active_hotspot)
 								possible_fire_spreads += enemy_tile
 						else
+/*							var/obj/movable/floor/movable_on_enemy = locate(/obj/movable/floor) in enemy_tile
+
+							if(movable_on_enemy)
+								if(movable_on_enemy.parent && movable_on_enemy.parent.group_processing) //apply tile to group sharing
+									if(movable_on_enemy.parent.current_cycle < current_cycle)
+										if(movable_on_enemy.parent.air.check_gas_mixture(air))
+											connection_difference = air.share(movable_on_enemy.parent.air)
+
+										else
+											movable_on_enemy.parent.suspend_group_processing()
+
+											if(movable_on_enemy.archived_cycle < archived_cycle) //archive bordering tile information if not already done
+												movable_on_enemy.archive()
+											connection_difference = air.share(movable_on_enemy.air)
+											//group processing failed so interact with individual tile
+								else
+									if(movable_on_enemy.archived_cycle < archived_cycle) //archive bordering tile information if not already done
+										movable_on_enemy.archive()
+
+									if(movable_on_enemy.current_cycle < current_cycle)
+										connection_difference = share_air_with_tile(movable_on_enemy)
+
+							else*/
 							connection_difference = mimic_air_with_tile(enemy_tile)
 								//bordering a tile with fixed air properties
 
@@ -698,12 +526,12 @@ turf
 				return 0
 
 			if(air)
-				if(air.temperature < (starting ? MINIMUM_TEMPERATURE_START_SUPERCONDUCTION : MINIMUM_TEMPERATURE_FOR_SUPERCONDUCTION))
+				if(air.temperature < (starting?MINIMUM_TEMPERATURE_START_SUPERCONDUCTION:MINIMUM_TEMPERATURE_FOR_SUPERCONDUCTION))
 					return 0
 				if(air.heat_capacity() < MOLES_CELLSTANDARD*0.1*0.05)
 					return 0
 			else
-				if(temperature < (starting ? MINIMUM_TEMPERATURE_START_SUPERCONDUCTION : MINIMUM_TEMPERATURE_FOR_SUPERCONDUCTION))
+				if(temperature < (starting?MINIMUM_TEMPERATURE_START_SUPERCONDUCTION:MINIMUM_TEMPERATURE_FOR_SUPERCONDUCTION))
 					return 0
 
 			being_superconductive = 1

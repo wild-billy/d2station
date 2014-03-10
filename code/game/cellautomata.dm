@@ -65,7 +65,6 @@
 	config = new /datum/configuration()
 	config.load("config/config.txt")
 	config.loadsql("config/dbconfig.txt")
-	config.loadforumsql("config/forumdbconfig.txt")
 	// apply some settings from config..
 	abandon_allowed = config.respawn
 
@@ -75,19 +74,15 @@
 	if (config && config.server_name != null && config.server_suffix && world.port > 0)
 		// dumb and hardcoded but I don't care~
 		config.server_name += " #[(world.port % 1000) / 100]"
-	//ass
+
 	src.load_mode()
 	src.load_motd()
 	src.load_rules()
 	src.load_admins()
-	if (config.usewhitelist)
-		load_whitelist()
-	LoadBansjob()
+
 	src.update_status()
-	SetupHooks()
 
 	makepowernets()
-	load_cluwnelist()
 
 	sun = new /datum/sun()
 
@@ -96,8 +91,6 @@
 	radio_controller = new /datum/controller/radio()
 	//main_hud1 = new /obj/hud()
 	data_core = new /obj/datacore()
-
-	paiController = new /datum/paiController()
 
 	..()
 
@@ -124,7 +117,7 @@
 //Crispy fullban
 /world/Reboot(var/reason)
 	spawn(0)
-		world << sound(pick('NewRound.ogg','NewRound2.ogg','NewRound3.ogg')) // Skie
+		world << sound(pick('NewRound.ogg','NewRound.ogg')) // Skie
 		//if(prob(40))
 		//	for(var/mob/M in world)
 		//		if(M.client)
@@ -136,7 +129,7 @@
 
 	for(var/client/C)
 		if (config.server)	//if you set a server location in config.txt, it sends you there instead of trying to reconnect to the same world address. -- NeoFite
-			C << link("byond://[config.server]")
+			C <<link("byond://[config.server]")
 		else
 			C << link("byond://[world.address]:[world.port]")
 
@@ -169,15 +162,13 @@
 	set name = "Point To"
 	set category = "Object"
 	set src in oview()
-	var/atom/this = src//detach proc from src
-	src = null
 
 	if (!usr || !isturf(usr.loc))
 		return
 	else if (usr.stat != 0 || usr.restrained())
 		return
 
-	var/tile = get_turf(this)
+	var/tile = get_turf(src)
 	if (!tile)
 		return
 
@@ -185,7 +176,7 @@
 	spawn (20)
 		del(P)
 
-	usr.visible_message("<b>[usr]</b> points to [this]")
+	usr.visible_message("<b>[usr]</b> points to [src]")
 
 /obj/decal/point/point()
 	set src in oview()

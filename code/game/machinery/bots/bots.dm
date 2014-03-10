@@ -5,22 +5,11 @@
 	layer = MOB_LAYER
 	var/obj/item/weapon/card/id/botcard			// the ID card that the bot "holds"
 	var/on = 1
-	health = 0 //do not forget to set health for your bot!
+	var/health = 0 //do not forget to set health for your bot!
 	var/maxhealth = 0
 	var/fire_dam_coeff = 1.0
 	var/brute_dam_coeff = 1.0
-	var/botcount = 0
 
-/obj/machinery/bot/New()
-	//To stop admins from busing bots.
-	botcount++
-	if(botcount >= 10)
-		src.explode()
-	..()
-
-/obj/machinery/bot/Del()
-	botcount--
-	..()
 
 /obj/machinery/bot/proc/turn_on()
 	if (stat)
@@ -84,8 +73,16 @@
 		..()
 		healthcheck()
 
-/obj/machinery/bot/bullet_act(var/obj/item/projectile/Proj)
-	health -= Proj.damage
+/obj/machinery/bot/bullet_act(flag, A as obj)
+	switch(flag)
+		if (PROJECTILE_BULLET)
+			src.health -= 20
+		//if (PROJECTILE_WEAKBULLET || PROJECTILE_BEANBAG) //Detective's revolver fires marshmallows
+		//	src.health -= 2
+		if (PROJECTILE_LASER)
+			src.health -= 10
+		if (PROJECTILE_PULSE)
+			src.health -= 40
 	healthcheck()
 
 /obj/machinery/bot/meteorhit()
@@ -114,7 +111,7 @@
 				healthcheck()
 				return
 	return
-
+/*
 /obj/machinery/bot/emp_act(severity)
 	var/was_on = on
 	stat |= EMPED
@@ -134,7 +131,7 @@
 		if (was_on)
 			turn_on()
 
-
+*/
 /obj/machinery/bot/attack_ai(mob/user as mob)
 	if (src.on)
 		turn_off()

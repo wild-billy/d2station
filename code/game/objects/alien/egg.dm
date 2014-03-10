@@ -12,10 +12,7 @@
 		src.icon_state = "egg_hatched"
 		new /obj/alien/facehugger(src.loc)
 
-/obj/alien/egg/bullet_act(var/obj/item/projectile/Proj)
-	health -= Proj.damage
-	healthcheck()
-	return
+
 
 /obj/alien/egg/attackby(var/obj/item/weapon/W, var/mob/user)
 	if(health <= 0)

@@ -102,7 +102,7 @@
 					ex_act(severity)
 				del(src)
 
-/obj/closet/bullet_act(var/obj/item/projectile/Proj)
+/obj/closet/bullet_act(flag)
 
 /* Just in case someone gives closets health
 	if (flag == PROJECTILE_BULLET)
@@ -118,7 +118,7 @@
 		src.healthcheck()
 		return
 */
-	if(prob(40) && istype(Proj, /obj/item/projectile/beam/pulse))
+	if(prob(4))
 		for (var/atom/movable/A as mob|obj in src)
 			A.loc = src.loc
 		del(src)
@@ -151,7 +151,7 @@
 			src.MouseDrop_T(W:affecting, user)      //act like they were dragged onto the closet
 
 		if (istype(W, /obj/item/weapon/weldingtool) && W:welding)
-			if (!W:remove_fuel(0,user))
+			if (!W:remove_fuel(1,user))
 				user << "\blue You need more welding fuel to complete this task."
 				return
 			new /obj/item/stack/sheet/metal(src.loc)
@@ -160,16 +160,13 @@
 			del(src)
 			return
 
-		if(isrobot(user))
-			return
-
 		usr.drop_item()
 
 		if (W)
 			W.loc = src.loc
 
 	else if(istype(W, /obj/item/weapon/weldingtool) && W:welding)
-		if (!W:remove_fuel(0,user))
+		if (!W:remove_fuel(1,user))
 			user << "\blue You need more welding fuel to complete this task."
 			return
 		src.welded =! src.welded
@@ -192,25 +189,19 @@
 		return
 	if(istype(O, /obj/secure_closet) || istype(O, /obj/closet))
 		return
-	if(isrobot(user))
-		return
 	step_towards(O, src.loc)
 	user.show_viewers(text("\red [] stuffs [] into []!", user, O, src))
 	src.add_fingerprint(user)
 	return
 
-/obj/closet
-	var/lastbang
 /obj/closet/relaymove(mob/user as mob)
 	if (user.stat)
 		return
 
 	if (!src.open())
 		user << "\blue It won't budge!"
-		if (world.time > lastbang+5)
-			lastbang = world.time
-			for (var/mob/M in hearers(src, null))
-				M << text("<FONT size=[]>BANG, bang!</FONT>", max(0, 5 - get_dist(src, M)))
+		for (var/mob/M in hearers(src, null))
+			M << text("<FONT size=[]>BANG, bang!</FONT>", max(0, 5 - get_dist(src, M)))
 
 /obj/closet/attack_paw(mob/user as mob)
 	return src.attack_hand(user)

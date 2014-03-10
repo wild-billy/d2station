@@ -1,17 +1,17 @@
 /mob/living/carbon/alien/humanoid/sentinel/New()
-	var/datum/reagents/R = new/datum/reagents(100)
-	reagents = R
-	R.my_atom = src
-	if(src.name == "alien sentinel")
-		src.name = text("alien sentinel ([rand(1, 1000)])")
-	src.real_name = src.name
 	spawn (1)
 		src.verbs += /mob/living/carbon/alien/humanoid/proc/corrode_target
+		var/datum/reagents/R = new/datum/reagents(100)
+		reagents = R
+		R.my_atom = src
 		src.stand_icon = new /icon('alien.dmi', "aliens_s")
 		src.lying_icon = new /icon('alien.dmi', "aliens_l")
 		src.icon = src.stand_icon
+		if(src.name == "alien sentinel") src.name = text("alien sentinel ([rand(1, 1000)])")
+		src.real_name = src.name
+		src << "\blue Your icons have been generated!"
+
 		update_clothing()
-		//src << "\blue Your icons have been generated!"
 
 
 /mob/living/carbon/alien/humanoid/sentinel
@@ -27,7 +27,7 @@
 
 	handle_regular_hud_updates()
 
-		if (src.stat == 2 || src.mutations & XRAY)
+		if (src.stat == 2 || src.mutations & 4)
 			src.sight |= SEE_TURFS
 			src.sight |= SEE_MOBS
 			src.sight |= SEE_OBJS
@@ -77,7 +77,7 @@
 
 	handle_regular_status_updates()
 
-		health = 150 - (oxyloss + fireloss + bruteloss + cloneloss)
+		health = 150 - (oxyloss + fireloss + bruteloss)
 
 		if(oxyloss > 50) paralysis = max(paralysis, 3)
 
@@ -166,36 +166,41 @@
 	set desc = "Spits neurotoxin at someone, paralyzing them for a short time."
 	set category = "Alien"
 
-	if(powerc(50))
-		if(!isalien(target))
-			toxloss -= 50
-			src << "\green You spit neurotoxin at [target]."
-			for(var/mob/O in oviewers())
-				if ((O.client && !( O.blinded )))
-					O << "\red [src] spits neurotoxin at [target]!"
-			//I'm not motivated enough to revise this. Prjectile code in general needs update.
-			var/turf/T = loc
-			var/turf/U = (istype(target, /atom/movable) ? target.loc : target)
+	if(src.stat)
+		src << "\green You must be conscious to do this."
+		return
+	if(istype(target, /mob/living/carbon/alien))
+		src << "\green Your allies are not a valid target."
+		return
+	if(src.toxloss >= 50)
+		src << "\green You spit neurotoxin at [target]."
+		for(var/mob/O in oviewers())
+			if ((O.client && !( O.blinded )))
+				O << "\red [src] spits neurotoxin at [target]!"
+		src.toxloss -= 50
+		var/turf/T = usr.loc
+		var/turf/U = (istype(target, /atom/movable) ? target.loc : target)
 
-			if(!U || !T)
-				return
-			while(U && !istype(U,/turf))
-				U = U.loc
-			if(!istype(T, /turf))
-				return
-			if (U == T)
-				usr.bullet_act(src, src.get_organ_target())
-				return
-			if(!istype(U, /turf))
-				return
+		if(!U || !T)
+			return
+		while(U && !istype(U,/turf))
+			U = U.loc
+		if(!istype(T, /turf))
+			return
+		if (U == T)
+			usr.bullet_act(PROJECTILE_DART, src, src.get_organ_target())
+			return
+		if(!istype(U, /turf))
+			return
 
-			var/obj/item/projectile/dart/A = new /obj/item/projectile/dart(usr.loc)
+		var/obj/bullet/neurodart/A = new /obj/bullet/neurodart(usr.loc)
 
-			A.current = U
-			A.yo = U.y - T.y
-			A.xo = U.x - T.x
-			//
-			A.process()
-		else
-			src << "\green Your allies are not a valid target."
+		A.current = U
+		A.yo = U.y - T.y
+		A.xo = U.x - T.x
+
+		A.process()
+
+	else
+		src << "\green Not enough plasma stored."
 	return

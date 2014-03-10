@@ -57,7 +57,7 @@ var/intercom_range_display_status = 0
 			del(C)
 
 		if(camera_range_display_status)
-			for(var/obj/machinery/camera/C in machines)
+			for(var/obj/machinery/camera/C in world)
 				new/obj/debugging/camera_range(C.loc)
 
 
@@ -72,7 +72,7 @@ var/intercom_range_display_status = 0
 
 		var/list/obj/machinery/camera/CL = list()
 
-		for(var/obj/machinery/camera/C in machines)
+		for(var/obj/machinery/camera/C in world)
 			CL += C
 
 		var/output = {"<B>CAMERA ANNOMALITIES REPORT</B><HR>
@@ -117,3 +117,4 @@ var/intercom_range_display_status = 0
 		src.verbs += /client/proc/camera_view 				//-errorage
 		src.verbs += /client/proc/sec_camera_report 		//-errorage
 		src.verbs += /client/proc/intercom_view 			//-errorage
+

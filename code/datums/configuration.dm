@@ -12,7 +12,6 @@
 	var/log_game = 0					// log game events
 	var/log_vote = 0					// log voting
 	var/log_whisper = 0					// log client whisper
-	var/sql_enabled = 1					// for sql switching
 	var/allow_vote_restart = 0 			// allow votes to restart
 	var/allow_vote_mode = 0				// allow votes to change mode
 	var/allow_admin_jump = 1			// allows admin jumping
@@ -24,8 +23,6 @@
 	var/vote_no_dead = 0				// dead people can't vote (tbi)
 	var/enable_authentication = 0		// goon authentication
 	var/del_new_on_log = 1				// del's new players if they log before they spawn in
-	var/feature_object_spell_system = 0 //spawns a spellbook which gives object-type spells instead of verb-type spells for the wizard
-	var/traitor_scaling = 0 //if amount of traitors scales based on amount of players
 
 	var/list/mode_names = list()
 	var/list/modes = list()				// allowed modes
@@ -35,8 +32,6 @@
 	var/hostedby = null
 	var/respawn = 1
 	var/guest_jobban = 1
-	var/usewhitelist = 0
-	var/kick_inactive = 0				//force disconnect for inactive players
 
 	var/server
 	var/banappeals
@@ -57,7 +52,6 @@
 				if (M.votable)
 					src.votable_modes += M.config_tag
 		del(M)
-	src.votable_modes += "secret"
 
 /datum/configuration/proc/load(filename)
 	var/text = file2text(filename)
@@ -100,9 +94,6 @@
 
 			if ("log_access")
 				config.log_access = 1
-
-			if ("sql_enabled")
-				config.sql_enabled = text2num(value)
 
 			if ("log_say")
 				config.log_say = 1
@@ -176,17 +167,11 @@
 			if ("banappeals")
 				config.banappeals = value
 
+			if ("dont_del_newmob")
+				config.del_new_on_log = 0
+
 			if ("guest_jobban")
 				config.guest_jobban = text2num(value)
-
-			if ("usewhitelist")
-				config.usewhitelist = 1
-
-			if ("feature_object_spell_system")
-				config.feature_object_spell_system = 1
-
-			if ("traitor_scaling")
-				config.traitor_scaling = 1
 
 			if ("probability")
 				var/prob_pos = findtext(value, " ")
@@ -202,12 +187,10 @@
 						diary << "Unknown game mode probability configuration definition: [prob_name]."
 				else
 					diary << "Incorrect probability configuration definition: [prob_name]  [prob_value]."
-			if ("kick_inactive")
-				config.kick_inactive = text2num(value)
 			else
 				diary << "Unknown setting in configuration: '[name]'"
 
-/datum/configuration/proc/loadsql(filename)  // -- TLE
+/datum/configuration/proc/loadsql(filename)
 	var/text = file2text(filename)
 
 	if (!text)
@@ -258,59 +241,6 @@
 			else
 				diary << "Unknown setting in configuration: '[name]'"
 
-/datum/configuration/proc/loadforumsql(filename)  // -- TLE
-	var/text = file2text(filename)
-
-	if (!text)
-		diary << "No forumdbconfig.txt file found, retaining defaults"
-		world << "No forumdbconfig.txt file found, retaining defaults"
-		return
-
-	diary << "Reading forum database configuration file [filename]"
-
-	var/list/CL = dd_text2list(text, "\n")
-
-	for (var/t in CL)
-		if (!t)
-			continue
-
-		t = trim(t)
-		if (length(t) == 0)
-			continue
-		else if (copytext(t, 1, 2) == "#")
-			continue
-
-		var/pos = findtext(t, " ")
-		var/name = null
-		var/value = null
-
-		if (pos)
-			name = lowertext(copytext(t, 1, pos))
-			value = copytext(t, pos + 1)
-		else
-			name = lowertext(t)
-
-		if (!name)
-			continue
-
-		switch (name)
-			if ("address")
-				forumsqladdress = value
-			if ("port")
-				forumsqlport = value
-			if ("database")
-				forumsqldb = value
-			if ("login")
-				forumsqllogin = value
-			if ("password")
-				forumsqlpass = value
-			if ("activatedgroup")
-				forum_activated_group = value
-			if ("authenticatedgroup")
-				forum_authenticated_group = value
-			else
-				diary << "Unknown setting in configuration: '[name]'"
-
 /datum/configuration/proc/pick_mode(mode_name)
 	// I wish I didn't have to instance the game modes in order to look up
 	// their information, but it is the only way (at least that I know of).
@@ -319,20 +249,38 @@
 		if (M.config_tag && M.config_tag == mode_name)
 			return M
 		del(M)
+
 	return null
 
-/datum/configuration/proc/get_runnable_modes()
-	var/list/datum/game_mode/runnable_modes = new
-	for (var/T in (typesof(/datum/game_mode) - /datum/game_mode))
-		var/datum/game_mode/M = new T()
-		//world << "DEBUG: [T], tag=[M.config_tag], prob=[probabilities[M.config_tag]]"
-		if (!(M.config_tag in modes))
-			del(M)
-			continue
-		if (probabilities[M.config_tag]<=0)
-			del(M)
-			continue
-		if (M.can_start())
-			runnable_modes[M] = probabilities[M.config_tag]
-			//world << "DEBUG: runnable_mode\[[runnable_modes.len]\] = [M.config_tag]"
-	return runnable_modes
+/datum/configuration/proc/pick_random_mode()
+	var/total = 0
+	var/list/accum = list()
+
+	for(var/M in src.modes)
+		total += src.probabilities[M]
+		accum[M] = total
+
+	var/r = total - (rand() * total)
+
+	var/mode_name = null
+	for (var/M in modes)
+		if (src.probabilities[M] > 0 && accum[M] >= r)
+			mode_name = M
+			break
+
+	if (!mode_name)
+		world << "Failed to pick a random game mode."
+		return null
+
+	//world << "Returning mode [mode_name]"
+
+	return src.pick_mode(mode_name)
+
+/datum/configuration/proc/get_used_mode_names()
+	var/list/names = list()
+
+	for (var/M in src.modes)
+		if (src.probabilities[M] > 0)
+			names += src.mode_names[M]
+
+	return names

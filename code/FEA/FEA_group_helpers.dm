@@ -2,14 +2,11 @@
 	//Basically, join any nearby valid groups
 	//	If more than one, pick one with most members at my borders
 	// If can not find any but there was an ungrouped at border with me, call for group assembly
-	// If can not find any and no ungrouped at border, register as a single tile
 
 	var/turf/simulated/floor/north = get_step(src,NORTH)
 	var/turf/simulated/floor/south = get_step(src,SOUTH)
 	var/turf/simulated/floor/east = get_step(src,EAST)
 	var/turf/simulated/floor/west = get_step(src,WEST)
-
-	//TODO integrate up/down support
 
 	//Clear those we do not have access to
 	if(!CanPass(null, north, null, 1) || !istype(north))
@@ -23,8 +20,6 @@
 
 	var/new_group_possible = 0
 
-
-	//TODO incorporate connections
 	var/north_votes = 0
 	var/south_votes = 0
 	var/east_votes = 0
@@ -44,7 +39,6 @@
 			if(west && (west.parent == north.parent))
 				north_votes++
 				west = null
-
 		else
 			new_group_possible = 1
 
@@ -59,7 +53,6 @@
 			if(west && (west.parent == south.parent))
 				south_votes++
 				west = null
-
 		else
 			new_group_possible = 1
 
@@ -70,9 +63,10 @@
 			if(west && (west.parent == east.parent))
 				east_votes++
 				west = null
-
 		else
 			new_group_possible = 1
+
+//	world << "[north_votes], [south_votes], [east_votes]"
 
 	if(west)
 		if(west.parent)

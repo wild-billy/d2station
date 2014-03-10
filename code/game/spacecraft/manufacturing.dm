@@ -158,13 +158,36 @@ obj/machinery/nanosprayer/Topic(href, href_list)
 			spawn() cooldown()
 	if(href_list["settask"])
 		if(state == 0)
-			var/temppayload = strip_html(input("Set a Task:", "Job Assignment") as text|null)
+			var/temppayload = input("Set a Task:", "Job Assignment") as text|null
 			if(temppayload)
 				payload = temppayload
 	//if(href_list["release"])
 	//	if(state == 2)
 			// Create the crate somewhere
 	src.updateUsrDialog()
+
+/obj/machinery/grinder
+	icon = 'recycling.dmi'
+	icon_state = "crusherroller_on"
+	density = 1
+	anchored = 1
+
+	Bump(atom/A)
+		consume(A)
+		return
+
+
+	Bumped(atom/A)
+		consume(A)
+		return
+
+	proc/consume(var/atom/A)
+		if (istype(A,/mob))
+			A:gib()
+		else if(istype(A,/obj/))
+			A:ex_act(1.0)
+			if(A) del(A)
+		return
 
 /obj/machinery/smelter
 	icon = 'mining.dmi'

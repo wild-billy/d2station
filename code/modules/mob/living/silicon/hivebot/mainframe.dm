@@ -55,10 +55,10 @@
 	var/tod = time2text(world.realtime,"hh:mm:ss") //weasellos time of death patch
 	mind.store_memory("Time of death: [tod]", 0)
 
-	if (src.key)
+	if (src.client)
 		spawn(50)
-			if(src.key && src.stat == 2)
-				src.verbs += /mob/proc/ghost
+			if(src.client && src.stat == 2)
+				src.verbs += /mob/proc/ghostize
 	return ..(gibbed)
 
 
@@ -108,7 +108,7 @@
 
 	var/list/bodies = new/list()
 
-	for(var/mob/living/silicon/hivebot/H in mobz)
+	for(var/mob/living/silicon/hivebot/H in world)
 		if(H.z == src.z)
 			if(H.shell)
 				if(!H.stat)
@@ -146,19 +146,19 @@
 	src.flash = new /obj/screen( null )
 	src.flash.icon_state = "blank"
 	src.flash.name = "flash"
-	src.flash.screen_loc = "1,1 to 17,17"
+	src.flash.screen_loc = "1,1 to 15,15"
 	src.flash.layer = 17
 	src.blind = new /obj/screen( null )
 	src.blind.icon_state = "black"
 	src.blind.name = " "
-	src.blind.screen_loc = "1,1 to 17,17"
+	src.blind.screen_loc = "1,1 to 15,15"
 	src.blind.layer = 0
 	src.client.screen += list( src.blind, src.flash )
 	if(!isturf(src.loc))
 		src.client.eye = src.loc
 		src.client.perspective = EYE_PERSPECTIVE
 	if (src.stat == 2)
-		src.verbs += /mob/proc/ghost
+		src.verbs += /mob/proc/ghostize
 	return
 
 

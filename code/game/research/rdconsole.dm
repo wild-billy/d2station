@@ -17,7 +17,7 @@ doesn't have toxins access.
 When a R&D console is destroyed or even partially disassembled, you lose all research data on it. However, there are two ways around
 this dire fate:
 - The easiest way is to go to the settings menu and select "Sync Database with Network." That causes it to upload (but not download)
-it's data to every other device in the game. Each console has a "disconnect from network" option that'll will cause data base sync
+its data to every other device in the game. Each console has a "disconnect from network" option that'll will cause data base sync
 operations to skip that console. This is useful if you want to make a "public" R&D console or, for example, give the engineers
 a circuit imprinter with certain designs on it and don't want it accidentally updating. The downside of this method is that you have
 to have physical access to the other console to send data back. Note: An R&D console is on CentCom so if a random griffan happens to
@@ -28,7 +28,6 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 
 
 */
-
 
 /obj/machinery/computer/rdconsole
 	name = "R&D Console"
@@ -120,7 +119,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 		..()
 		files = new /datum/research(src) //Setup the research data holder.
 		if(!id)
-			for(var/obj/machinery/r_n_d/server/centcom/S in machines)
+			for(var/obj/machinery/r_n_d/server/centcom/S in world)
 				S.initialize()
 				break
 
@@ -128,7 +127,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 		SyncRDevices()
 
 	process()
-		for(var/obj/machinery/r_n_d/server/centcom/C in machines) //have it automatically push research to the centcomm server so wild griffins can't fuck up R&D's work --NEO
+		for(var/obj/machinery/r_n_d/server/centcom/C in world) //have it automatically push research to the centcomm server so wild griffins can't fuck up R&D's work --NEO
 			for(var/datum/tech/T in files.known_tech)
 				C.files.AddTech2Known(T)
 			for(var/datum/design/D in files.known_designs)
@@ -259,38 +258,35 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 					usr << "\red The destructive analyzer is busy at the moment."
 				else
 					var/choice = input("Proceeding will destroy loaded item.") in list("Proceed", "Cancel")
-					if(choice == "Cancel") return
 					linked_destroy.busy = 1
+					if(choice == "Cancel") return
 					screen = 0.1
 					updateUsrDialog()
 					flick("d_analyzer_process", linked_destroy)
 					spawn(24)
-						if(linked_destroy)
-							linked_destroy.busy = 0
-							if(!linked_destroy.hacked)
-								if(!linked_destroy.loaded_item)
-									usr <<"\red The destructive analyzer appears to be empty."
-									return
-								if(linked_destroy.loaded_item.reliability >= 90)
-									var/list/temp_tech = linked_destroy.ConvertReqString2List(linked_destroy.loaded_item.origin_tech)
-									for(var/T in temp_tech)
-										files.UpdateTech(T, temp_tech[T])
-								if(linked_destroy.loaded_item.reliability < 100 && linked_destroy.loaded_item.crit_fail)
-									files.UpdateDesign(linked_destroy.loaded_item.type)
-								if(linked_lathe) //Also sends salvaged materials to a linked protolathe, if any.
-									linked_lathe.m_amount += min((linked_lathe.max_material_storage - linked_lathe.TotalMaterials()), (linked_destroy.loaded_item.m_amt*linked_destroy.decon_mod))
-									linked_lathe.g_amount += min((linked_lathe.max_material_storage - linked_lathe.TotalMaterials()), (linked_destroy.loaded_item.g_amt*linked_destroy.decon_mod))
-								linked_destroy.loaded_item = null
-							for(var/obj/I in linked_destroy.contents)
-								for(var/mob/M in I.contents)
-									M.death()
-								del(I)
-							use_power(250)
-							linked_destroy.icon_state = "d_analyzer"
-							score_researchdone++
-							//command_alert("The scientists in R&D have discovered new research levels and items.", "The scientists in R&D have discovered new items.")
-							screen = 1.0
-							updateUsrDialog()
+						linked_destroy.busy = 0
+						if(!linked_destroy.hacked)
+							if(!linked_destroy.loaded_item)
+								usr <<"\red The destructive analyzer appears to be empty."
+								return
+							if(linked_destroy.loaded_item.reliability >= 90)
+								var/list/temp_tech = linked_destroy.ConvertReqString2List(linked_destroy.loaded_item.origin_tech)
+								for(var/T in temp_tech)
+									files.UpdateTech(T, temp_tech[T])
+							if(linked_destroy.loaded_item.reliability < 100 && linked_destroy.loaded_item.crit_fail)
+								files.UpdateDesign(linked_destroy.loaded_item.type)
+							if(linked_lathe) //Also sends salvaged materials to a linked protolathe, if any.
+								linked_lathe.m_amount += min((linked_lathe.max_material_storage - linked_lathe.TotalMaterials()), (linked_destroy.loaded_item.m_amt*linked_destroy.decon_mod))
+								linked_lathe.g_amount += min((linked_lathe.max_material_storage - linked_lathe.TotalMaterials()), (linked_destroy.loaded_item.g_amt*linked_destroy.decon_mod))
+							linked_destroy.loaded_item = null
+						for(var/obj/I in linked_destroy.contents)
+							for(var/mob/M in I.contents)
+								M.death()
+							del(I)
+						use_power(250)
+						linked_destroy.icon_state = "d_analyzer"
+						screen = 1.0
+						updateUsrDialog()
 
 		else if(href_list["lock"]) //Lock the console from use by anyone without tox access.
 			if(src.allowed(usr))
@@ -304,29 +300,28 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 				usr << "\red You must connect to the network first!"
 			else
 				spawn(30)
-					if(src)
-						for(var/obj/machinery/r_n_d/server/S in machines)
-							var/server_processed = 0
-							if(S.disabled)
-								continue
-							if((id in S.id_with_upload) || istype(S, /obj/machinery/r_n_d/server/centcom))
-								for(var/datum/tech/T in files.known_tech)
-									S.files.AddTech2Known(T)
-								for(var/datum/design/D in files.known_designs)
-									S.files.AddDesign2Known(D)
-								S.files.RefreshResearch()
-								server_processed = 1
-							if(((id in S.id_with_download) && !istype(S, /obj/machinery/r_n_d/server/centcom)) || S.hacked)
-								for(var/datum/tech/T in S.files.known_tech)
-									files.AddTech2Known(T)
-								for(var/datum/design/D in S.files.known_designs)
-									files.AddDesign2Known(D)
-								files.RefreshResearch()
-								server_processed = 1
-							if(!istype(S, /obj/machinery/r_n_d/server/centcom) && server_processed)
-								S.produce_heat(100)
-						screen = 1.6
-						updateUsrDialog()
+					for(var/obj/machinery/r_n_d/server/S in world)
+						var/server_processed = 0
+						if(S.disabled)
+							continue
+						if((id in S.id_with_upload) || istype(S, /obj/machinery/r_n_d/server/centcom))
+							for(var/datum/tech/T in files.known_tech)
+								S.files.AddTech2Known(T)
+							for(var/datum/design/D in files.known_designs)
+								S.files.AddDesign2Known(D)
+							S.files.RefreshResearch()
+							server_processed = 1
+						if(((id in S.id_with_download) && !istype(S, /obj/machinery/r_n_d/server/centcom)) || S.hacked)
+							for(var/datum/tech/T in S.files.known_tech)
+								files.AddTech2Known(T)
+							for(var/datum/design/D in S.files.known_designs)
+								files.AddDesign2Known(D)
+							files.RefreshResearch()
+							server_processed = 1
+						if(!istype(S, /obj/machinery/r_n_d/server/centcom) && server_processed)
+							S.produce_heat(100)
+					screen = 1.6
+					updateUsrDialog()
 
 		else if(href_list["togglesync"]) //Prevents the console from being synced by other consoles. Can still send data.
 			sync = !sync
@@ -514,7 +509,6 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 	attack_hand(mob/user as mob)
 		if(stat & (BROKEN|NOPOWER))
 			return
-
 		user.machine = src
 		var/dat = ""
 		files.RefreshResearch()
@@ -542,15 +536,13 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 
 			if(0.2)
 				dat += "SYSTEM LOCKED<BR><BR>"
-				dat += "<A href='?src=\ref[src];menu=1.1'>Unlock</A>"
+				dat += "<A href='?src=\ref[src];lock=1.6'>Unlock</A>"
 
 			if(0.3)
-				dat += "Constructing Prototype. Please Wait...<BR><BR>"
-				dat += "<A href='?src=\ref[src];menu=1.1'>Cancel</A>"
+				dat += "Constructing Prototype. Please Wait..."
 
 			if(0.4)
-				dat += "Imprinting Circuit. Please Wait...<BR><BR>"
-				dat += "<A href='?src=\ref[src];menu=1.1'>Cancel</A>"
+				dat += "Imprinting Circuit. Please Wait..."
 
 			if(1.0) //Main Menu
 				dat += "Main Menu:<BR><BR>"

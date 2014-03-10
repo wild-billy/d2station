@@ -15,8 +15,7 @@ FLOOR TILES
 	if (istype(W, /obj/item/weapon/weldingtool) && W:welding)
 		if(amount < 2)
 			user << "\red You need at least two rods to do this."
-			return
-		if(W:remove_fuel(0,user))
+		if(W:remove_fuel(2,user))
 			var/obj/item/stack/sheet/metal/new_item = new(usr.loc)
 			new_item.add_to_stacks(usr)
 			for (var/mob/M in viewers(src))
@@ -48,7 +47,6 @@ FLOOR TILES
 			user << "\blue You need at least two rods to do this."
 			return
 		new /obj/grille( usr.loc )
-//		Shields.RemoveShield(usr.loc)
 		use(2)
 	return
 
@@ -67,7 +65,7 @@ var/global/list/datum/stack_recipe/metal_recipes = list ( \
 	null, \
 	new/datum/stack_recipe("canister", /obj/machinery/portable_atmospherics/canister, 2, one_per_turf = 1), \
 	null, \
-	new/datum/stack_recipe("floor tile", /obj/item/stack/tile/steel, 1, 4, 10), \
+	new/datum/stack_recipe("floor tile", /obj/item/stack/tile, 1, 4, 10), \
 	new/datum/stack_recipe("metal rod", /obj/item/stack/rods, 1, 2, 60), \
 	new/datum/stack_recipe("reinforced sheet", /obj/item/stack/sheet/r_metal, 2, 1, 50), \
 	null, \
@@ -75,13 +73,10 @@ var/global/list/datum/stack_recipe/metal_recipes = list ( \
 	new/datum/stack_recipe("wall girders", /obj/structure/girder, 2, time = 50, one_per_turf = 1, on_floor = 1), \
 	new/datum/stack_recipe("airlock assembly", /obj/door_assembly, 4, time = 50, one_per_turf = 1, on_floor = 1), \
 	new/datum/stack_recipe("machine frame", /obj/machinery/constructable_frame/machine_frame, 5, one_per_turf = 1), \
-	new/datum/stack_recipe("turret frame", /obj/machinery/porta_turret_construct, 5, one_per_turf = 1), \
 	null, \
 	new/datum/stack_recipe("apc frame", /obj/item/apc_frame, 2), \
 	new/datum/stack_recipe("grenade casing", /obj/item/weapon/chem_grenade), \
-	null, \
-
-)
+	)
 
 /obj/item/stack/sheet/metal
 	New(var/loc, var/amount=null)
@@ -95,8 +90,6 @@ var/global/list/datum/stack_recipe/r_metal_recipes = list ( \
 	new/datum/stack_recipe("table parts", /obj/item/weapon/table_parts/reinforced, 2), \
 	new/datum/stack_recipe("metal sheet", /obj/item/stack/sheet/metal, 1, 2, 50), \
 	new/datum/stack_recipe("AI core", /obj/AIcore, 4, one_per_turf = 1), \
-	new/datum/stack_recipe("Disposal Bin", /obj/machinery/disposal, 5, one_per_turf = 1), \
-	new/datum/stack_recipe("Delivery Chute", /obj/machinery/disposal/deliveryChute, 10, one_per_turf = 1), \
 	)
 
 /obj/item/stack/sheet/r_metal
@@ -108,13 +101,13 @@ var/global/list/datum/stack_recipe/r_metal_recipes = list ( \
 
 // TILES
 
-/obj/item/stack/tile/steel/New(var/loc, var/amount=null)
+/obj/item/stack/tile/New(var/loc, var/amount=null)
 	..()
 	src.pixel_x = rand(1, 14)
 	src.pixel_y = rand(1, 14)
 	return
 
-/obj/item/stack/tile/steel/attack_self(mob/user as mob)
+/obj/item/stack/tile/attack_self(mob/user as mob)
 	if (usr.stat)
 		return
 	var/T = user.loc
@@ -129,39 +122,7 @@ var/global/list/datum/stack_recipe/r_metal_recipes = list ( \
 	use(1)
 	return
 
-/obj/item/stack/tile/steel/proc/build(turf/S as turf)
+/obj/item/stack/tile/proc/build(turf/S as turf)
 	var/turf/simulated/floor/W = S.ReplaceWithFloor()
-	W.make_plating()
+	W.to_plating()
 	return
-
-// MOLTEN METAL
-
-/obj/item/stack/sheet/molten_metal
-	name = "molten scrap"
-	icon = 'scrap.dmi'
-	icon_state = "moltenscrap"
-	force = 5.0
-	throwforce = 5
-	w_class = 3.0
-	throw_speed = 3
-	throw_range = 3
-	origin_tech = "materials=1"
-	perunit = 1750
-
-/obj/item/stack/sheet/molten_metal/attackby(obj/item/W as obj, mob/user as mob)
-	..()
-	if (istype(W, /obj/item/weapon/weldingtool) && W:welding)
-		if(W:remove_fuel(0,user))
-			var/obj/item/stack/sheet/metal/new_item = new(usr.loc)
-			new_item.amount = src.amount
-			for (var/mob/M in viewers(src))
-				M.show_message("\red [src] is shaped into metal sheets by [user.name] with the weldingtool.", 3, "\red You hear welding.", 2)
-			var/obj/item/stack/sheet/molten_metal/R = src
-			src = null
-			var/replace = (user.get_inactive_hand()==R)
-			R.use(2)
-			if (!R && replace)
-				user.put_in_hand(new_item)
-		return
-	..()
-

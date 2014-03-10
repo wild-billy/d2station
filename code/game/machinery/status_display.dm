@@ -24,7 +24,6 @@
 	var/message2 = ""	// message line 2
 	var/index1			// display index for scrolling messages or 0 if non-scrolling
 	var/index2
-	var/adverts = 0
 
 	var/lastdisplayline1 = ""		// the cached last displays
 	var/lastdisplayline2 = ""
@@ -57,15 +56,6 @@
 	// set what is displayed
 
 	proc/update()
-		if(prob(1))
-			adverts = 1
-
-		if(adverts)
-			set_picture("ad[rand(1,4)]")
-			spawn(rand(50))
-				overlays = null
-				adverts = 0
-			return
 
 		if(friendc && mode!=4) //Makes all status displays except supply shuttle timer display the eye -- Urist
 			set_picture("ai_friend")
@@ -79,9 +69,7 @@
 			return
 
 		if(mode==1)	// shuttle timer
-			if(!emergency_shuttle)
-				return
-			else if(emergency_shuttle.online)
+			if(emergency_shuttle.online)
 				var/displayloc
 				if(emergency_shuttle.location == 1)
 					displayloc = "ETD "
@@ -179,12 +167,12 @@
 
 		if(line2 == null)		// single line display
 			overlays = null
-			overlays += texticon(line1, 24, -13)
+			overlays += texticon(line1, 23, -13)
 		else					// dual line display
 
 			overlays = null
-			overlays += texticon(line1, 24, -12)
-			overlays += texticon(line2, 24, -16)
+			overlays += texticon(line1, 23, -9)
+			overlays += texticon(line2, 23, -17)
 
 
 	// return shuttle timer as text
@@ -311,8 +299,6 @@
 					set_picture("ai_trollface")
 				if("Awesome")
 					set_picture("ai_awesome")
-				if("Dorfy")
-					set_picture("ai_urist")
 				if("Facepalm")
 					set_picture("ai_facepalm")
 				if("Friend Computer")

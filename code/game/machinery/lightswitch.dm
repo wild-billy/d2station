@@ -14,7 +14,6 @@
 			name = "light switch ([area.name])"
 
 		src.on = src.area.lightswitch
-		playsound(src, 'buttonclick.ogg', 30, 0)
 		updateicon()
 
 

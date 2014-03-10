@@ -9,7 +9,7 @@
 	var/on = 0
 	var/temperature_archived
 	var/obj/overlay/O1 = null
-	var/mob/living/carbon/occupant = null
+	var/mob/occupant = null
 	var/beaker = null
 	var/next_trans = 0
 
@@ -86,7 +86,7 @@
 			beaker_text = "<B>Beaker:</B> <A href='?src=\ref[src];eject=1'>Eject</A>"
 		else
 			beaker_text = "<B>Beaker:</B> <FONT color=red>No beaker loaded</FONT>"
-		var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Cryo cell control system</B><BR>
+		var/dat = {"<B>Cryo cell control system</B><BR>
 			<B>Current cell temperature:</B> [temp_text]K<BR>
 			<B>Cryo status:</B> [ src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>
 			[beaker_text]<BR><BR>
@@ -216,10 +216,7 @@
 			src.occupant = null
 			build_icon()
 			return
-		put_mob(mob/living/carbon/M as mob)
-			if (!istype(M))
-				usr << "\red <B>The cryo cell cannot handle such liveform!</B>"
-				return
+		put_mob(mob/M as mob)
 			if (src.occupant)
 				usr << "\red <B>The cryo cell is already occupied!</B>"
 				return
@@ -234,8 +231,6 @@
 				M.client.eye = src
 			M.pulling = null
 			M.loc = src
-			if(M.health > -100 && (M.health < 0 || M.sleeping))
-				M << "\blue <b>You feel a cold liquid surround you. Your skin starts to freeze up.</b>"
 			src.occupant = M
 //			M.metabslow = 1
 			src.add_fingerprint(usr)
@@ -245,7 +240,6 @@
 	verb
 		move_eject()
 			set name = "Eject occupant"
-			set category = "Object"
 			set src in oview(1)
 			if (usr.stat != 0)
 				return
@@ -255,7 +249,6 @@
 
 		move_inside()
 			set name = "Move Inside"
-			set category = "Object"
 			set src in oview(1)
 			if (usr.stat != 0 || stat & (NOPOWER|BROKEN))
 				return

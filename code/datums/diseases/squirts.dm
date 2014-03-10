@@ -4,8 +4,7 @@
 	spread = "Airborne"
 	cure = "Unknown"
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
-	why_so_serious = 0
+
 /datum/disease/squirts/stage_act()
 	..()
 

@@ -1,10 +1,3 @@
-/*
-CONTAINS:
-TABLE AND RACK OBJECT INTERATIONS
-*/
-
-
-//TABLE
 /obj/table/ex_act(severity)
 
 	switch(severity)
@@ -26,10 +19,6 @@ TABLE AND RACK OBJECT INTERATIONS
 /obj/table/blob_act()
 
 	if(prob(75))
-		if(istype(src, /obj/table/woodentable))
-			new /obj/item/weapon/table_parts/wood( src.loc )
-			del(src)
-
 		new /obj/item/weapon/table_parts( src.loc )
 		del(src)
 
@@ -39,15 +28,13 @@ TABLE AND RACK OBJECT INTERATIONS
 	return
 
 /obj/table/attack_paw(mob/user as mob)
-	if ((usr.mutations & HULK))
+	if ((usr.mutations & 8))
 		usr << text("\blue You destroy the table.")
 		for(var/mob/O in oviewers())
 			if ((O.client && !( O.blinded )))
 				O << text("\red [] smashes the table apart!", usr)
 		if(istype(src, /obj/table/reinforced))
 			new /obj/item/weapon/table_parts/reinforced( src.loc )
-		else if(istype(src, /obj/table/woodentable))
-			new/obj/item/weapon/table_parts/wood( src.loc )
 		else
 			new /obj/item/weapon/table_parts( src.loc )
 		src.density = 0
@@ -69,8 +56,6 @@ TABLE AND RACK OBJECT INTERATIONS
 			O << text("\red [] slices the table apart!", user)
 	if(istype(src, /obj/table/reinforced))
 		new /obj/item/weapon/table_parts/reinforced( src.loc )
-	else if(istype(src, /obj/table/woodentable))
-		new/obj/item/weapon/table_parts/wood( src.loc )
 	else
 		new /obj/item/weapon/table_parts( src.loc )
 	src.density = 0
@@ -78,15 +63,13 @@ TABLE AND RACK OBJECT INTERATIONS
 	return
 
 /obj/table/attack_hand(mob/user as mob)
-	if ((usr.mutations & HULK))
+	if ((usr.mutations & 8))
 		usr << text("\blue You destroy the table.")
 		for(var/mob/O in oviewers())
 			if ((O.client && !( O.blinded )))
 				O << text("\red [] smashes the table apart!", usr)
 		if(istype(src, /obj/table/reinforced))
 			new /obj/item/weapon/table_parts/reinforced( src.loc )
-		else if(istype(src, /obj/table/woodentable))
-			new/obj/item/weapon/table_parts/wood( src.loc )
 		else
 			new /obj/item/weapon/table_parts( src.loc )
 		src.density = 0
@@ -94,22 +77,11 @@ TABLE AND RACK OBJECT INTERATIONS
 	return
 
 
-/*
-/obj/plasticflaps/CanPass(atom/A, turf/T)
-	if(istype(A) && A.checkpass(PASSGLASS))
-		return prob(60)
-	else if(istype(A, /mob/living)) // You Shall Not Pass!
-		var/mob/living/M = A
-		if(!M.lying)			// unless you're lying down  // I want to plug this shit into the tables code so we can throw niggers over the bar. - Nernums
-			return 0
-	return ..()
-
-*/
 
 /obj/table/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	if(air_group || (height==0)) return 1
 
-	else if(istype(mover) && mover.checkpass(PASSTABLE))
+	if ((mover.flags & 2 || istype(mover, /obj/meteor)) )
 		return 1
 	else
 		return 0
@@ -117,8 +89,6 @@ TABLE AND RACK OBJECT INTERATIONS
 /obj/table/MouseDrop_T(obj/O as obj, mob/user as mob)
 
 	if ((!( istype(O, /obj/item/weapon) ) || user.equipped() != O))
-		return
-	if(isrobot(user))
 		return
 	user.drop_item()
 	if (O.loc != src.loc)
@@ -141,83 +111,23 @@ TABLE AND RACK OBJECT INTERATIONS
 		return
 
 	if (istype(W, /obj/item/weapon/wrench))
-		user << "\blue Now disassembling table"
-		playsound(src.loc, 'Ratchet.ogg', 50, 1)
-		sleep(50)
-		new /obj/item/weapon/table_parts( src.loc )
-		playsound(src.loc, 'Deconstruct.ogg', 50, 1)
-		//SN src = null
-		del(src)
-		return
-
-	if(isrobot(user))
-		return
-
-	if(istype(W, /obj/item/weapon/melee/energy/blade))
-		var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-		spark_system.set_up(5, 0, src.loc)
-		spark_system.start()
-		playsound(src.loc, 'blade1.ogg', 50, 1)
-		playsound(src.loc, "sparks", 50, 1)
-		for(var/mob/O in viewers(user, 4))
-			O.show_message(text("\blue The table was sliced apart by []!", user), 1, text("\red You hear metal coming apart."), 2)
-		new /obj/item/weapon/table_parts( src.loc )
-		del(src)
-		return
-
-	user.drop_item()
-	if(W && W.loc)	W.loc = src.loc
-	return
-
-//WOODEN TABLES
-/obj/table/woodentable/attackby(obj/item/weapon/W as obj, mob/user as mob)
-
-	if (istype(W, /obj/item/weapon/grab))
-		var/obj/item/weapon/grab/G = W
-		if(G.state<2)
-			user << "\red You need a better grip to do that!"
+		if (user.a_intent == "hurt")
+			user << "\blue Now disassembling table"
+			playsound(src.loc, 'Ratchet.ogg', 50, 1)
+			sleep(50)
+			new /obj/item/weapon/table_parts( src.loc )
+			playsound(src.loc, 'Deconstruct.ogg', 50, 1)
+			//SN src = null
+			del(src)
 			return
-		G.affecting.loc = src.loc
-		G.affecting.weakened = 5
-		for(var/mob/O in viewers(world.view, src))
-			if (O.client)
-				O << text("\red [] puts [] on the wooden table.", G.assailant, G.affecting)
-		del(W)
-		return
-	if (istype(W, /obj/item/weapon/wrench))
-		user << "\blue Now disassembling the wooden table"
-		playsound(src.loc, 'Ratchet.ogg', 50, 1)
-		sleep(50)
-		new /obj/item/weapon/table_parts/wood( src.loc )
-		playsound(src.loc, 'Deconstruct.ogg', 50, 1)
-		del(src)
-		return
-	if(isrobot(user))
-		return
-	if(istype(W, /obj/item/weapon/melee/energy/blade))
-		var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-		spark_system.set_up(5, 0, src.loc)
-		spark_system.start()
-		playsound(src.loc, 'blade1.ogg', 50, 1)
-		playsound(src.loc, "sparks", 50, 1)
-		for(var/mob/O in viewers(user, 4))
-			O.show_message(text("\blue The wooden table was sliced apart by []!", user), 1, text("\red You hear wood coming apart."), 2)
-		new /obj/item/weapon/table_parts/wood( src.loc )
-		del(src)
-		return
-
 	user.drop_item()
 	if(W && W.loc)	W.loc = src.loc
 	return
 
-//REINFORCED TABLES
 /obj/table/reinforced/attackby(obj/item/weapon/W as obj, mob/user as mob)
 
 	if (istype(W, /obj/item/weapon/grab))
 		var/obj/item/weapon/grab/G = W
-		if(G.state<2)
-			user << "\red You need a better grip to do that!"
-			return
 		G.affecting.loc = src.loc
 		G.affecting.weakened = 5
 		for(var/mob/O in viewers(world.view, src))
@@ -229,23 +139,17 @@ TABLE AND RACK OBJECT INTERATIONS
 	if (istype(W, /obj/item/weapon/weldingtool))
 		if(W:welding == 1)
 			if(src.status == 2)
-				W:welding = 2
 				user << "\blue Now weakening the reinforced table"
 				playsound(src.loc, 'Welder.ogg', 50, 1)
 				sleep(50)
 				user << "\blue Table weakened"
 				src.status = 1
-				W:welding = 1
 			else
-				W:welding = 2
 				user << "\blue Now strengthening the reinforced table"
 				playsound(src.loc, 'Welder.ogg', 50, 1)
 				sleep(50)
 				user << "\blue Table strengthened"
 				src.status = 2
-				W:welding = 1
-			return
-		if(isrobot(user))
 			return
 		user.drop_item()
 		if(W && W.loc)	W.loc = src.loc
@@ -260,26 +164,9 @@ TABLE AND RACK OBJECT INTERATIONS
 			playsound(src.loc, 'Deconstruct.ogg', 50, 1)
 			del(src)
 			return
-	if(isrobot(user))
-		return
-
-	if(istype(W, /obj/item/weapon/melee/energy/blade))
-		var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-		spark_system.set_up(5, 0, src.loc)
-		spark_system.start()
-		playsound(src.loc, 'blade1.ogg', 50, 1)
-		playsound(src.loc, "sparks", 50, 1)
-		for(var/mob/O in viewers(user, 4))
-			O.show_message(text("\blue The reinforced table was sliced apart by []!", user), 1, text("\red You hear metal coming apart."), 2)
-		new /obj/item/weapon/table_parts/reinforced( src.loc )
-		del(src)
-		return
-
 	user.drop_item()
 	if(W && W.loc)	W.loc = src.loc
 	return
-
-//RACKS
 
 /obj/rack/ex_act(severity)
 	switch(severity)
@@ -308,15 +195,14 @@ TABLE AND RACK OBJECT INTERATIONS
 
 /obj/rack/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	if(air_group || (height==0)) return 1
-	if(istype(mover) && mover.checkpass(PASSTABLE))
+
+	if (mover.flags & 2)
 		return 1
 	else
 		return 0
 
 /obj/rack/MouseDrop_T(obj/O as obj, mob/user as mob)
 	if ((!( istype(O, /obj/item/weapon) ) || user.equipped() != O))
-		return
-	if(isrobot(user))
 		return
 	user.drop_item()
 	if (O.loc != src.loc)
@@ -329,8 +215,6 @@ TABLE AND RACK OBJECT INTERATIONS
 		playsound(src.loc, 'Ratchet.ogg', 50, 1)
 		//SN src = null
 		del(src)
-		return
-	if(isrobot(user))
 		return
 	user.drop_item()
 	if(W && W.loc)	W.loc = src.loc

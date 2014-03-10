@@ -99,13 +99,17 @@
 		return
 	icon_state = "bloba0"
 
-/obj/blob/bullet_act(var/obj/item/projectile/Proj)
+/obj/blob/bullet_act(flag)
 
-	if (istype(Proj, /obj/item/projectile/bolt))
+	if (flag == PROJECTILE_BULLET)
+		health -= 10
+		update()
+	else if (flag == PROJECTILE_BOLT)
 		poisoned(1)
 	else
-		health -= Proj.damage
+		health -= 20
 		update()
+
 
 /obj/blob/attackby(var/obj/item/weapon/W, var/mob/user)
 	playsound(src.loc, 'attackblob.ogg', 50, 1)
@@ -133,7 +137,7 @@
 	usr << "Delicious magma."
 
 /datum/station_state/proc/count()
-	for(var/turf/T in turfs)
+	for(var/turf/T in world)
 		if(T.z != 1)
 			continue
 

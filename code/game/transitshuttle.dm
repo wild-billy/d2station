@@ -7,7 +7,7 @@
 #define DERELICTSHUTTLE_STATION_AREATYPE "/area/shuttle/derelict/station"
 #define DERELICTSHUTTLE_TRANSIT_AREATYPE "/area/shuttle/derelict/transit"
 #define DERELICTSHUTTLE_DOCK_AREATYPE "/area/shuttle/derelict/derelict"
-#define MININGSHUTTLE_MOVETIME 1488
+#define MININGSHUTTLE_MOVETIME 630
 #define MININGSHUTTLE_STATION_AREATYPE "/area/shuttle/mining/station"
 #define MININGSHUTTLE_TRANSIT_AREATYPE "/area/shuttle/mining/transit"
 #define MININGSHUTTLE_DOCK_AREATYPE "/area/shuttle/mining/asteroid"
@@ -52,7 +52,7 @@ var/prison_shuttle_timeleft = 0
 	name = "Shuttle Terminal"
 	icon_state = "dereshuttle"
 
-/*
+
 /obj/machinery/computer/transitshuttle/mining/proc/mining_process()
 	while(mining_shuttle_time - world.timeofday > 0)
 		var/ticksleft = mining_shuttle_time - world.timeofday
@@ -86,38 +86,19 @@ var/prison_shuttle_timeleft = 0
 					spawn( 0 )
 					L.close()
 			sleep(10)
-			for(var/area/FTLship/E in world)
-				E.requires_power = 0
-				E.luminosity = 0
-				E.ul_Lighting = 0
-			var/area/start_location = locate(/area/FTLship/start)
-			var/area/end_location = locate(/area/FTLship/hyperspace)
+			var/area/start_location = locate(/area/shuttle/mining/asteroid)
+			var/area/end_location = locate(/area/shuttle/mining/transit)
 
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue Thrusters engaged.", 3)
-			for(var/turf/Q in end_location)
-				for(var/atom/movable/AM as mob|obj in Q)
-					del(AM)
-					del(Q)
 			sleep(10)
 			start_location.move_contents_to(end_location)
-			for(var/area/FTLship/F in world)
-				F.requires_power = 1
-				F.ul_Lighting = 1
-			for(var/turf/Q in end_location)
-				for(var/atom/movable/AM as mob|obj in Q)
-					del(AM)
-					del(Q)
-
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue Shuttle en route.", 3)
 			sleep(600)
-			for(var/area/FTLship/G in world)
-				G.requires_power = 0
-				G.luminosity = 0
-				G.ul_Lighting = 0
-			var/area/start_location2 = locate(/area/FTLship/hyperspace)
-			var/area/end_location2 = locate(/area/FTLship/start)
+
+			var/area/start_location2 = locate(/area/shuttle/mining/transit)
+			var/area/end_location2 = locate(/area/shuttle/mining/station)
 
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue Shuttle approaching destination.", 3)
@@ -146,10 +127,6 @@ var/prison_shuttle_timeleft = 0
 
 			start_location2.move_contents_to(end_location2)
 			sleep(2)
-			for(var/area/FTLship/H in world)
-				H.requires_power = 1
-				H.ul_Lighting = 1
-
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue <B>Shuttle has arrived at destination: [station_name].</B>", 3)
 			mining_shuttle_intransit = 0
@@ -232,7 +209,7 @@ var/prison_shuttle_timeleft = 0
 				if (L.id == "mining")
 					spawn( 0 )
 					L.open()
-*/
+
 /obj/machinery/computer/transitshuttle/mining/proc/mining_can_move()
 	if(mining_shuttle_intransit) return 0
 
@@ -615,7 +592,7 @@ var/prison_shuttle_timeleft = 0
 	if (src.temp)
 		dat = src.temp
 	else
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Prison Shuttle</B><HR>
+		dat += {"<BR><B>Prison Shuttle</B><HR>
 		\nLocation: [prison_shuttle_moving_to_station || prison_shuttle_moving_to_prison ? "Moving to station ([prison_shuttle_timeleft] Secs.)":prison_shuttle_at_station ? "Station":"Dock"]<BR>
 		[prison_shuttle_moving_to_station || prison_shuttle_moving_to_prison ? "\n*Shuttle already called*<BR>\n<BR>":prison_shuttle_at_station ? "\n<A href='?src=\ref[src];sendtodock=1'>Send to Dock</A><BR>\n<BR>":"\n<A href='?src=\ref[src];sendtostation=1'>Send to station</A><BR>\n<BR>"]
 		\n<A href='?src=\ref[user];mach_close=computer'>Close</A>"}
@@ -710,7 +687,8 @@ var/prison_shuttle_timeleft = 0
 
 
 
-/*
+
+
 
 
 /obj/machinery/computer/transitshuttle/mining/attack_hand(var/mob/user as mob)
@@ -760,7 +738,7 @@ var/prison_shuttle_timeleft = 0
 
 		mining_shuttle_time = world.timeofday + MININGSHUTTLE_MOVETIME
 		spawn(0)
-	//		mining_process()
+			mining_process()
 
 	else if (href_list["sendtostation"])
 		if(mining_shuttle_at_station || mining_shuttle_moving_to_station || mining_shuttle_moving_to_asteroid) return
@@ -779,7 +757,7 @@ var/prison_shuttle_timeleft = 0
 
 		mining_shuttle_time = world.timeofday + MININGSHUTTLE_MOVETIME
 		spawn(0)
-		//	mining_process()
+			mining_process()
 
 	else if (href_list["mainmenu"])
 		src.temp = null
@@ -801,7 +779,8 @@ var/prison_shuttle_timeleft = 0
 
 	frequency.post_signal(src, status_signal)
 
-*/
+
+
 
 
 
@@ -819,7 +798,7 @@ var/prison_shuttle_timeleft = 0
 	if (src.temp)
 		dat = src.temp
 	else
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Salvaging Shuttle</B><HR>
+		dat += {"<BR><B>Salvaging Shuttle</B><HR>
 		\nLocation: [derelict_shuttle_moving_to_station || derelict_shuttle_moving_to_derelict ? "Moving to station (Approximately [derelict_shuttle_timeleft] Secs.)":derelict_shuttle_at_station ? "Station":"\[Beacon NT-288\]"]<BR>
 		[derelict_shuttle_moving_to_station || derelict_shuttle_moving_to_derelict ? "\n*Shuttle already called*<BR>\n<BR>":derelict_shuttle_at_station ? "\n<A href='?src=\ref[src];sendtodock=1'>Send to \[Beacon NT-288\]</A><BR>\n<BR>":"\n<A href='?src=\ref[src];sendtostation=1'>Send to station</A><BR>\n<BR>"]
 		\n<A href='?src=\ref[user];mach_close=computer'>Close</A>"}

@@ -132,10 +132,9 @@
 
 		else if(istype(I, /obj/item/weapon/weldingtool))
 			var/obj/item/weapon/weldingtool/W = I
-			if(W.remove_fuel(0,user))
+			if(W.remove_fuel(2,user))
 				playsound(src.loc, 'Welder2.ogg', 100, 1)
 				user << "Welding the pipe in place."
-				W:welding = 2
 				if(do_after(user, 20))
 					update()
 					var/pipetype = dpipetype()
@@ -146,7 +145,6 @@
 					P.updateicon()
 					del(src)
 					return
-				W:welding = 1
 			else
 				user << "You need more welding fuel to complete this task."
 				return

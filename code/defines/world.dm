@@ -2,7 +2,7 @@ world
 	mob = /mob/new_player
 	turf = /turf/space
 	area = /area
-	view = 7
+	view = "15x15"
 
 
 	Topic(href, href_list[])

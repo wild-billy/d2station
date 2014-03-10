@@ -16,52 +16,38 @@
 	else
 		stat |= NOPOWER
 
-/obj/machinery/door/firedoor/attack_hand(mob/user)
-	if(!istype(user, /mob/living/silicon))
-		return
-	if (!src.blocked && !src.operating)
-		if(src.density)
-			if(!blocked)
-				if(operating)
-					nextstate = OPEN
-				else if(density)
-					spawn(0)
-					open()
-		else //close it up again
-			if(!blocked)
-				if(operating)
-					nextstate = CLOSED
-				else if(!density)
-					spawn(0)
-					close()
-
 /obj/machinery/door/firedoor/attackby(obj/item/weapon/C as obj, mob/user as mob)
 	src.add_fingerprint(user)
 	if ((istype(C, /obj/item/weapon/weldingtool) && !( src.operating ) && src.density))
 		var/obj/item/weapon/weldingtool/W = C
-		if(W.remove_fuel(0, user))
+		if(W.remove_fuel(2, user))
 			src.blocked = !src.blocked
 			user << text("\red You [blocked?"welded":"unwelded"] the [src]")
 			update_icon()
+
 			return
-
-
-	if (istype(C, /obj/item/weapon/crowbar) || (istype(C,/obj/item/weapon/fireaxe) && C.wielded == 1) )
+	if (istype(C, /obj/item/weapon/crowbar))
 		if (!src.blocked && !src.operating)
 			if(src.density)
-				if(!blocked)
-					if(operating)
-						nextstate = OPEN
-					else if(density)
-						spawn(0)
-						open()
-			else
-				if(!blocked)
-					if(operating)
-						nextstate = CLOSED
-					else if(!density)
-						spawn(0)
-						close()
+				spawn( 0 )
+					src.operating = 1
+					animate("opening")
+					sleep(15)
+					src.density = 0
+					update_icon()
+					src.sd_SetOpacity(0)
+					src.operating = 0
+					return
+			else //close it up again
+				spawn( 0 )
+					src.operating = 1
+					animate("closing")
+					src.density = 1
+					sleep(15)
+					update_icon()
+					src.sd_SetOpacity(1)
+					src.operating = 0
+					return
 	return
 
 /obj/machinery/door/firedoor/process()
@@ -75,6 +61,18 @@
 			spawn()
 				src.close()
 		src.nextstate = null
+
+
+/obj/machinery/door/firedoor/open()
+	use_power(50)
+	playsound(src.loc, 'airlock_up.ogg', rand(10,20), 0)
+	return ..()
+
+/obj/machinery/door/firedoor/close()
+	use_power(50)
+	playsound(src.loc, 'airlock_down.ogg', rand(10,20), 0)
+	..()
+	return
 
 /obj/machinery/door/firedoor/border_only
 	CanPass(atom/movable/mover, turf/target, height=0, air_group=0)

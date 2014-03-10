@@ -9,7 +9,7 @@
 
 	else if(T == "players")
 		var/n = 0
-		for(var/mob/M in mobz)
+		for(var/mob/M in world)
 			if(M.client)
 				n++
 		return n
@@ -25,7 +25,7 @@
 		s["host"] = host ? host : null
 		s["players"] = list()
 		var/n = 0
-		for(var/mob/M in mobz)
+		for(var/mob/M in world)
 			if(M.client)
 				s["player[n]"] = M.client.key
 				n++

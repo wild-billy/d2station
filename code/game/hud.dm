@@ -23,28 +23,29 @@
 #define ui_oxygen "EAST+1, NORTH-4"
 #define ui_toxin "EAST+1, NORTH-6"
 #define ui_internal "EAST+1, NORTH-2"
-#define ui_fire "EAST+1, NORTH-7"
-#define ui_temp "EAST+1, NORTH-8"
-#define ui_health "EAST+1, NORTH-9"
-#define ui_nutrition "EAST+1, NORTH-10"
-#define ui_pull "SOUTH-1,9"
+#define ui_fire "EAST+1, NORTH-8"
+#define ui_temp "EAST+1, NORTH-10"
+#define ui_health "EAST+1, NORTH-11"
+#define ui_nutrition "EAST+1, NORTH-12"
+#define ui_pull "SOUTH-1,10"
 #define ui_hand "SOUTH-1,6"
-#define ui_sleep "EAST+1, NORTH-11"
-#define ui_rest "EAST+1, NORTH-12"
+#define ui_sleep "EAST+1, NORTH-13"
+#define ui_rest "EAST+1, NORTH-14"
 
-#define ui_acti "SOUTH-1,11"
-#define ui_movi "SOUTH-1,13"
+#define ui_acti "SOUTH-1,12"
+#define ui_movi "SOUTH-1,14"
 
-#define ui_iarrowleft "SOUTH-1,10"
-#define ui_iarrowright "SOUTH-1,12"
+#define ui_iarrowleft "SOUTH-1,11"
+#define ui_iarrowright "SOUTH-1,13"
 
 #define ui_inv1 "SOUTH-1,1"
 #define ui_inv2 "SOUTH-1,2"
 #define ui_inv3 "SOUTH-1,3"
 
 
+
 obj/hud/New(var/type = 0)
-	instantiate(type)
+	src.instantiate(type)
 	..()
 	return
 
@@ -75,37 +76,41 @@ obj/hud/New(var/type = 0)
 
 /obj/hud/proc/instantiate(var/type = 0)
 
-	mymob = loc
+	mymob = src.loc
 	ASSERT(istype(mymob, /mob))
 
-	if(ishuman(mymob))
-		human_hud(mymob.UI) // Pass the player the UI style chosen in preferences
+	if(istype(mymob, /mob/living/carbon/human))
+		src.human_hud(mymob.UI) // Pass the player the UI style chosen in preferences
 
-	else if(ismonkey(mymob))
-		monkey_hud(mymob.UI)
+		return
 
-	else if(isbrain(mymob))
-		brain_hud(mymob.UI)
+	if(istype(mymob, /mob/living/carbon/monkey))
+		src.monkey_hud(mymob.UI)
+		return
 
-	else if(islarva(mymob))
-		larva_hud()
+	//aliens
+	if(istype(mymob, /mob/living/carbon/alien/larva))
+		src.larva_hud()
+	else if(istype(mymob, /mob/living/carbon/alien))
+		src.alien_hud()
+		return
 
-	else if(isalien(mymob))
-		alien_hud()
+	if(istype(mymob, /mob/living/silicon/ai))
+		src.ai_hud()
+		return
 
-	else if(isAI(mymob))
-		ai_hud()
+	if(istype(mymob, /mob/living/silicon/robot))
+		src.robot_hud()
+		return
 
-	else if(isrobot(mymob))
-		robot_hud()
+	if(istype(mymob, /mob/living/silicon/hivebot))
+		src.hivebot_hud()
+		return
 
-	else if(ishivebot(mymob))
-		hivebot_hud()
+	if(istype(mymob, /mob/living/silicon/hive_mainframe))
+		src.hive_mainframe_hud()
+		return
 
-	else if(ishivemainframe(mymob))
-		hive_mainframe_hud()
-
-	else if(isobserver(mymob))
-		ghost_hud()
-
-	return
+	if(istype(mymob, /mob/dead/observer))
+		src.ghost_hud()
+		return

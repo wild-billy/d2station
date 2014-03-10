@@ -4,7 +4,10 @@
 // Once full (~1 atm), uses air resv to flush items into the pipes
 // Automatically recharges air (unless off), will flush when ready if pre-set
 // Can hold items and human size things, no other draggables
-// Toilets are a type of disposal bin for small objects only and work on magic. By magic, I mean torque rotation
+
+/obj/machinery/disposal/hydro
+	name = "material transport unit"
+	icon_state = "hydrodisposal"
 
 /obj/machinery/disposal
 	name = "disposal unit"
@@ -16,8 +19,11 @@
 	var/datum/gas_mixture/air_contents	// internal reservoir
 	var/mode = 1	// item mode 0=off 1=charging 2=charged
 	var/flush = 0	// true if flush handle is pulled
+	var/vacuum = 0	// true if vacuum is pulled
 	var/obj/disposalpipe/trunk/trunk = null // the attached pipe trunk
 	var/flushing = 0	// true if flushing in progress
+	var/vacuuming = 0	// true if flushing in progress
+	var/vacuumforabit = 0
 
 	// create a new disposal
 	// find the attached trunk (if present) and init gas resvr.
@@ -28,6 +34,7 @@
 			if(!trunk)
 				mode = 0
 				flush = 0
+				vacuum = 0
 			else
 				trunk.linked = src	// link the pipe trunk to self
 
@@ -39,10 +46,6 @@
 	// attack by item places it in to disposal
 	attackby(var/obj/item/I, var/mob/user)
 		if(stat & BROKEN)
-			return
-
-		if(istype(I, /obj/item/weapon/melee/energy/blade))
-			user << "You can't place that item inside the disposal unit."
 			return
 
 		var/obj/item/weapon/grab/G = I
@@ -60,9 +63,9 @@
 						C.show_message("\red [GM.name] has been placed in the [src] by [user].", 3)
 					del(G)
 
+
 		else
 			user.drop_item()
-
 			I.loc = src
 			user << "You place \the [I] into the [src]."
 			for(var/mob/M in viewers(src))
@@ -83,7 +86,6 @@
 			if(target == user && !user.stat)
 				V.show_message("[usr] starts climbing into the disposal.", 3)
 			if(target != user && !user.restrained())
-				if(target.anchored) return
 				V.show_message("[usr] starts stuffing [target.name] into the disposal.", 3)
 		if(!do_after(usr, 20))
 			return
@@ -137,6 +139,7 @@
 			return
 
 		flush = !flush
+		vacuum = !vacuum
 		update()
 		return
 
@@ -155,13 +158,18 @@
 			user.machine = null
 			return
 
-		var/dat = "<head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>Waste Disposal Unit</title></head><body><TT><B>Waste Disposal Unit</B><HR>"
+		var/dat = "<head><title>Waste Disposal Unit</title></head><body><TT><B>Waste Disposal Unit</B><HR>"
 
 		if(!ai)  // AI can't pull flush handle
 			if(flush)
 				dat += "Disposal handle: <A href='?src=\ref[src];handle=0'>Disengage</A> <B>Engaged</B>"
 			else
 				dat += "Disposal handle: <B>Disengaged</B> <A href='?src=\ref[src];handle=1'>Engage</A>"
+
+			if(vacuum)
+				dat += "<br><br>Vacuum mode: <A href='?src=\ref[src];vacuum=0'>Disengage</A> <B>Engaged</B>"
+			else
+				dat += "<br><br>Vacuum mode: <B>Disengaged</B> <A href='?src=\ref[src];vacuum=1'>Engage</A>"
 
 			dat += "<BR><HR><A href='?src=\ref[src];eject=1'>Eject contents</A><HR>"
 
@@ -188,7 +196,7 @@
 		src.add_fingerprint(usr)
 		if(stat & BROKEN)
 			return
-		if(usr.stat || usr.restrained() || src.flushing)
+		if(usr.stat || usr.restrained() || src.flushing || src.vacuuming)
 			return
 
 		if (in_range(src, usr) && istype(src.loc, /turf))
@@ -208,6 +216,10 @@
 
 			if(href_list["handle"])
 				flush = text2num(href_list["handle"])
+				update()
+
+			if(href_list["vacuum"])
+				vacuum = text2num(href_list["vacuum"])
 				update()
 
 			if(href_list["eject"])
@@ -232,11 +244,15 @@
 			icon_state = "disposal-broken"
 			mode = 0
 			flush = 0
+			vacuum = 0
 			return
 
 		// flush handle
 		if(flush)
-			overlays += image('disposal.dmi', "dispover-handle")
+			if(istype(src, /obj/machinery/disposal/hydro))
+				overlays += image('disposal.dmi', "hydrodispover-handle")
+			else
+				overlays += image('disposal.dmi', "dispover-handle")
 
 		// only handle is shown if no power
 		if(stat & NOPOWER)
@@ -263,6 +279,9 @@
 		if(flush && air_contents.return_pressure() >= 2*ONE_ATMOSPHERE)	// flush can happen even without power
 			flush()
 
+		if(vacuum && air_contents.return_pressure() >= 2*ONE_ATMOSPHERE)	// flush can happen even without power
+			vacuum()
+
 		if(stat & NOPOWER)			// won't charge if no power
 			return
 
@@ -273,6 +292,10 @@
 
 		// otherwise charge
 		use_power(500)		// charging power usage
+
+
+
+
 
 		var/atom/L = loc						// recharging from loc turf
 
@@ -297,11 +320,13 @@
 	proc/flush()
 
 		flushing = 1
-		flick("disposal-flush", src)
+		if(istype(src, /obj/machinery/disposal/hydro))
+			flick("hydrodisposal-flush", src)
+		else
+			flick("disposal-flush", src)
 
 		var/obj/disposalholder/H = new()	// virtual holder object which actually
 											// travels through the pipes.
-
 
 		H.init(src)	// copy the contents of disposer to holder
 
@@ -318,6 +343,32 @@
 		flush = 0
 		if(mode == 2)	// if was ready,
 			mode = 1	// switch to charging
+		update()
+		return
+
+	proc/vacuum()
+
+		vacuuming = 1
+
+		if (vacuumforabit != 10)
+			for(var/obj/item/M in orange(3,src))
+				if(!M.anchored && M.w_class)
+					var/i
+					var/iter = rand(1,2)
+					for(i=0,i<iter,i++)
+						step_towards(M,src)
+
+			for(var/obj/item/M in orange(1,src))
+				if(!M.anchored && M.w_class)
+					var/i
+					var/iter = rand(1,2)
+					for(i=0,i<iter,i++)
+						M.loc = src
+			vacuumforabit += 1
+		else
+			vacuuming = 0
+			vacuum = 0
+			vacuumforabit = 0
 		update()
 		return
 
@@ -347,93 +398,7 @@
 		H.vent_gas(loc)
 		del(H)
 
-//The toilet does not need to pressurized but can only handle small items.
-//You can also choke people by dunking them into the toilet.
-/obj/machinery/disposal/toilet
-	name = "toilet"
-	desc = "A torque rotation-based, waste disposal unit for small matter."
-	icon = 'device.dmi'
-	icon_state = "toilet"
-	density = 0//So you can stand on it.
-	mode = 2
 
-	attackby(var/obj/item/I, var/mob/user)
-		if( !(stat & BROKEN) )
-			if(istype(I, /obj/item/weapon/grab))
-				var/obj/item/weapon/grab/G = I
-				if(istype(G)) // handle grabbed mob
-					if(ismob(G.affecting))
-						var/mob/GM = G.affecting
-						for (var/mob/V in viewers(usr))
-							V.show_message("[user] dunks [GM.name] into the toilet!", 3)
-						if(do_after(user, 30))
-							if(G.state>1&&!GM.internal)
-								GM.oxyloss += 5
-
-			else if(I.w_class < 4)
-				user.drop_item()
-				I.loc = src
-				user << "You place \the [I] into the [src]."
-				for(var/mob/M in viewers(src))
-					if(M == user)
-						continue
-					M.show_message("[user.name] places \the [I] into the [src].", 3)
-			else
-				user << "\red That item cannot be placed into the toilet."
-		return
-
-	MouseDrop_T(mob/target, mob/user)
-		if (!istype(target) || target.buckled || get_dist(user, src) > 1 || get_dist(user, target) > 1 || user.stat || istype(user, /mob/living/silicon/ai))
-			return//Damn that list is long
-
-		for (var/mob/V in viewers(usr))
-			if(target == user && !user.stat)
-				V.show_message("[user] sits on the toilet.", 3)
-			if(target != user && !user.restrained())
-				V.show_message("[user] places [target.name] on the toilet.", 3)
-		target.loc = loc
-		return
-
-	interact(mob/user)
-		add_fingerprint(user)
-		for (var/mob/V in viewers(user))
-			V.show_message("[user] eagerly drinks the toilet water!", 3)//Yum yum yum
-		return
-
-	update()
-		overlays = null
-		if( !(stat & BROKEN) )
-			if(flush)
-				overlays += image('disposal.dmi',"toilet-handle",,dir)
-			if( !(stat & NOPOWER) )
-				overlays += image('disposal.dmi',"toilet-ready",,dir)
-		else
-			icon_state = "toilet-broken"
-			mode = 0
-			flush = 0
-		return
-
-	process()
-		if( !((stat & BROKEN)||(stat & NOPOWER)) )// nothing can happen if broken or not powered.
-			updateDialog()
-			if(!flush&&contents.len)
-				flush++
-				flush()
-			use_power(100)// base power usage
-			update()
-		return
-
-	flush()
-		flick("toilet-flush", src)
-		var/obj/disposalholder/H = new()
-		H.init(src)
-		sleep(10)
-		playsound(src, 'disposalflush.ogg', 50, 0, 0)
-		sleep(30) // To prevent spam.
-		H.start(src)
-		flush--
-		update()
-		return
 
 // virtual disposal object
 // travels through pipes in lieu of actual items
@@ -449,11 +414,10 @@
 	var/has_fat_guy = 0	// true if contains a fat person
 	var/destinationTag = 0 // changes if contains a delivery container
 
-
 	// initialize a holder from the contents of a disposal unit
 	proc/init(var/obj/machinery/disposal/D)
-		if(!istype(D, /obj/machinery/disposal/toilet))//So it does not drain gas from a toilet which does not function on it.
-			gas = D.air_contents// transfer gas resv. into holder object
+		gas = D.air_contents		// transfer gas resv. into holder object
+
 
 		// now everything inside the disposal gets put into the holder
 		// note AM since can contain mobs or objs
@@ -461,7 +425,7 @@
 			AM.loc = src
 			if(istype(AM, /mob/living/carbon/human))
 				var/mob/living/carbon/human/H = AM
-				if(H.mutations & FAT)		// is a human and fat?
+				if(H.mutations & 32)		// is a human and fat?
 					has_fat_guy = 1			// set flag on holder
 			if(istype(AM, /obj/bigDelivery))
 				var/obj/bigDelivery/T = AM
@@ -570,7 +534,7 @@
 	var/dpdir = 0		// bitmask of pipe directions
 	dir = 0				// dir will contain dominant direction for junction pipes
 	var/health = 10 	// health points 0-10
-	layer = 2.4			// slightly lower than wires
+	layer = 2.3			// slightly lower than wires
 	var/base_icon_state	// initial icon state on map
 
 	// new pipe, set the icon_state as on map
@@ -780,8 +744,7 @@
 			var/obj/item/weapon/weldingtool/W = I
 
 			if(W.welding)
-				if(W.remove_fuel(0,user))
-					W:welding = 2
+				if(W.remove_fuel(3,user))
 					playsound(src.loc, 'Welder2.ogg', 100, 1)
 					// check if anything changed over 2 seconds
 					var/turf/uloc = user.loc
@@ -792,7 +755,7 @@
 						welded()
 					else
 						user << "You must stay still while welding the pipe."
-					W:welding = 1
+						return
 				else
 					user << "You need more welding fuel to cut the pipe."
 					return
@@ -886,6 +849,7 @@
 			else
 				return mask & (~setbit)
 
+
 //a three-way junction that sorts objects
 /obj/disposalpipe/sortjunction
 
@@ -947,9 +911,6 @@
 			return null
 
 		return P
-
-
-
 
 
 //a trunk joining to a disposal bin or outlet on the same turf
@@ -1101,20 +1062,3 @@
 		dirs = alldirs.Copy()
 
 	src.streak(dirs)
-
-
-/obj/machinery/disposal/mimeclown
-	name = "HONK unit"
-	desc = "A silent looking disposal unit."
-	icon = 'disposal.dmi'
-	icon_state = "disposalhonk"
-	anchored = 1
-	density = 1
-
-	MouseDrop_T(mob/target, mob/user)
-		if (!user.job == "Clown" || !user.job == "Mime")
-			usr << "\red The chute refuses to accept you!"
-			return
-
-		else
-			..()

@@ -94,24 +94,16 @@
 
 /obj/item/weapon/secstorage/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	..()
-	if ( (istype(W, /obj/item/weapon/card/emag)||istype(W, /obj/item/weapon/melee/energy/blade)) && (src.locked == 1) && (!src.emagged))
+	if ((W.w_class > 3 || istype(W, /obj/item/weapon/secstorage)))
+		return
+	if ((istype(W, /obj/item/weapon/card/emag)) && (src.locked == 1) && (!src.emagged))
 		emagged = 1
 		src.overlays += image('storage.dmi', icon_sparking)
 		sleep(6)
 		src.overlays = null
 		overlays += image('storage.dmi', icon_locking)
 		locked = 0
-		if(istype(W, /obj/item/weapon/melee/energy/blade))
-			var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-			spark_system.set_up(5, 0, src.loc)
-			spark_system.start()
-			playsound(src.loc, 'blade1.ogg', 50, 1)
-			playsound(src.loc, "sparks", 50, 1)
-			user << "You slice through the lock on [src]."
-		else
-			user << "You short out the lock on [src]."
-		return
-	if ((W.w_class > 3 || istype(W, /obj/item/weapon/secstorage)))
+		user << "You short out the lock on [src]."
 		return
 	if ((istype(W, /obj/item/weapon/screwdriver)) && (src.locked == 1))
 		sleep(6)
@@ -190,7 +182,7 @@
 
 /obj/item/weapon/secstorage/attack_self(mob/user as mob)
 	user.machine = src
-	var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>[]</B><BR>\n\nLock Status: []",src, (src.locked ? "LOCKED" : "UNLOCKED"))
+	var/dat = text("<TT><B>[]</B><BR>\n\nLock Status: []",src, (src.locked ? "LOCKED" : "UNLOCKED"))
 	var/message = "Code"
 	if ((src.l_set == 0) && (!src.emagged) && (!src.l_setshort))
 		dat += text("<p>\n<b>5-DIGIT PASSCODE NOT SET.<br>ENTER NEW PASSCODE.</b>")

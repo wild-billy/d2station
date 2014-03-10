@@ -20,7 +20,6 @@
 
 		blobs = list()
 		new /obj/blob(location)
-	..()
 
 /datum/game_mode/blob/process()
 	if (prob(2))
@@ -79,7 +78,7 @@
 
 			world << "<FONT size = 3><B>Cent. Com. Update</B>: Biohazard Alert.</FONT>"
 			world << "\red Summary downloaded and printed out at all communications consoles."
-			for (var/mob/living/silicon/ai/aiPlayer in mobz)
+			for (var/mob/living/silicon/ai/aiPlayer in world)
 				if (aiPlayer.client)
 					var/law = "The station is under a quarantine. Do not permit anyone to leave. Disregard rules 1-3 if necessary to prevent, by any means necessary, anyone from leaving."
 					aiPlayer.add_supplied_law(8, law)
@@ -90,7 +89,7 @@
 			next_stage = world.timeofday + 600*rand(5,10)
 
 		if (1)
-			command_alert("Confirmed outbreak of level 5 biohazard aboard [station_name()]. All personnel must contain the outbreak.", "Biohazard Alert!")
+			command_alert("Confirmed outbreak of level 5 biohazard aboard [station_name()]. All personnel must contain the outbreak.", "Biohazard Alert")
 
 			stage = 2
 			// now check every minute
@@ -98,7 +97,7 @@
 
 		if (2)
 			if (blobs.len > 500)
-				command_alert("Uncontrolled spread of the biohazard onboard the station. We have issued directive 7-12 for [station_name()]. Estimated time until directive implementation: 60 seconds.", "Biohazard Alert!")
+				command_alert("Uncontrolled spread of the biohazard onboard the station. We have issued directive 7-12 for [station_name()]. Estimated time until directive implementation: 60 seconds.", "Biohazard Alert")
 				stage = 3
 				next_stage = world.timeofday + 600
 			else
@@ -134,8 +133,8 @@
 		var/numSpace = 0
 		var/numPod = 0
 		var/numOffStation = 0
-		for (var/mob/living/silicon/ai/aiPlayer in mobz)
-			for(var/mob/M in mobz)
+		for (var/mob/living/silicon/ai/aiPlayer in world)
+			for(var/mob/M in world)
 				if ((M != aiPlayer && M.client))
 					if (M.stat == 2)
 						numDead += 1
@@ -181,5 +180,4 @@
 
 		world << "\blue Rebooting in 30s"
 
-	..()
 	return 1

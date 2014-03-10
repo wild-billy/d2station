@@ -20,8 +20,8 @@
 			sleep(3)
 			if (i > 0)
 				var/obj/decal/cleanable/blood/b = new /obj/decal/cleanable/blood/splatter(src.loc)
-				for(var/datum/disease/D in src.viruses)
-					b.viruses += D
+				if (src.virus)
+					b.virus = src.virus
 			if (step_to(src, get_step(src, direction), 0))
 				break
 
@@ -32,8 +32,8 @@
 			sleep(3)
 			if (i > 0)
 				var/obj/decal/cleanable/xenoblood/b = new /obj/decal/cleanable/xenoblood/xsplatter(src.loc)
-				for(var/datum/disease/D in src.viruses)
-					b.viruses += D
+				if (src.virus)
+					b.virus = src.virus
 			if (step_to(src, get_step(src, direction), 0))
 				break
 
@@ -60,8 +60,17 @@
 
 	New()
 		..()
-		//ul_SetLuminosity(1)
-		ul_SetLuminosity(1)
+		sd_SetLuminosity(1)
 
 		spawn(1200)		// 2 minutes
 			del(src)
+
+/obj/decal/cleanable/greenglow/HasEntered(user as mob|obj)
+	if(ismob(user))
+		var/mob/M = user
+		if(ishuman(M))
+			var/mob/living/carbon/human/H = M
+			H.radiation = rand(3,30)
+			H.UpdateDamageIcon()
+			H.updatehealth()
+	..()

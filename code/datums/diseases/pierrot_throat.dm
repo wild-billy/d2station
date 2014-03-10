@@ -4,14 +4,14 @@
 	spread = "Airborne"
 	cure = "A whole banana."
 	cure_id = "banana"
-	cure_chance = 35
+	cure_chance = 5
+	agent = "H0NI<42 Virus"
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
 	permeability_mod = 0.75
 	desc = "If left untreated the subject will probably drive others to insanity."
 	severity = "Medium"
 	longevity = 400
-	why_so_serious = 0
+
 /datum/disease/pierrot_throat/stage_act()
 	..()
 	switch(stage)

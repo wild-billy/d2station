@@ -35,7 +35,7 @@ datum/hSB
 		admin = 0
 	proc
 		update()
-			var/hsbpanel = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><center><b>h_Sandbox Panel</b></center><hr>"
+			var/hsbpanel = "<center><b>h_Sandbox Panel</b></center><hr>"
 			if(admin)
 				hsbpanel += "<b>Administration Tools:</b><br>"
 				hsbpanel += "- <a href=\"?\ref[src];hsb=hsbtobj\">Toggle Object Spawning</a><br><br>"
@@ -143,7 +143,7 @@ datum/hSB
 							continue
 						if(istype(O, /obj/item/weapon/dummy))
 							continue
-						if(istype(O, /obj/item/weapon/melee/energy/sword))
+						if(istype(O, /obj/item/weapon/sword))
 							continue
 						if(istype(O, /obj/item/device/shield))
 							continue

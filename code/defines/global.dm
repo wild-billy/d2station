@@ -4,7 +4,7 @@ var/global
 	obj/overlay/slmaster = null
 
 	//obj/hud/main_hud1 = null
-	list/mobs = list()
+
 	list/machines = list()
 	list/processing_items = list()
 	list/active_diseases = list()
@@ -42,22 +42,6 @@ var
 	FAKEBLOCK = 0
 	BLOCKADD = 0
 	DIFFMUT = 0
-	HEADACHEBLOCK = 0
-	COUGHBLOCK = 0
-	TWITCHBLOCK = 0
-	NERVOUSBLOCK = 0
-	NOBREATHBLOCK = 0
-	REMOTEVIEWBLOCK = 0
-	REGENERATEBLOCK = 0
-	INCREASERUNBLOCK = 0
-	REMOTETALKBLOCK = 0
-	MORPHBLOCK = 0
-	BLENDBLOCK = 0
-	HALLUCINATIONBLOCK = 0
-	NOPRINTSBLOCK = 0
-	BLOCK = 0
-	SMALLSIZEBLOCK = 0
-	SHOCKIMMUNITYBLOCK = 0
 
 	skipupdate = 0
 	///////////////
@@ -65,16 +49,16 @@ var
 	event = 0
 	hadevent = 0
 	blobevent = 0
-	///////////////
 	meteorevent = 0
+	///////////////
 
 	diary = null
 	station_name = null
-	game_version = "D2Station V4 R[check_svnrevlist()]"
+	game_version = "D2Station v2 (devstation redux)"
 
 	datum/air_tunnel/air_tunnel1/SS13_airtunnel = null
 	going = 1.0
-	master_mode = "traitor"//"extended"
+	master_mode = "extended"
 
 	datum/engine_eject/engine_eject_control = null
 	host = null
@@ -86,46 +70,42 @@ var
 	dna_ident = 1
 	abandon_allowed = 1
 	enter_allowed = 1
-	guests_allowed = 1
 	shuttle_frozen = 0
 	shuttle_left = 0
-	tinted_weldhelh = 1 //as soon as the thing is sprited, we'll code in the toggle verb, bot for now, it should stay on by default. -errorage //Until you have the actual functionality for it, don't set this on by default. You're putting the cart before the horse. --DH
+	tinted_weldhelh = 1
 
-	aiMax = 1
 	captainMax = 1
 	engineerMax = 5
-	//minerMax = 3
 	barmanMax = 1
 	scientistMax = 3
-	chemistMax = 2
+	chemistMax = 1
 	geneticistMax = 2
-	securityMax = 6
+	securityMax = 4
 	hopMax = 1
 	hosMax = 1
 	directorMax = 1
 	chiefMax = 1
 	atmosMax = 4
 	detectiveMax = 1
-	chaplainMax = 1
-	janitorMax = 1
-	doctorMax = 6
-	clownMax = 1
+	chaplainMax = 2
+	janitorMax = 2
+	doctorMax = 4
+	clownMax = 4
 	chefMax = 1
 	roboticsMax = 3
-	cargoMax = 1
-	//cargotechMax = 2
-	hydroponicsMax = 3
-	//librarianMax = 1
-	lawyerMax = 1
+	cargoMax = 2
+	cargotechMax = 2
+	hydroponicsMax = 2
+	librarianMax = 1
+	lawyerMax = 0
+	minerMax = 3
 	viroMax = 1
-	//wardenMax = 1
+	barberMax = 1
+	wardenMax = 0
 	cmoMax = 1
 	mimeMax = 1
-	prostMax = 1
-	retardMax = 1
-	monkeyMax = 1
-	//sorterMax = 2
-	//borgMax = 1 < Isn't used anymore since borgs can't latejoin now. -- Urist
+	sorterMax = 0
+	borgMax = 3
 
 	list/bombers = list(  )
 	list/admin_log = list (  )
@@ -149,8 +129,6 @@ var
 	list/newplayer_start = list()
 	list/latejoin = list()
 	list/prisonwarp = list()	//prisoners go to these
-	list/holdingfacility = list()	//captured people go here
-	list/xeno_spawn = list()//Aliens spawn at these.
 	list/mazewarp = list()
 	list/tdome1 = list()
 	list/tdome2 = list()
@@ -164,30 +142,12 @@ var
 	list/blobs = list()
 //	list/traitors = list()	//traitor list
 	list/cardinal = list( NORTH, SOUTH, EAST, WEST )
-	list/cardinal8 = list( NORTH, NORTHEAST, NORTHWEST, SOUTH, SOUTHEAST, SOUTHWEST, EAST, WEST )
 	list/alldirs = list(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)
 
 	datum/station_state/start_state = null
 	datum/configuration/config = null
 	datum/vote/vote = null
 	datum/sun/sun = null
-	// **********************************
-	//	Networking Support
-	// **********************************
-
-	//Network address generation info
-	list/usedtypes = list()
-	list/usedids = list()
-	list/usednetids = list()
-
-	//True if computernet rebuild will be called manually after an event
-	defer_computernet_rebuild = 0
-
-	//Computernets in the world.
-	list/datum/computernet/computernets = null
-
-	//All the passwords needed for specific network devices
-	list/accesspasswords = list()
 
 
 	list/powernets = null
@@ -248,67 +208,4 @@ var
 	sqlpass = ""
 
 	sqllogging = 0 // Should we log deaths, population stats, etc?
-
-
-
-	// Forum MySQL configuration (for use with forum account/key authentication)
-	// These are all default values that will load should the forumdbconfig.txt
-	// file fail to read for whatever reason.
-
-	forumsqladdress = "localhost"
-	forumsqlport = "3306"
-	forumsqldb = "tgstation"
-	forumsqllogin = "root"
-	forumsqlpass = ""
-	forum_activated_group = "2"
-	forum_authenticated_group = "10"
-
-// these global variables are placed in global.dm
-// these should be added to relevant places within the code such as the chef cooking something would increment the
-// meals score thing
-	score_crewscore = 0 // this is the overall score for the whole round
-	score_stuffshipped = 0 // how many useful items have cargo shipped out?
-	score_stuffharvested = 0 // how many harvests have hydroponics done?
-	score_oremined = 0 // obvious
-	score_cyborgsmade = 0
-	score_researchdone = 0
-	score_eventsendured = 0 // how many random events did the station survive?
-	score_powerloss = 0 // how many APCs have poor charge?
-	score_escapees = 0 // how many people got out alive?
-	score_deadcrew = 0 // dead bodies on the station, oh no
-	score_mess = 0 // how much poo, puke, gibs, etc went uncleaned
-	score_meals = 0
-	score_disease = 0 // how many rampant, uncured diseases are on board the station
-
-	score_deadcommand = 0 // used during rev, how many command staff perished
-	score_arrested = 0 // how many traitors/revs/whatever are alive in the brig
-	score_traitorswon = 0 // how many traitors were successful?
-	score_allarrested = 0 // did the crew catch all the enemies alive?
-
-	score_opkilled = 0 // used during nuke mode, how many operatives died?
-	score_disc = 0 // is the disc safe and secure?
-	score_nuked = 0 // was the station blown into little bits?
-	score_cigssmoked = 0 //puff
-
-	// these ones are mainly for the stat panel
-	score_powerbonus = 0 // if all APCs on the station are running optimally, big bonus
-	score_messbonus = 0 // if there are no messes on the station anywhere, huge bonus
-	score_deadaipenalty = 0 // is the AI dead? if so, big penalty
-
-	score_foodeaten = 0 // nom nom nom
-	score_clownabuse = 0 // how many times a clown was punched, struck or otherwise maligned
-
-	score_moneyspent = 0
-	score_moneyearned = 0
-
-	score_richestname = null // this is all stuff to show who was the richest alive on the shuttle
-	score_richestjob = null  // kinda pointless if you dont have a money system i guess
-	score_richestcash = 0
-	score_richestkey = null
-
-	score_dmgestname = null // who had the most damage on the shuttle (but was still alive)
-	score_dmgestjob = null
-	score_dmgestdamage = 0
-	score_dmgestkey = null
-
 

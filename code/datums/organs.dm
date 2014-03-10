@@ -5,7 +5,6 @@
 /datum/organ/external
 	name = "external"
 	var/icon_name = null
-	var/body_part = null
 
 	var/damage_state = "00"
 	var/brute_dam = 0
@@ -14,6 +13,8 @@
 	var/max_damage = 0
 	var/wound_size = 0
 	var/max_size = 0
+	var/body_part = null
+	var/armor = 0
 
 /datum/organ/external/chest
 	name = "chest"
@@ -37,49 +38,49 @@
 	name = "l arm"
 	icon_name = "l_arm"
 	max_damage = 75
-	body_part = ARM_LEFT
+	body_part = ARMS
 
 /datum/organ/external/l_foot
 	name = "l foot"
 	icon_name = "l_foot"
 	max_damage = 40
-	body_part = FOOT_LEFT
+	body_part = FEET
 
 /datum/organ/external/l_hand
 	name = "l hand"
 	icon_name = "l_hand"
 	max_damage = 40
-	body_part = HAND_LEFT
+	body_part = HANDS
 
 /datum/organ/external/l_leg
 	name = "l leg"
 	icon_name = "l_leg"
 	max_damage = 75
-	body_part = LEG_LEFT
+	body_part = LEGS
 
 /datum/organ/external/r_arm
 	name = "r arm"
 	icon_name = "r_arm"
 	max_damage = 75
-	body_part = ARM_RIGHT
+	body_part = ARMS
 
 /datum/organ/external/r_foot
 	name = "r foot"
 	icon_name = "r_foot"
 	max_damage = 40
-	body_part = FOOT_RIGHT
+	body_part = FEET
 
 /datum/organ/external/r_hand
 	name = "r hand"
 	icon_name = "r_hand"
 	max_damage = 40
-	body_part = HAND_RIGHT
+	body_part = HANDS
 
 /datum/organ/external/r_leg
 	name = "r leg"
 	icon_name = "r_leg"
 	max_damage = 75
-	body_part = LEG_RIGHT
+	body_part = LEGS
 
 /datum/organ/internal
 	name = "internal"

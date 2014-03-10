@@ -12,29 +12,102 @@
 	file_amount = 80.0
 	title = "ROM Cart"
 
-	pda2test
-		name = "Test Cart"
+	medical
+		name = "Medical Cartridge"
 		New()
 			..()
-			src.root.add_file( new /datum/computer/file/computer_program/arcade(src))
-			src.root.add_file( new /datum/computer/file/pda_program/manifest(src))
-			src.root.add_file( new /datum/computer/file/pda_program/status_display(src))
-			src.root.add_file( new /datum/computer/file/pda_program/signaler(src))
-			src.root.add_file( new /datum/computer/file/pda_program/qm_records(src))
-			src.root.add_file( new /datum/computer/file/pda_program/scan/health_scan(src))
-			src.root.add_file( new /datum/computer/file/pda_program/records/security(src))
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
 			src.root.add_file( new /datum/computer/file/pda_program/records/medical(src))
 			src.read_only = 1
 
+	engineering
+		name = "Engineering Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			src.root.add_file( new /datum/computer/file/pda_program/signaler(src))
+			src.read_only = 1
+
+	security
+		name = "Security Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			src.root.add_file( new /datum/computer/file/pda_program/records/security(src))
+			src.read_only = 1
+
+	janitor
+		name = "Janitor Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			//src.root.add_file( new /datum/computer/file/pda_program/records/medical(src)) //janitor gets fuck all
+			src.read_only = 1
+
+	toxins
+		name = "Scientist Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			src.root.add_file( new /datum/computer/file/pda_program/signaler(src))
+			src.read_only = 1
+
+	clown
+		name = "Clown Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			src.root.add_file( new /datum/computer/file/pda_program/honksynth(src))
+			src.read_only = 1
+
+	heads
+		name = "Head Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			src.root.add_file( new /datum/computer/file/pda_program/records/medical(src))
+			src.root.add_file( new /datum/computer/file/pda_program/records/security(src))
+			src.root.add_file( new /datum/computer/file/pda_program/manifest(src))
+			src.read_only = 1
+
+	captain
+		name = "Captain Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			src.root.add_file( new /datum/computer/file/pda_program/records/medical(src))
+			src.root.add_file( new /datum/computer/file/pda_program/records/security(src))
+			src.root.add_file( new /datum/computer/file/pda_program/status_display(src))
+			src.root.add_file( new /datum/computer/file/pda_program/manifest(src))
+			src.root.add_file( new /datum/computer/file/pda_program/signaler(src))
+			src.read_only = 1
+
+	quartermaster
+		name = "Quartermaster Cartridge"
+		New()
+			..()
+			src.root.add_file( new /datum/computer/file/pda_program/jobpedia(src))
+			src.root.add_file( new /datum/computer/file/pda_program/donkmaps(src))
+			src.root.add_file( new /datum/computer/file/pda_program/qm_records(src))
+			src.read_only = 1
 
 /obj/item/device/pda2
 	name = "PDA"
-	desc = "A portable microcomputer by Thinktronic Systems, LTD. Functionality determined by an EEPROM cartridge."
+	desc = "A portable microcomputer by Kinesthesia Labs Systems, LTD. Functionality determined by an EEPROM cartridge."
 	icon = 'pda.dmi'
 	icon_state = "pda"
 	item_state = "electronic"
 	w_class = 2.0
 	flags = FPRINT | TABLEPASS | ONBELT
+	var/ownjob = null //related to above
 
 	var/owner = null
 	var/default_cartridge = null // Access level defined by cartridge
@@ -59,13 +132,13 @@
 
 /obj/item/device/pda2/pickup(mob/user)
 	if (src.fon)
-		src.ul_SetLuminosity(0)
-		user.ul_SetLuminosity(user.luminosity + src.f_lum)
+		src.sd_SetLuminosity(0)
+		user.sd_SetLuminosity(user.luminosity + src.f_lum)
 
 /obj/item/device/pda2/dropped(mob/user)
 	if (src.fon)
-		user.ul_SetLuminosity(user.luminosity - src.f_lum)
-		src.ul_SetLuminosity(src.f_lum)
+		user.sd_SetLuminosity(user.luminosity - src.f_lum)
+		src.sd_SetLuminosity(src.f_lum)
 
 /obj/item/device/pda2/New()
 	..()
@@ -94,7 +167,7 @@
 /obj/item/device/pda2/attack_self(mob/user as mob)
 	user.machine = src
 
-	var/dat = "<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>Personal Data Assistant</title></head><body>"
+	var/dat = "<html><head><title>Personal Data Assistant</title></head><body>"
 
 	dat += "<a href='byond://?src=\ref[src];close=1'>Close</a>"
 
@@ -239,11 +312,11 @@
 
 		if (ismob(src.loc))
 			if (src.fon)
-				src.loc.ul_SetLuminosity(src.loc.luminosity + src.f_lum)
+				src.loc.sd_SetLuminosity(src.loc.luminosity + src.f_lum)
 			else
-				src.loc.ul_SetLuminosity(src.loc.luminosity - src.f_lum)
+				src.loc.sd_SetLuminosity(src.loc.luminosity - src.f_lum)
 		else
-			src.ul_SetLuminosity(src.fon * src.f_lum)
+			src.sd_SetLuminosity(src.fon * src.f_lum)
 
 		src.updateSelfDialog()
 

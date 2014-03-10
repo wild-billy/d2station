@@ -14,7 +14,7 @@
 
 
 /obj/item/weapon/handcuffs/attack(mob/M as mob, mob/user as mob)
-	if ((usr.mutations & CLOWN) && prob(50))
+	if ((usr.mutations & 16) && prob(50))
 		usr << "\red Uh ... how do those things work?!"
 		if (istype(M, /mob/living/carbon/human))
 			var/obj/equip_e/human/O = new /obj/equip_e/human(  )
@@ -33,9 +33,6 @@
 		usr << "\red You don't have the dexterity to do this!"
 		return
 	if (istype(M, /mob/living/carbon/human))
-		M.attack_log += text("<font color='orange'>[world.time] - has been handcuffed (attempt) by [user.name] ([user.ckey])</font>")
-		user.attack_log += text("<font color='red'>[world.time] - has attempted to handcuff [M.name] ([M.ckey])</font>")
-
 		var/obj/equip_e/human/O = new /obj/equip_e/human(  )
 		O.source = user
 		O.target = M
@@ -69,19 +66,19 @@
 	var/datum/reagents/R = new/datum/reagents(50)
 	reagents = R
 	R.my_atom = src
-	R.add_reagent("water", 50)
+	R.add_reagent("fluorosurfactant",50)
 
 /obj/item/weapon/extinguisher/examine()
 	set src in usr
 
-	usr << text("\icon[] [] contains [] units of water left!", src, src.name, src.reagents.total_volume)
+	usr << text("\icon[] [] contains [] units left!", src, src.name, src.reagents.total_volume)
 	..()
 	return
 
 /obj/item/weapon/extinguisher/afterattack(atom/target, mob/user , flag)
 	//TODO; Add support for reagents in water.
 
-	if((istype(target, /obj/reagent_dispensers/watertank) || (istype(target, /obj/reagent_dispensers/foamtank))) && get_dist(user,target) <= 1)
+	if( istype(target, /obj/reagent_dispensers/foamtank) && get_dist(src,target) <= 1)
 		var/obj/o = target
 		o.reagents.trans_to(src, 50)
 		user << "\blue Extinguisher refilled"
@@ -96,18 +93,8 @@
 			return
 
 		src.last_use = world.time
-/*
-		if(loaded)
-			if(istype(loaded, /obj/item))
-				var/turf/targloc = get_turf(target)
-				loaded.attack_self(user)
-				loaded.loc = get_turf(user)
-				loaded.throw_at(targloc, 8, 2)
-				loaded = null
-				playsound(src.loc, 'bamf.ogg', 30, 1, -3)
-			return
-*/
-		playsound(src.loc, 'extinguish.ogg', 30, 1, -3)
+
+		playsound(src.loc, 'extinguish.ogg',40, 1, -3)
 
 		var/direction = get_dir(src,target)
 
@@ -159,7 +146,7 @@
 	return
 
 /obj/item/weapon/pen/sleepypen
-	origin_tech = "syndicate=5"
+	origin_tech = "syndicate=1;biotech=1"
 
 /obj/item/weapon/pen/sleepypen/attack_paw(mob/user as mob)
 	return src.attack_hand(user)
@@ -169,7 +156,7 @@
 	var/datum/reagents/R = new/datum/reagents(30) //Used to be 300
 	reagents = R
 	R.my_atom = src
-	R.add_reagent("chloralhydrate", 22)	//Used to be 100 sleep toxin//30 Chloral seems to be fatal, reducing it to 22./N
+	R.add_reagent("apitoxin", 30)	//Used to be 100 sleep toxin
 //	R.add_reagent("impedrezene", 100)
 //	R.add_reagent("cryptobiolin", 100)
 	..()
@@ -183,8 +170,6 @@
 		//	O.show_message(text("\red [] has been stabbed with [] by [].", M, src, user), 1)
 		user << "\red You stab [M] with the pen."
 		M << "\red You feel a tiny prick!"
-		M.attack_log += text("<font color='orange'>[world.time] - has been stabbed with [src.name]  by [user.name] ([user.ckey])</font>")
-		user.attack_log += text("<font color='red'>[world.time] - has used the [src.name] to stab [M.name] ([M.ckey])</font>")
 		if(M.reagents) reagents.trans_to(M, 50) //used to be 150
 	return
 
@@ -202,8 +187,6 @@
 	if (reagents.total_volume)
 		user << "\red You stab [M] with the penlight."
 		M << "\red You feel a tiny prick!"
-		M.attack_log += text("<font color='orange'>[world.time] - has been stabbed with [src.name]  by [user.name] ([user.ckey])</font>")
-		user.attack_log += text("<font color='red'>[world.time] - has used the [src.name] to stab [M.name] ([M.ckey])</font>")
 		if(M.reagents) reagents.trans_to(M, 15)
 	..()
 	return
@@ -220,7 +203,7 @@
 
 /obj/manifest/proc/manifest()
 	var/dat = "<B>Crew Manifest</B>:<BR>"
-	for(var/mob/living/carbon/human/M in mobz)
+	for(var/mob/living/carbon/human/M in world)
 		dat += text("    <B>[]</B> -  []<BR>", M.name, M.get_assignment())
 	var/obj/item/weapon/paper/P = new /obj/item/weapon/paper( src.loc )
 	P.info = dat
@@ -237,11 +220,6 @@
 
 
 /mob/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if (user.intent != "harm")
-		if (istype(src.l_hand,/obj/item/latexballon) && src.l_hand:air_contents && is_sharp(W))
-			return src.l_hand.attackby(W)
-		if (istype(src.r_hand,/obj/item/latexballon) && src.r_hand:air_contents && is_sharp(W))
-			return src.r_hand.attackby(W)
 	var/shielded = 0
 	for(var/obj/item/device/shield/S in src)
 		if (S.active)
@@ -270,7 +248,7 @@
 
 /obj/item/weapon/teleportation_scroll/attack_self(mob/user as mob)
 	user.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Teleportation Scroll:</B><BR>"
+	var/dat = "<B>Teleportation Scroll:</B><BR>"
 	dat += "Number of uses: [src.uses]<BR>"
 	dat += "<HR>"
 	dat += "<B>Four uses use them wisely:</B><BR>"
@@ -301,22 +279,34 @@
 					src.attack_self(M)
 	return
 
-/obj/item/brain/examine() // -- TLE
+
+
+
+/obj/item/brain/examine()
 	set src in oview(12)
 	if (!( usr ))
 		return
-	usr << "This is \icon[src] \an [name]."
+	usr << "This is \icon[src] \an [src.name]."
 
-	if(brainmob)//if thar be a brain inside... the brain.
-		usr << "You can feel the small spark of life still left in this one."
+	if(src.owner)
+	//if the brain has an owner corpse
+		if(src.owner.client)
+		//if the player hasn't ghosted
+			usr << "You can feel the small spark of life still in this one."
+		else
+		//if the player HAS ghosted
+			for(var/mob/dead/observer/O in world)
+				if(O.corpse == src.owner && O.client)
+				//find their ghost
+					usr << "You can feel the small spark of life still in this one."
 	else
-		usr << "This one seems particularly lifeless. Perhaps it will regain some of its luster later. Probably not."
+		usr << "This one seems particularly lifeless. Perhaps it will regain some of its luster later. Perhaps not."
 
 /obj/item/brain/attack(mob/living/carbon/M as mob, mob/living/carbon/user as mob)
 	if(!istype(M, /mob))
 		return
 
-	add_fingerprint(user)
+	src.add_fingerprint(user)
 
 	if(!(user.zone_sel.selecting == ("head")) || !istype(M, /mob/living/carbon/human))
 		return ..()
@@ -327,7 +317,7 @@
 	var/mob/living/carbon/human/H = M
 	if(istype(M, /mob/living/carbon/human) && ((H.head && H.head.flags & HEADCOVERSEYES) || (H.wear_mask && H.wear_mask.flags & MASKCOVERSEYES) || (H.glasses && H.glasses.flags & GLASSESCOVERSEYES)))
 		// you can't stab someone in the eyes wearing a mask!
-		user << "\blue You're going to need to remove their head cover first."
+		user << "\blue You're going to need to remove that mask/helmet/glasses first."
 		return
 
 //since these people will be dead M != usr
@@ -347,14 +337,25 @@
 		else
 			user << "\red You insert [src] into your head!"
 
-		//this might actually be outdated since barring badminnery, a debrain'd body will have any client sucked out to the brain's internal mob. Leaving it anyway to be safe. --NEO
-		if(M.key)//Revised. /N
-			M.ghostize(1)
+		if(M.client)
+			M.client.mob = new/mob/dead/observer(M)
+		//a mob can't have two clients so get rid of one
 
-		if(brainmob.mind)
-			brainmob.mind.transfer_to(M)
-		else
-			M.key = brainmob.key
+		if(src.owner)
+		//if the brain has an owner corpse
+			if(src.owner.client)
+			//if the player hasn't ghosted
+				src.owner.client.mob = M
+				//then put them in M
+			else
+			//if the player HAS ghosted
+				for(var/mob/dead/observer/O in world)
+					if(O.corpse == src.owner && O.client)
+					//find their ghost
+						O.client.mob = M
+						//put their mob in M
+						del(O)
+						//delete thier ghost
 
 		M:brain_op_stage = 3.0
 
@@ -371,6 +372,7 @@
 
 	..()
 	return
+
 
 /obj/item/weapon/dice/attack_self(mob/user as mob) // Roll the dice -- TLE
 	var/temp_sides
@@ -410,73 +412,3 @@
 			continue
 		else
 			O.show_message(text("\red The [src.name] lands on [result]. [comment]"), 1)
-
-/obj/item/latexballon
-	name = "Latex glove"
-	desc = "" //todo
-	icon_state = "latexballon"
-	item_state = "lgloves"
-	force = 0
-	throwforce = 0
-	w_class = 1.0
-	throw_speed = 1
-	throw_range = 15
-	var/state
-	var/datum/gas_mixture/air_contents = null
-
-/obj/item/latexballon/proc/blow(obj/item/weapon/tank/tank)
-	if (icon_state == "latexballon_bursted")
-		return
-	src.air_contents = tank.remove_air_volume(3)
-	icon_state = "latexballon_blow"
-	item_state = "latexballon"
-
-/obj/item/latexballon/proc/burst()
-	if (!air_contents)
-		return
-	playsound(src, 'Gunshot.ogg', 100, 1)
-	icon_state = "latexballon_bursted"
-	item_state = "lgloves"
-	loc.assume_air(air_contents)
-
-/obj/item/latexballon/ex_act(severity)
-	burst()
-	switch(severity)
-		if (1)
-			del(src)
-		if (2)
-			if (prob(50))
-				del(src)
-
-/obj/item/latexballon/bullet_act()
-	burst()
-
-/obj/item/latexballon/temperature_expose(datum/gas_mixture/air, temperature, volume)
-	if(temperature > T0C+100)
-		burst()
-	return
-
-/obj/item/latexballon/attackby(obj/item/W as obj, mob/user as mob)
-	if (is_sharp(W))
-		burst()
-
-/proc/is_sharp(obj/item/W as obj)
-	return ( \
-		istype(W, /obj/item/weapon/screwdriver)                   || \
-		istype(W, /obj/item/weapon/pen)                           || \
-		istype(W, /obj/item/weapon/weldingtool)      && W:welding || \
-		istype(W, /obj/item/weapon/zippo)            && W:lit     || \
-		istype(W, /obj/item/weapon/match)            && W:lit     || \
-		istype(W, /obj/item/clothing/mask/cigarette) && W:lit     || \
-		istype(W, /obj/item/weapon/wirecutters)                   || \
-		istype(W, /obj/item/weapon/circular_saw)                  || \
-		istype(W, /obj/item/weapon/melee/energy/sword)            && W:active  || \
-		istype(W, /obj/item/weapon/melee/energy/blade)                         || \
-		istype(W, /obj/item/weapon/shovel)                        || \
-		istype(W, /obj/item/weapon/kitchenknife)                  || \
-		istype(W, /obj/item/weapon/scalpel)                       || \
-		istype(W, /obj/item/weapon/kitchen/utensil/knife)         || \
-		istype(W, /obj/item/weapon/shard)                         || \
-		istype(W, /obj/item/weapon/reagent_containers/syringe)    || \
-		istype(W, /obj/item/weapon/kitchen/utensil/fork) && W.icon_state != "forkloaded" \
-	)

@@ -4,7 +4,7 @@
 	origin_tech = "materials=3;combat=3"
 
 
-/obj/item/mecha_parts/mecha_equipment/weapon/can_attach(var/obj/mecha/M as obj)
+/obj/item/mecha_parts/mecha_equipment/weapon/can_attach(var/obj/mecha/combat/M as obj)
 	if(..())
 		if(istype(M))
 			return 1
@@ -24,17 +24,17 @@
 			return
 		if (targloc == curloc)
 			return
-		set_ready_state(0)
+		equip_ready = 0
 		playsound(chassis, 'Laser.ogg', 50, 1)
-		var/obj/item/projectile/beam/A = new /obj/item/projectile/beam(curloc)
-		A.original = targloc
+		var/obj/beam/a_laser/A = new /obj/beam/a_laser(curloc)
 		A.current = curloc
 		A.yo = targloc.y - curloc.y
 		A.xo = targloc.x - curloc.x
-		chassis.use_power(energy_drain)
+		chassis.cell.use(energy_drain)
 		A.process()
 		chassis.log_message("Fired from [src.name], targeting [target].")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 
@@ -56,29 +56,28 @@
 			return
 
 		playsound(chassis, 'marauder.ogg', 50, 1)
-		var/obj/item/projectile/beam/pulse/A = new /obj/item/projectile/beam/pulse/heavy(curloc)
-		A.original = targloc
+		var/obj/beam/a_laser/A = new /obj/beam/a_laser/pulse_laser/heavy_pulse(curloc)
 		A.current = curloc
 		A.yo = targloc.y - curloc.y
 		A.xo = targloc.x - curloc.x
-		set_ready_state(0)
-		chassis.use_power(energy_drain)
+		equip_ready = 0
+		chassis.cell.use(energy_drain)
 		A.process()
 		chassis.log_message("Fired from [src.name], targeting [target].")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 
-/obj/item/projectile/beam/pulse/heavy
+/obj/beam/a_laser/pulse_laser/heavy_pulse
 	name = "heavy pulse laser"
-	icon_state = "pulse1_bl"
-	var/life = 20
+	icon = 'xcomalien.dmi'
+	icon_state = "plasma"
+	life = 20
 
 	Bump(atom/A)
-		A.bullet_act(src, def_zone)
+		A.bullet_act(PROJECTILE_PULSE)
 		src.life -= 10
-		if(life <= 0)
-			del(src)
 		return
 
 /obj/item/mecha_parts/mecha_equipment/weapon/taser
@@ -98,17 +97,17 @@
 			return
 
 		playsound(chassis, 'Laser.ogg', 50, 1)
-		var/obj/item/projectile/electrode/A = new /obj/item/projectile/electrode(curloc)
-		A.original = targloc
+		var/obj/bullet/electrode/A = new /obj/bullet/electrode(curloc)
 		A.current = curloc
 		A.yo = targloc.y - curloc.y
 		A.xo = targloc.x - curloc.x
-		set_ready_state(0)
-		chassis.use_power(energy_drain)
+		equip_ready = 0
+		chassis.cell.use(energy_drain)
 		spawn()
 			A.process()
 		chassis.log_message("Fired from [src.name], targeting [target].")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 /obj/item/mecha_parts/mecha_equipment/weapon/honker
@@ -133,6 +132,7 @@
 			return 0
 		if(!equip_ready)
 			return 0
+		equip_ready = 0
 		playsound(chassis, 'AirHorn.ogg', 100, 1)
 		chassis.occupant_message("<font color='red' size='5'>HONK</font>")
 		for(var/mob/living/carbon/M in ohearers(6, chassis))
@@ -161,9 +161,10 @@
 						if(thingy)
 							walk(thingy,0)
 			*/
-		chassis.use_power(energy_drain)
+		chassis.cell.use(energy_drain)
 		chassis.log_message("Honked from [src.name]. HONK!")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 /obj/item/mecha_parts/mecha_equipment/weapon/ballistic
@@ -186,13 +187,11 @@
 			while(chassis.get_charge() >= projectile_energy_cost && projectiles_to_add)
 				projectiles++
 				projectiles_to_add--
-				chassis.use_power(projectile_energy_cost)
-		send_byjax(chassis.occupant,"exosuit.browser","\ref[src]",src.get_equip_info())
+				chassis.cell.use(projectile_energy_cost)
 		chassis.log_message("Rearmed [src.name].")
 		return
 
 	Topic(href, href_list)
-		..()
 		if (href_list["rearm"])
 			src.rearm()
 		return
@@ -221,16 +220,16 @@
 			if(!targloc || targloc == curloc)
 				break
 			playsound(chassis, 'Gunshot.ogg', 80, 1)
-			var/obj/item/projectile/A = new /obj/item/projectile(curloc)
+			var/obj/bullet/A = new /obj/bullet(curloc)
 			src.projectiles--
-			A.original = targloc
 			A.current = curloc
 			A.yo = targloc.y - curloc.y
 			A.xo = targloc.x - curloc.x
-			set_ready_state(0)
+			equip_ready = 0
 			A.process()
 		chassis.log_message("Fired from [src.name], targeting [target].")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 
@@ -260,17 +259,17 @@
 			if (targloc == curloc)
 				continue
 			playsound(chassis, 'Gunshot.ogg', 50, 1)
-			var/obj/item/projectile/weakbullet/A = new /obj/item/projectile/weakbullet(curloc)
+			var/obj/bullet/weakbullet/A = new /obj/bullet/weakbullet(curloc)
 			src.projectiles--
-			A.original = targloc
 			A.current = curloc
 			A.yo = targloc.y - curloc.y
 			A.xo = targloc.x - curloc.x
 			A.process()
 			sleep(2)
-		set_ready_state(0)
+		equip_ready = 0
 		chassis.log_message("Fired from [src.name], targeting [target].")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack
@@ -284,14 +283,15 @@
 
 	action(target)
 		if(!action_checks(target)) return
-		set_ready_state(0)
+		equip_ready = 0
 		var/obj/item/missile/M = new /obj/item/missile(chassis.loc)
 		M.primed = 1
 		playsound(chassis, 'bang.ogg', 50, 1)
 		M.throw_at(target, missile_range, missile_speed)
 		projectiles--
 		chassis.log_message("Fired from [src.name], targeting [target].")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 
@@ -320,7 +320,7 @@
 
 	action(target)
 		if(!action_checks(target)) return
-		set_ready_state(0)
+		equip_ready = 0
 		var/obj/item/weapon/flashbang/F = new /obj/item/weapon/flashbang(chassis.loc)
 		playsound(chassis, 'bang.ogg', 50, 1)
 		F.throw_at(target, missile_range, missile_speed)
@@ -328,7 +328,8 @@
 		chassis.log_message("Fired from [src.name], targeting [target].")
 		spawn(det_time)
 			F.prime()
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 
@@ -350,13 +351,14 @@
 
 	action(target)
 		if(!action_checks(target)) return
-		set_ready_state(0)
+		equip_ready = 0
 		var/obj/item/weapon/bananapeel/B = new /obj/item/weapon/bananapeel(chassis.loc)
 		playsound(chassis, 'bikehorn.ogg', 60, 1)
 		B.throw_at(target, missile_range, missile_speed)
 		projectiles--
 		chassis.log_message("Bananed from [src.name], targeting [target]. HONK!")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
 
 
@@ -378,12 +380,14 @@
 
 	action(target)
 		if(!action_checks(target)) return
-		set_ready_state(0)
+		equip_ready = 0
 		var/obj/item/weapon/mousetrap/M = new /obj/item/weapon/mousetrap(chassis.loc)
 		M.armed = 1
 		playsound(chassis, 'bikehorn.ogg', 60, 1)
 		M.throw_at(target, missile_range, missile_speed)
 		projectiles--
 		chassis.log_message("Launched a mouse-trap from [src.name], targeting [target]. HONK!")
-		do_after_cooldown()
+		if(do_after_cooldown())
+			equip_ready = 1
 		return
+

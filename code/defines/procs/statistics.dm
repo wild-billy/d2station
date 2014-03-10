@@ -2,7 +2,7 @@ proc/sql_poll_players()
 	if(!sqllogging)
 		return
 	var/playercount = 0
-	for(var/mob/M in mobz)
+	for(var/mob/M in world)
 		if(M.client)
 			playercount += 1
 	var/DBConnection/dbcon = new()
@@ -22,7 +22,7 @@ proc/sql_poll_admins()
 	if(!sqllogging)
 		return
 	var/admincount = 0
-	for (var/mob/M in mobz)
+	for (var/mob/M in world)
 		if(M && M.client && M.client.holder && M.client.authenticated)
 			admincount += 1
 	var/DBConnection/dbcon = new()
@@ -120,7 +120,7 @@ proc/sql_report_death(var/mob/living/carbon/human/H)
 		return
 	if(!H)
 		return
-	if(!H.key || !H.mind)
+	if(!H.client || !H.mind)
 		return
 
 	var/turf/T = H.loc
@@ -157,7 +157,7 @@ proc/sql_report_cyborg_death(var/mob/living/silicon/robot/H)
 		return
 	if(!H)
 		return
-	if(!H.key || !H.mind)
+	if(!H.client || !H.mind)
 		return
 
 	var/turf/T = H.loc

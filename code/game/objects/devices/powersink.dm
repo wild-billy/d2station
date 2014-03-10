@@ -12,8 +12,8 @@
 	throw_range = 2
 	m_amt = 750
 	w_amt = 750
-	origin_tech = "powerstorage=3;syndicate=5"
-	var/drain_rate = 600000		// amount of power to drain per tick
+	origin_tech = "powerstorage=3;syndicate=4"
+	var/drain_rate = 200000		// amount of power to drain per tick
 	var/power_drained = 0 		// has drained this much power
 	var/max_power = 1e8		// maximum power that can be drained before exploding
 	var/mode = 0		// 0 = off, 1=clamped (off), 2=operating
@@ -50,8 +50,7 @@
 				for(var/mob/M in viewers(user))
 					if(M == user) continue
 					M << "[user] detaches the power sink from the cable."
-				//ul_SetLuminosity(0)
-				ul_SetLuminosity(0)
+				sd_SetLuminosity(0)
 				icon_state = "powersink0"
 
 				return
@@ -86,7 +85,7 @@
 					if(M == user) continue
 					M << "[user] deactivates the power sink!"
 				mode = 1
-				ul_SetLuminosity(0)
+				sd_SetLuminosity(0)
 				icon_state = "powersink0"
 				processing_items.Remove(src)
 
@@ -95,8 +94,7 @@
 			var/datum/powernet/PN = attached.get_powernet()
 			if(PN)
 				if(!luminosity)
-					//ul_SetLuminosity(12)
-					ul_SetLuminosity(12)
+					sd_SetLuminosity(12)
 
 
 				// found a powernet, so drain up to max power from it

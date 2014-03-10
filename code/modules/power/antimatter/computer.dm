@@ -16,10 +16,10 @@
 /obj/machinery/computer/am_engine/New()
 	..()
 	spawn( 24 )
-		for(var/obj/machinery/power/am_engine/engine/E in machines)
+		for(var/obj/machinery/power/am_engine/engine/E in world)
 			if(E.engine_id == src.engine_id)
 				src.connected_E = E
-		for(var/obj/machinery/power/am_engine/injector/I in machines)
+		for(var/obj/machinery/power/am_engine/injector/I in world)
 			if(I.engine_id == src.engine_id)
 				src.connected_I = I
 	return
@@ -34,7 +34,7 @@
 	switch(href_list["operation"])
 		// main interface
 		if("activate")
-			src.connected_E.process()
+			src.connected_E.engine_process()
 		if("engine")
 			src.state = STATE_ENGINE
 		if("injector")
@@ -64,7 +64,7 @@
 	if(..())
 		return
 	user.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><head><title>Engine Computer</title></head><body>"
+	var/dat = "<head><title>Engine Computer</title></head><body>"
 	switch(src.state)
 		if(STATE_DEFAULT)
 			if (src.authenticated)

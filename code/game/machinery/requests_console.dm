@@ -39,16 +39,11 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 		// 7 = sent unsuccessfully
 		// 8 = view messages
 		// 9 = authentication before sending
-		// 10 = send announcement
 	var/silent = 0 // set to 1 for it not to beep all the time
 	var/hackState = 0
 		// 0 = not hacked
 		// 1 = hacked
-	var/announcementConsole = 0
-		// 0 = This console cannot be used to send department announcements
-		// 1 = This console can send department announcements
 	var/open = 0 // 1 if open
-	var/announceAuth = 0 //Will be set to 1 when you authenticate yourself for announcements
 	var/msgVerified = "" //Will contain the name of the person who varified it
 	var/msgStamped = "" //If a message is stamped, this will contain the stamp name
 	var/message = "";
@@ -57,8 +52,6 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 	luminosity = 0
 
 /obj/machinery/requests_console/New()
-	del(src)
-	return
 	src.name = "[src.department] Requests Console"
 	allConsoles += src
 	//req_console_departments += department
@@ -98,10 +91,9 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 
 /obj/machinery/requests_console/attack_hand(user as mob)
 	var/dat
-	dat = text("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Requests Console</TITLE></HEAD><H3>[src.department] Requests Console</H3>")
+	dat = text("<HEAD><TITLE>Requests Console</TITLE></HEAD><H3>[src.department] Requests Console</H3>")
 	if(!src.open)
 		if (src.screen == 0)
-			announceAuth = 0
 			if (src.newmessagepriority == 1)
 				dat += text("<FONT COLOR='RED'>There are new messages</FONT><BR>")
 			if (src.newmessagepriority == 2)
@@ -111,8 +103,6 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 			dat += text("<A href='?src=\ref[src];setScreen=[1]'>Request Assistance</A><BR>")
 			dat += text("<A href='?src=\ref[src];setScreen=[2]'>Request Supplies</A><BR>")
 			dat += text("<A href='?src=\ref[src];setScreen=[3]'>Relay Anonymous Information</A><BR><BR>")
-			if(announcementConsole)
-				dat += text("<A href='?src=\ref[src];setScreen=[10]'>Send station-wide announcement</A><BR><BR>")
 			//dat += text("<BR><A href='?src=\ref[src];callMailman=[1];location=[src.department]'>Call Mailman</A><BR><BR>")   // This is the line to call the mailman, it's intended for it to message him on his PDA
 			if (src.silent)
 				dat += text("Speaker <A href='?src=\ref[src];setSilent=[0]'>OFF</A>")
@@ -173,16 +163,6 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 			dat += text("Stamped by: [msgStamped]<br>");
 			dat += text("<A href='?src=\ref[src];department=[src.dpt]'>Send</A><BR>");
 			dat += text("<BR><A href='?src=\ref[src];setScreen=[0]'>Back</A><BR>")
-		if (src.screen == 10)
-			dat += text("<B>Station wide announcement</B><BR><BR>")
-			if(announceAuth)
-				dat += text("<b>Authentication accepted</b><BR><BR>")
-			else
-				dat += text("Swipe your card to authenticate yourself.<BR><BR>")
-			dat += text("<b>Message: </b>[message] <A href='?src=\ref[src];writeAnnouncement=[1]'>Write</A><BR><BR>")
-			if (announceAuth && message)
-				dat += text("<A href='?src=\ref[src];sendAnnouncement=[1]'>Announce</A><BR>");
-			dat += text("<BR><A href='?src=\ref[src];setScreen=[0]'>Back</A><BR>")
 		user << browse("[dat]", "window=req_console")
 		onclose(user, "req_console")
 	return
@@ -194,7 +174,7 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 	src.add_fingerprint(usr)
 	if(href_list["write"])
 		src.dpt = href_list["write"] //write contains the string of the receiving department's name
-		src.message = strip_html(input(usr, "Write your message", "Messenger", ""))
+		src.message = strip_html(input(usr, "Write your message", "Messanger", ""))
 		src.priority = href_list["priority"]
 		while (findtext(src.message," ") == 1)
 			src.message = copytext(src.message,2,lentext(src.message)+1)
@@ -208,33 +188,20 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 			msgStamped = "";
 			screen = 0
 			priority = -1
-	if(href_list["writeAnnouncement"])
-		src.message = strip_html(input(usr, "Write your message", "Messenger", ""))
-		src.priority = href_list["priority"]
-		while (findtext(src.message," ") == 1)
-			src.message = copytext(src.message,2,lentext(src.message)+1)
-		if (findtext(src.message," ") == 1)
-			src.message = "";
-		if (src.message == "")
-			announceAuth = 0;
-			screen = 0
-	if(href_list["sendAnnouncement"])
-		src.message = strip_html(message)
-		world << "<b><font color='red' size='3'>[department] announcement:</font> <font color='black' size='3'>[sanitize(message)]</font></b>"
-		announceAuth = 0
-		message = ""
-		screen = 0
 	if(href_list["department"] && src.message)
-		var/message = strip_html(src.message, 512)
+		var/log_msg = src.message
+		var/message = src.message;
 		message += "<br>"
 		if (src.msgVerified)
-			message += strip_html(src.msgVerified, 512)
+			message += src.msgVerified
 			message += "<br>"
 		if (src.msgStamped)
-			message += strip_html(src.msgStamped, 512)
+			message += src.msgStamped
 			message += "<br>"
 		src.screen = 7 //if it's successful, this will get overrwritten (7 = unsufccessfull, 6 = successfull)
 		if (message)
+			for (var/obj/machinery/message_server/MS in world)
+				MS.send_rc_message(href_list["department"],src.department,log_msg,msgStamped,msgVerified,priority)
 			for (var/obj/machinery/requests_console/CONSOLE in allConsoles)
 				if (ckey(CONSOLE.department) == ckey(href_list["department"]))
 					if(src.priority == "2") //High priority
@@ -309,14 +276,6 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 		if(src.screen == 9)
 			var/obj/item/weapon/card/id/T = O
 			src.msgVerified = text("<font color='green'><b>Verified by [T.registered] ([T.assignment])</b></font>")
-			src.updateUsrDialog()
-		if(src.screen == 10)
-			var/obj/item/weapon/card/id/ID = O
-			if (access_RC_announce in ID.access)
-				announceAuth = 1
-			else
-				announceAuth = 0
-				user << "\red You are not authorized to send announcements."
 			src.updateUsrDialog()
 	if (istype(O, /obj/item/weapon/stamp))
 		if(src.screen == 9)

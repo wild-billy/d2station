@@ -14,7 +14,6 @@
 
 /mob/living/carbon/proc/throw_item(atom/target)
 	src.throw_mode_off()
-
 	if(usr.stat)
 		return
 	if(target.type == /obj/screen) return
@@ -22,19 +21,6 @@
 	var/atom/movable/item = src.equipped()
 
 	if(!item) return
-
-	if(istype(item,/obj/item))
-		var/obj/item/IT = item
-		if(IT.twohanded)
-			if(IT.wielded)
-				if(hand)
-					var/obj/item/weapon/offhand/O = r_hand
-					del O
-				else
-					var/obj/item/weapon/offhand/O = l_hand
-					del O
-			IT.name = initial(IT.name)
-
 
 	u_equip(item)
 	if(src.client)
@@ -89,34 +75,31 @@
 					src.throwing = 0
 
 /atom/proc/throw_impact(atom/hit_atom)
-	if(istype(hit_atom,/mob/living))
-		var/mob/living/M = hit_atom
-		M.visible_message("\red [hit_atom] has been hit by [src].")
+	if(ismob(hit_atom))
+		hit_atom.visible_message("\red [hit_atom] has been hit by [src].")
+		var/mob/M = hit_atom
 		if(src.vars.Find("throwforce"))
-			M.take_organ_damage(src:throwforce)
+			M.bruteloss += src:throwforce
 
 	else if(isobj(hit_atom))
 		var/obj/O = hit_atom
-		if(!O.anchored)
-			step(O, src.dir)
+		if(!O.anchored) step(O, src.dir)
 		O.hitby(src)
 
 	else if(isturf(hit_atom))
 		var/turf/T = hit_atom
 		if(T.density)
-			spawn(2)
-				step(src, turn(src.dir, 180))
-			if(istype(src,/mob/living))
-				var/mob/living/M = src
-				M.take_organ_damage(20)
+			spawn(2) step(src, turn(src.dir, 180))
+			if(ismob(src) && hasvar(src,"bruteloss"))
+				src:bruteloss += 20
 	if(istype(src, /obj/item/weapon/reagent_containers/food/drinks/drinkingglass) || istype(src, /obj/item/weapon/reagent_containers/glass/large) || istype(src, /obj/item/weapon/reagent_containers/glass/bottle/) || istype(src, /obj/item/weapon/reagent_containers/glass/beaker))
 		src:shatter(hit_atom)
 	if(istype(src, /obj/item/weapon/reagent_containers/food/snacks/poo))
-		src:poo_splat(hit_atom)
-//	if(istype(src, /obj/item/weapon/reagent_containers/food/snacks/grown/tomato))
-//		src:tomatosplat(hit_atom)
-//	if(istype(src, /obj/item/weapon/reagent_containers/food/snacks/egg))
-//		src:eggsplat(hit_atom)
+		src:poosplat(hit_atom)
+	if(istype(src, /obj/item/weapon/reagent_containers/food/snacks/grown/tomato))
+		src:tomatosplat(hit_atom)
+	if(istype(src, /obj/item/weapon/reagent_containers/food/snacks/egg))
+		src:eggsplat(hit_atom)
 
 /atom/movable/Bump(atom/O)
 	if(src.throwing)
@@ -146,7 +129,7 @@
 	var/dist_since_sleep = 0
 	if(dist_x > dist_y)
 		var/error = dist_x/2 - dist_y
-		while (((((src.x < target.x && dx == EAST) || (src.x > target.x && dx == WEST)) && dist_travelled < range) || istype(src.loc, /turf/space)) && src.throwing && istype(src.loc, /turf))
+		while (src &&((((src.x < target.x && dx == EAST) || (src.x > target.x && dx == WEST)) && dist_travelled < range) || istype(src.loc, /turf/space)) && src.throwing && istype(src.loc, /turf))
 			// only stop when we've gone the whole distance (or max throw range) and are on a non-space tile, or hit something, or hit the end of the map, or someone picks it up
 			if(error < 0)
 				var/atom/step = get_step(src, dy)
@@ -174,7 +157,7 @@
 					sleep(1)
 	else
 		var/error = dist_y/2 - dist_x
-		while (src &&((((src.y < target.y && dy == NORTH) || (src.y > target.y && dy == SOUTH)) && dist_travelled < range) || istype(src.loc, /turf/space)) && src.throwing && istype(src.loc, /turf))
+		while (((((src.y < target.y && dy == NORTH) || (src.y > target.y && dy == SOUTH)) && dist_travelled < range) || istype(src.loc, /turf/space)) && src.throwing && istype(src.loc, /turf))
 			// only stop when we've gone the whole distance (or max throw range) and are on a non-space tile, or hit something, or hit the end of the map, or someone picks it up
 			if(error < 0)
 				var/atom/step = get_step(src, dx)

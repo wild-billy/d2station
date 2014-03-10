@@ -11,12 +11,22 @@
 		list/req_components = null
 		state = 1
 
+/*
+To Do: Add deconstruct code to constructable machines. A marvelous idea, I know.
+*/
 /obj/machinery/constructable_frame/machine_frame
 	attackby(obj/item/P as obj, mob/user as mob)
 		if(P.crit_fail)
 			user << "\red This part is faulty, you cannot add this to the machine!"
 			return
 		switch(state)
+//			if(0)
+//				if(istype(P, /obj/item/weapon/wrench))
+//					playsound(src.loc, 'Ratchet.ogg', 75, 1)
+//					user << "\blue You wrench the frame into place."
+//					anchored = 1
+//					state = 1
+
 			if(1)
 				if(istype(P, /obj/item/weapon/cable_coil))
 					if(P:amount >= 5)
@@ -48,7 +58,6 @@
 						req_components = circuit.req_components.Copy()
 						for(var/A in circuit.req_components)
 							req_components[A] = circuit.req_components[A]
-						if(circuit.frame_desc) desc = circuit.frame_desc
 					else
 						user << "\red This frame does not accept circuit boards of this type!"
 				if(istype(P, /obj/item/weapon/wirecutters))
@@ -71,7 +80,6 @@
 						user << "\blue You remove the circuit board and other components."
 						for(var/obj/item/weapon/W in components)
 							W.loc = src.loc
-					desc = initial(desc)
 					req_components = null
 					components = null
 					icon_state = "box_1"
@@ -125,8 +133,7 @@ to destroy them and players will be able to make replacements.
 	name = "Circuit board (Destructive Analyzer)"
 	build_path = "/obj/machinery/r_n_d/destructive_analyzer"
 	board_type = "machine"
-	origin_tech = "magnets=2;engineering=2;programming=2"
-	frame_desc = "Requires 2 Scanning Modules, 1 Manipulator, and 1 Micro-Laser."
+	origin_tech = "magnets=2;materials=2"
 	req_components = list(
 							"/obj/item/weapon/stock_parts/scanning_module" = 1,
 							"/obj/item/weapon/stock_parts/manipulator" = 1,
@@ -136,8 +143,7 @@ to destroy them and players will be able to make replacements.
 	name = "Circuit board (Autolathe)"
 	build_path = "/obj/machinery/autolathe"
 	board_type = "machine"
-	origin_tech = "engineering=2;programming=2"
-	frame_desc = "Requires 3 Matter Bins, 1 Manipulator, and 1 Console Screen."
+	origin_tech = "materials=3"
 	req_components = list(
 							"/obj/item/weapon/stock_parts/matter_bin" = 3,
 							"/obj/item/weapon/stock_parts/manipulator" = 1,
@@ -147,8 +153,7 @@ to destroy them and players will be able to make replacements.
 	name = "Circuit board (Protolathe)"
 	build_path = "/obj/machinery/r_n_d/protolathe"
 	board_type = "machine"
-	origin_tech = "engineering=2;programming=2"
-	frame_desc = "Requires 2 Matter Bins, 2 Manipulators, and 2 Beakers."
+	origin_tech = "materials=2"
 	req_components = list(
 							"/obj/item/weapon/stock_parts/matter_bin" = 2,
 							"/obj/item/weapon/stock_parts/manipulator" = 2,
@@ -159,19 +164,18 @@ to destroy them and players will be able to make replacements.
 	name = "Circuit board (Circuit Imprinter)"
 	build_path = "/obj/machinery/r_n_d/circuit_imprinter"
 	board_type = "machine"
-	origin_tech = "engineering=2;programming=2"
-	frame_desc = "Requires 1 Matter Bin, 1 Manipulator, and 2 Beakers."
+	origin_tech = "materials=2;programming=2"
 	req_components = list(
 							"/obj/item/weapon/stock_parts/matter_bin" = 1,
 							"/obj/item/weapon/stock_parts/manipulator" = 1,
 							"/obj/item/weapon/reagent_containers/glass/beaker" = 2)
 
+
 /obj/item/weapon/circuitboard/pacman
 	name = "Circuit Board (PACMAN-type Generator)"
 	build_path = "/obj/machinery/power/port_gen/pacman"
 	board_type = "machine"
-	origin_tech = "programming=3:powerstorage=3;plasmatech=3;engineering=3"
-	frame_desc = "Requires 1 Matter Bin, 1 Micro-Laser, 2 Pieces of Cable, and 1 Capacitor."
+	origin_tech = "powerstorage=3;plasmatech=3"
 	req_components = list(
 							"/obj/item/weapon/stock_parts/matter_bin" = 1,
 							"/obj/item/weapon/stock_parts/micro_laser" = 1,
@@ -181,55 +185,20 @@ to destroy them and players will be able to make replacements.
 /obj/item/weapon/circuitboard/pacman/super
 	name = "Circuit Board (SUPERPACMAN-type Generator)"
 	build_path = "/obj/machinery/power/port_gen/pacman/super"
-	origin_tech = "programming=3;powerstorage=4;engineering=4"
+	origin_tech = "powerstorage=4;plasmatech=5"
 
 /obj/item/weapon/circuitboard/pacman/mrs
 	name = "Circuit Board (MRSPACMAN-type Generator)"
 	build_path = "/obj/machinery/power/port_gen/pacman/mrs"
-	origin_tech = "programming=3;powerstorage=5;engineering=5"
+	origin_tech = "powerstorage=5;plasmatech=6"
+
 
 obj/item/weapon/circuitboard/rdserver
 	name = "Circuit Board (R&D Server)"
 	build_path = "/obj/machinery/r_n_d/server"
 	board_type = "machine"
 	origin_tech = "programming=3"
-	frame_desc = "Requires 2 pieces of cable, and 1 Scanning Module."
 	req_components = list(
 							"/obj/item/weapon/cable_coil" = 2,
 							"/obj/item/weapon/stock_parts/scanning_module" = 1)
 
-/obj/item/weapon/circuitboard/mechfab
-	name = "Circuit board (Exosuit Fabricator)"
-	build_path = "/obj/machinery/mecha_part_fabricator"
-	board_type = "machine"
-	origin_tech = "programming=3;engineering=3"
-	frame_desc = "Requires 2 Matter Bins, 1 Manipulator, 1 Micro-Laser and 1 Console Screen."
-	req_components = list(
-							"/obj/item/weapon/stock_parts/matter_bin" = 2,
-							"/obj/item/weapon/stock_parts/manipulator" = 1,
-							"/obj/item/weapon/stock_parts/micro_laser" = 1,
-							"/obj/item/weapon/stock_parts/console_screen" = 1)
-
-/obj/item/weapon/circuitboard/clonepod
-	name = "Circuit board (Clone Pod)"
-	build_path = "/obj/machinery/clonepod"
-	board_type = "machine"
-	origin_tech = "programming=3;biotech=3"
-	frame_desc = "Requires 1 Health Analyzer, 2 Manipulator, 1 Scanning Module and 1 Console Screen."
-	req_components = list(
-							"/obj/item/device/healthanalyzer" = 1,
-							"/obj/item/weapon/cable_coil" = 2,
-							"/obj/item/weapon/stock_parts/scanning_module" = 1,
-							"/obj/item/weapon/stock_parts/manipulator" = 2,
-							"/obj/item/weapon/stock_parts/console_screen" = 1)
-
-/obj/item/weapon/circuitboard/clonescanner
-	name = "Circuit board (Cloning Scanner)"
-	build_path = "/obj/machinery/dna_scannernew"
-	board_type = "machine"
-	origin_tech = "programming=2;biotech=2"
-	frame_desc = "Requires 1 Health Analyzer, 1 Manipulator, 1 Micro-Laser and 1 Console Screen."
-	req_components = list(
-							"/obj/item/device/healthanalyzer" = 1,
-							"/obj/item/weapon/stock_parts/scanning_module" = 2,
-							"/obj/item/weapon/cable_coil" = 2,)

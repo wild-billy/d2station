@@ -9,8 +9,8 @@
 	var/hacked = 0
 	var/opened = 0
 	var/current_song = null
-	var/list/songs = list('')
-	var/list/hacked_songs = list('')
+	var/list/songs = list('badboys.mid', 'entertainer.mid', 'pokerface.mid', 'saints.mid')
+	var/list/hacked_songs = list('fartelise.it', 'mozfart.it', 'ode_to_poo.it')
 
 /obj/machinery/computer/jukebox/set_broken()
 	src.icon_state = src.icon_broken
@@ -56,5 +56,48 @@
 		spawn(0)
 			O.Life()
 
+/obj/machinery/computer/jukebox/attack_ai(mob/user)
+	return src.attack_hand(user)
 
-/obj/machinery/power/jukebox/New()
+/obj/machinery/power/jukebox/attack_hand(mob/user)
+	add_fingerprint(user)
+
+	if(stat & BROKEN)
+		return
+
+	if(user.a_intent == "hurt")
+		if(user.mutations & 16 && prob(50))
+			for(var/mob/M in viewers(src, null))
+				M.show_message("\red [] hits [src] the wrong way, breaking their hand.")
+			M.bruteloss += 10
+			return
+		else if (istype(user, /mob/living/carbon/human) && user:brainloss >= 60 && prob(50))
+			var/mob/living/carbon/human/H = user
+			playsound(src.loc, 'Genhit.ogg', 25, 1, -1)
+			if(!istype(H.head, /obj/item/clothing/head/helmet))
+				for(var/mob/M in viewers(src, null))
+					M << "\red [usr] headbutts [src]."
+				var/datum/organ/external/affecting = H.organs["head"]
+				affecting.take_damage(10, 0)
+				H.stunned = 8
+				H.weakened = 5
+				H.UpdateDamage()
+				H.UpdateDamageIcon()
+			else
+				for(var/mob/M in viewers(src, null))
+					M << "\red [usr] headbutts [src]. Good thing they're wearing a helmet."
+			return
+		else
+			if(prob(1) || (src.mutations & 8))
+				playsound(src, "shatter", 50, 0)
+				for(var/mob/M in viewers(src, null))
+					M.show_message("\red [] smashes their fist into [src], destroying it completely."
+				M.bruteloss += 5
+				new /obj/item/weapon/shard( src.loc )
+				var/obj/effects/sparks/O = new /obj/effects/sparks( src.loc )
+				spawn(0)
+					O.Life()
+				set_broken()
+				return
+			else
+				// SHIT GOES HERE, I'LL FINISH LATER

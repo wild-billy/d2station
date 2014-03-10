@@ -195,13 +195,23 @@
 			var/obj/cable/C = O
 
 			C.netnum = num
-			P = C.get_connections()
 
 		else if( istype(O, /obj/machinery/power) )
 
 			var/obj/machinery/power/M = O
 
 			M.netnum = num
+
+
+		if( istype(O, /obj/cable) )
+			var/obj/cable/C = O
+
+			P = C.get_connections()
+
+		else if( istype(O, /obj/machinery/power) )
+
+			var/obj/machinery/power/M = O
+
 			P = M.get_connections()
 
 		if(P.len == 0)
@@ -348,21 +358,19 @@
 
 /datum/powernet/proc/get_electrocute_damage()
 	switch(avail)
-		if (1300000 to INFINITY)
-			return min(rand(70,150),rand(70,150))
-		if (750000 to 1300000)
-			return min(rand(50,115),rand(50,115))
+		if (750000 to INFINITY)
+			return min(rand(70,145),rand(70,145))
 		if (100000 to 750000-1)
-			return min(rand(35,101),rand(35,101))
+			return min(rand(35,110),rand(35,110))
 		if (75000 to 100000-1)
-			return min(rand(30,95),rand(30,95))
+			return min(rand(30,100),rand(30,100))
 		if (50000 to 75000-1)
-			return min(rand(25,80),rand(25,80))
+			return min(rand(25,90),rand(25,90))
 		if (25000 to 50000-1)
-			return min(rand(20,70),rand(20,70))
+			return min(rand(20,80),rand(20,80))
 		if (10000 to 25000-1)
 			return min(rand(20,65),rand(20,65))
-		if (1000 to 10000-1)
+		if (100 to 10000-1)
 			return min(rand(10,20),rand(10,20))
 		else
 			return 0
@@ -398,13 +406,13 @@
 //power_source is a source of electricity, can be powercell, area, apc, cable, powernet or null
 //source is an object caused electrocuting (airlock, grille, etc)
 //No animations will be performed by this proc.
-/proc/electrocute_mob(mob/living/carbon/M as mob, var/power_source, var/obj/source, var/siemens_coeff = 1.0)
+/proc/electrocute_mob(mob/living/carbon/M as mob, var/power_source, var/obj/source)
 	if(istype(M,/mob/living/carbon/human))
 		var/mob/living/carbon/human/H = M
 		if(H.gloves)
 			var/obj/item/clothing/gloves/G = H.gloves
 			var/siem_coef = G.siemens_coefficient
-			if(siem_coef == 0) //to avoid spamming with insulated glvoes on
+			if(!siem_coef) //to avoid spamming with insulated glvoes on
 				return 0
 	var/area/source_area
 	if (istype(power_source,/area))
@@ -446,8 +454,8 @@
 	else
 		power_source = cell
 		shock_damage = cell_damage
-	var/drained_hp = M.electrocute_act(shock_damage, source, siemens_coeff) //zzzzzzap!
-	var/drained_energy = drained_hp*20
+	var/drained_hp = M.electrocute_act(shock_damage, source) //zzzzzzap!
+	var/drained_energy = drained_hp*10
 
 	if (source_area)
 		source_area.use_power(drained_energy/CELLRATE)

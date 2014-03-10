@@ -10,6 +10,7 @@
 	spawn(5)
 		updateicon()
 
+
 /obj/item/weapon/cell/proc/updateicon()
 
 	if(maxcharge <= 2500)
@@ -59,36 +60,29 @@
 			usr << "[desc]\nThe manufacturer's label states this cell has a power rating of [maxcharge], and that you should not swallow it.\nThe charge meter reads [round(src.percent() )]%."
 		else
 			usr << "This power cell has an exciting chrome finish, as it is an uber-capacity cell type! It has a power rating of [maxcharge]!!!\nThe charge meter reads [round(src.percent() )]%."
-	if(crit_fail)
-		usr << "\red This power cell seems to be faulty"
 
-/obj/item/weapon/cell/attack_self(mob/user as mob)
-	src.add_fingerprint(user)
-	return
+	if(crit_fail)
+		usr << "\red The terminals appear to be burnt."
 
 //Just because someone gets you occasionally with stun gloves doesn't mean you can put in code to kill everyone who tries to make some.
-// but i can add code that stops illogical bullshit -- deadsnipe
 /obj/item/weapon/cell/attackby(obj/item/W, mob/user)
 	..()
 	var/obj/item/clothing/gloves/G = W
 	if(istype(G))
-		if(charge < 1000)
-			return
-		if((!istype(G, /obj/item/clothing/gloves/latex) && (!istype(G, /obj/item/clothing/gloves/yellow)))) // this is a horrible logical thing, improve if you want --deadsnipe
-			G.elecgen = 1
-			G.uses = min(5, round(charge / 1000))
-			use(G.uses*1000)
-			updateicon()
-			user << "\red These gloves are now electrically charged!"
 	//	var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
 	//	s.set_up(3, 1, src)
 	//	s.start()
 	//	if (prob(80+(G.siemens_coefficient*100)) && electrocute_mob(user, src, src))
 	//		return 1
-
+		if(charge < 1000)
+			return
 
 	//	G.siemens_coefficient = max(G.siemens_coefficient,0.3)
-
+		G.elecgen = 1
+		G.uses = min(5, round(charge / 1000))
+		use(G.uses*1000)
+		updateicon()
+		user << "\red These gloves are now electrically charged!"
 
 	else if(istype(W, /obj/item/weapon/reagent_containers/syringe))
 		var/obj/item/weapon/reagent_containers/syringe/S = W
@@ -100,10 +94,6 @@
 			rigged = 1
 
 		S.reagents.clear_reagents()
-
-	else if(istype(G, /obj/item/clothing/gloves/latex) || istype(G, /obj/item/clothing/gloves/yellow))
-		user << "\red These gloves are not electrically charged!" // enjoy the misleading message, fucknuts
-
 
 
 /obj/item/weapon/cell/proc/explode()
@@ -171,18 +161,18 @@
 /obj/item/weapon/cell/proc/get_electrocute_damage()
 	switch (charge)
 		if (9000 to INFINITY)
-			return min(rand(90,150),rand(90,150))
+			return min(rand(80,120),rand(90,120))
 		if (2500 to 9000-1)
-			return min(rand(70,145),rand(70,145))
+			return min(rand(70,100),rand(70,100))
 		if (1750 to 2500-1)
-			return min(rand(35,110),rand(35,110))
+			return min(rand(35,90),rand(35,90))
 		if (1500 to 1750-1)
-			return min(rand(30,100),rand(30,100))
+			return min(rand(30,80),rand(30,80))
 		if (750 to 1500-1)
-			return min(rand(25,90),rand(25,90))
+			return min(rand(20,70),rand(20,70))
 		if (250 to 750-1)
-			return min(rand(20,80),rand(20,80))
+			return min(rand(15,60),rand(15,60))
 		if (100 to 250-1)
-			return min(rand(20,65),rand(20,65))
+			return min(rand(10,55),rand(10,55))
 		else
 			return 0

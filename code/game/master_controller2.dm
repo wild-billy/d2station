@@ -20,7 +20,7 @@ datum/controller/game_controller
 			air_master = new /datum/controller/air_system()
 			air_master.setup()
 
-		world.tick_lag = 0.7
+		world.tick_lag = 0.5
 
 		setup_objects()
 
@@ -68,10 +68,10 @@ datum/controller/game_controller
 
 		var/start_time = world.timeofday
 
-		if (controlleriteration%5==1) //make the atmos processing only happen every other tick)
+		if (controlleriteration%7==1) //make the atmos processing only happen every other tick)
 			air_master.process()
 
-		sleep(1)
+		sleep(-1)
 
 		sun.calc_position()
 
@@ -99,7 +99,7 @@ datum/controller/game_controller
 		sleep(-1)
 		sleep(1)
 
-		for(var/obj/item/item in world)
+		for(var/obj/item/item in processing_items)
 			item.process()
 
 		for(var/datum/pipe_network/network in pipe_networks)

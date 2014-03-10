@@ -1,7 +1,3 @@
-/obj/machinery/nuclearbomb/New()
-	..()
-	r_code = "[rand(10000, 99999.0)]"//Creates a random code upon object spawn.
-
 /obj/machinery/nuclearbomb/process()
 	if (src.timing)
 		src.timeleft--
@@ -18,7 +14,7 @@
 /obj/machinery/nuclearbomb/attack_hand(mob/user as mob)
 	if (src.extended)
 		user.machine = src
-		var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Nuclear Fission Explosive</B><BR>\nAuth. Disk: <A href='?src=\ref[];auth=1'>[]</A><HR>", src, (src.auth ? "++++++++++" : "----------"))
+		var/dat = text("<TT><B>Nuclear Fission Explosive</B><BR>\nAuth. Disk: <A href='?src=\ref[];auth=1'>[]</A><HR>", src, (src.auth ? "++++++++++" : "----------"))
 		if (src.auth)
 			if (src.yes_code)
 				dat += text("\n<B>Status</B>: []-[]<BR>\n<B>Timer</B>: []<BR>\n<BR>\nTimer: [] <A href='?src=\ref[];timer=1'>Toggle</A><BR>\nTime: <A href='?src=\ref[];time=-10'>-</A> <A href='?src=\ref[];time=-1'>-</A> [] <A href='?src=\ref[];time=1'>+</A> <A href='?src=\ref[];time=10'>+</A><BR>\n<BR>\nSafety: [] <A href='?src=\ref[];safety=1'>Toggle</A><BR>\nAnchor: [] <A href='?src=\ref[];anchor=1'>Toggle</A><BR>\n", (src.timing ? "Func/Set" : "Functional"), (src.safety ? "Safe" : "Engaged"), src.timeleft, (src.timing ? "On" : "Off"), src, src, src, src.timeleft, src, src, (src.safety ? "On" : "Off"), src, (src.anchored ? "Engaged" : "Off"), src)
@@ -42,11 +38,12 @@
 		flick("nuclearbombc", src)
 		src.icon_state = "nuclearbomb1"
 		src.extended = 1
+		bomb_set = 1
 	return
 
 /obj/machinery/nuclearbomb/verb/make_deployable()
-	set category = "Object"
 	set name = "Make Deployable"
+	set category = "Object"
 	set src in oview(1)
 
 	if (src.deployable)
@@ -58,11 +55,9 @@
 	..()
 	if (usr.stat || usr.restrained())
 		return
-	if ( ! (istype(usr, /mob/living/carbon/human) || \
-			/*istype(usr, /mob/living/silicon) || \   */
-			istype(usr, /mob/living/carbon/monkey) && ticker && ticker.mode.name == "monkey") )
-		usr << "\red NOPE!"
-		return 1
+	if (!(istype(usr, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")
+		usr << "\red You don't have the dexterity to do this!"
+		return
 	if ((usr.contents.Find(src) || (in_range(src, usr) && istype(src.loc, /turf))))
 		usr.machine = src
 		if (href_list["auth"])
@@ -103,11 +98,8 @@
 					src.timing = !( src.timing )
 					if (src.timing)
 						src.icon_state = "nuclearbomb2"
-						if(!src.safety)
-							bomb_set = 1//There can still be issues with this reseting when there are multiple bombs. Not a big deal tho for Nuke/N
 					else
 						src.icon_state = "nuclearbomb1"
-						bomb_set = 0
 				if (href_list["safety"])
 					src.safety = !( src.safety )
 				if (href_list["anchor"])
@@ -134,7 +126,6 @@
 	return
 
 /obj/machinery/nuclearbomb/proc/explode()
-
 	if (src.safety)
 		src.timing = 0
 		return
@@ -142,13 +133,8 @@
 	src.yes_code = 0
 	src.safety = 1
 	src.icon_state = "nuclearbomb3"
-	playsound(src,'Alarm.ogg',100,0,5)
-	if (ticker && ticker.mode)
-		ticker.mode.explosion_in_progress = 1
-	sleep(100)
-	explosion(src.loc,24,34,44) //ITS A NUKE GUYS
-	if(src)
-		del(src)
+	sleep(20)
+
 /*
 	var/turf/ground_zero = get_turf(loc)
 	explosion(ground_zero, 50, 250, 500, 750)
@@ -156,44 +142,65 @@
 */
 	enter_allowed = 0
 	var/derp = 0
-	for (var/turf/T in range(1,src))
-		if (!is_type_in_list(T.loc, the_station_areas))
+	var/herp = 0
+	var/area/A = src.loc.loc
+	if (istype( A, /area))
+		if (A.name == "Space")
 			derp = 1
-			break
-	if (ticker && ticker.mode && ticker.mode.name == "nuclear emergency")
-		ticker.mode:herp = syndicate_station_at_station
-		ticker.mode:derp = derp
+		if (istype(A, /area/syndicate_station))
+			derp = 1
+		if (A.name == "Wizard's Den")
+			derp = 1
+	if (!derp)
+		for(var/direction in cardinal)
+			for(var/area/target in get_step(src,direction))
+				if (target.name == "Space")
+					derp = 1
+				if (istype(target, /area/syndicate_station))
+					derp = 1
+				if (target.name == "Wizard's Den")
+					derp = 1
+	if (syndicate_station_at_station)
+		herp = 1
+	for(var/mob/M in world)
+		if(M.client)
+			spawn(0)
+				M.client.station_explosion_cinematic(derp)
 
-	//for(var/mob/M in world)
-	//	if(M.client)
-	//		spawn(0)
-	//			M.client.station_explosion_cinematic(derp)
-	sleep(110)
-
-	if (ticker && ticker.mode)
-		ticker.mode.explosion_in_progress = 0
-		if(ticker.mode.name == "nuclear emergency")
-			ticker.mode:nukes_left --
-			ticker.mode.station_was_nuked = (derp==0)
-
-		else
-			world << "<B>The station was destoyed by the nuclear blast!</B>"
-			ticker.mode.station_was_nuked = 1
-			/*
-			TODO: derped blast should partially damage nearest objects
-			and do not reboot the game. Also make it work properly on other z-levels --rastaf0
-			Further TODO: make nuke detonation work with objectives. Right now, you can't track player
-			location because they are viewing the cinematic (can't get_turf on them to determine z_level
-			as it will return null). Leaving this for you since you apparently plan to work this further. /N
-			*/
-
+	if(ticker.mode.name == "nuclear emergency")
+		ticker.mode:nuke_detonated = 1
+		if (derp) ticker.mode:derp = 1
 		ticker.mode.check_win()
+		ticker.mode.declare_completion()
 
+	sleep(110)
+	if (ticker.mode.name != "nuclear emergency" || !derp || !herp)
+		world << "<B>The station was destoyed by the nuclear blast! Resetting in 30 seconds!</B>"
+
+		sleep(300)
+		log_game("Rebooting due to nuclear destruction of station")
+		world.Reboot()
+		return
+
+	else if (ticker.mode.name == "nuclear emergency" && herp)
+		world << "<B>Everyone died in the blast, including the Syndicate Agents. Resetting in 30 seconds!</B>"
+
+		sleep(300)
+		log_game("Rebooting due to nuclear detonation")
+		world.Reboot()
+		return
+
+	else if (ticker.mode.name == "nuclear emergency" && derp)
+		world << "<B>Resetting in 30 seconds!</B>"
+
+		sleep(300)
+		log_game("Rebooting due to nuclear detonation")
+		world.Reboot()
+		return
 
 /obj/item/weapon/disk/nuclear/Del()
 	if (ticker.mode && ticker.mode.name == "nuclear emergency")
 		if(blobstart.len > 0)
 			var/obj/D = new /obj/item/weapon/disk/nuclear(pick(blobstart))
 			message_admins("[src] has been destroyed. Spawning [D] at ([D.x], [D.y], [D.z]).")
-			log_game("[src] has been destroyed. Spawning [D] at ([D.x], [D.y], [D.z]).")
 	..()

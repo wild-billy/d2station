@@ -1,16 +1,16 @@
 /datum/disease/wizarditis
 	name = "Wizarditis"
 	max_stages = 4
-	spread = "Oral"
+	spread = "Airborne"
 	cure = "The Manly Dorf"
 	cure_id = "manlydorf"
+	agent = "Rincewindus Vulgaris"
 	affected_species = list("Human")
-	affected_species2 = list(/mob/living/carbon/human)
 	curable = 0
 	permeability_mod = 0.75
 	desc = "Some speculate, that this virus is the cause of Wizard Federation existance. Subjects affected show the signs of mental retardation, yelling obscure sentences or total gibberish. On late stages subjects sometime express the feelings of inner power, and, cite, 'the ability to control the forces of cosmos themselves!' A gulp of strong, manly spirits usually reverts them to normal, humanlike, condition."
 	severity = "Minor"
-	why_so_serious = 2
+
 /*
 BIRUZ BENNAR
 SCYAR NILA - teleport
@@ -112,7 +112,7 @@ STI KALY - blind
 	var/area/thearea = pick(theareas)
 
 	var/datum/effects/system/harmless_smoke_spread/smoke = new /datum/effects/system/harmless_smoke_spread()
-	smoke.set_up(2, 0, affected_mob.loc)
+	smoke.set_up(5, 0, affected_mob.loc)
 	smoke.attach(affected_mob)
 	smoke.start()
 

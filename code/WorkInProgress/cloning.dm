@@ -12,13 +12,12 @@
 	icon_state = "pod_0"
 	req_access = list(access_medlab) //For premature unlocking.
 	var/mob/living/occupant
-	var/heal_level = 100 //The clone is released once its health reaches this level.
+	var/heal_level = 90 //The clone is released once its health reaches this level.
 	var/locked = 0
 	var/obj/machinery/computer/cloning/connected = null //So we remember the connected clone machine.
 	var/mess = 0 //Need to clean out it if it's full of exploded clone.
 	var/attempting = 0 //One clone attempt at a time thanks
 	var/eject_wait = 0 //Don't eject them as soon as they are created fuckkk
-	var/last_completion = 0
 
 /obj/machinery/computer/cloning
 	name = "Cloning console"
@@ -35,9 +34,8 @@
 
 //The return of data disks?? Just for transferring between genetics machine/cloning machine.
 //TO-DO: Make the genetics machine accept them.
-
 /obj/item/weapon/disk/data
-	name = "data disk"
+	name = "Cloning Data Disk"
 	icon = 'cloning.dmi'
 	icon_state = "datadisk0" //Gosh I hope syndies don't mistake them for the nuke disk.
 	item_state = "card-id"
@@ -45,12 +43,13 @@
 	var/data = ""
 	var/ue = 0
 	var/data_type = "ui" //ui|se
-	var/owner = "Farmer Jeff"
+	var/owner = "God Emperor of Mankind"
 	var/read_only = 0 //Well,it's still a floppy disk
 
 /obj/item/weapon/disk/data/demo
-	name = "data disk - 'Farmer Jeff'"
-	data = "0C80C80C80C80C80C8000000000000161FBDDEF"
+	name = "data disk - 'God Emperor of Mankind'"
+	data = "066000033000000000AF00330660FF4DB002690"
+	//data = "0C80C80C80C80C80C8000000000000161FBDDEF" - Farmer Jeff
 	ue = 1
 	read_only = 1
 
@@ -120,7 +119,7 @@
 	if(stat & (BROKEN|NOPOWER))
 		return
 
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h3>Cloning System Control</h3>"
+	var/dat = "<h3>Cloning System Control</h3>"
 	dat += "<font size=-1><a href='byond://?src=\ref[src];refresh=1'>Refresh</a></font>"
 
 	dat += "<br><tt>[temp]</tt><br>"
@@ -227,7 +226,7 @@
 
 		else if (src.menu == 4)
 			var/obj/item/weapon/card/id/C = usr.equipped()
-			if (istype(C))
+			if (istype(C)||istype(C, /obj/item/device/pda))
 				if(src.check_access(C))
 					src.records.Remove(src.active_record)
 					del(src.active_record)
@@ -296,7 +295,7 @@
 //Can't clone without someone to clone.  Or a pod.  Or if the pod is busy. Or full of gibs.
 		if ((!selected) || (!src.pod1) || (src.pod1.occupant) || (src.pod1.mess))
 			src.temp = "Unable to initiate cloning cycle." // most helpful error message in THE HISTORY OF THE WORLD
-		else if (src.pod1.growclone(selected, C.fields["name"], C.fields["UI"], C.fields["SE"], C.fields["mind"]))
+		else if (src.pod1.growclone(selected, C.fields["name"], C.fields["UI"], C.fields["SE"], C.fields["mind"], C.fields["mrace"]))
 			src.temp = "Cloning cycle activated."
 			src.records.Remove(C)
 			del(C)
@@ -310,8 +309,11 @@
 	return
 
 /obj/machinery/computer/cloning/proc/scan_mob(mob/living/carbon/human/subject as mob)
-	if ((isnull(subject)) || (!istype(subject, /mob/living/carbon/human)) || (!subject.dna))
+	if ((isnull(subject)) || (!(istype(subject, /mob/living/carbon/human))) || (!subject.dna))
 		src.temp = "Error: Unable to locate valid genetic data."
+		return
+	if (subject.brain_op_stage == 4.0)
+		src.temp = "Error: Unable to interface with subject."
 		return
 	if ((!subject.ckey) || (!subject.client))
 		src.temp = "Error: Mental interface failure."
@@ -323,6 +325,7 @@
 	subject.dna.check_integrity()
 
 	var/datum/data/record/R = new /datum/data/record(  )
+	R.fields["mrace"] = subject.mutantrace
 	R.fields["ckey"] = subject.ckey
 	R.fields["name"] = subject.real_name
 	R.fields["id"] = copytext(md5(subject.real_name), 2, 6)
@@ -374,7 +377,7 @@
 		return
 
 	var/mob/selected = null
-	for(var/mob/M in mobz)
+	for(var/mob/M in world)
 		//Dead people only thanks!
 		if ((M.stat != 2) || (!M.client))
 			continue
@@ -427,18 +430,16 @@
 		return
 	if ((!isnull(src.occupant)) && (src.occupant.stat != 2))
 		var/completion = (100 * ((src.occupant.health + 100) / (src.heal_level + 100)))
-		if(completion > last_completion)
-			last_completion = completion
-		user << "Current clone cycle is [max(round(last_completion, 1), 1)]% complete."
+		user << "Current clone cycle is [round(completion)]% complete."
 	return
 
 //Clonepod
 
 //Start growing a human clone in the pod!
-/obj/machinery/clonepod/proc/growclone(mob/ghost as mob, var/clonename, var/ui, var/se, var/mindref)
+/obj/machinery/clonepod/proc/growclone(mob/ghost as mob, var/clonename, var/ui, var/se, var/mindref, var/mrace)
 	if (((!ghost) || (!ghost.client)) || src.mess || src.attempting)
 		return 0
-	last_completion = 0
+
 	src.attempting = 1 //One at a time!!
 	src.locked = 1
 
@@ -451,19 +452,14 @@
 
 	src.icon_state = "pod_1"
 	//Get the clone body ready
-	src.occupant.rejuv = 12
-	src.occupant.bruteloss += 90
-	src.occupant.toxloss += 50
-	src.occupant.oxyloss += 40
+	src.occupant.rejuv = 10
+	src.occupant.cloneloss += 190 //new damage var so you can't eject a clone early then stab them to abuse the current damage system
 	src.occupant.brainloss += 90
 	src.occupant.paralysis += 4
-	src.occupant.cloneloss += 50
-	src.occupant.buddha = 0 // this is fucking horrible and i should replace this method asap -ds
+
 	//Here let's calculate their health so the pod doesn't immediately eject them!!!
-	src.occupant.reagents.add_reagent("mynoglobin", 30)
-	src.occupant.reagents.add_reagent("chloromydride", 30)
-	src.occupant.reagents.add_reagent("polyadrenalobin", 30)
-	src.occupant.arrhythmia = 0
+	src.occupant.health = (src.occupant.bruteloss + src.occupant.toxloss + src.occupant.oxyloss + src.occupant.cloneloss)
+
 	src.occupant << "\blue <b>Clone generation process initiated.</b>"
 	src.occupant << "\blue This will take a moment, please hold."
 
@@ -476,19 +472,33 @@
 
 	if ((clonemind) && (istype(clonemind))) //Move that mind over!!
 		clonemind.transfer_to(src.occupant)
+		clonemind.original = src.occupant
 	else //welp
 		src.occupant.mind = new /datum/mind(  )
 		src.occupant.mind.key = src.occupant.key
 		src.occupant.mind.current = src.occupant
+		src.occupant.mind.original = src.occupant
 		src.occupant.mind.transfer_to(src.occupant)
 		ticker.minds += src.occupant.mind
 
 	// -- Mode/mind specific stuff goes here
 	switch(ticker.mode.name)
 		if ("revolution")
-			if ((src.occupant.mind in ticker.mode:revolutionaries) || (src.occupant.mind in ticker.mode:head_revolutionaries))
+			if (src.occupant.mind in ticker.mode:revolutionaries)
 				ticker.mode:add_revolutionary(src.occupant.mind)
 				ticker.mode:update_all_rev_icons() //So the icon actually appears
+			if (src.occupant.mind in ticker.mode:head_revolutionaries)
+				ticker.mode:update_all_rev_icons()
+		if ("cult")
+			if (src.occupant.mind in ticker.mode:cult)
+				ticker.mode:add_cultist(src.occupant.mind)
+				ticker.mode:update_all_cult_icons() //So the icon actually appears
+		if ("traitor")
+			if (src.occupant.mind in ticker.mode:traitors)
+				ticker.mode:update_traitor_icons() //So the icon actually appears
+		if ("changeling")
+			if (src.occupant.mind in ticker.mode:changelings)
+				src.occupant.make_changeling()
 
 	// -- End mode specific stuff
 
@@ -503,6 +513,9 @@
 	if (se)
 		src.occupant.dna.struc_enzymes = se
 		randmutb(src.occupant) //Sometimes the clones come out wrong.
+	src.occupant:update_face()
+	src.occupant:update_body()
+	src.occupant:mutantrace = mrace
 
 	src.attempting = 0
 	return 1
@@ -510,7 +523,7 @@
 //Grow clones to maturity then kick them out.  FREELOADERS
 /obj/machinery/clonepod/process()
 
-	if (stat && NOPOWER) //Autoeject if power is lost
+	if (stat & NOPOWER) //Autoeject if power is lost
 		if (src.occupant)
 			src.locked = 0
 			src.go_out()
@@ -527,33 +540,29 @@
 			src.occupant.paralysis = 4
 
 			 //Slowly get that clone healed and finished.
-			src.occupant.bruteloss = max(src.occupant.bruteloss-1, 0)
+			src.occupant.cloneloss = max(src.occupant.cloneloss-1, 0)
 
 			//At this rate one clone takes about 95 seconds to produce.(with heal_level 90)
-			src.occupant.toxloss = max(src.occupant.toxloss-0.5, 0)
+//			src.occupant.toxloss = max(src.occupant.toxloss-0.5, 0)
 
 			//Premature clones may have brain damage.
-			src.occupant.brainloss = max(src.occupant.brainloss-2, 0)
-
-			src.occupant.cloneloss = max(src.occupant.cloneloss-0.5, 0)
+			src.occupant.brainloss = max(src.occupant.brainloss-1, 0)
 
 			//So clones don't die of oxyloss in a running pod.
-			if(src.occupant.reagents.get_reagent_amount("mynoglobin") < 60)
-				src.occupant.reagents.add_reagent("mynoglobin", 30)
-			if(src.occupant.reagents.get_reagent_amount("chloromydride") < 60)
-				src.occupant.reagents.add_reagent("chloromydride", 30)
-			if(src.occupant.reagents.get_reagent_amount("polyadrenalobin") < 60)
-				src.occupant.reagents.add_reagent("polyadrenalobin", 30)
+			if (src.occupant.reagents.get_reagent_amount("inaprovaline") < 30)
+				src.occupant.reagents.add_reagent("inaprovaline", 60)
 
-			src.occupant.fireloss = max(src.occupant.fireloss-2, 0)
-			// other shit -ds
+			//Also heal some oxyloss ourselves because inaprovaline is so bad at preventing it!!
+			src.occupant.oxyloss = max(src.occupant.oxyloss-2, 0)
 
-			use_power(17500) //This might need tweaking.
+			//Stop baking in the tubes you jerks.
+//			src.occupant.fireloss = max(src.occupant.fireloss-2, 0)
+
+			use_power(7500) //This might need tweaking.
 			return
 
 		else if((src.occupant.health >= src.heal_level) && (!src.eject_wait))
 			src.connected_message("Cloning Process Complete.")
-			src.occupant.buddha = 0 // no defense from the reaper on my end, fuckass.
 			src.locked = 0
 			src.go_out()
 			return
@@ -571,7 +580,7 @@
 
 //Let's unlock this early I guess.  Might be too early, needs tweaking.
 /obj/machinery/clonepod/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if (istype(W, /obj/item/weapon/card/id))
+	if (istype(W, /obj/item/weapon/card/id)||istype(W, /obj/item/device/pda))
 		if (!src.check_access(W))
 			user << "\red Access Denied."
 			return
@@ -587,7 +596,6 @@
 		if (isnull(src.occupant))
 			return
 		user << "You force an emergency ejection."
-		src.occupant.buddha = 0 // even the traitor gets in trouble
 		src.locked = 0
 		src.go_out()
 		return
@@ -606,12 +614,13 @@
 	return 1
 
 /obj/machinery/clonepod/verb/eject()
+	set name = "Eject Cloner"
+	set category = "Object"
 	set src in oview(1)
 
 	if (usr.stat != 0)
 		return
 	src.go_out()
-	src.occupant.buddha = 0
 	add_fingerprint(usr)
 	return
 
@@ -635,12 +644,12 @@
 	if (src.occupant.client)
 		src.occupant.client.eye = src.occupant.client.mob
 		src.occupant.client.perspective = MOB_PERSPECTIVE
-		src.occupant.loc = src.loc
-		src.icon_state = "pod_0"
-		src.eject_wait = 0 //If it's still set somehow.
-		domutcheck(src.occupant) //Waiting until they're out before possible monkeyizing.
-		src.occupant.updatehealth() // http://me.d2k5.com/Emyylii12/public/Comic/cartoon-1334600089.png
-		src.occupant = null
+	src.occupant.loc = src.loc
+	src.icon_state = "pod_0"
+	src.eject_wait = 0 //If it's still set somehow.
+	domutcheck(src.occupant) //Waiting until they're out before possible monkeyizing.
+	src.occupant = null
+	return
 
 /obj/machinery/clonepod/proc/malfunction()
 	if (src.occupant)
@@ -651,6 +660,10 @@
 		spawn(5)
 			del(src.occupant)
 	return
+
+/obj/machinery/clonepod/emp_act(severity)
+	if(prob(100/severity)) malfunction()
+	..()
 
 /obj/machinery/clonepod/relaymove(mob/user as mob)
 	if (user.stat)
@@ -727,10 +740,22 @@
 	A load/save dialog will become available in each profile if a disk is inserted.</p><br>
 	<i>A good diskette is a great way to counter aforementioned genetic drift!</i><br>
 	<br>
-	<font size=1>This technology produced under license from Thinktronic Systems, LTD.</font>"}
+	<font size=1>This technology produced under license from Kinesthesia Labs Systems, LTD.</font>"}
 
 //SOME SCRAPS I GUESS
 /* EMP grenade/spell effect
 		if(istype(A, /obj/machinery/clonepod))
 			A:malfunction()
 */
+
+/obj/item/weapon/paper/Prison
+	name = "paper - 'Prison Station Notes"
+	info = {"<h4>Getting Started</h4>
+	Welcome to the station!<br>
+	This station is a work in progess, we're expanding the capacity daily, and repairing the wreckage of the old station ruins<br>
+	<b>Unstable Structure</b><br>
+	<p>The reconstruction area is extremely dangerous and should not be entered, treat it as a seperate entity unless an urgent reason arrises.</p>
+	<h4>Prisoners and Staff</h4>
+	You have a small staff of security officers and a medical officer to aid the station's running.<br>
+	Prisoners will be transfered to your station if the need arrises, they must be fed and kept in good health during thier incarceration.<br>
+	<br>"}

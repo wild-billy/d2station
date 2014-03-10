@@ -9,7 +9,7 @@
 
 	log_say("Ghost/[src.key] : [message]")
 
-	if (src.client.muted)
+	if (src.muted)
 		return
 
 	. = src.say_dead(message)
@@ -30,7 +30,7 @@
 					return
 				else if (prob (95))
 					M.show_message("<span class='game'><i>You hear muffled speech... but nothing is there...</i></span>", 2)
-					if(prob(20))
+					if(prob(30))
 						playsound(src.loc, pick('ghost.ogg','ghost2.ogg'), 10, 1)
 				else
 					M.show_message("<span class='game'><i>[stutter(message)]</i></span>", 2)

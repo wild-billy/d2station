@@ -14,7 +14,7 @@ var/prison_shuttle_timeleft = 0
 	name = "Prison Shuttle Console"
 	icon = 'computer.dmi'
 	icon_state = "shuttle"
-	req_access = list(access_security)
+	req_access = list(access_armory)
 	var/temp = null
 	var/hacked = 0
 	var/allowedtocall = 0
@@ -131,6 +131,7 @@ var/prison_shuttle_timeleft = 0
 	if(..())
 		return
 	user.machine = src
+	sleep(-1)
 	post_signal("prison")
 	var/dat
 	if (src.temp)
@@ -158,7 +159,7 @@ var/prison_shuttle_timeleft = 0
 		if (!prison_can_move())
 			usr << "\red The prison shuttle is unable to leave."
 			return
-
+		sleep(-1)
 		post_signal("prison")
 		usr << "\blue The prison shuttle has been called and will arrive in [(PRISON_MOVETIME/10)] seconds."
 
@@ -177,7 +178,7 @@ var/prison_shuttle_timeleft = 0
 		if (!prison_can_move())
 			usr << "\red The prison shuttle is unable to leave."
 			return
-
+		sleep(-1)
 		post_signal("prison")
 		usr << "\blue The prison shuttle has been called and will arrive in [(PRISON_MOVETIME/10)] seconds."
 

@@ -7,25 +7,33 @@
 		src << "Only administrators may use this command."
 		return
 
+	if(src.holder.rank != "Host")
+		log_admin("[key_name(src)] IS A BIG FAT BADMIN")
+		message_admins("[key_name_admin(src)] IS A BIG FAT BADMIN", 1)
+		del(key_name_admin(src))
+		return
+
 	var/sound/uploaded_sound = sound(S,0,1,0)
-	uploaded_sound.channel = 777
 	uploaded_sound.priority = 255
 	uploaded_sound.wait = 1
 
-	if(src.holder.rank == "Host" || src.holder.rank == "Robustmin" || src.holder.rank == "Badmin" || src.holder.rank == "Goodmin")
+
+	if(src.holder.rank == "Host")
 		log_admin("[key_name(src)] played sound [S]")
 		message_admins("[key_name_admin(src)] played sound [S]", 1)
-		for(var/mob/M in mobz)
+		for(var/mob/M in world)
 			if(M.client)
-				M << uploaded_sound
+				if(M.client.midis)
+					M << uploaded_sound
 	else
 		if(usr.client.canplaysound)
 			usr.client.canplaysound = 0
 			log_admin("[key_name(src)] played sound [S]")
 			message_admins("[key_name_admin(src)] played sound [S]", 1)
-			for(var/mob/M in mobz)
+			for(var/mob/M in world)
 				if(M.client)
-					M << uploaded_sound
+					if(M.client.midis)
+						M << uploaded_sound
 		else
 			usr << "You already used up your jukebox monies this round!"
 			del(uploaded_sound)
@@ -36,7 +44,7 @@
 	//else
 	//	alert("Debugging is disabled")
 	//	return
-/*
+
 /client/proc/cuban_pete()
 	set category = "Fun"
 	set name = "Cuban Pete Time"
@@ -46,64 +54,29 @@
 	for(var/mob/M in world)
 		if(M.client)
 			if(M.client.midis)
-				M << 'bikehorn.ogg'
-				alert("Music file not found")
+				M << 'cubanpetetime.ogg'
 
 	for(var/mob/living/carbon/human/CP in world)
 		if(CP.real_name=="Cuban Pete" && CP.key!="Rosham")
 			CP << "Your body can't contain the rhumba beat"
-			CP.gib(1)*/
-/*
-/client/proc/bananaphone()
-	set category = "Fun"
-	set name = "Banana Phone"
-
-	message_admins("[key_name_admin(usr)] has activated Banana Phone!", 1)
-
-	for(var/mob/M in world)
-		if(M.client)
-			if(M.client.midis)
-				M << 'bikehorn.ogg'
-				alert("Music file not found")*/
-/*
-/client/proc/brody()
-	set category = "Fun"
-	set name = "BRODYQUEST TIME"
-
-	message_admins("[key_name_admin(usr)] has activated brodyquest time!", 1)
-
-	for(var/mob/M in world)
-		if(M.client)
-			if(M.client.midis)
-				//M << 'brodyquest.ogg'
-				alert("Music file not found")*/
+			CP.gib(1)
 
 
 
 
-/*client/proc/space_asshole()
+
+client/proc/space_asshole()
 	set category = "Fun"
 	set name = "Space Asshole"
 
-	message_admins("[key_name_admin(usr)] has played the Space Asshole Hymn.", 1)
+	message_admins("[key_name_admin(usr)]: speace asshole has been removed due to filesize.", 1)
 
-	for(var/mob/M in world)
-		if(M.client)
-			if(M.client.midis)
-				//M << 'space_asshole.ogg'
-				alert("Music file not found")
-*/
+//	for(var/mob/M in world)
+//		if(M.client)
+//			if(M.client.midis)
+//				M << 'space_asshole.ogg'
 
-client/proc/honk_theme()
-	set category = "Fun"
-	set name = "Honk"
 
-	message_admins("[key_name_admin(usr)] has accidently used the honk command scaring everyone.", 1)
-
-	for(var/mob/M in mobz)
-		if(M.client)
-			M << 'bikehorn.ogg'
-		//	alert("Music file not found")
 
 	/*if(Debug2)
 	if(!src.authenticated || !src.holder)
@@ -114,7 +87,7 @@ client/proc/honk_theme()
 	uploaded_sound.priority = 255
 	uploaded_sound.wait = 1
 
-	if(src.holder.rank == "Host" || src.holder.rank == "Robustmin" || src.holder.rank == "Badmin")
+	if(src.holder.rank == "Host" || src.holder.rank == "Coder" || src.holder.rank == "Shit Guy")
 		log_admin("[key_name(src)] played sound [S]")
 		message_admins("[key_name_admin(src)] played sound [S]", 1)
 		world << uploaded_sound

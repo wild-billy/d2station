@@ -1,63 +1,35 @@
 
-/*
-field_generator power level display
-   The icon used for the field_generator need to have 'num_power_levels' number of icon states
-   named 'Field_Gen +p[num]' where 'num' ranges from 1 to 'num_power_levels'
-
-   The power level is displayed using overlays. The current displayed power level is stored in 'powerlevel'.
-   The overlay in use and the powerlevel variable must be kept in sync.  A powerlevel equal to 0 means that
-   no power level overlay is currently in the overlays list.
-   -Aygar
-*/
-
+/////FIELD GEN
 #define field_generator_max_power 250
 /obj/machinery/field_generator
 	name = "Field Generator"
 	desc = "A large thermal battery that projects a high amount of energy when powered."
-	icon = 'field_generator.dmi'
+	icon = 'singularity.dmi'
 	icon_state = "Field_Gen"
 	anchored = 0
 	density = 1
+	req_access = list(access_engine)
 	use_power = 0
 	var
-		const/num_power_levels = 15  // Total number of power level icon has
 		Varedit_start = 0
 		Varpower = 0
 		active = 0
-		power = 20  // Current amount of power
+		power = 20
 		state = 0
 		warming_up = 0
-		powerlevel = 0  // Current Power level in overlays list
+		powerlevel = 0
 		list/obj/machinery/containment_field/fields
 		list/obj/machinery/field_generator/connected_gens
+		overlay = null
+		locked = 0
 		clean_up = 0
 
-
-	update_icon()
-		if (!active)
-			//Set icon_state has not been set, set to "Field_Gen"
-			if (icon_state != "Field_Gen")
-				icon_state = "Field_Gen"
-				warming_up = 0
-			else if (warming_up && icon_state != "Field_Gen +a[warming_up]")
-				icon_state = "Field_Gen +a[warming_up]"
-
-		// Power level indicator
-		// Scale % power to % num_power_levels and truncate value
-		var/level = round(num_power_levels * power / field_generator_max_power)
-		// Clamp between 0 and num_power_levels for out of range power values
-		level = between(0, level, num_power_levels)
-
-		// Do nothing unless new level is diffrent the powerlevel
-		if (powerlevel!=level)
-			if (powerlevel) //Remove old powerlevel overlay from overlays
-				overlays -= "Field_Gen +p[powerlevel]"
-			powerlevel = level
-			// If new power level exists add it to overlays
-			if (powerlevel)
-				overlays += "Field_Gen +p[powerlevel]"
-
-		return
+//	update_icon()
+//		if (!active)
+//			src.overlays = null
+//		else
+//			src.overlays = icon('singularity.dmi', "Field_Gen_overlay")
+//		return
 
 
 	New()
@@ -68,19 +40,20 @@ field_generator power level display
 
 
 	process()
-		if(Varedit_start == 1)
-			if(active == 0)
-				active = 1
-				state = 2
-				power = field_generator_max_power
-				anchored = 1
-				warming_up = 3
+		if(src.Varedit_start)
+			if(!src.active)
+				src.active = 1
+				src.state = 2
+				src.power = field_generator_max_power
+				src.anchored = 1
+				src.warming_up = 3
 				turn_on()
 			Varedit_start = 0
-
+		if(src.active)
+			update_icon()
 		if(src.active == 2)
 			calc_power()
-			update_icon()
+
 		return
 
 
@@ -88,11 +61,11 @@ field_generator power level display
 		if(state == 2)
 			if(get_dist(src, user) <= 1)//Need to actually touch the thing to turn it on
 				if(src.active >= 1)
-					user << "You are unable to turn off the [src.name] once it is online."
+					user << "You are unable to turn off the [src] once it is online."
 					return 1
 				else
 					user.visible_message("[user.name] turns on the [src.name]", \
-						"You turn on the [src.name].", \
+						"You turn on the [src].", \
 						"You hear heavy droning")
 					turn_on()
 					src.add_fingerprint(user)
@@ -131,7 +104,6 @@ field_generator power level display
 					return
 				if(1)
 					if (W:remove_fuel(0,user))
-						W:welding = 2
 						playsound(src.loc, 'Welder2.ogg', 50, 1)
 						user.visible_message("[user.name] starts to weld the [src.name] to the floor.", \
 							"You start to weld the [src] to the floor.", \
@@ -139,12 +111,10 @@ field_generator power level display
 						if (do_after(user,20))
 							state = 2
 							user << "You weld the field generator to the floor."
-						W:welding = 1
 					else
 						return
 				if(2)
 					if (W:remove_fuel(0,user))
-						W:welding = 2
 						playsound(src.loc, 'Welder2.ogg', 50, 1)
 						user.visible_message("[user.name] starts to cut the [src.name] free from the floor.", \
 							"You start to cut the [src] free from the floor.", \
@@ -152,17 +122,14 @@ field_generator power level display
 						if (do_after(user,20))
 							state = 1
 							user << "You cut the [src] free from the floor."
-						W:welding = 2
 					else
 						return
 		else
 			..()
 			return
 
-
 	emp_act()
 		return 0
-
 
 	blob_act()
 		if(active)
@@ -170,33 +137,35 @@ field_generator power level display
 		else
 			..()
 
-
-	bullet_act(var/obj/item/projectile/Proj)
-		if(Proj.flag != "bullet")
-			power += Proj.damage
-			update_icon()
+	bullet_act(flag)
+		if (flag == PROJECTILE_BULLET)
+			src.power -= 50
+		else if (flag == PROJECTILE_WEAKBULLET)
+			src.power -= 25
+		else if (flag == PROJECTILE_LASER)
+			src.power += 20
+		else if (flag == PROJECTILE_TASER)
+			src.power += 10
 		else
-			power -= Proj.damage
-			update_icon()
+			src.power -= 30
+//		update_icon()
 		return
-
 
 	Del()
 		src.cleanup()
 		..()
 
-
 	proc
 		turn_off()
-			active = 0
+			src.active = 0
 			spawn(1)
 				src.cleanup()
-			update_icon()
-
+			src.overlays = null
 
 		turn_on()
-			active = 1
+			src.active = 1
 			warming_up = 1
+			powerlevel = 0
 			spawn(1)
 				while (warming_up<3 && active)
 					sleep(50)
@@ -204,8 +173,7 @@ field_generator power level display
 					update_icon()
 					if(warming_up >= 3)
 						start_fields()
-			update_icon()
-
+						src.overlays += icon('singularity.dmi', "Field_Gen_overlay")
 
 		calc_power()
 			if(Varpower)
@@ -229,7 +197,7 @@ field_generator power level display
 				src.power = 0
 				return 0
 
-//This could likely be better, it tends to start loopin if you have a complex generator loop setup.  Still works well enough to run the engine fields will likely recode the field gens and fields sometime -Mport
+//This could likely be better, it tends to start looping if you have a complex generator loop setup.  Still works well enough to run the engine fields will likely recode the field gens and fields sometime -Mport
 		draw_power(var/draw = 0, var/failsafe = 0, var/obj/machinery/field_generator/G = null, var/obj/machinery/field_generator/last = null)
 			if(Varpower)
 				return 1
@@ -258,7 +226,6 @@ field_generator power level display
 							return 1
 						else
 							return 0
-
 
 		start_fields()
 			if(!src.state == 2 || !anchored)

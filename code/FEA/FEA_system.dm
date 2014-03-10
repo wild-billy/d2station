@@ -53,7 +53,9 @@ Important Procedures
 
 */
 
-atom/proc/CanPass(atom/movable/mover, turf/source, height=1.5, air_group = 0)
+var/kill_air = 0
+
+atom/proc/CanPass(atom/movable/mover, turf/target, height=1.5, air_group = 0)
 	return (!density || !height || air_group)
 
 turf
@@ -66,25 +68,12 @@ turf
 		else // Now, doing more detailed checks for air movement and air group formation
 			if(target.blocks_air||blocks_air)
 				return 0
+
 			for(var/obj/obstacle in src)
 				if(!obstacle.CanPass(mover, target, height, air_group))
 					return 0
 			for(var/obj/obstacle in target)
 				if(!obstacle.CanPass(mover, src, height, air_group))
-					return 0
-
-			return 1
-	proc/CanPassOneWay(atom/movable/mover, turf/target, height=1.5,air_group=0) //Does one-way checks instead.
-		if(!target) return 0
-
-		if(istype(mover)) // turf/Enter(...) will perform more advanced checks
-			return !density
-
-		else // Now, doing more detailed checks for air movement and air group formation
-			if(blocks_air)
-				return 0
-			for(var/obj/obstacle in src)
-				if(!obstacle.CanPass(mover, target, height, air_group))
 					return 0
 
 			return 1
@@ -157,23 +146,17 @@ datum
 
 			setup()
 				set background = 1
-				LoadTweaks()
-
 				world << "\red \b Processing Geometry..."
 				sleep(1)
 
-				//var/list/door_tiles = list()
-
 				var/start_time = world.timeofday
-				for(var/turf/simulated/S in turfs)
-					if(!S.blocks_air && !S.parent)
+
+				for(var/turf/simulated/S in world)
+					if(!S.blocks_air && !S.parent && S.z < 5) // Added last check to force skipping asteroid z-levels -- TLE
 						assemble_group_turf(S)
-					if(S.HasDoor())
-						spawn(1) S.add_to_other_zone()
-					else
-						if(S.CanPass(null,S,0,0) && !S.zone)
-							new/zone(S)
-				for(var/turf/simulated/S in turfs) //Update all pathing and border information as well
+				for(var/turf/simulated/S in world) //Update all pathing and border information as well
+					if(S.z > 4) // Skipping asteroids -- TLE
+						continue
 					S.update_air_properties()
 /*
 				for(var/obj/movable/floor/S in world)
@@ -282,20 +265,19 @@ datum
 				return null
 */
 			process()
+				if(kill_air)
+					return 1
 				current_cycle++
-
 				if(groups_to_rebuild.len > 0) process_rebuild_select_groups()
 				if(tiles_to_update.len > 0) process_update_tiles()
 
 				process_groups()
-				sleep(-1)
 				process_singletons()
-				sleep(-1)
+
 				process_super_conductivity()
-				sleep(-1)
 				process_high_pressure_delta()
-				sleep(-1)
-				if(controlleriteration%40==1) //Check for groups of tiles to resume group processing every 10 cycles
+
+				if(current_cycle%10==5) //Check for groups of tiles to resume group processing every 10 cycles
 					for(var/datum/air_group/AG in air_groups)
 						AG.check_regroup()
 
@@ -349,8 +331,6 @@ datum
 			process_singletons()
 				for(var/item in active_singletons)
 					item:process_cell()
-//				for(var/turf/simulated/floor/open/O in world)
-//					O.process_extra()
 
 			process_super_conductivity()
 				for(var/turf/simulated/hot_potato in active_super_conductivity)

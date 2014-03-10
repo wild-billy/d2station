@@ -16,11 +16,11 @@
 
 //Main os program: Provides old pda interface and four programs including file browser, notes, messenger, and atmos scan
 	main_os
-		name = "ThinkOS 7"
+		name = "SenseOS 7"
 		size = 8.0
 		var/mode = 0
 		//Note vars
-		var/note = "Congratulations, your station has chosen the Thinktronic 5150 Personal Data Assistant!"
+		var/note = "Congratulations, your station has chosen the Kinesthesia Labs 5150 Personal Data Assistant!"
 		var/note_mode = 0 //0 For note editor, 1 for note browser
 		var/datum/computer/file/text/note_file = null //If set, save to this file.
 		//Messenger vars

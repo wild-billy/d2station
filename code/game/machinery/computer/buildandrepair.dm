@@ -25,7 +25,6 @@
 		list/req_components = null
 		powernet = null
 		list/records = null
-		frame_desc = null
 
 /obj/item/weapon/circuitboard/security
 	name = "Circuit board (Security)"
@@ -36,10 +35,6 @@
 /obj/item/weapon/circuitboard/aiupload
 	name = "Circuit board (AI Upload)"
 	build_path = "/obj/machinery/computer/aiupload"
-	origin_tech = "programming=4"
-/obj/item/weapon/circuitboard/borgupload
-	name = "Circuit board (Cyborg Upload)"
-	build_path = "/obj/machinery/computer/borgupload"
 	origin_tech = "programming=4"
 /obj/item/weapon/circuitboard/med_data
 	name = "Circuit board (Medical Records)"
@@ -59,22 +54,21 @@
 /obj/item/weapon/circuitboard/card
 	name = "Circuit board (ID Computer)"
 	build_path = "/obj/machinery/computer/card"
-/obj/item/weapon/circuitboard/card/centcom
-	name = "Circuit board (CentCom ID Computer)"
-	build_path = "/obj/machinery/computer/card/centcom"
-//obj/item/weapon/circuitboard/shield
-//	name = "Circuit board (Shield Control)"
-//	build_path = "/obj/machinery/computer/stationshield"
+/obj/item/weapon/circuitboard/shield
+	name = "Circuit board (Shield Control)"
+	build_path = "/obj/machinery/computer/stationshield"
 /obj/item/weapon/circuitboard/teleporter
 	name = "Circuit board (Teleporter)"
 	build_path = "/obj/machinery/computer/teleporter"
-	origin_tech = "programming=2;bluespace=2"
 /obj/item/weapon/circuitboard/secure_data
 	name = "Circuit board (Security Records)"
 	build_path = "/obj/machinery/computer/secure_data"
 /obj/item/weapon/circuitboard/stationalert
 	name = "Circuit board (Station Alerts)"
 	build_path = "/obj/machinery/computer/station_alert"
+/obj/item/weapon/circuitboard/atmospherealerts
+	name = "Circuit board (Atmosphere alerts)"
+	build_path = "/obj/machinery/computer/atmosphere/alerts"
 /obj/item/weapon/circuitboard/atmospheresiphonswitch
 	name = "Circuit board (Atmosphere siphon control)"
 	build_path = "/obj/machinery/computer/atmosphere/siphonswitch"
@@ -86,9 +80,6 @@
 	build_path = "/obj/machinery/computer/general_air_control/fuel_injection"
 /obj/item/weapon/circuitboard/atmos_alert
 	name = "Circuit board (Atmospheric Alert)"
-	build_path = "/obj/machinery/computer/atmos_alert"
-/obj/item/weapon/circuitboard/atmospherealerts
-	name = "Circuit board (Atmosphere alerts)"
 	build_path = "/obj/machinery/computer/atmos_alert"
 /obj/item/weapon/circuitboard/pod
 	name = "Circuit board (Massdriver control)"
@@ -104,10 +95,6 @@
 /obj/item/weapon/circuitboard/arcade
 	name = "Circuit board (Arcade)"
 	build_path = "/obj/machinery/computer/arcade"
-	origin_tech = "programming=1"
-/obj/item/weapon/circuitboard/arcadepuzzle
-	name = "Circuit board (Arcade)"
-	build_path = "/obj/machinery/computer/arcadepuzzle"
 	origin_tech = "programming=1"
 /obj/item/weapon/circuitboard/turbine_control
 	name = "Circuit board (Turbine control)"
@@ -133,13 +120,18 @@
 /obj/item/weapon/circuitboard/rdconsole
 	name = "Circuit Board (RD Console)"
 	build_path = "/obj/machinery/computer/rdconsole"
-/obj/item/weapon/circuitboard/mecha_control
-	name = "Circuit Board (Exosuit Control Console)"
-	build_path = "/obj/machinery/computer/mecha"
 /obj/item/weapon/circuitboard/rdservercontrol
 	name = "Circuit Board (R&D Server Control)"
 	build_path = "/obj/machinery/computer/rdservercontrol"
-
+/obj/item/weapon/circuitboard/curer
+	name = "Circuit Board (Cure Research Machine)"
+	build_path = "/obj/machinery/computer/curer"
+/obj/item/weapon/circuitboard/diseasesplicer
+	name = "Circuit Board (Disease Splicer)"
+	build_path = "/obj/machinery/computer/diseasesplicer"
+/obj/item/weapon/circuitboard/mecha_control
+	name = "Circuit Board (Exosuit Control Console)"
+	build_path = "/obj/machinery/computer/mecha"
 
 
 /obj/computerframe/attackby(obj/item/P as obj, mob/user as mob)
@@ -152,13 +144,11 @@
 					src.anchored = 1
 					src.state = 1
 			if(istype(P, /obj/item/weapon/weldingtool))
-				P:welding = 2
 				playsound(src.loc, 'Welder.ogg', 50, 1)
 				if(do_after(user, 20))
 					user << "\blue You deconstruct the frame."
 					new /obj/item/stack/sheet/metal( src.loc, 5 )
 					del(src)
-				P:welding = 1
 		if(1)
 			if(istype(P, /obj/item/weapon/wrench))
 				playsound(src.loc, 'Ratchet.ogg', 50, 1)

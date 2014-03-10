@@ -1,5 +1,6 @@
 /proc/captain_announce(var/text)
-	world << "<br>"
-	world << "<b>Captain Announces:</b> <font color=\"red\">[sanitize(text)]</font>"
+	world << "<h1 class='alert'>Captain Announces</h1>"
+
+	world << "<span class='alert'>[sanitize(text)]</span>"
 	world << "<br>"
 

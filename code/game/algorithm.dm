@@ -2,28 +2,29 @@
 	..()
 
 	diary = file("data/logs/[time2text(world.realtime, "YYYY/MM-Month/DD-Day")].log")
-	diary << {"
-
-Starting up. [time2text(world.timeofday, "hh:mm.ss")]
----------------------
-
-"}
+	diary << ""
+	diary << ""
+	diary << "Starting up. [time2text(world.timeofday, "hh:mm.ss")]"
+	diary << "---------------------"
+	diary << ""
 
 	jobban_loadbanfile()
 	jobban_updatelegacybans()
 	goon_loadfile()
-//	beta_tester_loadfile()
+	beta_tester_loadfile()
 	LoadBans()
 	process_teleport_locs() //Sets up the wizard teleport locations
 	process_ghost_teleport_locs() //Sets up ghost teleport locations.
-	sleep_offline = 1
 
-	if (config.kick_inactive)
-		spawn(30)
-			//EXPERIMENTAL
-			Optimize()
-			//EXPERIMENTAL
+	spawn(30)
+		//EXPERIMENTAL
+		Optimize()
+		sleep_offline = 1
+		//EXPERIMENTAL
 
+	spawn(0)
+		SetupOccupationsList()
+		return
 
 
 /// EXPERIMENTAL STUFF
@@ -40,20 +41,21 @@ var/opt_inactive = null
 /world/proc/KickInactiveClients()
 	for(var/client/C)
 		if(!C.holder && ((C.inactivity/10)/60) >= 10) // Used to be 15 -- TLE
-			//C << "\red You have been inactive for more than 10 minutes and have been disconnected."
+			C << "\red You have been inactive for more than 10 minutes and have been disconnected."
+			/*
 			if(C.mob)
 				if(!istype(C.mob, /mob/dead/))
-					log_access("AFK: [key_name(C)]")
-					C << "\red You have been inactive for more than 10 minutes and have been disconnected."
-					C.mob.logged_in = 0
+					C << "\red Your character has also been killed to save on server resources."
+					C.mob.death(0) // Added to lighten the load they take on the server -- TLE
 			del(C)
+			*/
 
 /// EXPERIMENTAL STUFF
 
 // This function counts a passed job.
 proc/countJob(rank)
 	var/jobCount = 0
-	for(var/mob/H in mobz)
+	for(var/mob/H in world)
 		if(H.mind && H.mind.assigned_role == rank)
 			jobCount++
 	return jobCount
@@ -79,15 +81,7 @@ proc/countJob(rank)
 	slot_in_backpack = 18
 	slot_h_store = 19
 
-/mob/living/carbon/human/proc/equip_in_one_of_slots(obj/item/W, list/slots, del_on_fail = 1)
-	for (var/slot in slots)
-		if (equip_if_possible(W, slots[slot], del_on_fail = 0))
-			return slot
-	if (del_on_fail)
-		del(W)
-	return null
-
-/mob/living/carbon/human/proc/equip_if_possible(obj/item/W, slot, del_on_fail = 1) // since byond doesn't seem to have pointers, this seems like the best way to do this :/
+/mob/living/carbon/human/proc/equip_if_possible(obj/item/weapon/W, slot) // since byond doesn't seem to have pointers, this seems like the best way to do this :/
 	//warning: icky code
 	var/equipped = 0
 	if((slot == l_store || slot == r_store || slot == belt || slot == wear_id) && !src.w_uniform)
@@ -171,7 +165,7 @@ proc/countJob(rank)
 		if(slot_in_backpack)
 			if (src.back && istype(src.back, /obj/item/weapon/storage/backpack))
 				var/obj/item/weapon/storage/backpack/B = src.back
-				if(B.contents.len < B.storage_slots && W.w_class <= B.max_w_class)
+				if(B.contents.len < 7 && W.w_class <= 3)
 					W.loc = B
 					equipped = 1
 		if(slot_h_store)
@@ -182,12 +176,10 @@ proc/countJob(rank)
 	if(equipped)
 		W.layer = 20
 	else
-		if (del_on_fail)
-			del(W)
-	return equipped
+		del(W)
 
 /proc/AutoUpdateAI(obj/subject)
 	if (subject!=null)
-		for(var/mob/living/silicon/ai/M in mobz)
+		for(var/mob/living/silicon/ai/M in world)
 			if ((M.client && M.machine == subject))
 				subject.attack_ai(M)

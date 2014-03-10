@@ -16,6 +16,8 @@
 				L.Add(T)
 	return L
 
+
+
 /obj/alien/facehugger
 	name = "alien"
 	desc = "An alien, looks pretty scary!"
@@ -49,7 +51,7 @@
 		..()
 		if(aliens_allowed)
 			health = maxhealth
-			process()
+			src.process()
 		else
 			del(src)
 
@@ -58,7 +60,7 @@
 		..()
 		if(!alive)
 			usr << text("\red <B>The alien is not moving.</B>")
-		else if (health > 5)
+		else if (src.health > 5)
 			usr << text("\red <B>The alien looks fresh, just out of the egg.</B>")
 		else
 			usr << text("\red <B>The alien looks injured.</B>")
@@ -73,43 +75,48 @@
 	attackby(obj/item/weapon/W as obj, mob/user as mob)
 		switch(W.damtype)
 			if("fire")
-				health -= W.force * 0.75
+				src.health -= W.force * 0.75
 			if("brute")
-				health -= W.force * 0.5
+				src.health -= W.force * 0.5
 			else
-		if (health <= 0)
-			death()
+		if (src.health <= 0)
+			src.death()
 		else if (W.force)
 			if(ishuman(user) || ismonkey(user))
-				target = user
-				state = 1
+				src.target = user
+				src.state = 1
 		..()
 
-	bullet_act(var/obj/item/projectile/Proj)
-		health -= round(Proj.damage / 2)
+	bullet_act(flag, A as obj)
+		if (flag == PROJECTILE_BULLET)
+			src.health -= 20
+		else if (flag == PROJECTILE_WEAKBULLET)
+			src.health -= 4
+		else if (flag == PROJECTILE_LASER)
+			src.health -= 10
 		healthcheck()
 
 	ex_act(severity)
 		switch(severity)
 			if(1.0)
-				death()
+				src.death()
 			if(2.0)
-				health -= 15
+				src.health -= 15
 				healthcheck()
 		return
 
 	meteorhit()
-		death()
+		src.death()
 		return
 
 	blob_act()
 		if(prob(50))
-			death()
+			src.death()
 		return
 
 	Bumped(AM as mob|obj)
 		if(ismob(AM) && (ishuman(AM) || ismonkey(AM)) )
-			target = AM
+			src.target = AM
 			set_attack()
 		else if(ismob(AM))
 			spawn(0)
@@ -118,10 +125,10 @@
 
 	Bump(atom/A)
 		if(ismob(A) && (ishuman(A) || ismonkey(A)))
-			target = A
+			src.target = A
 			set_attack()
 		else if(ismob(A))
-			loc = A:loc
+			src.loc = A:loc
 
 	temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
 		if(exposed_temperature > 300)
@@ -132,9 +139,8 @@
 
 
 	verb/follow()
-		set src in view() //set src in get_aliens(view()) - does not work, damn shitty byond :( -- rastaf0
+		set src in view()
 		set name = "Follow Me"
-		set category = "Object" //"Alien" does not work perfect - humans get "Alien" tab too, that's annoying
 		if(!alive) return
 		if(!isalien(usr))
 			usr << text("\red <B>The alien ignores you.</B>")
@@ -150,7 +156,6 @@
 	verb/stop()
 		set src in view()
 		set name = "Stop Following"
-		set category = "Object"
 		if(!alive) return
 		if(!isalien(usr))
 			usr << text("\red <B>The alien ignores you.</B>")
@@ -206,7 +211,7 @@
 				view = 1
 			else
 				view = viewrange-2
-			for (var/mob/living/carbon/C in range(view,loc))
+			for (var/mob/living/carbon/C in range(view,src.loc))
 				if (C.stat == 2 || isalien(C) || C.alien_egg_flag || !can_see(src,C,viewrange))
 					continue
 				if(C:stunned || C:paralysis || C:weakened)
@@ -232,29 +237,27 @@
 			if(can_see(src,target,viewrange))
 				if(distance <= 1 && (!lamarr || prob(20)))
 					for(var/mob/O in viewers(world.view,src))
-						O.show_message("\red <B>[target] has been leapt on by [lamarr ? name : "the alien"]!</B>", 1, "\red You hear someone fall", 2)
+						O.show_message("\red <B>[src.target] has been leapt on by [lamarr ? src.name : "the alien"]!</B>", 1, "\red You hear someone fall", 2)
 					if (!lamarr)
-						target:take_overall_damage(5)
+						target:bruteloss += 5
 						if(prob(70))
 							target:paralysis = max(target:paralysis, 5)
-					loc = target.loc
+					src.loc = target.loc
 
 					if(!target.alien_egg_flag && ( ishuman(target) || ismonkey(target) ) )
 						if (!lamarr)
+							target.alien_egg_flag = 1
 							var/mob/trg = target
-							death()
-							//if(trg.virus)//Viruses are stored in a global database.
-								//trg.virus.cure(0)//You need to either cure() or del() them to stop their processing.
-							trg.contract_disease(new /datum/disease/alien_embryo(0))//So after that you need to infect the target anew.
-							for(var/datum/disease/alien_embryo/A in trg.viruses)
-								if(target.virus)//If they actually get infected. They may not.
-									target.alien_egg_flag = 1//We finally set their flag to 1.
+							src.death()
+							if(trg.virus)
+								trg.virus.cure(0)
+							trg.contract_disease(new /datum/disease/alien_embryo(0))
 							return
 						else
 							sleep(50)
 					else
 						set_null()
-						spawn(cycle_pause) process()
+						spawn(cycle_pause) src.process()
 						return
 
 				step_towards(src,get_step_towards2(src , target))
@@ -264,7 +267,7 @@
 					path_attack(target)
 					if(!path_target.len)
 						set_null()
-						spawn(cycle_pause) process()
+						spawn(cycle_pause) src.process()
 						return
 				else
 					var/turf/next = path_target[1]
@@ -273,23 +276,23 @@
 						path_attack(target)
 
 					if(!path_target.len)
-						frustration += 5
+						src.frustration += 5
 					else
 						next = path_target[1]
 						path_target -= next
 						step_towards(src,next)
 						quick_move = 1
 
-			if (get_dist(src, target) >= distance) frustration++
-			else frustration--
+			if (get_dist(src, src.target) >= distance) src.frustration++
+			else src.frustration--
 			if(frustration >= 35 || lamarr) set_null()
 
 		if(quick_move)
 			spawn(cycle_pause/2)
-				process()
+				src.process()
 		else
 			spawn(cycle_pause)
-				process()
+				src.process()
 
 	proc/idle()
 		set background = 1
@@ -297,7 +300,7 @@
 
 		if(state != 2 || !alive || target) return
 
-		if(locate(/obj/alien/weeds) in loc && health < maxhealth)
+		if(locate(/obj/alien/weeds) in src.loc && health < maxhealth)
 			health++
 			spawn(cycle_pause) idle()
 			return
@@ -312,7 +315,7 @@
 					if(!path_idle.len)
 						trg_idle = null
 						set_idle()
-						spawn(cycle_pause) idle()
+						spawn(cycle_pause) src.idle()
 						return
 			else
 				var/obj/alien/weeds/W = null
@@ -320,7 +323,7 @@
 					var/list/the_weeds = new/list()
 
 					find_weeds:
-						for(var/obj/alien/weeds/weed in range(viewrange,loc))
+						for(var/obj/alien/weeds/weed in range(viewrange,src.loc))
 							if(!can_see(src,weed,viewrange)) continue
 							for(var/atom/A in get_turf(weed))
 								if(A.density) continue find_weeds
@@ -332,11 +335,11 @@
 					path_idle(W)
 					if(!path_idle.len)
 						trg_idle = null
-						spawn(cycle_pause) idle()
+						spawn(cycle_pause) src.idle()
 						return
 				else
 					for(var/mob/living/carbon/alien/humanoid/H in range(1,src))
-						spawn(cycle_pause) idle()
+						spawn(cycle_pause) src.idle()
 						return
 					step(src,pick(cardinal))
 
@@ -362,7 +365,7 @@
 					path_idle(trg_idle)
 
 				if(!path_idle.len)
-					spawn(cycle_pause) idle()
+					spawn(cycle_pause) src.idle()
 					return
 				else
 					next = path_idle[1]
@@ -378,18 +381,18 @@
 				idle()
 
 	proc/path_idle(var/atom/trg)
-		path_idle = AStar(loc, get_turf(trg), /turf/proc/CardinalTurfsWithAccess, /turf/proc/Distance, 0, 250, null, null)
+		path_idle = AStar(src.loc, get_turf(trg), /turf/proc/CardinalTurfsWithAccess, /turf/proc/Distance, 0, 250, null, null)
 		path_idle = reverselist(path_idle)
 
 	proc/path_attack(var/atom/trg)
 		target = trg
-		path_target = AStar(loc, target.loc, /turf/proc/CardinalTurfsWithAccess, /turf/proc/Distance, 0, 250, null, null)
+		path_target = AStar(src.loc, target.loc, /turf/proc/CardinalTurfsWithAccess, /turf/proc/Distance, 0, 250, null, null)
 		path_target = reverselist(path_target)
 
 
 	proc/death()
 		if(!alive) return
-		alive = 0
+		src.alive = 0
 		density = 0
 		icon_state = "facehugger_l"
 		set_null()
@@ -397,6 +400,6 @@
 			O.show_message("\red <B>[src] curls up into a ball!</B>", 1)
 
 	proc/healthcheck()
-		if (health <= 0)
-			death()
+		if (src.health <= 0)
+			src.death()
 

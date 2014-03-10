@@ -4,7 +4,7 @@
 		icon = 'objects.dmi'
 		icon_state = "shieldoff"
 		var/active = 0
-		health = 100
+		var/health = 100
 		var/malfunction = 0
 		density = 1
 		opacity = 0
@@ -36,7 +36,15 @@
 		flags = FPRINT | CONDUCT
 		use_power = 0
 
-
+/obj/machinery/shield
+		name = "shield"
+		desc = "An energy shield."
+		icon = 'effects.dmi'
+		icon_state = "shieldsparkles"
+		density = 1
+		opacity = 1
+		anchored = 1
+		unacidable = 1
 
 /obj/machinery/shieldwall
 		name = "Shield"
@@ -113,26 +121,43 @@
 	return
 
 /obj/machinery/shieldgen/meteorhit(obj/O as obj)
-	src.health -= 5
-	if (prob(1))
+	src.health -= 25
+	if (prob(5))
 		src.malfunction = 1
 	src.checkhp()
 	return
 
+/obj/machinery/shield/meteorhit(obj/O as obj)
+	if (prob(75))
+		del(src)
+	return
 
 /obj/machinery/shieldgen/ex_act(severity)
 	switch(severity)
 		if(1.0)
-			src.health -= 35
+			src.health -= 75
 			src.checkhp()
 		if(2.0)
-			src.health -= 10
+			src.health -= 30
 			if (prob(15))
 				src.malfunction = 1
 			src.checkhp()
 		if(3.0)
-			src.health -= 5
+			src.health -= 10
 			src.checkhp()
+	return
+
+/obj/machinery/shield/ex_act(severity)
+	switch(severity)
+		if(1.0)
+			if (prob(75))
+				del(src)
+		if(2.0)
+			if (prob(50))
+				del(src)
+		if(3.0)
+			if (prob(25))
+				del(src)
 	return
 
 /obj/machinery/shieldgen/attack_hand(mob/user as mob)
@@ -351,9 +376,22 @@
 	src.cleanup(8)
 	..()
 
-/obj/machinery/shieldwallgen/bullet_act(var/obj/item/projectile/Proj)
+/obj/machinery/shieldwallgen/bullet_act(flag)
 
-	storedpower -= Proj.damage
+	switch(flag)
+		if (PROJECTILE_BULLET)
+			src.storedpower -= 10
+		if (PROJECTILE_WEAKBULLET)
+			src.storedpower -= 1
+		if (PROJECTILE_LASER)
+			src.storedpower +=20
+		if (PROJECTILE_TASER)
+			src.storedpower +=3
+		if (PROJECTILE_PULSE)
+			src.storedpower +=50
+		else
+			src.storedpower -=2
+	return
 
 
 /obj/machinery/shield
@@ -428,7 +466,7 @@
 	if(A && B)
 		needs_power = 1
 	spawn(1)
-		src.ul_SetLuminosity(3)
+		src.sd_SetLuminosity(3)
 
 /*	for(var/mob/M as mob in src.loc) //does not work for some reason.
 	 	if(istype(M,/mob/living/carbon))
@@ -460,7 +498,7 @@
 			gen_secondary.storedpower -=10
 
 
-/obj/machinery/shieldwall/bullet_act(var/obj/item/projectile/Proj)
+/obj/machinery/shieldwall/bullet_act(flag)
 
 	if(needs_power)
 		var/obj/machinery/shieldwallgen/G
@@ -468,8 +506,19 @@
 			G = gen_primary
 		else
 			G = gen_secondary
-
-		G.storedpower -= Proj.damage
+		switch(flag)
+			if (PROJECTILE_BULLET)
+				G.storedpower -= 10
+			if (PROJECTILE_WEAKBULLET)
+				G.storedpower -=1
+			if (PROJECTILE_LASER)
+				G.storedpower +=20
+			if (PROJECTILE_TASER)
+				G.storedpower +=3
+			if (PROJECTILE_PULSE)
+				G.storedpower +=50
+			else
+				G.storedpower -=2
 	return
 
 
@@ -477,10 +526,10 @@
 /obj/machinery/shieldwall/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	if(air_group || (height==0)) return 1
 
-	if(istype(mover) && mover.checkpass(PASSGLASS))
+	if ((istype(mover, /obj/item/weapon/dummy) || istype(mover, /obj/beam)))
 		return prob(20)
 	else
-		if (istype(mover, /obj/item/projectile))
+		if (istype(mover, /obj/bullet))
 			return prob(10)
 		else
 			return !src.density

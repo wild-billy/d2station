@@ -18,7 +18,7 @@
 	var/locked = 1
 	var/atom/movable/load = null		// the loaded crate (usually)
 
-	var/beacon_freq = 1400
+	var/beacon_freq = 1445
 	var/control_freq = 1447
 
 	suffix = ""
@@ -84,11 +84,12 @@
 
 	spawn(5)	// must wait for map loading to finish
 		if(radio_controller)
+			sleep(-1)
 			radio_controller.add_object(src, control_freq, filter = RADIO_MULEBOT)
 			radio_controller.add_object(src, beacon_freq, filter = RADIO_NAVBEACONS)
 
 		var/count = 0
-		for(var/obj/machinery/bot/mulebot/other in machines)
+		for(var/obj/machinery/bot/mulebot/other in world)
 			count++
 		if(!suffix)
 			suffix = "#[count]"
@@ -267,7 +268,7 @@
 		else
 			dat += "The bot is in maintenance mode and cannot be controlled.<BR>"
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Mulebot [suffix ? "([suffix])" : ""]</TITLE></HEAD>[dat]", "window=mulebot;size=350x500")
+	user << browse("<HEAD><TITLE>Mulebot [suffix ? "([suffix])" : ""]</TITLE></HEAD>[dat]", "window=mulebot;size=350x500")
 	onclose(user, "mulebot")
 	return
 
@@ -365,7 +366,7 @@
 
 			if("destination")
 				refresh=0
-				var/new_dest = strip_html(input("Enter new destination tag", "Mulebot [suffix ? "([suffix])" : ""]", destination)) as text|null
+				var/new_dest = input("Enter new destination tag", "Mulebot [suffix ? "([suffix])" : ""]", destination) as text|null
 				refresh=1
 				if(new_dest)
 					set_destination(new_dest)
@@ -373,7 +374,7 @@
 
 			if("setid")
 				refresh=0
-				var/new_id = strip_html(input("Enter new bot ID", "Mulebot [suffix ? "([suffix])" : ""]", suffix)) as text|null
+				var/new_id = input("Enter new bot ID", "Mulebot [suffix ? "([suffix])" : ""]", suffix) as text|null
 				refresh=1
 				if(new_id)
 					suffix = new_id
@@ -382,7 +383,7 @@
 
 			if("sethome")
 				refresh=0
-				var/new_home = strip_html(input("Enter new home tag", "Mulebot [suffix ? "([suffix])" : ""]", home_destination)) as text|null
+				var/new_home = input("Enter new home tag", "Mulebot [suffix ? "([suffix])" : ""]", home_destination) as text|null
 				refresh=1
 				if(new_home)
 					home_destination = new_home
@@ -572,6 +573,7 @@
 
 /obj/machinery/bot/mulebot/proc/process_bot()
 	//if(mode) world << "Mode: [mode]"
+	sleep(-1)
 	switch(mode)
 		if(0)		// idle
 			icon_state = "mulebot0"
@@ -964,5 +966,4 @@
 	s.start()
 
 	new /obj/decal/cleanable/oil(src.loc)
-	unload(0)
 	del(src)

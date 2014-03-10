@@ -3,7 +3,7 @@
 	icon = 'atmos.dmi'
 	icon_state = "yellow"
 	density = 1
-	health = 100.0
+	var/health = 100.0
 	flags = FPRINT | CONDUCT
 
 	var/valve_open = 0
@@ -59,6 +59,12 @@
 		icon_state = "[colour]"
 		if(holding)
 			overlays += image('atmos.dmi', "can-oT")
+			if((holding.icon_state == "oxygen") || (holding.icon_state == "jetpack1") || (holding.icon_state == "jetpack0") || (holding.icon_state == "emergency"))
+				overlays += image('atmos.dmi', "can-open_ox")
+			if(holding.icon_state == "plasma")
+				overlays += image('atmos.dmi', "can-open_pl")
+			if(holding.icon_state == "anesthetic")
+				overlays += image('atmos.dmi', "can-open_an")
 
 		var/tank_pressure = air_contents.return_pressure()
 
@@ -134,18 +140,6 @@
 /obj/machinery/portable_atmospherics/canister/return_air()
 	return air_contents
 
-/obj/machinery/portable_atmospherics/canister/proc/return_temperature()
-	var/datum/gas_mixture/GM = src.return_air()
-	if(GM && GM.volume>0)
-		return GM.temperature
-	return 0
-
-/obj/machinery/portable_atmospherics/canister/proc/return_pressure()
-	var/datum/gas_mixture/GM = src.return_air()
-	if(GM && GM.volume>0)
-		return GM.return_pressure()
-	return 0
-
 /obj/machinery/portable_atmospherics/canister/blob_act()
 	src.health -= 1
 	healthcheck()
@@ -191,14 +185,12 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 <A href='?src=\ref[user];mach_close=canister'>Close</A><BR>
 "}
 
-	user << browse("<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>[src]</title></head><body>[output_text]</body></html>", "window=canister;size=600x300")
+	user << browse("<html><head><title>[src]</title></head><body>[output_text]</body></html>", "window=canister;size=600x300")
 	onclose(user, "canister")
 	return
 
 /obj/machinery/portable_atmospherics/canister/Topic(href, href_list)
 	..()
-	var/turf/bombturf = get_turf(src)
-	var/bombarea = bombturf.loc.name
 	if (usr.stat || usr.restrained())
 		return
 	if (((get_dist(src, usr) <= 1) && istype(src.loc, /turf)))
@@ -214,10 +206,8 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 				if (holding)
 					playsound(src.loc, 'oxygen_desk.ogg', 20, 1)
 					release_log += "Valve was <b>opened</b> by [usr], starting the transfer into the [holding]<br>"
-					message_admins("[name] valve was opened in [bombarea] by [src.fingerprintslast]")
 				else
 					playsound(src.loc, 'oxygen_desk.ogg', 20, 1)
-					message_admins("[name] valve was opened in [bombarea] by [src.fingerprintslast]")
 					release_log += "Valve was <b>opened</b> by [usr], starting the transfer into the <font colour='red'><b>air</b></font><br>"
 			valve_open = !valve_open
 
@@ -258,8 +248,8 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 		return
 	return
 
-/obj/machinery/portable_atmospherics/canister/bullet_act(var/obj/item/projectile/Proj)
-	if (Proj.flag == "bullet")
+/obj/machinery/portable_atmospherics/canister/bullet_act(flag)
+	if (flag == PROJECTILE_BULLET)
 		src.health = 0
 		spawn( 0 )
 			healthcheck()
@@ -317,6 +307,7 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 
 	src.update_icon()
 	return 1
+
 
 /obj/machinery/portable_atmospherics/canister/carbon_dioxide/New()
 

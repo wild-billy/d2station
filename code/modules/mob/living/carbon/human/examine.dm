@@ -78,27 +78,15 @@
 
 	if (src.wear_id)
 		var/id
-		var/photo = 0
 		if(istype(src:wear_id, /obj/item/device/pda))
 			var/obj/item/device/pda/pda = src:wear_id
 			id = pda.owner
 		else
 			id = src.wear_id.registered
-			if (src.wear_id.PHOTO)
-				photo = 1
 		if (id != src.real_name && in_range(src, usr) && prob(10))
-			if (photo)
-				usr << "\red [src.name] is wearing \icon[src.wear_id] [src.wear_id.name] with a photo yet doesn't seem to be that person!!!"
-			else
-				usr << "\red [src.name] is wearing \icon[src.wear_id] [src.wear_id.name] yet doesn't seem to be that person!!!"
+			usr << "\red [src.name] is wearing \icon[src.wear_id] [src.wear_id.name] yet doesn't seem to be that person!!!"
 		else
-			if (photo)
-				usr << "\blue [src.name] is wearing \icon[src.wear_id] [src.wear_id.name] with a photo."
-			else
-				usr << "\blue [src.name] is wearing \icon[src.wear_id] [src.wear_id.name]."
-
-	if (src.frozen)
-		usr << "\red Holy shit! [src.name] is frozen!"
+			usr << "\blue [src.name] is wearing \icon[src.wear_id] [src.wear_id.name]."
 
 	if (src.is_jittery)
 		switch(src.jitteriness)
@@ -120,9 +108,9 @@
 
 		if (src.cloneloss)
 			if (src.cloneloss < 30)
-				usr << "\red [src.name] looks slightly... unfinished?"
+				usr << "\red [src.name]'s skin looks a bit too pink."
 			else
-				usr << "\red <B>[src.name] looks very... unfinished?</B>"
+				usr << "\red <B>[src.name]'s skin looks almost transparent!</B>"
 
 		if (src.fireloss)
 			if (src.fireloss < 30)
@@ -151,25 +139,7 @@
 		if (src.moaning)
 			usr << "\red [src] looks like they're in pleasure."
 
-		if (src.turnedon)
-			usr << "\blue [src] looks a bit like as if they were blushing."
-
-		if(druggy)
-			usr << "\red [src] looks high on drugs!"
-
-		if(confused >= 5 || dizziness >= 5)
-			usr << "\red [src] seems drunk!"
-
-		if(dizziness >= 50)
-			usr << "\red [src] seems sick!"
-
-		if(confused >= 20 || dizziness >= 20)
-			usr << "\blue [src] seems hungover."
-
-		if(brainloss >= 60)
-			usr << "\blue [src] seems to be drooling out of their mouth."
-
-		if(sleeping)
-			usr << "\blue [src] is asleep."
+		/*if (src.horny)
+			usr << "\blue [src] looks a bit like as if they were blushing."*/
 
 	usr << "\blue *---------*"

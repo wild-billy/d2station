@@ -11,11 +11,10 @@
 
 /obj/machinery/power/solar/attackby(obj/item/weapon/W, mob/user)
 	..()
-	if (W)
-		src.add_fingerprint(user)
-		src.health -= W.force
-		src.healthcheck()
-		return
+	src.add_fingerprint(user)
+	src.health -= W.force
+	src.healthcheck()
+	return
 
 /obj/machinery/power/solar/blob_act()
 	src.health--
@@ -43,8 +42,6 @@
 	return
 
 /obj/machinery/power/solar/proc/update_solar_exposure()
-	if(!sun)
-		return
 	if(obscured)
 		sunfrac = 0
 		return
@@ -59,9 +56,10 @@
 #define SOLARGENRATE 1500
 
 /obj/machinery/power/solar/process()
+
 	if(stat & BROKEN)
 		return
-	sleep(-1)
+
 	//return //TODO: FIX
 
 	if(!obscured)
@@ -96,10 +94,6 @@
 				new /obj/item/weapon/shard( src.loc )
 			return
 		if(2.0)
-			if (prob(25))
-				new /obj/item/weapon/shard( src.loc )
-				del(src)
-				return
 			if (prob(50))
 				broken()
 		if(3.0)
@@ -108,7 +102,7 @@
 	return
 
 /obj/machinery/power/solar/blob_act()
-	if(prob(75))
+	if(prob(50))
 		broken()
 		src.density = 0
 
@@ -196,7 +190,7 @@
 	add_fingerprint(user)
 	user.machine = src
 
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Solar Generator Control</B><HR><PRE>"
+	var/t = "<TT><B>Solar Generator Control</B><HR><PRE>"
 	t += "Generated power : [round(lastgen)] W<BR><BR>"
 	t += "<B>Orientation</B>: [rate_control(src,"cdir","[cdir]&deg",1,15)] ([angle2text(cdir)])<BR><BR><BR>"
 
@@ -248,7 +242,7 @@
 		if(src.trackrate) nexttime = world.timeofday + 3600/abs(trackrate)
 		track = text2num(href_list["track"])
 		if(track == 2)
-			var/obj/machinery/power/tracker/T = locate() in machines
+			var/obj/machinery/power/tracker/T = locate() in world
 			if(T)
 				cdir = T.sun_angle
 
@@ -294,6 +288,6 @@
 	return
 
 /obj/machinery/power/solar_control/blob_act()
-	if (prob(75))
+	if (prob(50))
 		broken()
 		src.density = 0

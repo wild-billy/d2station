@@ -4,6 +4,7 @@
 	..()
 	if (istype(W, /obj/item/weapon/wrench))
 		new /obj/item/stack/sheet/metal( get_turf(src.loc), 2 )
+		new /obj/item/stack/sheet/metal( src.loc, 2 )
 		del(src)
 
 /obj/item/apc_frame/proc/try_build(turf/on_wall)
@@ -21,7 +22,7 @@
 		usr << "\red APC cannot be placed in this area."
 		return
 	if (A.get_apc())
-		usr << "\red This area already has APC."
+		usr << "\red This area already has an APC."
 		return //only one APC per area
 	for(var/obj/machinery/power/terminal/T in loc)
 		if (T.master)

@@ -58,7 +58,7 @@ obj/machinery/door/airlock
 
 			signal.data["door_status"] = density?("closed"):("open")
 			signal.data["lock_status"] = locked?("locked"):("unlocked")
-
+			sleep(-1)
 			radio_connection.post_signal(src, signal, range = AIRLOCK_CONTROL_RANGE, filter = RADIO_AIRLOCK)
 
 	open(surpress_send)
@@ -118,7 +118,7 @@ obj/machinery/airlock_sensor
 		signal.transmission_method = 1 //radio signal
 		signal.data["tag"] = master_tag
 		signal.data["command"] = "cycle"
-
+		sleep(-1)
 		radio_connection.post_signal(src, signal, range = AIRLOCK_CONTROL_RANGE, filter = RADIO_AIRLOCK)
 		flick("airlock_sensor_cycle", src)
 
@@ -135,7 +135,7 @@ obj/machinery/airlock_sensor
 			alert = (pressure < ONE_ATMOSPHERE*0.8)
 
 			signal.data["pressure"] = num2text(pressure)
-
+			sleep(-1)
 			radio_connection.post_signal(src, signal, range = AIRLOCK_CONTROL_RANGE, filter = RADIO_AIRLOCK)
 
 		update_icon()
@@ -182,7 +182,7 @@ obj/machinery/access_button
 			signal.transmission_method = 1 //radio signal
 			signal.data["tag"] = master_tag
 			signal.data["command"] = command
-
+			sleep(-1)
 			radio_connection.post_signal(src, signal, range = AIRLOCK_CONTROL_RANGE, filter = RADIO_AIRLOCK)
 		flick("access_button_cycle", src)
 
@@ -200,46 +200,6 @@ obj/machinery/access_button
 
 		if(radio_controller)
 			set_frequency(frequency)
-
-//gas
-/obj/machinery/gas_shower
-	name = "Decontamination shower"
-	icon = 'stationobjs.dmi'
-	icon_state = "sprinkler"
-	layer = 4
-	anchored = 1.0
-	var/id_tag
-	var/on = 0
-	var/datum/effects/system/mustard_gas_spread/mustard_gas
-
-/obj/machinery/gas_shower/New()
-	var/datum/reagents/R = new/datum/reagents(5000)
-	reagents = R
-	R.my_atom = src
-	R.add_reagent("cleaner", 5000)
-
-/obj/machinery/gas_shower/attack_hand(mob/user)
-	if(src.on == 0)
-		src.on = 1
-		src.process()
-	else
-		src.on = 0
-
-/obj/machinery/gas_shower/proc/spray()
-	spawn(0)
-		src.mustard_gas = new /datum/effects/system/mustard_gas_spread/
-		src.mustard_gas.attach(src)
-		src.mustard_gas.set_up(5, 0, src.loc)
-		src.mustard_gas.start()
-	return
-
-/obj/machinery/gas_shower/process()
-	if(src.on)
-		spray()
-		sleep(30)
-		process()
-//gas
-
 
 /obj/machinery/decon_shower
 	name = "Decontamination shower"
@@ -262,11 +222,9 @@ obj/machinery/access_button
 	R.add_reagent("cleaner", 5000)
 
 /obj/machinery/decon_shower/attack_hand(mob/user)
-	if(src.on == 0)
+	src.spray()
+	if (istype(src, /obj/machinery/decon_shower/personal))
 		src.on = 1
-		src.process()
-	else
-		src.on = 0
 
 /obj/machinery/decon_shower/proc/spray()
 	var/obj/decal/D = new/obj/decal(get_turf(src))
@@ -296,7 +254,6 @@ obj/machinery/access_button
 	return
 
 /obj/machinery/decon_shower/personal/process()
-	if(src.on)
+	while (src.on)
 		spray()
-		sleep(10)
-		process()
+		sleep(20)

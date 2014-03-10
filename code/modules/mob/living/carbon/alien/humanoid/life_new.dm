@@ -112,15 +112,15 @@
 		handle_mutations_and_radiation()
 
 			if(src.fireloss)
-				if(src.mutations & COLD_RESISTANCE || prob(50))
+				if(src.mutations & 2 || prob(50))
 					switch(src.fireloss)
 						if(1 to 50)
 							src.fireloss--
 						if(51 to 100)
 							src.fireloss -= 5
 
-			if (src.mutations & HULK && src.health <= 25)
-				src.mutations &= ~HULK
+			if (src.mutations & 8 && src.health <= 25)
+				src.mutations &= ~8
 				src << "\red You suddenly feel very weak."
 				src.weakened = 3
 				emote("collapse")
@@ -164,7 +164,6 @@
 
 
 		breathe()
-			if(mutations & 32)	return
 			if(src.reagents)
 				if(src.reagents.has_reagent("lexorin")) return
 			if(istype(loc, /obj/machinery/atmospherics/unary/cryo_cell)) return
@@ -260,7 +259,7 @@
 			breath.toxins -= toxins_used
 			breath.oxygen += toxins_used
 
-			if(breath.temperature > (T0C+66) && !(src.mutations & COLD_RESISTANCE)) // Hot air hurts :(
+			if(breath.temperature > (T0C+66) && !(src.mutations & 2)) // Hot air hurts :(
 				if(prob(20))
 					src << "\red You feel a searing heat in your lungs!"
 				fire_alert = max(fire_alert, 1)
@@ -318,7 +317,7 @@
 				thermal_protection += 0.2
 			if(wear_suit && (wear_suit.flags & SUITSPACE))
 				thermal_protection += 3
-			if(src.mutations & COLD_RESISTANCE)
+			if(src.mutations & 2)
 				thermal_protection += 5
 
 			return thermal_protection
@@ -342,15 +341,15 @@
 
 			if(reagents) reagents.metabolize(src)
 
-			if(src.nutrition > 500 && !(src.mutations & FAT))
+			if(src.nutrition > 500 && !(src.mutations & 32))
 				if(prob(5 + round((src.nutrition - 200) / 2)))
 					src << "\red You suddenly feel blubbery!"
-					src.mutations |= FAT
+					src.mutations |= 32
 //					update_body()
-			if (src.nutrition < 100 && src.mutations & FAT)
+			if (src.nutrition < 100 && src.mutations & 32)
 				if(prob(round((50 - src.nutrition) / 100)))
 					src << "\blue You feel fit again!"
-					src.mutations &= ~FAT
+					src.mutations &= ~32
 //					update_body()
 			if (src.nutrition > 0)
 				src.nutrition -= HUNGER_FACTOR
@@ -361,10 +360,6 @@
 				if (prob(5))
 					src.sleeping = 1
 					src.paralysis = 5
-
-			if(confused >= 15)
-				if(prob(2))
-					emote("vomit")
 
 			confused = max(0, confused - 1)
 			// decrement dizziness counter, clamped to 0
@@ -381,7 +376,7 @@
 
 		handle_regular_status_updates()
 
-			health = 100 - (oxyloss + fireloss + bruteloss + cloneloss)
+			health = 100 - (oxyloss + fireloss + bruteloss)
 
 			if(oxyloss > 50) paralysis = max(paralysis, 3)
 
@@ -465,12 +460,15 @@
 
 		handle_regular_hud_updates()
 
-			if (src.stat == 2 || src.mutations & XRAY)
+			if (src.stat == 2 || src.mutations & 4)
 				src.sight |= SEE_TURFS
 				src.sight |= SEE_MOBS
 				src.sight |= SEE_OBJS
 				src.see_in_dark = 8
 				src.see_invisible = 2
+			else if(src.reagents.has_reagent("psilocybin"))
+				if (src.druggy > 30)
+					src.see_invisible = 10
 			else if (src.stat != 2)
 				src.sight |= SEE_MOBS
 				src.sight &= ~SEE_TURFS
@@ -538,9 +536,8 @@
 			return 1
 
 		handle_virus_updates()
-			if(src.bodytemperature > 406)
-				for(var/datum/disease/D in viruses)
-					D.cure()
+			if(src.bodytemperature > 406 && src.virus)
+				src.virus.cure()
 			return
 
 		check_if_buckled()
@@ -562,6 +559,11 @@
 						if(M.stat == 2)
 							M.death(1)
 							stomach_contents.Remove(M)
+							if(M.client)
+								var/mob/dead/observer/newmob = new(M)
+								M:client:mob = newmob
+								M.mind.transfer_to(newmob)
+								newmob.reset_view(null)
 							del(M)
 							continue
 						if(air_master.current_cycle%3==1)

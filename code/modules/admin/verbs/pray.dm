@@ -10,10 +10,10 @@
 	if (!msg)
 		return
 
-	if (usr.client.muted)
+	if (usr.muted)
 		return
 
-	for (var/mob/M in mobz)
+	for (var/mob/M in world)
 		if (M.client && M.client.holder)
 			M << "\blue <b><font color=purple>PRAY: </font>[key_name(src, M)](<A HREF='?src=\ref[M.client.holder];adminplayeropts=\ref[src]'>X</A>):</b> [msg]"
 

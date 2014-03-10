@@ -4,10 +4,7 @@
 	cure = "None"
 	spread = "Bites"
 	spread_type = SPECIAL
-	affected_species = list("Monkey", "Human")
-	affected_species2 = list(/mob/living/carbon/monkey, /mob/living/carbon/human)
+	affected_species = list("Monkey")
 	curable = 0
 	desc = "Monkies with this disease will bite humans, causing humans to spontaneously mutate into a monkey."
 	severity = "Medium"
-	//stage_prob = 100
-	agent = "Kongey Vibrion M-909"

@@ -69,18 +69,18 @@
 	icon_state = "bookcase"
 	anchored = 1
 	density = 1
-	opacity = 1
+	opacity = 0
 
 	attackby(obj/O as obj, mob/user as mob)
 		if(istype(O, /obj/item/weapon/book))
 			user.drop_item()
 			O.loc = src
 		else if(istype(O, /obj/item/weapon/pen))
-			var/newname = strip_html(input("What would you like to title this bookshelf?")) as text|null
+			var/newname = input("What would you like to title this bookshelf?") as text|null
 			if(!newname)
 				return
 			else
-				src.setname(sanitize(newname))
+				src.setname(newname)
 		else
 			..()
 	attack_hand(var/mob/user as mob)
@@ -123,47 +123,31 @@
 			else
 		return
 
-
 /obj/bookcase/manuals/medical
 	name = "Medical Manuals bookcase"
-
 	New()
 		..()
 		new /obj/item/weapon/book/manual/medical_cloning(src)
-
+		new /obj/item/weapon/book/manual/medicinefordummies(src)
 
 /obj/bookcase/manuals/engineering
 	name = "Engineering Manuals bookcase"
-
 	New()
 		..()
 		new /obj/item/weapon/book/manual/engineering_construction(src)
-		new /obj/item/weapon/book/manual/engineering_particle_accelerator(src)
+		//new /obj/item/weapon/book/manual/engineering_particle_accelerator(src)
 		new /obj/item/weapon/book/manual/engineering_hacking(src)
 		new /obj/item/weapon/book/manual/engineering_guide(src)
-		new /obj/item/weapon/book/manual/engineering_singularity_safety(src)
-		new /obj/item/weapon/book/manual/robotics_cyborgs(src)
+		//new /obj/item/weapon/book/manual/engineering_singularity_safety(src)
 
 /obj/bookcase/manuals/research_and_development
 	name = "R&D Manuals bookcase"
-
 	New()
 		..()
 		new /obj/item/weapon/book/manual/research_and_development(src)
-		new /obj/item/weapon/book/manual/research_and_development(src)
 
-/obj/bookcase/manuals/chapel
-	name = "chapel bookcase"
-	New()
-		..()
-		new /obj/item/weapon/storage/bible(src)
-		new /obj/item/weapon/storage/bible(src)
-		new /obj/item/weapon/storage/bible(src)
-		if (prob(5))
-			new /obj/item/weapon/storage/bible/booze(src)
-
-
-
+/obj/bookcase/manuals/misc
+	name = "Miscellaneous Manuals"
 
 /obj/item/weapon/book
 	name = "book"
@@ -172,6 +156,8 @@
 	throw_speed = 1
 	throw_range = 5
 	w_class = 1.0
+	var/lit = 0
+	var/smoketime = 7
 	flags = FPRINT | TABLEPASS
 	var
 		dat			 // Actual page content
@@ -188,19 +174,105 @@
 			user << "This book is completely blank!"
 
 	attackby(obj/item/weapon/W as obj, mob/user as mob)
-		return
+		if(istype(W, /obj/item/weapon/pen))
+			if(unique)
+				user << "These pages don't seem to take the ink well. Looks like you can't modify it."
+				return
+			var/choice = input("What would you like to change?") in list("Title", "Contents", "Author", "Cancel")
+			switch(choice)
+				if("Title")
+					var/title = input("Write a new title:") as text|null
+					if(!title)
+						return
+					else
+						src.name = title
+				else if("Contents")
+					var/content = strip_html(input("Write your book's contents (HTML NOT allowed):"),8192) as message|null
+					if(!content)
+						return
+					else
+						src.dat += content
+				else if("Author")
+					var/nauthor = input("Write the author's name:") as text|null
+					if(!nauthor)
+						return
+					else
+						src.author = nauthor
+				else
+					return
+		else if(istype(W, /obj/item/weapon/barcodescanner))
+			var/obj/item/weapon/barcodescanner/scanner = W
+			if(!scanner.computer)
+				user << "[W]'s screen flashes: 'No associated computer found!'"
+			else
+				switch(scanner.mode)
+					if(0)
+						scanner.book = src
+						user << "[W]'s screen flashes: 'Book stored in buffer.'"
+					if(1)
+						scanner.book = src
+						scanner.computer.buffer_book = src.name
+						user << "[W]'s screen flashes: 'Book stored in buffer. Book title stored in associated computer buffer.'"
+					if(2)
+						scanner.book = src
+						for(var/datum/borrowbook/b in scanner.computer.checkouts)
+							if(b.bookname == src.name)
+								scanner.computer.checkouts.Remove(b)
+								user << "[W]'s screen flashes: 'Book stored in buffer. Book has been checked in.'"
+								return
+						user << "[W]'s screen flashes: 'Book stored in buffer. No active check-out record found for current title.'"
+					if(3)
+						scanner.book = src
+						for(var/obj/item/weapon/book in scanner.computer.inventory)
+							if(book == src)
+								user << "[W]'s screen flashes: 'Book stored in buffer. Title already present in inventory, aborting to avoid duplicate entry.'"
+								return
+						scanner.computer.inventory.Add(src)
+						user << "[W]'s screen flashes: 'Book stored in buffer. Title added to general inventory.'"
+		else if(istype(W, /obj/item/weapon/weldingtool)  && W:welding)
+			if(src.lit == 0)
+				src.lit = 1
+				src.damtype = "fire"
+				src.icon_state = "book_burning"
+				src.dat = ""
+				for(var/mob/O in viewers(user, null))
+					O.show_message(text("\red [] burns the [src] with [].", user, W), 1)
+				spawn() //start fires while it's lit
+					src.process()
+		else if(istype(W, /obj/item/weapon/zippo) && W:lit)
+			if(src.lit == 0)
+				src.lit = 1
+				src.icon_state = "book_burning"
+				src.dat = ""
+				for(var/mob/O in viewers(user, null))
+					O.show_message(text("\red [] burns the [src] with [].", user, W), 1)
+				spawn() //start fires while it's lit
+					src.process()
+		else if(istype(W, /obj/item/weapon/match) && W:lit)
+			if(src.lit == 0)
+				src.lit = 1
+				src.icon_state = "book_burning"
+				src.dat = ""
+				for(var/mob/O in viewers(user, null))
+					O.show_message(text("\red [] burns the [src] with [].", user, W), 1)
+				spawn() //start fires while it's lit
+					src.process()
+
+		else
+			..()
+
+/obj/item/weapon/book/process()
+	while(src.lit == 1)
+		src.smoketime--
+		sleep(10)
+		if(src.smoketime < 1)
+			new /obj/decal/ash( src.loc )
+			del(src)
+			return
 
 
 
 
-
-
-
-
-
-
-
-/*
 /obj/item/weapon/barcodescanner
 	name = "barcode scanner"
 	icon = 'library.dmi'
@@ -237,7 +309,7 @@
 		else
 			user << "<font color=red>No associated computer found. Only local scans will function properly.</font>"
 		user << "\n"
-*/
+
 
 
 
@@ -260,7 +332,7 @@ datum/borrowbook // Datum used to keep track of who has borrowed what when and f
 
 
 
-/*
+
 /obj/machinery/librarypubliccomp
 	name = "visitor computer"
 	icon = 'library.dmi'
@@ -314,22 +386,22 @@ datum/borrowbook // Datum used to keep track of who has borrowed what when and f
 
 /obj/machinery/librarypubliccomp/Topic(href, href_list)
 	if(href_list["settitle"])
-		var/newtitle = strip_html(input("Enter a title to search for:")) as text|null
+		var/newtitle = input("Enter a title to search for:") as text|null
 		if(newtitle)
-			title = sanitize(newtitle)
+			title = newtitle
 		else
 			title = null
 		title = dd_replacetext(title, "'", "''")
 	if(href_list["setcategory"])
-		var/newcategory = strip_html(input("Choose a category to search for:")) in list("Any", "Fiction", "Non-Fiction", "Adult", "Reference", "Religion")
+		var/newcategory = input("Choose a category to search for:") in list("Any", "Fiction", "Non-Fiction", "Adult", "Reference", "Religion")
 		if(newcategory)
 			category = newcategory
 		else
 			category = "Any"
 	if(href_list["setauthor"])
-		var/newauthor = strip_html(input("Enter an author to search for:")) as text|null
+		var/newauthor = input("Enter an author to search for:") as text|null
 		if(newauthor)
-			author = sanitize(newauthor)
+			author = newauthor
 		else
 			author = null
 		author = dd_replacetext(author, "'", "''")
@@ -524,8 +596,8 @@ datum/borrowbook // Datum used to keep track of who has borrowed what when and f
 		buffer_mob = input("Enter the recipient's name:") as text|null
 	if(href_list["checkout"])
 		var/datum/borrowbook/b = new /datum/borrowbook
-		b.bookname = sanitize(buffer_book)
-		b.mobname = sanitize(buffer_mob)
+		b.bookname = buffer_book
+		b.mobname = buffer_mob
 		b.getdate = world.time
 		b.duedate = world.time + (checkoutperiod * 600)
 		checkouts.Add(b)
@@ -536,17 +608,17 @@ datum/borrowbook // Datum used to keep track of who has borrowed what when and f
 		var/obj/item/weapon/book/b = locate(href_list["delbook"])
 		inventory.Remove(b)
 	if(href_list["setauthor"])
-		var/newauthor = strip_html(input("Enter the author's name: ")) as text|null
+		var/newauthor = input("Enter the author's name: ") as text|null
 		if(newauthor)
-			scanner.cache.author = sanitize(newauthor)
+			scanner.cache.author = newauthor
 	if(href_list["setcategory"])
-		var/newcategory = strip_html(input("Choose a category: ")) in list("Fiction", "Non-Fiction", "Adult", "Reference", "Religion")
+		var/newcategory = input("Choose a category: ") in list("Fiction", "Non-Fiction", "Adult", "Reference", "Religion")
 		if(newcategory)
 			upload_category = newcategory
 	if(href_list["upload"])
 		if(scanner)
 			if(scanner.cache)
-				var/choice = strip_html(input("Are you certain you wish to upload this title to the Archive?")) in list("Confirm", "Abort")
+				var/choice = input("Are you certain you wish to upload this title to the Archive?") in list("Confirm", "Abort")
 				if(choice == "Confirm")
 					var/DBConnection/dbcon = new()
 					dbcon.Connect("dbi:mysql:[sqldb]:[sqladdress]:[sqlport]","[sqllogin]","[sqlpass]")
@@ -594,7 +666,7 @@ datum/borrowbook // Datum used to keep track of who has borrowed what when and f
 				break
 			dbcon.Disconnect()
 	if(href_list["orderbyid"])
-		var/orderid = strip_html(input("Enter your order:")) as num|null
+		var/orderid = input("Enter your order:") as num|null
 		if(orderid)
 			var/nhref = "src=\ref[src];targetid=[orderid]"
 			spawn() src.Topic(nhref, params2list(nhref), src)
@@ -689,5 +761,3 @@ datum/borrowbook // Datum used to keep track of who has borrowed what when and f
 			del(O)
 		else
 			..()
-
-*/

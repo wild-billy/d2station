@@ -2,6 +2,7 @@
 CONTAINS:
 TOILET
 
+*/
 /obj/item/weapon/storage/toilet
 	name = "toilet"
 	w_class = 4.0
@@ -10,7 +11,7 @@ TOILET
 	var/status = 0.0
 	var/clogged = 0.0
 	anchored = 1.0
-	icon = 'stationobjs.dmi'
+	icon = 'device.dmi'
 	icon_state = "toilet"
 	item_state = "syringe_kit"
 
@@ -91,6 +92,3 @@ TOILET
 		for(var/mob/O in viewers(user, null))
 			O << text("\blue The toilet is clogged!")
 	return
-
-
-*/

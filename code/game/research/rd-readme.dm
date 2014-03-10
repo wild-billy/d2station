@@ -82,7 +82,7 @@ When thinking about new stuff, check here to see if there are any slots unfilled
 3	|	Super-Capacity Cell (20,000), Powersink, PACMAN
 4	|	SUPERPACMAN
 5	|	MRSPACMAN, Super Capacitor
-6	|	Hyper-Capacity Cell (30,000)
+6	|
 7	|
 8	|
 9	|
@@ -103,7 +103,7 @@ When thinking about new stuff, check here to see if there are any slots unfilled
 2	|	Teleporter Console Board
 3	|	Teleport Gun, Hand Tele
 4	|	Teleportation Scroll
-5	|
+5	|	Bag Of Holding
 6	|
 7	|
 8	|
@@ -123,8 +123,8 @@ When thinking about new stuff, check here to see if there are any slots unfilled
 //BIOTECH
 1	|	Bruise Pack, Scalple
 2	|	PANDEMIC Board, Mass Spectrometer
-3	|	AI Core, Brains (MMI)
-4	|	MMI+Radio
+3	|	AI Core, Brains
+4	|
 5	|
 6	|
 7	|

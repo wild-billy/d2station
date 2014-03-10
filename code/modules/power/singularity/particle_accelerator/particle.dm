@@ -32,7 +32,7 @@
 		if (A)
 			if(ismob(A))
 				toxmob(A)
-			if((istype(A,/obj/machinery/the_singularitygen))||(istype(A,/obj/machinery/singularity/)))
+			if((istype(A,/obj/machinery/singularitygen))||(istype(A,/obj/machinery/singularity/)))
 				A:energy += energy
 		return
 
@@ -49,12 +49,9 @@
 
 
 	proc
-		toxmob(var/mob/living/M)
+		toxmob(var/mob/M)
 			var/radiation = (energy*2)
 			if(istype(M,/mob/living/carbon/human))
-				if(M:wear_suit) //TODO: check for radiation protection
-					radiation = round(radiation/2,1)
-			if(istype(M,/mob/living/carbon/monkey))
 				if(M:wear_suit) //TODO: check for radiation protection
 					radiation = round(radiation/2,1)
 			M.radiation += radiation

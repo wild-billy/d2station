@@ -1,16 +1,10 @@
 /obj/alien/weeds/New()
-	..()
-	if(istype(loc, /turf/space))
+	if(istype(src.loc, /turf/space))
 		del(src)
 		return
-	icon_state = pick("weeds", "weeds1", "weeds2")
-	spawn(rand(150,300))
-		if(src)
-			Life()
-	return
 
 /obj/alien/weeds/proc/Life()
-	var/turf/U = get_turf(src)
+	var/turf/U = src.loc
 /*
 	if (locate(/obj/movable, U))
 		U = locate(/obj/movable, U)
@@ -20,45 +14,62 @@
 
 Alien plants should do something if theres a lot of poison
 	if(U.poison> 200000)
-		health -= round(U.poison/200000)
-		update()
+		src.health -= round(U.poison/200000)
+		src.update()
 		return
 */
 	if (istype(U, /turf/space))
 		del(src)
 		return
 
-	direction_loop:
-		for(var/dirn in cardinal)
-			var/turf/T = get_step(src, dirn)
+	for(var/dirn in cardinal)
+		var/turf/T = get_step(src, dirn)
 
-			if (!istype(T) || T.density || locate(/obj/alien/weeds) in T || istype(T.loc, /area/arrival) || istype(T, /turf/space))
-				continue
+		if (istype(T.loc, /area/arrival))
+			continue
 
-	//		if (locate(/obj/movable, T)) // don't propogate into movables
-	//			continue
+//		if (locate(/obj/movable, T)) // don't propogate into movables
+//			continue
 
-			for(var/obj/O in T)
-				if(O.density)
-					continue direction_loop
+		var/cont = 0
+		for(var/obj/O in T)
+			if(O.density)
+				cont = 1
+				break
 
-			new /obj/alien/weeds(T)
+		if(cont)
+			continue
 
+		var/obj/alien/weeds/B = new /obj/alien/weeds(U)
+		B.icon_state = pick("weeds", "weeds1", "weeds2")
+
+		if(T.Enter(B,src) && !(locate(/obj/alien/weeds) in T))
+			B.loc = T
+			spawn(200)
+				if(B)
+					B.Life()
+			// open cell, so expand
+		else
+			del(B)
 
 /obj/alien/weeds/ex_act(severity)
 	switch(severity)
 		if(1.0)
 			del(src)
+			return
 		if(2.0)
 			if (prob(50))
 				del(src)
+				return
 		if(3.0)
 			if (prob(5))
 				del(src)
+				return
+		else
 	return
 
 /obj/alien/weeds/attackby(var/obj/item/weapon/W, var/mob/user)
-	visible_message("\red <B>\The [src] have been attacked with \the [W][(user ? " by [user]." : ".")]")
+	src.visible_message("\red <B>\The [src] have been attacked with \the [W][(user ? " by [user]." : ".")]")
 
 	var/damage = W.force / 4.0
 
@@ -67,10 +78,10 @@ Alien plants should do something if theres a lot of poison
 
 		if(WT.welding)
 			damage = 15
-			playsound(loc, 'Welder.ogg', 100, 1)
+			playsound(src.loc, 'Welder.ogg', 100, 1)
 
-	health -= damage
-	healthcheck()
+	src.health -= damage
+	src.healthcheck()
 
 /obj/alien/weeds/proc/healthcheck()
 	if(health <= 0)

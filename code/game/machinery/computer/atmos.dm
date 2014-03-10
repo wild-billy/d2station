@@ -54,7 +54,7 @@ Atmos alert computer
 
 /obj/machinery/computer/station_alert/proc/interact(mob/user)
 	usr.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>Current Station Alerts</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
+	var/dat = "<HEAD><TITLE>Current Station Alerts</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
 	dat += "<A HREF='?src=\ref[user];mach_close=alerts'>Close</A><br><br>"
 	for (var/cat in src.alarms)
 		dat += text("<B>[]</B><BR>\n", cat)

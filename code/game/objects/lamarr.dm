@@ -29,15 +29,21 @@
 				src.health -= 5
 				src.healthcheck()
 
-/obj/lamarr/bullet_act(var/obj/item/projectile/Proj)
-	if (Proj.flag == "bullet")
+/obj/lamarr/bullet_act(flag)
+
+	if (flag == PROJECTILE_BULLET)
 		src.health -= 10
 		src.healthcheck()
 		return
-	else
-		src.health -= 4
+	if (flag != PROJECTILE_LASER) //lasers aren't particularly good at breaking glass
+		src.health -= 2
 		src.healthcheck()
 		return
+	else
+		src.health -= 5
+		src.healthcheck()
+		return
+
 
 /obj/lamarr/blob_act()
 	if (prob(75))
@@ -64,7 +70,7 @@
 			src.density = 0
 			src.destroyed = 1
 			new /obj/item/weapon/shard( src.loc )
-			playsound(src, "shatter", 70, 1)
+			playsound(src, "shatter", 70, 0)
 			var/obj/alien/facehugger/A = new /obj/alien/facehugger( src.loc )
 			A.lamarr = 1
 			A.name = "Lamarr"

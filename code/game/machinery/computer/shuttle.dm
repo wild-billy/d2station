@@ -132,49 +132,6 @@
 	return
 */
 
-/*/obj/machinery/computer/prison_shuttle/verb/take_off()
-	set category = "Object"
-	set name = "Launch Prison Shuttle"
-	set src in oview(1)
-
-	if (usr.stat || usr.restrained())
-		return
-
-	src.add_fingerprint(usr)
-	if(!src.allowedtocall)
-		usr << "\red The console seems irreparably damaged!"
-		return
-	if(src.z == 3)
-		usr << "\red Already in transit! Please wait!"
-		return
-
-	var/A = locate(/area/shuttle/prison/)
-	for(var/mob/M in A)
-		M.show_message("\red Launch sequence initiated!")
-		spawn(0)	shake_camera(M, 10, 1)
-	sleep(10)
-
-	if(src.z == 2)	//This is the laziest proc ever
-		for(var/atom/movable/AM as mob|obj in A)
-			AM.z = 3
-			AM.Move()
-		sleep(rand(600,1800))
-		for(var/atom/movable/AM as mob|obj in A)
-			AM.z = 1
-			AM.Move()
-	else
-		for(var/atom/movable/AM as mob|obj in A)
-			AM.z = 3
-			AM.Move()
-		sleep(rand(600,1800))
-		for(var/atom/movable/AM as mob|obj in A)
-			AM.z = 2
-			AM.Move()
-	for(var/mob/M in A)
-		M.show_message("\red Prison shuttle has arrived at destination!")
-		spawn(0)	shake_camera(M, 2, 1)
-	return*/
-
 /obj/machinery/computer/transitshuttle/newstationprison/verb/take_off()
 	set src in oview(1)
 
@@ -217,8 +174,6 @@
 	return
 
 /obj/machinery/computer/prison_shuttle/verb/restabalize()
-	set category = "Object"
-	set name = "Restabilize Prison Shuttle"
 	set src in oview(1)
 
 	src.add_fingerprint(usr)

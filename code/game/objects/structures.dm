@@ -1,4 +1,3 @@
-var/global/isnotadmin = "k"
 obj/structure
 	icon = 'structures.dmi'
 
@@ -24,18 +23,6 @@ obj/structure
 			user << "\blue You dissasembled the girder!"
 			new /obj/item/stack/sheet/metal(get_turf(src))
 			del(src)
-
-	else if(istype(W, /obj/item/weapon/cutter) || (istype(W, /obj/item/weapon/asteroidcutter) && W:lit))
-		user << "\blue Now slicing apart the girder"
-		if(do_after(user,30))
-			user << "\blue You slice apart the girder!"
-		new /obj/item/stack/sheet/metal(get_turf(src))
-		del(src)
-
-	else if(istype(W, /obj/item/weapon/tgpickaxe/diamonddrill))
-		user << "\blue You drill through the girder!"
-		new /obj/item/stack/sheet/metal(get_turf(src))
-		del(src)
 
 	else if((istype(W, /obj/item/stack/sheet/metal)) && (W:amount >= 2) && istype(src,/obj/structure/girder/displaced))
 		W:use(2)
@@ -97,8 +84,7 @@ obj/structure
 				user << "\blue Wall fully reinforced!"
 				var/turf/Tsrc = get_turf(src)
 				Tsrc.ReplaceWithRWall()
-				if (W)
-					W:use(1)
+				W:use(1)
 				del(src)
 				return
 		else
@@ -136,6 +122,14 @@ obj/structure
 		else
 	return
 
+/obj/structure/girder/meteorhit(obj/O as obj)
+	if(prob(80))
+		var/remains = pick(/obj/item/stack/rods,/obj/item/stack/sheet/metal)
+		new remains(loc)
+		del(src)
+	else
+		del(src)
+
 // LATTICE
 
 
@@ -163,8 +157,7 @@ obj/structure
 		C:build(get_turf(src))
 		C:use(1)
 		playsound(src.loc, 'Genhit.ogg', 50, 1)
-		if (C)
-			C.add_fingerprint(user)
+		C.add_fingerprint(user)
 		del(src)
 		return
 	if (istype(C, /obj/item/weapon/weldingtool) && C:welding)

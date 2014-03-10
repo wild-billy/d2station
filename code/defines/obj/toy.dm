@@ -7,13 +7,13 @@
 obj/item/toy/blink
 	name = "electronic blink toy game"
 	desc = "Blink.  Blink.  Blink. Ages 8 and up."
-	icon = 'radio.dmi'
+	icon = 'device.dmi'
 	icon_state = "beacon"
 	item_state = "signaler"
 
 /obj/item/toy/ammo/gun
 	name = "ammo-caps"
-	desc = "There are 7 caps left! Make sure to recyle the box in an autolathe when it gets empty."
+	desc = "There are 7 caps left! Make sure to recyle the box when it gets empty."
 	icon = 'ammo.dmi'
 	icon_state = "357-7"
 	flags = FPRINT | TABLEPASS| CONDUCT
@@ -24,7 +24,7 @@ obj/item/toy/blink
 
 	update_icon()
 		src.icon_state = text("357-[]", src.amount_left)
-		src.desc = text("There are [] caps\s left! Make sure to recycle the box in an autolathe when it gets empty.", src.amount_left)
+		src.desc = text("There are [] caps\s left! Make sure to recyle the box when it gets empty.", src.amount_left)
 		return
 
 /obj/item/toy/ammo/crossbow
@@ -34,30 +34,6 @@ obj/item/toy/blink
 	icon_state = "foamdart"
 	flags = FPRINT | TABLEPASS
 	w_class = 1.0
-
-/obj/filingcabinet
-	name = "Filing Cabinet"
-	desc = "A large cabinet with drawers."
-	icon = 'computer.dmi'
-	icon_state = "messyfiles"
-	density = 1
-	anchored = 0
-
-/obj/filingcabinet/attackby(obj/item/weapon/paper/P,mob/M)
-	if(istype(P))
-		M << "You put the [P] in the [src]."
-		M.drop_item()
-		P.loc = src
-	else
-		M << "You can't put a [P] in the [src]!"
-
-/obj/filingcabinet/attack_hand(mob/user)
-	if(src.contents.len <= 0)
-		user << "The [src] is empty."
-		return
-	var/obj/item/weapon/paper/P = input(user,"Choose a sheet to take out.","[src]", "Cancel") as obj in src.contents
-	if(in_range(src,user))
-		P.loc = user.loc
 
 /obj/foam_dart_dummy
 	name = ""
@@ -69,14 +45,12 @@ obj/item/toy/blink
 
 /obj/item/toy/gun
 	name = "cap gun"
-	desc = "There are 0 caps left. Looks almost like the real thing! Ages 8 and up. Please recycle in an autolathe when you're out of caps!"
+	desc = "There are 0 caps left. Looks almost like the real thing! Ages 8 and up."
 	icon = 'gun.dmi'
 	icon_state = "revolver"
 	item_state = "gun"
 	flags =  FPRINT | TABLEPASS | CONDUCT | ONBELT | USEDELAY
 	w_class = 3.0
-	g_amt = 10
-	m_amt = 10
 	var/bullets = 7.0
 
 	examine()
@@ -235,7 +209,6 @@ obj/item/toy/blink
 				if(O.client)
 					O.show_message(text("\red <B>[] casually lines up a shot with []'s head and pulls the trigger!</B>", user, M), 1, "\red You hear the sound of foam against skull", 2)
 					O.show_message(text("\red [] was hit in the head by the foam dart!", M), 1)
-
 			playsound(user.loc, 'syringeproj.ogg', 50, 1)
 			new /obj/item/toy/ammo/crossbow(M.loc)
 			src.bullets--
@@ -244,22 +217,3 @@ obj/item/toy/blink
 				if (O.client)	O.show_message(text("\red <B>[] casually lines up a shot with []'s head, pulls the trigger, then realizes they are out of ammo and drops to the floor in search of some!</B>", user, M), 1, "\red You hear someone fall", 2)
 			user.weakened += 5
 		return
-
-/obj/item/toy/crayonbox
-	name = "box of crayons"
-	desc = "A box of crayons for all your rune drawing needs."
-	icon = 'crayons.dmi'
-	icon_state = "crayonbox"
-	w_class = 2.0
-
-/obj/item/toy/crayon
-	name = "crayon"
-	desc = "A colourful crayon. Looks tasty. Mmmm..."
-	icon = 'crayons.dmi'
-	icon_state = "crayonred"
-	w_class = 1.0
-	var/colour = "#FF0000" //RGB
-	var/shadeColour = "#220000" //RGB
-	var/uses = 30 //0 for unlimited uses
-	var/instant = 0
-	var/colourName = "red" //for updateIcon purposes

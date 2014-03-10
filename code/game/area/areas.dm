@@ -1,6 +1,4 @@
-/datum/hook/mobAreaChange
-	name = "MobAreaChange"
-
+// ===
 /area/
 	var/global/global_uid = 0
 	var/uid
@@ -11,10 +9,9 @@
 	uid = ++global_uid
 	spawn(1)
 	//world.log << "New: [src] [tag]"
-		if(name == "Space")			// override defaults for space
-			ul_Lighting = 0
-		ul_Prep()
-		if(findtext(tag,":UL") != 0)
+		var/sd_created = findtext(tag,"sd_L")
+		sd_New(sd_created)
+		if(sd_created)
 			related += src
 			return
 		master = src
@@ -30,11 +27,11 @@
 			power_light = 0//rastaf0
 			power_equip = 0//rastaf0
 			power_environ = 0//rastaf0
-			ul_Lighting = 0			// *DAL*
-//			sd_lighting = 0			// *DAL*
+			luminosity = 1
+			sd_lighting = 0			// *DAL*
 		else
 			luminosity = 0
-			//ul_SetLuminosity(0)		// *DAL*
+			//sd_SetLuminosity(0)		// *DAL*
 
 
 	/*spawn(5)
@@ -49,25 +46,16 @@
 
 	spawn(15)
 		src.power_change()		// all machines set to current power level, also updates lighting icon
-		alldoors = get_doors(src)
 
-/area/Entered(atom/movable/Obj,atom/OldLoc)
-	if (istype(Obj, /mob))
-		var/area/NewArea = get_area(Obj.loc)
-		var/area/OldArea = get_area(OldLoc)
-		var/NewTag = copytext(NewArea.tag, 1, findtext(NewArea.tag, ":UL"))
-		var/OldTag = copytext(OldArea.tag, 1, findtext(OldArea.tag, ":UL"))
-		if (NewTag != OldTag)
-			CallHook("MobAreaChange", list("mob" = Obj, "newTag" = NewTag, "oldTag" = OldTag))
+/*
+/proc/get_area(area/A)
+	while (A)
+		if (istype(A, /area))
+			return A
 
-
-///proc/get_area(area/A)
-//	while (A)
-//		if (istype(A, /area))
-//			return A
-//
-//		A = A.loc
-//	return null
+		A = A.loc
+	return null
+*/
 /*
 /area/proc/update_lights()
 	var/new_power = 0
@@ -83,12 +71,12 @@
 		var/list/cameras = list()
 		for (var/obj/machinery/camera/C in src)
 			cameras += C
-		for (var/mob/living/silicon/aiPlayer in mobz)
+		for (var/mob/living/silicon/aiPlayer in world)
 			if (state == 1)
 				aiPlayer.cancelAlarm("Power", src, source)
 			else
 				aiPlayer.triggerAlarm("Power", src, cameras, source)
-		for(var/obj/machinery/computer/station_alert/a in machines)
+		for(var/obj/machinery/computer/station_alert/a in world)
 			if(state == 1)
 				a.cancelAlarm("Power", src, source)
 			else
@@ -107,14 +95,14 @@
 				//src.updateicon()
 				for(var/obj/machinery/camera/C in RA)
 					cameras += C
-			for(var/mob/living/silicon/aiPlayer in mobz)
+			for(var/mob/living/silicon/aiPlayer in world)
 				aiPlayer.triggerAlarm("Atmosphere", src, cameras, src)
-			for(var/obj/machinery/computer/station_alert/a in machines)
+			for(var/obj/machinery/computer/station_alert/a in world)
 				a.triggerAlarm("Atmosphere", src, cameras, src)
 		else if (src.atmosalm == 2)
-			for(var/mob/living/silicon/aiPlayer in mobz)
+			for(var/mob/living/silicon/aiPlayer in world)
 				aiPlayer.cancelAlarm("Atmosphere", src, src)
-			for(var/obj/machinery/computer/station_alert/a in machines)
+			for(var/obj/machinery/computer/station_alert/a in world)
 				a.cancelAlarm("Atmosphere", src, src)
 		src.atmosalm = danger_level
 		return 1
@@ -137,9 +125,9 @@
 		var/list/cameras = list()
 		for (var/obj/machinery/camera/C in src)
 			cameras += C
-		for (var/mob/living/silicon/ai/aiPlayer in mobz)
+		for (var/mob/living/silicon/ai/aiPlayer in world)
 			aiPlayer.triggerAlarm("Fire", src, cameras, src)
-		for (var/obj/machinery/computer/station_alert/a in machines)
+		for (var/obj/machinery/computer/station_alert/a in world)
 			a.triggerAlarm("Fire", src, cameras, src)
 	return
 
@@ -155,24 +143,10 @@
 				else if(D.density)
 					spawn(0)
 					D.open()
-		for (var/mob/living/silicon/ai/aiPlayer in mobz)
+		for (var/mob/living/silicon/ai/aiPlayer in world)
 			aiPlayer.cancelAlarm("Fire", src, src)
-		for (var/obj/machinery/computer/station_alert/a in machines)
+		for (var/obj/machinery/computer/station_alert/a in world)
 			a.cancelAlarm("Fire", src, src)
-	return
-
-/area/proc/readyalert()
-	if(name == "Space")
-		return
-	if(!eject)
-		eject = 1
-		updateicon()
-	return
-
-/area/proc/readyreset()
-	if(eject)
-		eject = 0
-		updateicon()
 	return
 
 /area/proc/partyalert()
@@ -199,7 +173,7 @@
 	return
 
 /area/proc/updateicon()
-	if ((fire || eject || party) && ((!requires_power)?(!requires_power):power_environ))//If it doesn't require power, can still activate this proc.
+	if ((fire || eject || party) && power_environ)
 		if(fire && !eject && !party)
 			icon_state = "blue"
 		/*else if(atmosalm && !fire && !eject && !party)
@@ -273,10 +247,3 @@
 			master.used_light += amount
 		if(ENVIRON)
 			master.used_environ += amount
-
-proc/get_doors(area/A) //Luckily for the CPU, this generally is only run once per area.
-	set background = 1
-	. = list()
-	for(var/area/AR in A.related)
-		for(var/obj/machinery/door/D in AR)
-			. += D

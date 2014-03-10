@@ -26,10 +26,14 @@ CLIPBOARDS
 
 	..()
 	if (!( istype(usr, /mob/living/carbon/human) || istype(usr, /mob/dead/observer) || istype(usr, /mob/living/silicon) ))
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		for(var/mob/O in viewers(usr, null))
+			O.show_message(text("[usr] reads the \"[src.name]\"."))
 		onclose(usr, "[src.name]")
 	else
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		for(var/mob/O in viewers(usr, null))
+			O.show_message(text("[usr] reads the \"[src.name]\"."))
 		onclose(usr, "[src.name]")
 	return
 
@@ -41,10 +45,10 @@ CLIPBOARDS
 
 	usr << browse_rsc(map_graphic)
 	if (!( istype(usr, /mob/living/carbon/human) || istype(usr, /mob/dead/observer) || istype(usr, /mob/living/silicon) ))
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	else
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	return
 
@@ -170,7 +174,7 @@ CLIPBOARDS
 		dat += text("<b>Jump into a new line at the end?</b> yes / <A href='?src=\ref[src];break=[0]'>no</A><br>")
 	else
 		dat += text("<b>Jump into a new line at the end?</b> <A href='?src=\ref[src];break=[1]'>yes</A> / no<br>")
-	user << browse("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />[dat]", "window=pen")
+	user << browse("[dat]", "window=pen")
 
 /obj/item/weapon/pen/Topic(href, href_list)
 	usr.machine = src
@@ -190,23 +194,16 @@ CLIPBOARDS
 	attack_self(usr)
 	return
 
-/obj/item/weapon/paper/verb/rename()
-	set name = "Rename paper"
-	set category = "Object"
-	set src in usr
-
-	if ((usr.mutations & CLOWN) && prob(50))
+/obj/item/weapon/paper/attack_self(mob/user as mob)
+	if ((usr.mutations & 16) && prob(50))
 		usr << text("\red You cut yourself on the paper.")
+		usr.bruteloss += 3
 		return
-	var/n_name = trim(strip_html(input(usr, "What would you like to label the paper?", "Paper Labelling", null)))  as text
+	var/n_name = input(user, "What would you like to label the paper?", "Paper Labelling", null)  as text
 	n_name = copytext(n_name, 1, 32)
-	if ((src.loc == usr && usr.stat == 0))
-		src.name = text("paper[]", (n_name ? text("- '[n_name]'") : null))
-	src.add_fingerprint(usr)
-	return
-
-/obj/item/weapon/paper/attack_self(mob/living/user as mob)
-	examine()
+	if ((src.loc == user && user.stat == 0))
+		src.name = text("paper[]", (n_name ? text("- '[]'", n_name) : null))
+	src.add_fingerprint(user)
 	return
 
 /obj/item/weapon/paper/attack_ai(var/mob/living/silicon/ai/user as mob)
@@ -216,10 +213,14 @@ CLIPBOARDS
 	else //cyborg or AI not seeing through a camera
 		dist = get_dist(src, user)
 	if (dist < 2)
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		for(var/mob/O in viewers(usr, null))
+			O.show_message(text("[usr] reads the \"[src.name]\"."))
 		onclose(usr, "[src.name]")
 	else
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		for(var/mob/O in viewers(usr, null))
+			O.show_message(text("[usr] reads the \"[src.name]\"."))
 		onclose(usr, "[src.name]")
 	return
 
@@ -230,11 +231,15 @@ CLIPBOARDS
 		clown = 1
 
 	if (istype(P, /obj/item/weapon/pen))
+
+		var/n_name = input(user, "What would you like to label the paper?", "Paper Labelling", null)  as text
+		n_name = copytext(n_name, 1, 32)
+		if ((src.loc == user && user.stat == 0))
+			src.name = text("paper[]", (n_name ? text("- '[]'", n_name) : null))
+
 		var/obj/item/weapon/pen/PEN = P
-
-		var/t = trim(strip_html(input(user, "What text do you wish to add?", text("[]", src.name), null),8192))  as message
+		var/t = strip_html(input(user, "What text do you wish to add?", text("[]", src.name), null),8192)  as message
 		t = text("[PEN.formatText(t)]")
-
 		if ((!in_range(src, usr) && src.loc != user && !( istype(src.loc, /obj/item/weapon/clipboard) ) && src.loc.loc != user && user.equipped() != P))
 			return
 		/*
@@ -249,9 +254,7 @@ CLIPBOARDS
 		t = dd_replacetext(t, "\[sign\]", text("<font face=vivaldi>[]</font>", user.real_name))
 		*/
 		t = text("<font face=calligrapher>[]</font>", t)
-
 		src.info += t
-
 	else
 		if(istype(P, /obj/item/weapon/stamp))
 			if ((!in_range(src, usr) && src.loc != user && !( istype(src.loc, /obj/item/weapon/clipboard) ) && src.loc.loc != user && user.equipped() != P))
@@ -286,53 +289,47 @@ CLIPBOARDS
 
 			user << "\blue You stamp the paper with your rubber stamp."
 
-	/*
-	else
-		if (istype(P, /obj/item/weapon/weldingtool))
-			var/obj/item/weapon/weldingtool/W = P
-			if ((W.welding && W.weldfuel > 0))
-				for(var/mob/O in viewers(user, null))
-					O.show_message(text("\red [] burns [] with the welding tool!", user, src), 1, "\red You hear a small burning noise", 2)
-					//Foreach goto(323)
-				spawn( 0 )
-					src.burn(1800000.0)
-					return
 		else
-			if (istype(P, /obj/item/device/igniter))
-				for(var/mob/O in viewers(user, null))
-					O.show_message(text("\red [] burns [] with the igniter!", user, src), 1, "\red You hear a small burning noise", 2)
-					//Foreach goto(406)
-				spawn( 0 )
-					src.burn(1800000.0)
-					return
-			else
-				if (istype(P, /obj/item/weapon/wirecutters))
+			if(istype(P, /obj/item/weapon/weldingtool)  && P:welding)
+				if(src.lit == 0)
+					src.lit = 1
+					src.damtype = "fire"
+					src.icon_state = "paper_onfire"
+					src.info = ""
 					for(var/mob/O in viewers(user, null))
-						O.show_message(text("\red [] starts cutting []!", user, src), 1)
-						//Foreach goto(489)
-					sleep(50)
-					if (((src.loc == src || get_dist(src, user) <= 1) && (!( user.stat ) && !( user.restrained() ))))
-						for(var/mob/O in viewers(user, null))
-							O.show_message(text("\red [] cuts [] to pieces!", user, src), 1)
-							//Foreach goto(580)
-						//SN src = null
-						del(src)
-						return
-	*/ //TODO: FIX
+						O.show_message(text("\red [] burns the [src] with [].", user, P), 1)
+					spawn() //start fires while it's lit
+						src.process()
+			else if(istype(P, /obj/item/weapon/zippo) && P:lit)
+				if(src.lit == 0)
+					src.lit = 1
+					src.icon_state = "paper_onfire"
+					src.info = ""
+					for(var/mob/O in viewers(user, null))
+						O.show_message(text("\red [] burns the [src] with [].", user, P), 1)
+					spawn() //start fires while it's lit
+						src.process()
+			else if(istype(P, /obj/item/weapon/match) && P:lit)
+				if(src.lit == 0)
+					src.lit = 1
+					src.icon_state = "paper_onfire"
+					src.info = ""
+					for(var/mob/O in viewers(user, null))
+						O.show_message(text("\red [] burns the [src] with [].", user, P), 1)
+					spawn() //start fires while it's lit
+						src.process()
 	src.add_fingerprint(user)
 	return
 
 
-/obj/item/weapon/paper/rolling_paper/attackby(obj/item/weapon/P as obj, mob/user as mob)
-	..()
-	if(istype(P, /obj/item/weapon/reagent_containers/food/snacks/grown))
-		user << "\blue You prepare the [P.name] for groovy inhalation."
-		var/obj/item/clothing/mask/cigarette/C = new /obj/item/clothing/mask/cigarette( get_turf(src) )
-		spawn()
-			if(P.reagents)
-				P.reagents.trans_to(C, P.reagents.total_volume)
-				del(P)
-				del(src)
+/obj/item/weapon/paper/process()
+	while(src.lit == 1)
+		src.smoketime--
+		sleep(10)
+		if(src.smoketime < 1)
+			new /obj/decal/ash( src.loc )
+			del(src)
+			return
 
 
 //PAPER BIN
@@ -460,7 +457,7 @@ CLIPBOARDS
 				del(src)
 				return
 		else
-			user << "\blue You need wirecutters!"
+			user << "\blue You need scissors!"
 	else
 		user << "\blue The object is FAR too large!"
 	return
@@ -473,7 +470,7 @@ CLIPBOARDS
 	usr << text("There is about [] square units of paper left!", src.amount)
 	return
 
-/obj/item/weapon/wrapping_paper/attack(mob/target as mob, mob/user as mob)
+/obj/item/weapon/wrapping_paper/attack(target as mob, mob/user as mob)
 	if (!istype(target, /mob/living/carbon/human)) return
 	if (istype(target:wear_suit, /obj/item/clothing/suit/straight_jacket) || target:stat)
 		if (src.amount > 2)
@@ -485,9 +482,6 @@ CLIPBOARDS
 				target:client:eye = present
 
 			target:loc = present
-			target.attack_log += text("<font color='orange'>[world.time] - has been wrapped with [src.name]  by [user.name] ([user.ckey])</font>")
-			user.attack_log += text("<font color='red'>[world.time] - has used the [src.name] to wrap [target.name] ([target.ckey])</font>")
-
 		else
 			user << "/blue You need more paper."
 	else
@@ -525,7 +519,6 @@ CLIPBOARDS
 
 /obj/spresent/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	..()
-
 	if (!istype(W, /obj/item/weapon/wirecutters))
 		user << "/blue I need wirecutters for that."
 		return
@@ -555,7 +548,7 @@ CLIPBOARDS
 			del(src)
 			return
 		if("l_gun")
-			var/obj/item/weapon/gun/energy/laser/W = new /obj/item/weapon/gun/energy/laser( M )
+			var/obj/item/weapon/gun/energy/laser_gun/W = new /obj/item/weapon/gun/energy/laser_gun( M )
 			if (M.hand)
 				M.l_hand = W
 			else
@@ -566,7 +559,7 @@ CLIPBOARDS
 			del(src)
 			return
 		if("t_gun")
-			var/obj/item/weapon/gun/energy/taser/W = new /obj/item/weapon/gun/energy/taser( M )
+			var/obj/item/weapon/gun/energy/taser_gun/W = new /obj/item/weapon/gun/energy/taser_gun( M )
 			if (M.hand)
 				M.l_hand = W
 			else
@@ -588,7 +581,7 @@ CLIPBOARDS
 			del(src)
 			return
 		if("sword")
-			var/obj/item/weapon/melee/energy/sword/W = new /obj/item/weapon/melee/energy/sword( M )
+			var/obj/item/weapon/sword/W = new /obj/item/weapon/sword( M )
 			if (M.hand)
 				M.l_hand = W
 			else
@@ -599,7 +592,7 @@ CLIPBOARDS
 			del(src)
 			return
 		if("axe")
-			var/obj/item/weapon/melee/energy/axe/W = new /obj/item/weapon/melee/energy/axe( M )
+			var/obj/item/weapon/axe/W = new /obj/item/weapon/axe( M )
 			if (M.hand)
 				M.l_hand = W
 			else
@@ -621,15 +614,11 @@ CLIPBOARDS
 // BEDSHEET BIN
 
 /obj/bedsheetbin/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if (istype(W, /obj/item/weapon/bedsheet))
+	..()
+	if (istype(W, /obj/item/clothing/suit/bedsheet))
 		//W = null
 		del(W)
 		src.amount++
-	else
-		if	(istype(W, /obj/item/clothing/suit/bedsheet))
-			//W = null
-			del(W)
-			src.amount++
 	return
 
 /obj/bedsheetbin/attack_paw(mob/user as mob)
@@ -638,7 +627,7 @@ CLIPBOARDS
 /obj/bedsheetbin/attack_hand(mob/user as mob)
 	if (src.amount >= 1)
 		src.amount--
-		new /obj/item/clothing/suit/bedsheet( src.loc )
+		new /obj/item/weapon/bedsheet( src.loc )
 		add_fingerprint(user)
 
 /obj/bedsheetbin/examine()
@@ -663,7 +652,7 @@ CLIPBOARDS
 // CLIPBOARD
 
 /obj/item/weapon/clipboard/attack_self(mob/user as mob)
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Clipboard</B><BR>"
+	var/dat = "<B>Clipboard</B><BR>"
 	if (src.pen)
 		dat += text("<A href='?src=\ref[];pen=1'>Remove Pen</A><BR><HR>", src)
 	for(var/obj/item/weapon/paper/P in src)
@@ -728,10 +717,10 @@ CLIPBOARDS
 			var/obj/item/weapon/paper/P = locate(href_list["read"])
 			if ((P && P.loc == src))
 				if (!( istype(usr, /mob/living/carbon/human) ))
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, stars(P.info)), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, stars(P.info)), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 				else
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.info), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.info), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 		if (ismob(src.loc))
 			var/mob/M = src.loc
@@ -796,24 +785,7 @@ CLIPBOARDS
 	return
 
 
-/obj/item/weapon/clipboard/MouseDrop(obj/over_object as obj) //Quick clipboard fix. -Agouri
-	if (ishuman(usr) || ismonkey(usr)) //Can monkeys even place items in the pocket slots? Leaving this in just in case~
-		var/mob/M = usr
-		if (!( istype(over_object, /obj/screen) ))
-			return ..()
-		if ((!( M.restrained() ) && !( M.stat ) /*&& M.pocket == src*/))
-			if (over_object.name == "r_hand")
-				if (!( M.r_hand ))
-					M.u_equip(src)
-					M.r_hand = src
-			else
-				if (over_object.name == "l_hand")
-					if (!( M.l_hand ))
-						M.u_equip(src)
-						M.l_hand = src
-			M.update_clothing()
-			src.add_fingerprint(usr)
-			return //
+
 
 
 // PHOTOGRAPH
@@ -827,7 +799,7 @@ CLIPBOARDS
 
 /obj/item/weapon/paper/photograph/attack_self(mob/user as mob)
 
-	var/n_name = strip_html(input(user, "What would you like to label the photo?", "Paper Labelling", null)  as text)
+	var/n_name = input(user, "What would you like to label the photo?", "Paper Labelling", null)  as text
 	n_name = copytext(n_name, 1, 32)
 	if ((src.loc == user && user.stat == 0))
 		src.name = text("photo[]", (n_name ? text("- '[]'", n_name) : null))

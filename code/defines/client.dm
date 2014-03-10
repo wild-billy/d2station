@@ -2,8 +2,6 @@
 	var/obj/admins/holder = null
 	var/authenticated = 0
 	var/goon = 0
-	var/forumauthed = 0
-	var/forumid = 0
 	var/beta_tester = 0
 	var/authenticating = 0
 	var/listen_ooc = 1
@@ -14,11 +12,8 @@
 	var/adminobs = null
 	var/deadchat = 0.0
 	var/changes = 0
-	//set to 1 for testing
-	var/prisoner = 0
-	var/muted = null //Can't talk in any way shape or form (Even OOC or emote). An admin punishment
 	var/canplaysound = 1
-	var/ambience_playing = null
+	var/ambience_playing = 1
 	var/no_ambi = 0
 	var/area = null
 	var/played = 0
@@ -32,7 +27,6 @@
 	var/ooccolor = "#b82e00" //only used for admins of host level, default is equal to admin default
 	var/midis = 1 //Check if midis should be played for someone -- Urist
 	var/be_alien = 0 //Check if that guy wants to be an alien -- Urist
-	var/list/ctab_settings = list()
 
 	authenticate = 0
 	// comment out the line below when debugging locally to enable the options & messages menu

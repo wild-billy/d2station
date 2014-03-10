@@ -193,22 +193,20 @@
 	new /obj/item/weapon/reagent_containers/glass/beaker( src )
 	new /obj/item/weapon/reagent_containers/glass/beaker( src )
 
-
-/obj/item/weapon/storage/testtubebox
-	name = "Test Tube Box"
-	icon_state = "hypospray"
+/obj/item/weapon/storage/glasswarebox
+	name = "Glassware Box"
+	icon_state = "glassware"
 	item_state = "syringe_kit"
 
-/obj/item/weapon/storage/testtubebox/New()
+/obj/item/weapon/storage/glasswarebox/New()
 	..()
-	new /obj/item/weapon/reagent_containers/glass/beaker/testtube( src )
-	new /obj/item/weapon/reagent_containers/glass/beaker/testtube( src )
-	new /obj/item/weapon/reagent_containers/glass/beaker/testtube( src )
-	new /obj/item/weapon/reagent_containers/glass/beaker/testtube( src )
-	new /obj/item/weapon/reagent_containers/glass/beaker/testtube( src )
-	new /obj/item/weapon/reagent_containers/glass/beaker/testtube( src )
-	new /obj/item/weapon/reagent_containers/glass/beaker/testtube( src )
-
+	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
+	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
+	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
+	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
+	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
+	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
+	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
 
 /obj/item/weapon/paper/alchemy/
 	name = "paper- 'Chemistry Information'"
@@ -227,12 +225,11 @@
 	item_state = "syringe_kit"
 
 /obj/item/weapon/storage/trashcan/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	//..()
-
+	..()
 	if (src.contents.len >= 7)
 		user << "The trashcan is full!"
 		return
-	if (istype(W, /obj/item/weapon/disk/nuclear)||istype(W, /obj/item/weapon/melee/energy/blade))
+	if (istype(W, /obj/item/weapon/disk/nuclear))
 		user << "This is far too important to throw away!"
 		return
 	if (istype(W, /obj/item/weapon/storage/))

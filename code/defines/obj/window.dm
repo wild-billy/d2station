@@ -1,6 +1,7 @@
 /obj/window
 	name = "window"
 	icon = 'structures.dmi'
+	icon_state = "window"
 	desc = "A window."
 	density = 1
 	var/health = 14.0
@@ -16,9 +17,6 @@
 
 
 // Basic
-
-/obj/window/basic
-	icon_state = "window"
 
 /obj/window/basic/north
 	dir = NORTH
@@ -74,135 +72,3 @@
 
 /obj/window/reinforced/southeast
 	dir = SOUTHEAST
-
-/obj/window/vacuum
-	health = 150
-	icon_state = "vwindow"
-	name = "vacuum window"
-
-/obj/window/vacuum/north
-	dir = NORTH
-
-/obj/window/vacuum/east
-	dir = EAST
-
-/obj/window/vacuum/west
-	dir = WEST
-
-
-/obj/window/vacuum/south
-	dir = SOUTH
-
-
-/obj/window/vacuum/northwest
-	dir = NORTHWEST
-
-
-/obj/window/vacuum/northeast
-	dir = NORTHEAST
-
-
-/obj/window/vacuum/southwest
-	dir = SOUTHWEST
-
-
-/obj/window/vacuum/southeast
-	dir = SOUTHEAST
-
-/obj/window/fence
-	health = 300
-	icon_state = "fence"
-	name = "fence"
-
-/obj/window/fence/north
-	dir = NORTH
-
-/obj/window/fence/east
-	dir = EAST
-
-/obj/window/fence/west
-	dir = WEST
-
-
-/obj/window/fence/south
-	dir = SOUTH
-
-
-/obj/window/fence/northwest
-	dir = NORTHWEST
-
-
-/obj/window/fence/northeast
-	dir = NORTHEAST
-
-
-/obj/window/fence/southwest
-	dir = SOUTHWEST
-
-
-/obj/window/fence/southeast
-	dir = SOUTHEAST
-
-
-/obj/window/reinforced/tinted
-	name = "tinted window"
-	icon_state = "twindow"
-	opacity = 1
-
-/obj/window/reinforced/tinted/frosted
-	icon_state = "fwindow"
-	name = "frosted window"
-
-// One-way windows
-
-/obj/window/basic/oneway/
-	name = "mirrored window"
-	icon_state = "mwindow"
-	health = 30
-	var/reversed = 0
-
-/obj/window/basic/oneway/north
-	dir = NORTH
-
-/obj/window/basic/oneway/east
-	dir = EAST
-
-/obj/window/basic/oneway/west
-	dir = WEST
-
-/obj/window/basic/oneway/south
-	dir = SOUTH
-
-/*/obj/window/basic/oneway/reversed
-	name = "mirrored window"
-	icon_state = "mwindow"
-	health = 30
-	reversed = 1
-
-/obj/window/basic/oneway/reversed/north
-	dir = NORTH
-
-/obj/window/basic/oneway/reversed/east
-	dir = EAST
-
-/obj/window/basic/oneway/reversed/west
-	dir = WEST
-
-/obj/window/basic/oneway/reversed/south
-	dir = SOUTH*/
-
-// Pod
-
-/obj/window_shuttle
-	name = "window"
-	icon = 'shuttle.dmi'
-	icon_state = "window_white1"
-	var/source_icon_state = "window_white"
-	var/glass = 1.0
-	var/broken = 0
-	desc = "A thick window secured into its frame."
-	anchored = 1
-	density = 1
-	var/health = 60
-	flags = null
-

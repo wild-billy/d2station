@@ -100,6 +100,7 @@
 			if("botlist")
 				active = null
 
+
 			if("stop", "go")
 				post_signal(control_freq, "command", href_list["op"], "active", active, s_filter = RADIO_SECBOT)
 				post_signal(control_freq, "command", "bot_status", "active", active, s_filter = RADIO_SECBOT)
@@ -115,7 +116,7 @@
 	var/list/botstatus			// the status signal sent by the bot
 	var/list/beacons
 
-	var/beacon_freq = 1400
+	var/beacon_freq = 1445
 	var/control_freq = 1447
 
 	// create a new QM cartridge, and register to receive bot control & beacon message
@@ -126,7 +127,7 @@
 				radio_controller.add_object(src, control_freq, filter = RADIO_MULEBOT)
 				radio_controller.add_object(src, beacon_freq, filter = RADIO_NAVBEACONS)
 				spawn(10)
-					post_signal(beacon_freq, "findbeacon", "delivery", s_filter = RADIO_NAVBEACONS)
+					post_signal(beacon_freq, "findbeacon", "delivery", filter = RADIO_NAVBEACONS)
 
 	// receive radio signals
 	// can detect bot status signals
@@ -186,7 +187,7 @@
 				post_signal(control_freq, cmd, "bot_status", s_filter = RADIO_MULEBOT)
 			if("setdest")
 				if(beacons)
-					var/dest = strip_html(input("Select Bot Destination", "Mulebot [active.suffix] Interlink", active.destination) as null|anything in beacons)
+					var/dest = input("Select Bot Destination", "Mulebot [active.suffix] Interlink", active.destination) as null|anything in beacons
 					if(dest)
 						post_signal(control_freq, cmd, "target", "destination", dest, s_filter = RADIO_MULEBOT)
 						post_signal(control_freq, cmd, "bot_status", s_filter = RADIO_MULEBOT)

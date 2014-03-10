@@ -37,7 +37,6 @@
 				open()
 				sleep(50)
 				close()
-
 		return
 	if (!( ticker ))
 		return
@@ -53,7 +52,7 @@
 	return
 
 /obj/machinery/door/window/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
-	if(istype(mover) && mover.checkpass(PASSGLASS))
+	if(istype(mover, /obj/beam))
 		return 1
 	if(get_dir(loc, target) == dir) //Make sure looking at appropriate border
 		if(air_group) return 0
@@ -62,7 +61,7 @@
 		return 1
 
 /obj/machinery/door/window/CheckExit(atom/movable/mover as mob|obj, turf/target as turf)
-	if(istype(mover) && mover.checkpass(PASSGLASS))
+	if(istype(mover, /obj/beam))
 		return 1
 	if(get_dir(loc, target) == dir)
 		return !density
@@ -77,12 +76,12 @@
 	if(!src.operating) //in case of emag
 		src.operating = 1
 	flick(text("[]opening", src.base_state), src)
-	playsound(src.loc, 'slidedoor.ogg', 25, 1)
+	playsound(src.loc, 'slidedoor.ogg', 30, 1)
 	src.icon_state = text("[]open", src.base_state)
 	sleep(10)
 
 	src.density = 0
-	src.ul_SetOpacity(0)
+	src.sd_SetOpacity(0)
 	update_nearby_tiles()
 
 	if(operating == 1) //emag again
@@ -94,12 +93,12 @@
 		return 0
 	src.operating = 1
 	flick(text("[]closing", src.base_state), src)
-	playsound(src.loc, 'slidedoor.ogg', 25, 1)
+	playsound(src.loc, 'slidedoor.ogg', 30, 1)
 	src.icon_state = text("[]", src.base_state)
 
 	src.density = 1
 	if (src.visible)
-		src.ul_SetOpacity(1)
+		src.sd_SetOpacity(1)
 	update_nearby_tiles()
 
 	sleep(10)
@@ -114,16 +113,8 @@
 	if (!src.requiresID())
 		//don't care who they are or what they have, act as if they're NOTHING
 		user = null
-	if (src.density && (istype(I, /obj/item/weapon/card/emag)||istype(I, /obj/item/weapon/melee/energy/blade)))
+	if (src.density && istype(I, /obj/item/weapon/card/emag))
 		src.operating = -1
-		if(istype(I, /obj/item/weapon/melee/energy/blade))
-			var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-			spark_system.set_up(5, 0, src.loc)
-			spark_system.start()
-			playsound(src.loc, "sparks", 50, 1)
-			playsound(src.loc, 'blade1.ogg', 50, 1)
-			for(var/mob/O in viewers(user, 5))
-				O.show_message(text("\blue The glass door was sliced open by []!", user), 1, text("\red You hear glass being sliced and sparks flying."), 2)
 		flick(text("[]spark", src.base_state), src)
 		sleep(6)
 		open()
@@ -135,5 +126,4 @@
 			close()
 	else if (src.density)
 		flick(text("[]deny", src.base_state), src)
-		playsound(src.loc, 'accessdenied.ogg', 30, 0)
 	return

@@ -155,9 +155,10 @@
 
 		switch(prizeselect)
 			if(1)
-				prize = new /obj/item/weapon/money( prize_location )
-				prize.name = "space ticket"
-				prize.desc = "It's almost like actual currency!"
+				prize = new /obj/item/weapon/spacecash( prize_location )
+				prize.name = "50 space euros"
+				prize.moneyvalue = "50"
+				prize.icon_state = "50"
 			if(2)
 				prize = new /obj/item/device/radio/beacon( prize_location )
 				prize.name = "electronic blink toy game"
@@ -173,7 +174,7 @@
 				prize.icon_state = "sword1"
 				prize.desc = "A sword made of cheap plastic."
 
-
+/*
 /obj/item/weapon/peripheral/card_scanner
 	name = "ID scanner module"
 	icon_state = "card_mod"
@@ -184,6 +185,7 @@
 			user << "The card falls out."
 			src.authid.loc = get_turf(user)
 			src.authid = null
+
 		return
 
 	receive_command(obj/source,command, datum/signal/signal)
@@ -202,67 +204,8 @@
 				var/new_access = signal.data["access"]
 				if(!new_access)
 					return
-		return
 
-/obj/item/weapon/peripheral/beaker_holder
-	name = "beaker recepticle module"
-	icon_state = "beaker_holder"
-	var/obj/item/weapon/reagent_containers/glass/held_beaker = null
 
-	attack_self(mob/user as mob)
-		if(held_beaker)
-			user << "The module releases the beaker."
-			src.held_beaker.loc = get_turf(user)
-			src.held_beaker = null
-		return
-
-	receive_command(obj/source,command, datum/signal/signal)
-		if(..())
-			return
-
-		switch(command)
-			if("eject beaker")
-				if(src.held_beaker)
-					src.held_beaker.loc = src.host.loc
-					src.held_beaker = null
-		return
-
-/obj/item/weapon/peripheral/robot_module
-	name = "robotics module reader"
-	icon_state = "card_mod"
-	var/obj/item/weapon/aiModule/module = null
-
-	attack_self(mob/user as mob)
-		if(module)
-			user << "The module falls out."
-			src.module.loc = get_turf(user)
-			src.module = null
-		return
-
-	receive_command(obj/source,command, datum/signal/signal)
-		if(..())
-			return
-
-		switch(command)
-			if("eject module")
-				if(src.module)
-					src.module.loc = src.host.loc
-					src.module = null
-			if("apply module write")
-				module.install(host)
-				return
-		return
-
-/obj/item/weapon/peripheral/servo
-	name = "servo"
-	desc = "A small motor used to move other objects."
-	icon_state = "servo"
-
-	receive_command(obj/source,command, datum/signal/signal)
-		if(..())
-			return
-
-		if(!signal)
-			return
 
 		return
+*/

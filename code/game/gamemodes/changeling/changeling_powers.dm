@@ -2,9 +2,9 @@
 	src.verbs += /client/proc/changeling_lesser_transform
 	src.verbs += /client/proc/changeling_fakedeath
 
-//	src.verbs += /client/proc/changeling_blind_sting
-//	src.verbs += /client/proc/changeling_deaf_sting
-//	src.verbs += /client/proc/changeling_silence_sting
+	src.verbs += /client/proc/changeling_blind_sting
+	src.verbs += /client/proc/changeling_deaf_sting
+	src.verbs += /client/proc/changeling_silence_sting
 
 	src.changeling_level = 1
 	return
@@ -15,17 +15,15 @@
 	src.verbs += /client/proc/changeling_lesser_form
 	src.verbs += /client/proc/changeling_fakedeath
 
-//	src.verbs += /client/proc/changeling_deaf_sting
-//	src.verbs += /client/proc/changeling_blind_sting
-//	src.verbs += /client/proc/changeling_paralysis_sting
-//	src.verbs += /client/proc/changeling_silence_sting
-//	src.verbs += /client/proc/changeling_transformation_sting
-//	src.verbs += /client/proc/changeling_boost_range
+	src.verbs += /client/proc/changeling_deaf_sting
+	src.verbs += /client/proc/changeling_blind_sting
+	src.verbs += /client/proc/changeling_paralysis_sting
+	src.verbs += /client/proc/changeling_silence_sting
+	src.verbs += /client/proc/changeling_transformation_sting
+	src.verbs += /client/proc/changeling_boost_range
 
 	src.changeling_level = 2
-	if (!src.absorbed_dna)
-		src.absorbed_dna = list()
-	if (src.absorbed_dna.len == 0)
+	if (src.absorbed_dna.len <= 0)
 		src.absorbed_dna[src.real_name] = src.dna
 	return
 
@@ -40,13 +38,12 @@
 	src.verbs -= /client/proc/changeling_lesser_form
 	src.verbs -= /client/proc/changeling_lesser_transform
 	src.verbs -= /client/proc/changeling_fakedeath
-
-//	src.verbs -= /client/proc/changeling_deaf_sting
-//	src.verbs -= /client/proc/changeling_blind_sting
-//	src.verbs -= /client/proc/changeling_paralysis_sting
-//	src.verbs -= /client/proc/changeling_silence_sting
-//	src.verbs -= /client/proc/changeling_boost_range
-//	usr.verbs -= /client/proc/changeling_transformation_sting
+	src.verbs -= /client/proc/changeling_deaf_sting
+	src.verbs -= /client/proc/changeling_blind_sting
+	src.verbs -= /client/proc/changeling_paralysis_sting
+	src.verbs -= /client/proc/changeling_silence_sting
+	src.verbs -= /client/proc/changeling_boost_range
+	usr.verbs -= /client/proc/changeling_transformation_sting
 
 /client/proc/changeling_absorb_dna()
 	set category = "Changeling"
@@ -91,54 +88,25 @@
 	usr << "\blue We stab [T] with the proboscis."
 	usr.visible_message(text("\red <B>[usr] stabs [T] with the proboscis!</B>"))
 	T << "\red <B>You feel a sharp stabbing pain!</B>"
-	T.take_overall_damage(40)
+	T.bruteloss += 40
 
 	if (!do_mob(usr, T, 150))
 		usr << "\red Our absorption of [T] has been interrupted!"
 		return
 
 	usr << "\blue We have absorbed [T]!"
-	usr.visible_message(text("\red <B>[usr] sucks some cells from [T]!</B>"))
-	T << "\red <B>You have been infected by the thing!</B>"
+	usr.visible_message(text("\red <B>[usr] sucks the fluids from [T]!</B>"))
+	T << "\red <B>You have been absorbed by the changeling!</B>"
 
 	usr.absorbed_dna[T.real_name] = T.dna
 	if(usr.nutrition < 400) usr.nutrition = min((usr.nutrition + T.nutrition), 400)
 	usr.chem_charges += 5
 
 	T.death(0)
-
-//	T.canmove = 0
-//	T.make_changeling()
-//	new /obj/decal/cleanable/blood(usr.loc)
-//	var/obj/decal/cleanable/blood/B = new /obj/decal/cleanable/blood(usr.loc)
-//	var/obj/decal/cleanable/blood/C = new /obj/decal/cleanable/blood(usr.loc)
-//	var/obj/decal/cleanable/blood/D = new /obj/decal/cleanable/blood(usr.loc)
-//	var/obj/decal/cleanable/blood/E = new /obj/decal/cleanable/blood(usr.loc)
-//	step_rand(B)
-//	step_rand(C)
-//	step_rand(D)
-//	step_rand(E)
-//	var/atom/movable/overlay/animation = new /atom/movable/overlay( T.loc )
-	for(var/obj/item/W in T)
-		T.drop_from_slot(W)
-	spawn(1)
-//	T.loc = animation
-//	animation.name = "freaky looking horror"
-//	animation.layer = 4
-//	animation.icon_state = "thething"
-//	animation.icon = 'mob.dmi'
-//	animation.master = T
-//	src.verbs += /client/proc/changeling_paralysis_sting
-//	sleep(380)
-//	T.loc = animation.loc
-//	new /obj/decal/cleanable/blood(usr.loc)
-//	del(animation)
-//	T.canmove = 1
-//	src.verbs -= /client/proc/changeling_paralysis_sting
-	//make blood and ripped clothes
 	T.real_name = "Unknown"
-	T.mutations |= HUSK
+	T.mutations |= 64
 	T.update_body()
+
 	return
 
 /client/proc/changeling_transform()
@@ -164,27 +132,11 @@
 	usr.chem_charges -= 5
 
 	usr.visible_message(text("\red <B>[usr] transforms!</B>"))
-	usr.canmove = 0
-	var/atom/movable/overlay/animation = new /atom/movable/overlay( usr.loc )
-	for(var/obj/item/W in usr)
-		usr.drop_from_slot(W)
-	spawn(1)
-	usr.loc = animation
-	animation.layer = 4
-	animation.icon_state = "blank"
-	animation.icon = 'mob.dmi'
-	animation.master = src
-	flick("humantohuman-h", animation)
-	sleep(10)
-	usr.loc = animation.loc
-	new /obj/decal/cleanable/blood(usr.loc)
-	del(animation)
+
 	usr.dna = usr.absorbed_dna[S]
 	usr.real_name = S
 	updateappearance(usr, usr.dna.uni_identity)
-	usr.invisibility = null
 	domutcheck(usr, null)
-	usr.canmove = 1
 
 	usr.verbs -= /client/proc/changeling_transform
 
@@ -217,7 +169,13 @@
 			implants += W
 
 	for(var/obj/item/W in usr)
-		usr.drop_from_slot(W)
+		usr.u_equip(W)
+		if (usr.client)
+			usr.client.screen -= W
+		if (W)
+			W.loc = usr.loc
+			W.dropped(usr)
+			W.layer = initial(W.layer)
 
 	usr.update_clothing()
 	usr.monkeyizing = 1
@@ -239,8 +197,8 @@
 
 	for(var/obj/T in usr)
 		del(T)
-	//for(var/R in usr.organs) //redundant, let's give garbage collector work to do --rastaf0
-	//	del(usr.organs[text("[]", R)])
+	for(var/R in usr.organs)
+		del(usr.organs[text("[]", R)])
 
 	O.loc = usr.loc
 
@@ -379,18 +337,25 @@
 
 	spawn(550)
 		if (usr.stat != 2)
-			//usr.fireloss = 0
+			if(istype(usr, /mob/living/carbon/human))
+				var/mob/living/carbon/human/H = usr
+				for(var/A in H.organs)
+					var/datum/organ/external/affecting = null
+					if(!H.organs[A])    continue
+					affecting = H.organs[A]
+					if(!istype(affecting, /datum/organ/external))    continue
+					affecting.heal_damage(1000, 1000)    //fixes getting hit after ingestion, killing you when game updates organ health
+				H.UpdateDamageIcon()
+			usr.fireloss = 0
 			usr.toxloss = 0
-			//usr.bruteloss = 0
+			usr.bruteloss = 0
 			usr.oxyloss = 0
 			usr.paralysis = 0
 			usr.stunned = 0
 			usr.weakened = 0
 			usr.radiation = 0
-			//usr.health = 100
-			//usr.updatehealth()
-			var/mob/living/M = src
-			M.heal_overall_damage(1000, 1000)
+			usr.health = 100
+			usr.updatehealth()
 			usr.reagents.clear_reagents()
 			usr.lying = 0
 			usr.canmove = 1
@@ -572,7 +537,7 @@
 		usr << "\red We don't have enough stored chemicals to do that!"
 		return
 
-	if(T.stat != 2 || (T.mutations & HUSK) || (!ishuman(T) && !ismonkey(T)))
+	if(T.stat != 2 || (T.mutations & 64) || (!ishuman(T) && !ismonkey(T)))
 		usr << "\red We can't transform that target!"
 		return
 
@@ -586,7 +551,7 @@
 
 	usr << "\blue We stealthily sting [T]."
 
-	T.visible_message(text("\red <B>[T] transforms!</B>"))
+	T.visible_message(text("\red <B>[usr] transforms!</B>"))
 
 	T.dna = usr.absorbed_dna[S]
 	T.real_name = S

@@ -39,8 +39,8 @@
 	if(internal_damage&MECHA_INT_CONTROL_LOST)
 		target = pick(oview(1,src))
 	if(!melee_can_hit || !istype(target, /atom)) return
-	if(istype(target, /mob/living))
-		var/mob/living/M = target
+	if(istype(target, /mob))
+		var/mob/M = target
 		if(src.occupant.a_intent == "hurt")
 			playsound(src, 'punch4.ogg', 50, 1)
 			if(damtype == "brute")
@@ -65,11 +65,7 @@
 						if("fire")
 							temp.take_damage(0, rand(force/2, force))
 						if("tox")
-							if(H.reagents)
-								if(H.reagents.get_reagent_amount("carpotoxin") + force < force*2)
-									H.reagents.add_reagent("carpotoxin", force)
-								if(H.reagents.get_reagent_amount("cryptobiolin") + force < force*2)
-									H.reagents.add_reagent("cryptobiolin", force)
+							H.toxloss += rand(force/2, force)
 						else
 							return
 					H.UpdateDamageIcon()
@@ -79,20 +75,15 @@
 				switch(damtype)
 					if("brute")
 						M.paralysis += 1
-						M.take_overall_damage(rand(force/2, force))
+						M.bruteloss += rand(force/2, force)
 					if("fire")
-						M.take_overall_damage(0, rand(force/2, force))
+						M.fireloss += rand(force/2, force)
 					if("tox")
-						if(M.reagents)
-							if(M.reagents.get_reagent_amount("carpotoxin") + force < force*2)
-								M.reagents.add_reagent("carpotoxin", force)
-							if(M.reagents.get_reagent_amount("cryptobiolin") + force < force*2)
-								M.reagents.add_reagent("cryptobiolin", force)
+						M.toxloss += rand(force/2, force)
 					else
 						return
 				M.updatehealth()
 			src.occupant_message("You hit [target].")
-			src.visible_message("<font color='red'><b>[src.name] hits [target].</b></font>")
 		else
 			step_away(M,src)
 			src.occupant_message("You push [target] out of the way.")
@@ -150,13 +141,7 @@
 	return 0
 */
 
-/obj/mecha/combat/go_out()
-	if(src.occupant && src.occupant.client)
-		src.occupant.client.mouse_pointer_icon = initial(src.occupant.client.mouse_pointer_icon)
-	..()
-	return
 
-/*
 /obj/mecha/combat/get_stats_part()
 	var/output = ..()
 	output += "<b>Weapon systems:</b><div style=\"margin-left: 15px;\">"
@@ -167,7 +152,7 @@
 		output += "None"
 	output += "</div>"
 	return output
-*/
+
 
 /* //the garbage collector should handle this
 /obj/mecha/combat/Del()

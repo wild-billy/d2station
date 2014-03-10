@@ -1,43 +1,46 @@
 var
 	jobban_runonce	// Updates legacy bans with new info
 	jobban_keylist[0]		//to store the keys & ranks
+	messageshown = 0
 
 /proc/jobban_fullban(mob/M, rank)
-	if (M.client)
-		jobban_keylist.Add(text("[M.ckey] - [rank]"))
-		jobban_savebanfile()
+	if (!M || !M.key || !M.client) return
+	jobban_keylist.Add(text("[M.ckey] - [rank]"))
+	jobban_savebanfile()
 
 /proc/jobban_isbanned(mob/M, rank)
-	if(_jobban_isbanned(M, rank)) return 1//for old jobban
 	if(M)
-		//LIST YOUR GOLD JOBS HERE GUYS
-		if((rank == "Clown") || (rank == "Mime") || (rank == "Prostitute") || (rank == "Retard") || (rank == "Monkey") || (rank == "Lawyer"))
-			if(M.client.goon)
-				return 0
-			else
-				return 1
-		if(is_important_job(rank))
-			if(config.guest_jobban && IsGuestKey(M.key))
-				return 1
-			if(config.usewhitelist && !check_whitelist(M))
-				return 1
-		if (jobban_keylist.Find(text("[M.ckey] - [rank]")))
-			return 1
-		else
-			return 0
+		if (rank == "Captain" || rank == "Head of Personnel" || rank == "Head of Security" || rank == "Chief Engineer" || rank == "Research Director" || rank == "Warden" || rank == "Detective" || rank == "Chief Medical Officer" || rank == "Cyborg" || rank == "AI" || rank == "Security Officer")
 
-/*
-working but not needed
-/proc/jobban_isbanned_for_heads(mob/M)
-	if(config.guest_jobban && IsGuestKey(M.key))
-		return 1
-	if(config.usewhitelist && check_whitelist(M))
-		return 1
-	for (var/rank in head_positions)
-		if (!jobban_keylist.Find(text("[M.ckey] - [rank]")))
-			return 0
-	return 1
-*/
+			if(IsGuestKey(M.key)/* && config.guest_jobban*/)
+				return 1
+
+			if(!M.client.holder)
+				var/whitelisted = 1
+				var/DBConnection/dbcon = new()
+				dbcon.Connect("dbi:mysql:[sqldb]:[sqladdress]:[sqlport]","[sqllogin]","[sqlpass]")
+				if(dbcon.IsConnected())
+					var/DBQuery/query = dbcon.NewQuery("SELECT value FROM whitelisted WHERE ckey='[M.key]'")
+					query.Execute()
+
+					while(query.NextRow())
+						whitelisted = query.item[1]
+
+				if(whitelisted == 1)
+					if(messageshown != 1)
+						M << "\red DEBUG: You are not whitelisted, boo hoo (don't tell me about this showing up)!"
+						messageshown = 1
+					return whitelisted
+				else
+					if(messageshown != 1)
+						M << "\green DEBUG: You are whitelisted, congrats (don't tell me about this showing up)!"
+						messageshown = 1
+				dbcon.Disconnect()
+
+			if (jobban_keylist.Find(text("[M.ckey] - [rank]")))
+				return 1
+			else
+				return 0
 
 /proc/jobban_loadbanfile()
 	var/savefile/S=new("data/job_full.ban")

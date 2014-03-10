@@ -137,8 +137,7 @@ steam.start() -- spawns the effect
 
 /obj/effects/sparks/New()
 	..()
-	luminosity = 2
-	playsound(src.loc, "sparks", 100, 1)
+	playsound(src.loc, "sparks", 60, 0)
 	var/turf/T = src.loc
 	if (istype(T, /turf))
 		T.hotspot_expose(1000,100)
@@ -147,7 +146,6 @@ steam.start() -- spawns the effect
 	return
 
 /obj/effects/sparks/Del()
-	luminosity = 2
 	var/turf/T = src.loc
 	if (istype(T, /turf))
 		T.hotspot_expose(1000,100)
@@ -156,7 +154,6 @@ steam.start() -- spawns the effect
 
 /obj/effects/sparks/Move()
 	..()
-	luminosity = 2
 	var/turf/T = src.loc
 	if (istype(T, /turf))
 		T.hotspot_expose(1000,100)
@@ -293,8 +290,10 @@ steam.start() -- spawns the effect
 
 
 /////////////////////////////////////////////
+
 // Bad smoke
 /////////////////////////////////////////////
+
 
 /obj/effects/bad_smoke
 	name = "smoke"
@@ -308,11 +307,13 @@ steam.start() -- spawns the effect
 	pixel_x = -32
 	pixel_y = -32
 
+
 /obj/effects/bad_smoke/New()
 	..()
 	spawn (200+rand(10,30))
 		del(src)
 	return
+
 
 /obj/effects/bad_smoke/Move()
 	..()
@@ -327,6 +328,7 @@ steam.start() -- spawns the effect
 				spawn ( 20 )
 					M.coughedtime = 0
 	return
+
 
 /obj/effects/bad_smoke/HasEntered(mob/living/carbon/M as mob )
 	..()
@@ -343,6 +345,7 @@ steam.start() -- spawns the effect
 					M.coughedtime = 0
 	return
 
+
 /datum/effects/system/bad_smoke_spread
 	var/number = 3
 	var/cardinals = 0
@@ -350,6 +353,10 @@ steam.start() -- spawns the effect
 	var/atom/holder
 	var/total_smoke = 0 // To stop it being spammed and lagging!
 	var/direction
+
+
+
+
 
 /datum/effects/system/bad_smoke_spread/proc/set_up(n = 5, c = 0, loca, direct)
 	if(n > 20)
@@ -364,8 +371,14 @@ steam.start() -- spawns the effect
 		direction = direct
 
 
+
+
+
+
+
 /datum/effects/system/bad_smoke_spread/proc/attach(atom/atom)
 	holder = atom
+
 
 /datum/effects/system/bad_smoke_spread/proc/start()
 	var/i = 0
@@ -375,25 +388,48 @@ steam.start() -- spawns the effect
 		spawn(0)
 			if(holder)
 				src.location = get_turf(holder)
+
+
+
+
+
 			var/obj/effects/bad_smoke/smoke = new /obj/effects/bad_smoke(src.location)
 			src.total_smoke++
+
+
+
+
+
+
+
 			var/direction = src.direction
+
 			if(!direction)
 				if(src.cardinals)
 					direction = pick(cardinal)
 				else
 					direction = pick(alldirs)
+
+
 			for(i=0, i<pick(0,1,1,1,2,2,2,3), i++)
 				sleep(10)
 				step(smoke,direction)
+
+
+
+
+
+
 			spawn(150+rand(10,30))
 				del(smoke)
 				src.total_smoke--
 
 
 /////////////////////////////////////////////
+
 // Sleep smoke
 /////////////////////////////////////////////
+
 
 /obj/effects/sleep_smoke
 	name = "smoke"
@@ -407,11 +443,13 @@ steam.start() -- spawns the effect
 	pixel_x = -32
 	pixel_y = -32
 
+
 /obj/effects/sleep_smoke/New()
 	..()
 	spawn (200+rand(10,30))
 		del(src)
 	return
+
 
 /obj/effects/sleep_smoke/Move()
 	..()
@@ -420,6 +458,7 @@ steam.start() -- spawns the effect
 //		if (M.wear_suit, /obj/item/clothing/suit/wizrobe && (M.hat, /obj/item/clothing/head/wizard) && (M.shoes, /obj/item/clothing/shoes/sandal))  // I'll work on it later
 		else
 			M.drop_item()
+
 			M:sleeping += 1
 			if (M.coughedtime != 1)
 				M.coughedtime = 1
@@ -427,6 +466,7 @@ steam.start() -- spawns the effect
 				spawn ( 20 )
 					M.coughedtime = 0
 	return
+
 
 /obj/effects/sleep_smoke/HasEntered(mob/living/carbon/M as mob )
 	..()
@@ -436,6 +476,7 @@ steam.start() -- spawns the effect
 			return
 		else
 			M.drop_item()
+
 			M:sleeping += 1
 			if (M.coughedtime != 1)
 				M.coughedtime = 1
@@ -444,6 +485,7 @@ steam.start() -- spawns the effect
 					M.coughedtime = 0
 	return
 
+
 /datum/effects/system/sleep_smoke_spread
 	var/number = 3
 	var/cardinals = 0
@@ -451,6 +493,7 @@ steam.start() -- spawns the effect
 	var/atom/holder
 	var/total_smoke = 0 // To stop it being spammed and lagging!
 	var/direction
+
 
 /datum/effects/system/sleep_smoke_spread/proc/set_up(n = 5, c = 0, loca, direct)
 	if(n > 20)
@@ -465,8 +508,10 @@ steam.start() -- spawns the effect
 		direction = direct
 
 
+
 /datum/effects/system/sleep_smoke_spread/proc/attach(atom/atom)
 	holder = atom
+
 
 /datum/effects/system/sleep_smoke_spread/proc/start()
 	var/i = 0
@@ -476,6 +521,7 @@ steam.start() -- spawns the effect
 		spawn(0)
 			if(holder)
 				src.location = get_turf(holder)
+
 			var/obj/effects/sleep_smoke/smoke = new /obj/effects/sleep_smoke(src.location)
 			src.total_smoke++
 			var/direction = src.direction
@@ -490,6 +536,8 @@ steam.start() -- spawns the effect
 			spawn(150+rand(10,30))
 				del(smoke)
 				src.total_smoke--
+
+
 
 /////////////////////////////////////////////
 // Mustard Gas
@@ -714,10 +762,10 @@ steam.start() -- spawns the effect
 	..(loc)
 	icon_state = "[ismetal ? "m":""]foam"
 	metal = ismetal
-	playsound(src, 'bubbles2.ogg', 40, 1, -3)
+	playsound(src, 'bubbles2.ogg', 80, 1, -3)
 	spawn(3 + metal*3)
 		process()
-	spawn(30)
+	spawn(120)
 		expand = 0 // stop expanding
 		sleep(30)
 
@@ -861,10 +909,10 @@ steam.start() -- spawns the effect
 		..()
 		update_nearby_tiles(1)
 		spawn(1)
-			ul_SetOpacity(1)
+			sd_NewOpacity(1)
 
 	Del()
-		ul_SetOpacity(0)
+		sd_NewOpacity(0)
 		density = 0
 		update_nearby_tiles(1)
 		..()
@@ -891,7 +939,7 @@ steam.start() -- spawns the effect
 		return
 
 	attack_hand(var/mob/user)
-		if (user.mutations & HULK || (prob(75 - metal*25)))
+		if (user.mutations & 8 || (prob(75 - metal*25)))
 			user << "\blue You smash through the metal foam wall."
 			for(var/mob/O in oviewers(user))
 				if ((O.client && !( O.blinded )))
@@ -1004,7 +1052,7 @@ steam.start() -- spawns the effect
 		for(var/mob/M in viewers(1, location))
 			if (prob (50 * amount))
 				M << "\red The explosion knocks you down."
-				M.achievement_give("Boom!", 72)
+				M.achievement_give("Boom!", 23, 10)
 				M.weakened += rand (1, 5)
 		return
 	else

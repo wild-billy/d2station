@@ -12,25 +12,25 @@
 
 /obj/item/weapon/storage/blankbox/New()
 
-	new /obj/item/ammo_casing/shotgun/blank( src )
-	new /obj/item/ammo_casing/shotgun/blank( src )
-	new /obj/item/ammo_casing/shotgun/blank( src )
-	new /obj/item/ammo_casing/shotgun/blank( src )
-	new /obj/item/ammo_casing/shotgun/blank( src )
-	new /obj/item/ammo_casing/shotgun/blank( src )
-	new /obj/item/ammo_casing/shotgun/blank( src )
+	new /obj/item/weapon/ammo/shell/blank( src )
+	new /obj/item/weapon/ammo/shell/blank( src )
+	new /obj/item/weapon/ammo/shell/blank( src )
+	new /obj/item/weapon/ammo/shell/blank( src )
+	new /obj/item/weapon/ammo/shell/blank( src )
+	new /obj/item/weapon/ammo/shell/blank( src )
+	new /obj/item/weapon/ammo/shell/blank( src )
 	..()
 	return
 
 /obj/item/weapon/storage/flashbang_kit/New()
 
-	new /obj/item/weapon/chem_grenade/flashbang( src )
-	new /obj/item/weapon/chem_grenade/flashbang( src )
-	new /obj/item/weapon/chem_grenade/flashbang( src )
-	new /obj/item/weapon/chem_grenade/flashbang( src )
-	new /obj/item/weapon/chem_grenade/flashbang( src )
-	new /obj/item/weapon/chem_grenade/flashbang( src )
-	new /obj/item/weapon/chem_grenade/flashbang( src )
+	new /obj/item/weapon/flashbang( src )
+	new /obj/item/weapon/flashbang( src )
+	new /obj/item/weapon/flashbang( src )
+	new /obj/item/weapon/flashbang( src )
+	new /obj/item/weapon/flashbang( src )
+	new /obj/item/weapon/flashbang( src )
+	new /obj/item/weapon/flashbang( src )
 	..()
 	return
 
@@ -53,18 +53,6 @@
 	new /obj/item/clothing/mask/surgical( src )
 	new /obj/item/clothing/mask/surgical( src )
 	new /obj/item/clothing/mask/surgical( src )
-	..()
-	return
-
-/obj/item/weapon/storage/acma_kit/New()
-
-	new /obj/item/clothing/mask/antiacid/sterile( src )
-	new /obj/item/clothing/mask/antiacid/sterile( src )
-	new /obj/item/clothing/mask/antiacid/sterile( src )
-	new /obj/item/clothing/mask/antiacid/sterile( src )
-	new /obj/item/clothing/mask/antiacid/sterile( src )
-	new /obj/item/clothing/mask/antiacid/sterile( src )
-	new /obj/item/clothing/mask/antiacid/sterile( src )
 	..()
 	return
 
@@ -171,17 +159,6 @@
 	new /obj/item/weapon/reagent_containers/food/condiment( src )
 	new /obj/item/weapon/reagent_containers/food/condiment( src )
 	new /obj/item/weapon/reagent_containers/food/condiment( src )
-	..()
-	return
-
-/obj/item/weapon/storage/drinkingglasses/New()
-
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
-	new /obj/item/weapon/reagent_containers/food/drinks/drinkingglass( src )
 	..()
 	return
 

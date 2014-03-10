@@ -9,27 +9,20 @@ obj/machinery/recharger
 
 	var
 		obj/item/weapon/gun/energy/charging = null
-		obj/item/weapon/melee/baton/charging2 = null
+		obj/item/weapon/baton/charging2 = null
 
 /obj/machinery/recharger/attackby(obj/item/weapon/G as obj, mob/user as mob)
 	if (src.charging || src.charging2)
 		return
-	if (istype(G, /obj/item/weapon/gun/energy))
-		if (istype(G, /obj/item/weapon/gun/energy/nuclear) || istype(G, /obj/item/weapon/gun/energy/crossbow))
-			user << "Your gun's recharge port was removed to make room for a miniaturized reactor."
+	if ((istype(G, /obj/item/weapon/gun/energy)) || (istype(G, /obj/item/weapon/gun/magnetrifle)))
+		if (istype(G, /obj/item/weapon/gun/energy/general/atomic))
+			user << "\blue This is incompatible!"
 			return
 		user.drop_item()
 		G.loc = src
 		src.charging = G
 		use_power = 2
-
-	if (istype(G,/obj/item/weapon/cargotele))
-		user.drop_item()
-		G.loc = src
-		src.charging2 = G
-		use_power = 2
-
-	if (istype(G, /obj/item/weapon/melee/baton))
+	if (istype(G, /obj/item/weapon/baton))
 		user.drop_item()
 		G.loc = src
 		src.charging2 = G
@@ -37,7 +30,6 @@ obj/machinery/recharger
 
 /obj/machinery/recharger/attack_hand(mob/user as mob)
 	src.add_fingerprint(user)
-
 	if (src.charging)
 		src.charging.update_icon()
 		src.charging.loc = src.loc
@@ -49,14 +41,15 @@ obj/machinery/recharger
 		src.charging2 = null
 		use_power = 1
 
+
 /obj/machinery/recharger/attack_paw(mob/user as mob)
 	if ((ticker && ticker.mode.name == "monkey"))
 		return src.attack_hand(user)
 
 /obj/machinery/recharger/process()
 	if ((src.charging) && ! (stat & NOPOWER) )
-		if (src.charging.power_supply.charge < src.charging.power_supply.maxcharge)
-			src.charging.power_supply.give(100)
+		if (src.charging.charges < src.charging.maximum_charges)
+			src.charging.charges++
 			src.icon_state = "recharger1"
 			use_power(250)
 		else

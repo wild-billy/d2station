@@ -366,7 +366,7 @@ mob
 			for(var/datum/pipe_network/network in pipe_networks)
 				network.marker = rand(1,4)
 
-			for(var/obj/machinery/atmospherics/pipe/P in machines)
+			for(var/obj/machinery/atmospherics/pipe/P in world)
 				P.overlays = null
 
 				var/datum/pipe_network/master = P.return_network()
@@ -376,7 +376,7 @@ mob
 					world << "error"
 					P.overlays += icon('atmos_testing.dmi',"marker0")
 
-			for(var/obj/machinery/atmospherics/valve/V in machines)
+			for(var/obj/machinery/atmospherics/valve/V in world)
 				V.overlays = null
 
 				if(V.network_node1)

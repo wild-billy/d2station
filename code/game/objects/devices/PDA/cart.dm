@@ -22,6 +22,8 @@
 	var/access_hydroponics = 0
 	var/mode = null
 	var/menu
+	var/mmode = 0 //medical record viewing mode
+	var/smode = 0 //Security record viewing mode???
 	var/datum/data/record/active1 = null //General
 	var/datum/data/record/active2 = null //Medical
 	var/datum/data/record/active3 = null //Security
@@ -98,57 +100,9 @@
 		name = "Easy-Record DELUXE"
 		icon_state = "cart-h"
 		access_manifest = 1
-		access_status_display = 1
-
-	hop
-		name = "HumanResources9001"
-		icon_state = "cart-h"
-		access_manifest = 1
-		access_status_display = 1
-		access_quartermaster = 1
-
-		New()
-			..()
-			spawn(5)
-				radio = new /obj/item/radio/integrated/mule(src)
-
-	hos
-		name = "R.O.B.U.S.T. DELUXE"
-		icon_state = "cart-hos"
-		access_manifest = 1
-		access_status_display = 1
-		access_security = 1
-
-		New()
-			..()
-			spawn(5)
-				radio = new /obj/item/radio/integrated/beepsky(src)
-
-	ce
-		name = "Power-On DELUXE"
-		icon_state = "cart-ce"
-		access_manifest = 1
-		access_status_display = 1
 		access_engine = 1
-
-	cmo
-		name = "Med-U DELUXE"
-		icon_state = "cart-cmo"
-		access_manifest = 1
+		access_security = 1
 		access_status_display = 1
-		access_medical = 1
-
-	rd
-		name = "Signal Ace DELUXE"
-		icon_state = "cart-rd"
-		access_manifest = 1
-		access_status_display = 1
-		access_reagent_scanner = 1
-
-		New()
-			..()
-			spawn(5)
-				radio = new /obj/item/radio/integrated/signal(src)
 
 	captain
 		name = "Value-PAK Cartridge"
@@ -172,8 +126,10 @@
 		if (!istype(loc, /obj/item/device/pda))
 			return
 
-		generate_menu()
-		print_to_host(menu)
+		loc:mode = "cart" //Switch right to the notes program
+
+		src.generate_menu()
+		src.print_to_host(src.menu)
 		return
 
 	proc/print_to_host(var/text)
@@ -204,54 +160,23 @@
 				status_signal.data["msg2"] = data2
 			if("alert")
 				status_signal.data["picture_state"] = data1
-
+		sleep(-1)
 		frequency.post_signal(src, status_signal)
 
 	proc/generate_menu()
 		switch(mode)
-			if(40) //signaller
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_signaler.png> Remote Signaling System</h4>"
 
-				menu += {"
-<a href='byond://?src=\ref[src];choice=Send Signal'>Send Signal</A><BR>
-Frequency:
-<a href='byond://?src=\ref[src];choice=Signal Frequency;sfreq=-10'>-</a>
-<a href='byond://?src=\ref[src];choice=Signal Frequency;sfreq=-2'>-</a>
-[format_frequency(radio:frequency)]
-<a href='byond://?src=\ref[src];choice=Signal Frequency;sfreq=2'>+</a>
-<a href='byond://?src=\ref[src];choice=Signal Frequency;sfreq=10'>+</a><br>
-<br>
-Code:
-<a href='byond://?src=\ref[src];choice=Signal Code;scode=-5'>-</a>
-<a href='byond://?src=\ref[src];choice=Signal Code;scode=-1'>-</a>
-[radio:code]
-<a href='byond://?src=\ref[src];choice=Signal Code;scode=1'>+</a>
-<a href='byond://?src=\ref[src];choice=Signal Code;scode=5'>+</a><br>"}
-			if (41) //crew manifest
+			if ("crew") //crew manifest
 
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_notes.png> Crew Manifest</h4>"
+				menu = "<h4><img src=pda_notes.png> Crew Manifest</h4>"
 				menu += "Entries cannot be modified from this terminal.<br><br>"
 
 				for (var/datum/data/record/t in data_core.general)
 					menu += "[t.fields["name"]] - [t.fields["rank"]]<br>"
 				menu += "<br>"
 
-
-			if (42) //status displays
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_status.png> Station Status Display Interlink</h4>"
-
-				menu += "\[ <A HREF='?src=\ref[src];choice=Status;statdisp=blank'>Clear</A> \]<BR>"
-				menu += "\[ <A HREF='?src=\ref[src];choice=Status;statdisp=shuttle'>Shuttle ETA</A> \]<BR>"
-				menu += "\[ <A HREF='?src=\ref[src];choice=Status;statdisp=message'>Message</A> \]"
-				menu += "<ul><li> Line 1: <A HREF='?src=\ref[src];choice=Status;statdisp=setmsg1'>[ message1 ? message1 : "(none)"]</A>"
-				menu += "<li> Line 2: <A HREF='?src=\ref[src];choice=Status;statdisp=setmsg2'>[ message2 ? message2 : "(none)"]</A></ul><br>"
-				menu += "\[ Alert: <A HREF='?src=\ref[src];choice=Status;statdisp=alert;alert=default'>None</A> |"
-				menu += " <A HREF='?src=\ref[src];choice=Status;statdisp=alert;alert=redalert'>Red Alert</A> |"
-				menu += " <A HREF='?src=\ref[src];choice=Status;statdisp=alert;alert=lockdown'>Lockdown</A> |"
-				menu += " <A HREF='?src=\ref[src];choice=Status;statdisp=alert;alert=biohazard'>Biohazard</A> \]<BR>"
-
-			if (43) //Muskets' power monitor
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_power.png> Power Monitor</h4>"
+			if ("power") //Muskets' power monitor
+				menu = "<h4><img src=pda_power.png> Power Monitor</h4>"
 
 				if(!powerreport)
 					menu += "\red No connection"
@@ -278,136 +203,190 @@ Code:
 
 					menu += "</FONT></PRE>"
 
-			if (44) //medical records //This thing only displays a single screen so it's hard to really get the sub-menu stuff working.
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_medical.png> Medical Record List</h4>"
-				for (var/datum/data/record/R in data_core.general)
-					menu += "<a href='byond://?src=\ref[src];choice=Medical Records;target=\ref[R]'>[R.fields["id"]]: [R.fields["name"]]<br>"
-				menu += "<br>"
-			if(441)
-				menu = "<h4><img src=pda_medical.png> Medical Record</h4>"
+			if ("medical") //medical records
+				if (!src.mmode)
 
-				if (istype(active1, /datum/data/record) && (active1 in data_core.general))
-					menu += "Name: [active1.fields["name"]] ID: [active1.fields["id"]]<br>"
-					menu += "Sex: [active1.fields["sex"]]<br>"
-					menu += "Age: [active1.fields["age"]]<br>"
-					menu += "Fingerprint: [active1.fields["fingerprint"]]<br>"
-					menu += "Physical Status: [active1.fields["p_stat"]]<br>"
-					menu += "Mental Status: [active1.fields["m_stat"]]<br>"
-				else
-					menu += "<b>Record Lost!</b><br>"
+					menu = "<h4><img src=pda_medical.png> Medical Record List</h4>"
+					for (var/datum/data/record/R in data_core.general)
+						menu += "<a href='byond://?src=\ref[src];d_rec=\ref[R]'>[R.fields["id"]]: [R.fields["name"]]<br>"
+					menu += "<br>"
 
-				menu += "<br>"
+				else if (src.mmode)
 
-				menu += "<h4><img src=pda_medical.png> Medical Data</h4>"
-				if (istype(active2, /datum/data/record) && (active2 in data_core.medical))
-					menu += "Blood Type: [active2.fields["b_type"]]<br><br>"
+					menu = "<h4><img src=pda_medical.png> Medical Record</h4>"
 
-					menu += "Minor Disabilities: [active2.fields["mi_dis"]]<br>"
-					menu += "Details: [active2.fields["mi_dis_d"]]<br><br>"
+					menu += "<a href='byond://?src=\ref[src];pback=1'>Back</a><br>"
 
-					menu += "Major Disabilities: [active2.fields["ma_dis"]]<br>"
-					menu += "Details: [active2.fields["ma_dis_d"]]<br><br>"
-
-					menu += "Allergies: [active2.fields["alg"]]<br>"
-					menu += "Details: [active2.fields["alg_d"]]<br><br>"
-
-					menu += "Current Diseases: [active2.fields["cdi"]]<br>"
-					menu += "Details: [active2.fields["cdi_d"]]<br><br>"
-
-					menu += "Important Notes: [active2.fields["notes"]]<br>"
-				else
-					menu += "<b>Record Lost!</b><br>"
-
-				menu += "<br>"
-			if (45) //security records
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_cuffs.png> Security Record List</h4>"
-
-				for (var/datum/data/record/R in data_core.general)
-					menu += "<a href='byond://?src=\ref[src];choice=Security Records;target=\ref[R]'>[R.fields["id"]]: [R.fields["name"]]<br>"
-
-				menu += "<br>"
-			if(451)
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_cuffs.png> Security Record</h4>"
-
-				if (istype(active1, /datum/data/record) && (active1 in data_core.general))
-					menu += "Name: [active1.fields["name"]] ID: [active1.fields["id"]]<br>"
-					menu += "Sex: [active1.fields["sex"]]<br>"
-					menu += "Age: [active1.fields["age"]]<br>"
-					menu += "Fingerprint: [active1.fields["fingerprint"]]<br>"
-					menu += "Physical Status: [active1.fields["p_stat"]]<br>"
-					menu += "Mental Status: [active1.fields["m_stat"]]<br>"
-				else
-					menu += "<b>Record Lost!</b><br>"
-
-				menu += "<br>"
-
-				menu += "<h4><img src=pda_cuffs.png> Security Data</h4>"
-				if (istype(active3, /datum/data/record) && (active3 in data_core.security))
-					menu += "Criminal Status: [active3.fields["criminal"]]<br>"
-
-					menu += "Minor Crimes: [active3.fields["mi_crim"]]<br>"
-					menu += "Details: [active3.fields["mi_crim"]]<br><br>"
-
-					menu += "Major Crimes: [active3.fields["ma_crim"]]<br>"
-					menu += "Details: [active3.fields["ma_crim_d"]]<br><br>"
-
-					menu += "Important Notes:<br>"
-					menu += "[active3.fields["notes"]]"
-				else
-					menu += "<b>Record Lost!</b><br>"
-
-				menu += "<br>"
-			if (46) //beepsky control
-				var/obj/item/radio/integrated/beepsky/SC = radio
-				if(!SC)
-					menu = "Interlink Error - Please reinsert cartridge."
-					return
-
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_cuffs.png> Securitron Interlink</h4>"
-
-				if(!SC.active)
-					// list of bots
-					if(!SC.botlist || (SC.botlist && SC.botlist.len==0))
-						menu += "No bots found.<BR>"
-
+					if (istype(src.active1, /datum/data/record) && data_core.general.Find(src.active1))
+						menu += "Name: [src.active1.fields["name"]] ID: [src.active1.fields["id"]]<br>"
+						menu += "Sex: [src.active1.fields["sex"]]<br>"
+						menu += "Age: [src.active1.fields["age"]]<br>"
+						menu += "Fingerprint: [src.active1.fields["fingerprint"]]<br>"
+						menu += "Physical Status: [src.active1.fields["p_stat"]]<br>"
+						menu += "Mental Status: [src.active1.fields["m_stat"]]<br>"
 					else
-						for(var/obj/machinery/bot/secbot/B in SC.botlist)
-							menu += "<A href='byond://?src=\ref[SC];op=control;bot=\ref[B]'>[B] at [B.loc.loc]</A><BR>"
+						menu += "<b>Record Lost!</b><br>"
 
-					menu += "<BR><A href='byond://?src=\ref[SC];op=scanbots'><img src=pda_scanner.png> Scan for active bots</A><BR>"
+					menu += "<br>"
 
-				else	// bot selected, control it
+					menu += "<h4><img src=pda_medical.png> Medical Data</h4>"
+					if (istype(src.active2, /datum/data/record) && data_core.medical.Find(src.active2))
+						menu += "Blood Type: [src.active2.fields["b_type"]]<br><br>"
 
-					menu += "<B>[SC.active]</B><BR> Status: (<A href='byond://?src=\ref[SC];op=control;bot=\ref[SC.active]'><img src=pda_refresh.png><i>refresh</i></A>)<BR>"
+						menu += "Minor Disabilities: [src.active2.fields["mi_dis"]]<br>"
+						menu += "Details: [src.active2.fields["mi_dis_d"]]<br><br>"
 
-					if(!SC.botstatus)
-						menu += "Waiting for response...<BR>"
+						menu += "Major Disabilities: [src.active2.fields["ma_dis"]]<br>"
+						menu += "Details: [src.active2.fields["ma_dis_d"]]<br><br>"
+
+						menu += "Allergies: [src.active2.fields["alg"]]<br>"
+						menu += "Details: [src.active2.fields["alg_d"]]<br><br>"
+
+						menu += "Current Diseases: [src.active2.fields["cdi"]]<br>"
+						menu += "Details: [src.active2.fields["cdi_d"]]<br><br>"
+
+						menu += "Important Notes: [src.active2.fields["notes"]]<br>"
 					else
+						menu += "<b>Record Lost!</b><br>"
 
-						menu += "Location: [SC.botstatus["loca"] ]<BR>"
-						menu += "Mode: "
+					menu += "<br>"
+			if ("security") //security records
+				if (!src.smode)
 
-						switch(SC.botstatus["mode"])
-							if(0)
-								menu += "Ready"
-							if(1)
-								menu += "Apprehending target"
-							if(2,3)
-								menu += "Arresting target"
-							if(4)
-								menu += "Starting patrol"
-							if(5)
-								menu += "On patrol"
-							if(6)
-								menu += "Responding to summons"
+					menu = "<h4><img src=pda_cuffs.png> Security Record List</h4>"
 
-						menu += "<BR>\[<A href='byond://?src=\ref[SC];op=stop'>Stop Patrol</A>\] "
-						menu += "\[<A href='byond://?src=\ref[SC];op=go'>Start Patrol</A>\] "
-						menu += "\[<A href='byond://?src=\ref[SC];op=summon'>Summon Bot</A>\]<BR>"
-						menu += "<HR><A href='byond://?src=\ref[SC];op=botlist'><img src=pda_back.png>Return to bot list</A>"
+					for (var/datum/data/record/R in data_core.general)
+						menu += "<a href='byond://?src=\ref[src];d_rec=\ref[R]'>[R.fields["id"]]: [R.fields["name"]]<br>"
 
-			if (47) //quartermaster order records
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_crate.png> Supply Record Interlink</h4>"
+					menu += "<br>"
+
+				else if (src.smode)
+
+					menu = "<h4><img src=pda_cuffs.png> Security Record</h4>"
+
+					menu += "<a href='byond://?src=\ref[src];pback=1'><img src=pda_back.png> Back</a><br>"
+
+					if (istype(src.active1, /datum/data/record) && data_core.general.Find(src.active1))
+						menu += "Name: [src.active1.fields["name"]] ID: [src.active1.fields["id"]]<br>"
+						menu += "Sex: [src.active1.fields["sex"]]<br>"
+						menu += "Age: [src.active1.fields["age"]]<br>"
+						menu += "Fingerprint: [src.active1.fields["fingerprint"]]<br>"
+						menu += "Physical Status: [src.active1.fields["p_stat"]]<br>"
+						menu += "Mental Status: [src.active1.fields["m_stat"]]<br>"
+					else
+						menu += "<b>Record Lost!</b><br>"
+
+					menu += "<br>"
+
+					menu += "<h4><img src=pda_cuffs.png> Security Data</h4>"
+					if (istype(src.active3, /datum/data/record) && data_core.security.Find(src.active3))
+						menu += "Criminal Status: [src.active3.fields["criminal"]]<br>"
+
+						menu += "Minor Crimes: [src.active3.fields["mi_crim"]]<br>"
+						menu += "Details: [src.active3.fields["mi_crim"]]<br><br>"
+
+						menu += "Major Crimes: [src.active3.fields["ma_crim"]]<br>"
+						menu += "Details: [src.active3.fields["ma_crim_d"]]<br><br>"
+
+						menu += "Important Notes:<br>"
+						menu += "[src.active3.fields["notes"]]"
+					else
+						menu += "<b>Record Lost!</b><br>"
+
+					menu += "<br>"
+
+			if ("janitor") //janitorial locator
+				menu = "<h4><img src=pda_bucket.png> Persistent Custodial Object Locator</h4>"
+
+				var/turf/cl = get_turf(src)
+				if (cl)
+					menu += "Current Orbital Location: <b>\[[cl.x],[cl.y]\]</b>"
+
+					menu += "<h4>Located Mops:</h4>"
+
+					var/ldat
+					for (var/obj/item/weapon/mop/M in world)
+						var/turf/ml = get_turf(M)
+
+						if (ml.z != cl.z)
+							continue
+
+						ldat += "Mop - <b>\[[ml.x],[ml.y]\]</b> - [M.reagents.total_volume ? "Wet" : "Dry"]<br>"
+
+					if (!ldat)
+						menu += "None"
+					else
+						menu += "[ldat]"
+
+					menu += "<h4>Located Mop Buckets:</h4>"
+
+					ldat = null
+					for (var/obj/mopbucket/B in world)
+						var/turf/bl = get_turf(B)
+
+						if (bl.z != cl.z)
+							continue
+
+						ldat += "Bucket - <b>\[[bl.x],[bl.y]\]</b> - Water level: [B.reagents.total_volume]/70<br>"
+
+					if (!ldat)
+						menu += "None"
+					else
+						menu += "[ldat]"
+
+					menu += "<h4>Located Cleanbots:</h4>"
+
+					ldat = null
+					for (var/obj/machinery/bot/cleanbot/B in world)
+						var/turf/bl = get_turf(B)
+
+						if (bl.z != cl.z)
+							continue
+
+						ldat += "Cleanbot - <b>\[[bl.x],[bl.y]\]</b> - [B.on ? "Online" : "Offline"]<br>"
+
+					if (!ldat)
+						menu += "None"
+					else
+						menu += "[ldat]"
+
+				else
+					menu += "ERROR: Unable to determine current location."
+
+			if("signal") //signaller
+				menu = "<h4><img src=pda_signaler.png> Remote Signaling System</h4>"
+
+				menu += {"
+<a href='byond://?src=\ref[src];ssend=1'>Send Signal</A><BR>
+Frequency:
+<a href='byond://?src=\ref[src];sfreq=-10'>-</a>
+<a href='byond://?src=\ref[src];sfreq=-2'>-</a>
+[format_frequency(src.radio:frequency)]
+<a href='byond://?src=\ref[src];sfreq=2'>+</a>
+<a href='byond://?src=\ref[src];sfreq=10'>+</a><br>
+<br>
+Code:
+<a href='byond://?src=\ref[src];scode=-5'>-</a>
+<a href='byond://?src=\ref[src];scode=-1'>-</a>
+[src.radio:code]
+<a href='byond://?src=\ref[src];scode=1'>+</a>
+<a href='byond://?src=\ref[src];scode=5'>+</a><br>"}
+
+			if ("status") //status displays
+				menu = "<h4><img src=pda_status.png> Station Status Display Interlink</h4>"
+
+				menu += "\[ <A HREF='?src=\ref[src];statdisp=blank'>Clear</A> \]<BR>"
+				menu += "\[ <A HREF='?src=\ref[src];statdisp=shuttle'>Shuttle ETA</A> \]<BR>"
+				menu += "\[ <A HREF='?src=\ref[src];statdisp=message'>Message</A> \]"
+				menu += "<ul><li> Line 1: <A HREF='?src=\ref[src];statdisp=setmsg1'>[ message1 ? message1 : "(none)"]</A>"
+				menu += "<li> Line 2: <A HREF='?src=\ref[src];statdisp=setmsg2'>[ message2 ? message2 : "(none)"]</A></ul><br>"
+				menu += "\[ Alert: <A HREF='?src=\ref[src];statdisp=alert;alert=default'>None</A> |"
+				menu += " <A HREF='?src=\ref[src];statdisp=alert;alert=redalert'>Red Alert</A> |"
+				menu += " <A HREF='?src=\ref[src];statdisp=alert;alert=lockdown'>Lockdown</A> |"
+				menu += " <A HREF='?src=\ref[src];statdisp=alert;alert=biohazard'>Biohazard</A> \]<BR>"
+
+			if ("qm") //quartermaster order records
+				menu = "<h4><img src=pda_crate.png> Supply Record Interlink</h4>"
 
 				menu += "<BR><B>Supply shuttle</B><BR>"
 				menu += "Location: [supply_shuttle_moving ? "Moving to station ([supply_shuttle_timeleft] Mins.)":supply_shuttle_at_station ? "Station":"Dock"]<BR>"
@@ -423,13 +402,13 @@ Code:
 					menu += "<li>[SO.object.name] requested by [SO.orderedby]</li>"
 				menu += "</ol><font size=\"-3\">Upgrade NOW to Space Parts & Space Vendors PLUS for full remote order control and inventory management."
 
-			if (48) //mulebot control
+			if ("mule") //mulebot control
 				var/obj/item/radio/integrated/mule/QC = radio
 				if(!QC)
 					menu = "Interlink Error - Please reinsert cartridge."
 					return
 
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_mule.png> M.U.L.E. bot Interlink V0.8</h4>"
+				menu = "<h4><img src=pda_mule.png> M.U.L.E. bot Interlink V0.8</h4>"
 
 				if(!QC.active)
 					// list of bots
@@ -440,9 +419,12 @@ Code:
 						for(var/obj/machinery/bot/mulebot/B in QC.botlist)
 							menu += "<A href='byond://?src=\ref[QC];op=control;bot=\ref[B]'>[B] at [B.loc.loc]</A><BR>"
 
+
+
 					menu += "<BR><A href='byond://?src=\ref[QC];op=scanbots'><img src=pda_scanner.png> Scan for active bots</A><BR>"
 
 				else	// bot selected, control it
+
 
 					menu += "<B>[QC.active]</B><BR> Status: (<A href='byond://?src=\ref[QC];op=control;bot=\ref[QC.active]'><img src=pda_refresh.png><i>refresh</i></A>)<BR>"
 
@@ -481,131 +463,131 @@ Code:
 						menu += "\[<A href='byond://?src=\ref[QC];op=home'>Return Home</A>\]<BR>"
 						menu += "<HR><A href='byond://?src=\ref[QC];op=botlist'><img src=pda_back.png>Return to bot list</A>"
 
-			if (49) //janitorial locator
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_bucket.png> Persistent Custodial Object Locator</h4>"
+			if ("beepsky") //beepsky control
+				var/obj/item/radio/integrated/beepsky/SC = radio
+				if(!SC)
+					menu = "Interlink Error - Please reinsert cartridge."
+					return
 
-				var/turf/cl = get_turf(src)
-				if (cl)
-					menu += "Current Orbital Location: <b>\[[cl.x],[cl.y]\]</b>"
+				menu = "<h4><img src=pda_cuffs.png> Securitron Interlink</h4>"
 
-					menu += "<h4>Located Mops:</h4>"
+				if(!SC.active)
+					// list of bots
+					if(!SC.botlist || (SC.botlist && SC.botlist.len==0))
+						menu += "No bots found.<BR>"
 
-					var/ldat
-					for (var/obj/item/weapon/mop/M in world)
-						var/turf/ml = get_turf(M)
-
-						if (ml.z != cl.z)
-							continue
-
-						ldat += "Mop - <b>\[[ml.x],[ml.y]\]</b> - [M.reagents.total_volume ? "Wet" : "Dry"]<br>"
-
-					if (!ldat)
-						menu += "None"
 					else
-						menu += "[ldat]"
+						for(var/obj/machinery/bot/secbot/B in SC.botlist)
+							menu += "<A href='byond://?src=\ref[SC];op=control;bot=\ref[B]'>[B] at [B.loc.loc]</A><BR>"
 
-					menu += "<h4>Located Mop Buckets:</h4>"
 
-					ldat = null
-					for (var/obj/mopbucket/B in world)
-						var/turf/bl = get_turf(B)
 
-						if (bl.z != cl.z)
-							continue
+					menu += "<BR><A href='byond://?src=\ref[SC];op=scanbots'><img src=pda_scanner.png> Scan for active bots</A><BR>"
 
-						ldat += "Bucket - <b>\[[bl.x],[bl.y]\]</b> - Water level: [B.reagents.total_volume]/100<br>"
+				else	// bot selected, control it
 
-					if (!ldat)
-						menu += "None"
+
+					menu += "<B>[SC.active]</B><BR> Status: (<A href='byond://?src=\ref[SC];op=control;bot=\ref[SC.active]'><img src=pda_refresh.png><i>refresh</i></A>)<BR>"
+
+					if(!SC.botstatus)
+						menu += "Waiting for response...<BR>"
 					else
-						menu += "[ldat]"
 
-					menu += "<h4>Located Cleanbots:</h4>"
+						menu += "Location: [SC.botstatus["loca"] ]<BR>"
+						menu += "Mode: "
 
-					ldat = null
-					for (var/obj/machinery/bot/cleanbot/B in machines)
-						var/turf/bl = get_turf(B)
+						switch(SC.botstatus["mode"])
+							if(0)
+								menu += "Ready"
+							if(1)
+								menu += "Apprehending target"
+							if(2,3)
+								menu += "Arresting target"
+							if(4)
+								menu += "Starting patrol"
+							if(5)
+								menu += "On patrol"
+							if(6)
+								menu += "Responding to summons"
 
-						if (bl.z != cl.z)
-							continue
-
-						ldat += "Cleanbot - <b>\[[bl.x],[bl.y]\]</b> - [B.on ? "Online" : "Offline"]<br>"
-
-					if (!ldat)
-						menu += "None"
-					else
-						menu += "[ldat]"
-
-				else
-					menu += "ERROR: Unable to determine current location."
+						menu += "<BR>\[<A href='byond://?src=\ref[SC];op=stop'>Stop Patrol</A>\] "
+						menu += "\[<A href='byond://?src=\ref[SC];op=go'>Start Patrol</A>\] "
+						menu += "\[<A href='byond://?src=\ref[SC];op=summon'>Summon Bot</A>\]<BR>"
+						menu += "<HR><A href='byond://?src=\ref[SC];op=botlist'><img src=pda_back.png>Return to bot list</A>"
 
 /obj/item/weapon/cartridge/Topic(href, href_list)
 	..()
 
-	if (usr.stat || usr.restrained() || !in_range(loc, usr))
-		usr.machine = null
-		usr << browse(null, "window=pda")
+	if (usr.stat || usr.restrained() || !in_range(src.loc, usr))
 		return
 
-	switch(href_list["choice"])
-		if("Medical Records")
-			var/datum/data/record/R = locate(href_list["target"])
-			var/datum/data/record/M = locate(href_list["target"])
-			loc:mode = 441
-			mode = 441
-			if (R in data_core.general)
-				for (var/datum/data/record/E in data_core.medical)
-					if ((E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
-						M = E
-						break
-				active1 = R
-				active2 = M
+	if (href_list["d_rec"])
+		var/datum/data/record/R = locate(href_list["d_rec"])
+		var/datum/data/record/M = locate(href_list["d_rec"])
+		var/datum/data/record/S = locate(href_list["d_rec"])
 
-		if("Security Records")
-			var/datum/data/record/R = locate(href_list["target"])
-			var/datum/data/record/S = locate(href_list["target"])
-			loc:mode = 451
-			mode = 451
-			if (R in data_core.general)
-				for (var/datum/data/record/E in data_core.security)
-					if ((E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
-						S = E
-						break
-				active1 = R
-				active3 = S
+		if (data_core.general.Find(R))
+			for (var/datum/data/record/E in data_core.medical)
+				if ((E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
+					M = E
+					break
 
-		if("Send Signal")
-			for(var/obj/item/assembly/r_i_ptank/R in world) //Bomblist stuff
-				if((R.part1.code == src/radio:code) && (R.part1.frequency == radio:frequency))
-					bombers += "[key_name(usr)] has activated a radio bomb (Freq: [format_frequency(radio:frequency)], Code: [radio:code]). Temp = [R.part3.air_contents.temperature-T0C]."
-			spawn( 0 )
-				radio:send_signal("ACTIVATE")
-				return
+			for (var/datum/data/record/E in data_core.security)
+				if ((E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
+					S = E
+					break
 
-		if("Signal Frequency")
-			var/new_frequency = sanitize_frequency(radio:frequency + text2num(href_list["sfreq"]))
-			radio:set_frequency(new_frequency)
+			src.active1 = R
+			src.active2 = M
+			src.active3 = S
 
-		if("Signal Code")
-			radio:code += text2num(href_list["scode"])
-			radio:code = round(radio:code)
-			radio:code = min(100, radio:code)
-			radio:code = max(1, radio:code)
+		if (src.mode == "medical")
+			src.mmode = 1
+		else
+			src.smode = 1
 
-		if("Status")
-			switch(href_list["statdisp"])
-				if("message")
-					post_status("message", message1, message2)
-				if("alert")
-					post_status("alert", href_list["alert"])
-				if("setmsg1")
-					message1 = strip_html(input("Line 1", "Enter Message Text", message1) as text|null)
-					updateSelfDialog()
-				if("setmsg2")
-					message2 = strip_html(input("Line 2", "Enter Message Text", message2) as text|null)
-					updateSelfDialog()
-				else
-					post_status(href_list["statdisp"])
+	else if (href_list["pback"])
+		if (src.mode == "medical")
+			src.mmode = 0
+		if (src.mode == "security")
+			src.smode = 0
+			loc:tmode = !loc:tmode
 
-	generate_menu()
-	print_to_host(menu)
+
+	else if ((href_list["ssend"]) && (istype(src,/obj/item/weapon/cartridge/signal)))
+		for(var/obj/item/assembly/r_i_ptank/R in world) //Bomblist stuff
+			if((R.part1.code == src/radio:code) && (R.part1.frequency == src.radio:frequency))
+				bombers += "[key_name(usr)] has activated a radio bomb (Freq: [format_frequency(src.radio:frequency)], Code: [src.radio:code]). Temp = [R.part3.air_contents.temperature-T0C]."
+		spawn( 0 )
+			src.radio:send_signal("ACTIVATE")
+			return
+
+	else if ((href_list["sfreq"]) && (istype(src,/obj/item/weapon/cartridge/signal)))
+		var/new_frequency = sanitize_frequency(src.radio:frequency + text2num(href_list["sfreq"]))
+		src.radio:set_frequency(new_frequency)
+
+	else if ((href_list["scode"]) && (istype(src,/obj/item/weapon/cartridge/signal)))
+		src.radio:code += text2num(href_list["scode"])
+		src.radio:code = round(src.radio:code)
+		src.radio:code = min(100, src.radio:code)
+		src.radio:code = max(1, src.radio:code)
+
+	else if (href_list["statdisp"] && access_status_display)
+
+		switch(href_list["statdisp"])
+			if("message")
+				post_status("message", message1, message2)
+			if("alert")
+				post_status("alert", href_list["alert"])
+
+			if("setmsg1")
+				message1 = input("Line 1", "Enter Message Text", message1) as text|null
+				src.updateSelfDialog()
+			if("setmsg2")
+				message2 = input("Line 2", "Enter Message Text", message2) as text|null
+				src.updateSelfDialog()
+			else
+				post_status(href_list["statdisp"])
+
+	src.generate_menu()
+	src.print_to_host(src.menu)

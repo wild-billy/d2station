@@ -4,47 +4,36 @@
 /mob/verb/whisper()
 	set name = "Whisper"
 	set category = "IC"
-	if (client.muted)
-		return
-	if(chattime > 0)
-		src << "\red No more than one message per 1 second please!"
-		return
-	else
-		src.chattime = 1
 	return
 
 /mob/verb/say_verb(message as text)
 	set name = "Say"
 	set category = "IC"
-	if (client.muted)
-		return
-	if(chattime > 0)
-		src << "\red No more than one message per 1 second please!"
-		return
-	else
-		src.chattime = 1
 	usr.say(message)
 
 /mob/verb/me_verb(message as text)
 	set name = "Me"
 	set category = "IC"
-	if(chattime > 0)
-		src << "\red No more than one message per 1 second please!"
-		return
-	else
-		src.chattime = 1
-	message = trim(copytext(sanitize(message), 1, MAX_MESSAGE_LEN))
-	if (client.muted)
-		return
 	usr.emote("me",1,message)
+
+/mob/verb/emote_verb(message as text)
+	set name = "Emote"
+	set category = "IC"
+	usr.emote("message")
 
 /mob/proc/say_dead(var/message)
 	var/name = src.real_name
 	var/alt_name = ""
 
 	if (istype(src, /mob/living/carbon/human) && src.name != src.real_name)
-		var/mob/living/carbon/human/H = src
-		alt_name = " (as [H.get_authentification_name()])"
+		if (src:wear_id)
+			var/obj/item/weapon/card/id/id = src:wear_id
+			if(istype(src:wear_id, /obj/item/device/pda))
+				var/obj/item/device/pda/pda = src:wear_id
+				id = pda.id
+			alt_name = " (as [id:registered])"
+		else
+			alt_name = " (as Unknown)"
 	else if (istype(src, /mob/dead/observer))
 		name = "Ghost"
 		alt_name = " ([src.real_name])"
@@ -53,10 +42,9 @@
 
 	message = src.say_quote(message)
 
-
 	var/rendered = "<span class='game deadsay'><span class='prefix'>DEAD:</span> <span class='name'>[name]</span>[alt_name] <span class='message'>[message]</span></span>"
 
-	for (var/mob/M in mobz)
+	for (var/mob/M in world)
 		if (istype(M, /mob/new_player))
 			continue
 		if (M.stat == 2 || (M.client && M.client.holder && M.client.deadchat)) //admins can toggle deadchat on and off. This is a proc in admin.dm and is only give to Administrators and above
@@ -81,15 +69,8 @@
 		return "asks, \"[text]\"";
 	else if (ending == "!")
 		return "exclaims, \"[text]\"";
-	return "says, \"[text]\"";
 
-/mob/proc/say_test(var/text)
-	var/ending = copytext(text, length(text))
-	if (ending == "?")
-		return "1"
-	else if (ending == "!")
-		return "2"
-	return "0"
+	return "says, \"[text]\"";
 
 /mob/proc/emote(var/act)
 	return

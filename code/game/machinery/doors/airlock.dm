@@ -78,9 +78,6 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 	var/doortype = 0
 	var/justzap = 0
 	var/obj/item/weapon/airlock_electronics/electronics = null
-	//var/is_cold = 0
-	//var/is_hot = 1
-	//var/clickedon = 0
 
 /obj/machinery/door/airlock/command
 	name = "Airlock"
@@ -117,7 +114,6 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 	icon = 'Doorglass.dmi'
 	opacity = 0
 	doortype = 7
-	transparent = 1
 
 /obj/machinery/door/airlock/centcom
 	name = "Airlock"
@@ -131,112 +127,6 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 	opacity = 1
 	doortype = 9
 
-/obj/machinery/door/airlock/glass_large
-	name = "Glass Airlock"
-	icon = 'Door2x1glassfull.dmi'
-	opacity = 0
-	doortype = 10
-	transparent = 1
-	var/obj/machinery/door/airlock/glass_large/bump/connected = null
-
-	New()
-		src.connected = locate(/obj/machinery/door/airlock/glass_large/bump, get_step(loc, EAST))
-
-/obj/machinery/door/airlock/glass_large/bump
-	name = "Glass Airlock"
-	icon = null
-	opacity = 0
-	doortype = 10
-
-	New()
-		src.connected = locate(/obj/machinery/door/airlock/glass_large, get_step(loc, WEST))
-
-/obj/machinery/door/airlock/armoureddoor
-	name = "Armoured door"
-	icon = 'Rollingfoor.dmi'
-	doortype = 11
-
-/obj/machinery/door/airlock/glass_large/bumpopen(mob/user as mob) //Airlocks now zap you when you 'bump' them open when they're electrified. --NeoFite
-	connected.bumpopen(user)
-	if (!istype(usr, /mob/living/silicon))
-		if (src.isElectrified())
-			if (!src.justzap)
-				if(src.shock(user, 100))
-					src.justzap = 1
-					spawn (10)
-						src.justzap = 0
-					return
-			else /*if (src.justzap)*/
-				return
-	..(user)
-
-
-/obj/machinery/door/airlock/freezer
-	name = "Freezer Airlock"
-	icon = 'Doorfreezer.dmi'
-	opacity = 1
-	doortype = 11
-
-/obj/machinery/door/airlock/hatch
-	name = "Airtight Hatch"
-	icon = 'Doorhatchele.dmi'
-	opacity = 1
-	doortype = 12
-
-/obj/machinery/door/airlock/maintenance_hatch
-	name = "Maintenance Hatch"
-	icon = 'Doorhatchmaint2.dmi'
-	opacity = 1
-	doortype = 13
-	req_access_txt = "12"
-
-/obj/machinery/door/airlock/glass_command
-	name = "Maintenance Hatch"
-	icon = 'Doorcomglass.dmi'
-	opacity = 0
-	doortype = 14
-	transparent = 1
-
-/obj/machinery/door/airlock/glass_engineering
-	name = "Maintenance Hatch"
-	icon = 'Doorengglass.dmi'
-	opacity = 0
-	doortype = 15
-	transparent = 1
-
-/obj/machinery/door/airlock/glass_security
-	name = "Maintenance Hatch"
-	icon = 'Doorsecglass.dmi'
-	opacity = 0
-	doortype = 16
-	transparent = 1
-
-/obj/machinery/door/airlock/glass_green
-	name = "Maintenance Hatch"
-	icon = 'glassairlocks.dmi'
-	opacity = 0
-	doortype = 16
-	transparent = 1
-
-
-/obj/machinery/door/airlock/glass_medical
-	name = "Maintenance Hatch"
-	icon = 'doormedglass.dmi'
-	opacity = 0
-	doortype = 17
-	transparent = 1
-
-/obj/machinery/door/airlock/glass_sci
-	name = "Research and Development"
-	icon = 'doorsciglass.dmi'
-	opacity = 0
-	doortype = 18
-	transparent = 1
-
-/obj/machinery/door/airlock/science
-	name = "Research and Development"
-	icon = 'Doorsci.dmi'
-	doortype = 19
 /*
 About the new airlock wires panel:
 *	An airlock wire dialog can be accessed by the normal way or by using wirecutters or a multitool on the door while the wire-panel is open. This would show the following wires, which you can either wirecut/mend or send a multitool pulse through. There are 9 wires.
@@ -271,7 +161,6 @@ About the new airlock wires panel:
 			//Sending a pulse through this flashes the red light on the door (if the door has power).
 			if ((src.arePowerSystemsOn()) && (!(stat & NOPOWER)))
 				do_animate("deny")
-				playsound(src.loc, 'accessdenied.ogg', 30, 0)
 		if (AIRLOCK_WIRE_MAIN_POWER1 || AIRLOCK_WIRE_MAIN_POWER2)
 			//Sending a pulse through either one causes a breaker to trip, disabling the door for 10 seconds if backup power is connected, or 1 minute if not (or until backup power comes back on, whichever is shorter).
 			src.loseMainPower()
@@ -477,7 +366,6 @@ About the new airlock wires panel:
 	else
 		return 0
 
-
 /obj/machinery/door/airlock/update_icon()
 	if(overlays) overlays = null
 	if(density)
@@ -499,31 +387,17 @@ About the new airlock wires panel:
 /obj/machinery/door/airlock/do_animate(animation)
 	switch(animation)
 		if("opening")
-			/*HOT AND COLD CHECKS
-			if(is_hot || is_cold)
-				if(is_hot)
-					usr << "\red The airlock feels very warm! Are you sure you want to open it?"
-				else if(is_cold)
-					usr << "\red The airlock feels very cold! Are you sure you want to open it?"
-				if(!clickedon)
-					clickedon = 1
-					return
-			HOT AND COLD CHECKS
-			clickedon = 0
-			is_hot = 0
-			is_cold = 0
-			*/
 			if(overlays) overlays = null
 			if(p_open)
 				icon_state = "o_door_opening" //can not use flick due to BYOND bug updating overlays right before flicking
 			else
-				icon_state = "door_opening"
+				flick("door_opening", src)
 		if("closing")
 			if(overlays) overlays = null
 			if(p_open)
-				icon_state = "o_door_closing"
+				flick("o_door_closing", src)
 			else
-				icon_state = "door_closing"
+				flick("door_closing", src)
 		if("spark")
 			flick("door_spark", src)
 		if("deny")
@@ -619,7 +493,7 @@ About the new airlock wires panel:
 		src.aiHacking=1
 		spawn(20)
 			//TODO: Make this take a minute
-			user << "Airlock remote control has been blocked. Beginning fault-detection."
+			user << "Airlock AI control has been blocked. Beginning fault-detection."
 			sleep(50)
 			if (src.canAIControl())
 				user << "Alert cancelled. Airlock control has been restored without our assistance."
@@ -674,26 +548,20 @@ About the new airlock wires panel:
 	if (ishuman(user) && prob(40) && src.density)
 		var/mob/living/carbon/human/H = user
 		if(H.brainloss >= 60)
-			src.health = max(0, src.health - 15)
-			playsound(src.loc, 'bang.ogg', 25, 1)
+			playsound(src.loc, 'bang.ogg', 15, 1)
 			if(!istype(H.head, /obj/item/clothing/head/helmet))
 				for(var/mob/M in viewers(src, null))
-					M << "\red [user] smashes the airlock with their head!"
+					M << "\red [user] headbutts the airlock."
 				var/datum/organ/external/affecting = H.organs["head"]
 				affecting.take_damage(10, 0)
-				if(H.mutantrace == "zombie")
-					H.stunned = 0
-					H.weakened = 0
-				else
-					H.stunned = 8
-					H.weakened = 5
+				H.stunned = 8
+				H.weakened = 5
 				H.UpdateDamage()
 				H.UpdateDamageIcon()
 			else
 				for(var/mob/M in viewers(src, null))
-					M << "\red [user] smashes the airlock with their helmet!."
+					M << "\red [user] headbutts the airlock. Good thing they're wearing a helmet."
 			return
-
 
 	if (src.p_open)
 		user.machine = src
@@ -934,7 +802,7 @@ About the new airlock wires panel:
 	src.add_fingerprint(user)
 	if ((istype(C, /obj/item/weapon/weldingtool) && !( src.operating ) && src.density))
 		var/obj/item/weapon/weldingtool/W = C
-		if(W.remove_fuel(0,user))
+		if(W.remove_fuel(2,user))
 			if (!src.welded)
 				src.welded = 1
 			else
@@ -946,24 +814,14 @@ About the new airlock wires panel:
 	else if (istype(C, /obj/item/weapon/screwdriver))
 		src.p_open = !( src.p_open )
 		src.update_icon()
-	else if (istype(C, /obj/item/device/hacktool))
-		hack(user)
 	else if (istype(C, /obj/item/weapon/wirecutters))
 		return src.attack_hand(user)
 	else if (istype(C, /obj/item/device/multitool))
 		return src.attack_hand(user)
 	else if (istype(C, /obj/item/device/radio/signaler))
 		return src.attack_hand(user)
-	else if (istype(C, /obj/item/weapon/pai_cable))	// -- TLE
-		var/obj/item/weapon/pai_cable/cable = C
-		cable.plugin(src, user)
-	else if (istype(C, /obj/item/weapon/crowbar) || istype(C, /obj/item/weapon/fireaxe) )
-		var/beingcrowbarred = null
-		if(istype(C, /obj/item/weapon/crowbar) )
-			beingcrowbarred = 1 //derp, Agouri
-		else
-			beingcrowbarred = 0
-		if ( ((src.density) && ( src.welded ) && !( src.operating ) && src.p_open && (!src.arePowerSystemsOn() || (stat & NOPOWER)) && !src.locked) && beingcrowbarred == 1 )
+	else if (istype(C, /obj/item/weapon/crowbar))
+		if ((src.density) && ( src.welded ) && !( src.operating ) && src.p_open && (!src.arePowerSystemsOn() || (stat & NOPOWER)) && !src.locked)
 			playsound(src.loc, 'Crowbar.ogg', 100, 1)
 			user.visible_message("[user] removes the electronics from the airlock assembly.", "You start to remove electronics into the airlock assembly.")
 			if(do_after(user,40))
@@ -993,74 +851,32 @@ About the new airlock wires panel:
 		else if (src.locked)
 			user << "\blue The airlock's bolts prevent it from being pried open."
 		if ((src.density) && (!( src.welded ) && !( src.operating ) && ((!src.arePowerSystemsOn()) || (stat & NOPOWER)) && !( src.locked )))
+			spawn( 0 )
+				src.operating = 1
+				do_animate("opening")
 
-			if(beingcrowbarred == 0) //being fireaxe'd
-				var/obj/item/weapon/fireaxe/F = C
-				if(F.wielded == 1)
-					spawn( 0 )
-						src.operating = 1
-						do_animate("opening")
+				sleep(15)
 
-						sleep(15)
+				src.density = 0
+				update_icon()
 
-						layer = 2.7
-						src.density = 0
-						update_icon()
-
-						if (!istype(src, /obj/machinery/door/airlock/glass))
-							src.ul_SetOpacity(0)
-						src.operating = 0
-						return
-				user << "\red You need to be wielding the Fire axe to do that."
+				if (!istype(src, /obj/machinery/door/airlock/glass))
+					src.sd_SetOpacity(0)
+				src.operating = 0
 				return
-			else
-				spawn( 0 )
-					src.operating = 1
-					do_animate("opening")
-
-					sleep(15)
-
-					layer = 2.7
-					src.density = 0
-					update_icon()
-
-					if (!istype(src, /obj/machinery/door/airlock/glass))
-						src.ul_SetOpacity(0)
-					src.operating = 0
-					return
-
 		else
 			if ((!src.density) && (!( src.welded ) && !( src.operating ) && !( src.locked )))
-				if(beingcrowbarred == 0)
-					var/obj/item/weapon/fireaxe/F = C
-					if(F.wielded == 1)
-						spawn( 0 )
-							src.operating = 1
-							do_animate("closing")
+				spawn( 0 )
+					src.operating = 1
+					do_animate("closing")
 
-							layer = 3.1
-							src.density = 1
-							sleep(15)
-							update_icon()
+					src.density = 1
+					sleep(15)
+					update_icon()
 
-							if ((src.visible) && (!istype(src, /obj/machinery/door/airlock/glass)))
-								src.ul_SetOpacity(1)
-							src.operating = 0
-					else
-						user << "\red You need to be wielding the Fire axe to do that."
-				else
-					spawn( 0 )
-						src.operating = 1
-						do_animate("closing")
-
-						layer = 3.1
-						src.density = 1
-						sleep(15)
-						update_icon()
-
-						if ((src.visible) && (!istype(src, /obj/machinery/door/airlock/glass)))
-							src.ul_SetOpacity(1)
-						src.operating = 0
+					if ((src.visible) && (!istype(src, /obj/machinery/door/airlock/glass)))
+						src.sd_SetOpacity(1)
+					src.operating = 0
 
 	else
 		..()

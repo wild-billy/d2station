@@ -15,16 +15,12 @@
 	new /obj/item/weapon/paper(src)
 	new /obj/item/weapon/pen(src)
 
-/obj/item/weapon/secstorage/sbriefcase/attack(mob/M as mob, mob/living/user as mob)
-	if ((user.mutations & CLOWN) && prob(50))
-		user << "\red The [src] slips out of your hand and hits your head."
-		user.take_organ_damage(10)
-		user.paralysis += 2
+/obj/item/weapon/secstorage/sbriefcase/attack(mob/M as mob, mob/user as mob)
+	if ((usr.mutations & 16) && prob(50))
+		usr << "\red The [src] slips out of your hand and hits your head."
+		usr.bruteloss += 10
+		usr.paralysis += 2
 		return
-
-
-	M.attack_log += text("<font color='orange'>[world.time] - has been attacked with [src.name] by [user.name] ([user.ckey])</font>")
-	user.attack_log += text("<font color='red'>[world.time] - has used the [src.name] to attack [M.name] ([M.ckey])</font>")
 
 	var/t = user:zone_sel.selecting
 	if (t == "head")

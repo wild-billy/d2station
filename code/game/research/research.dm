@@ -168,14 +168,9 @@ datum
 			desc = "Development of new and improved materials."
 			id = "materials"
 
-		engineering
-			name = "Engineering Research"
-			desc = "Development of new and improved engineering parts and."
-			id = "engineering"
-
 		plasmatech
 			name = "Plasma Research"
-			desc = "Research into the mysterious substance colloqually known as 'plasma'."
+			desc = "Research into the mysterious substance colloqually known as 'plasma'"
 			id = "plasmatech"
 
 		powerstorage
@@ -193,11 +188,6 @@ datum
 			desc = "Research into the deeper mysteries of life and organic substances."
 			id = "biotech"
 
-		combat
-			name = "Combat Systems Research"
-			desc = "The development of offensive and defensive systems."
-			id = "combat"
-
 		magnets
 			name = "Electromagnetic Spectrum Research"
 			desc = "Research into the electromagnetic spectrum. No clue how they actually work, though."
@@ -213,14 +203,13 @@ datum
 			desc = "The study of technologies that violate Nanotrassen regulations."
 			id = "syndicate"
 
-	/*	arcane
-			name = "Arcane Research"
-			desc = "Research into the acult and arcane field for use in practical science"
-			id = "arcane"
-			level = 0 //It didn't become "secret" as advertised.
+		combat
+			name = "Combat Systems Research"
+			desc = "The development of offensive and defensive systems."
+			id = "combat"
 
 	//Branch Techs
-		explosives
+	/*	explosives
 			name = "Explosives Research"
 			desc = "The creation and application of explosive materials."
 			id = "explosives"

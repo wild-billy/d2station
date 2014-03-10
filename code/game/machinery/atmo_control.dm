@@ -56,6 +56,7 @@ obj/machinery/air_sensor
 					signal.data["nitrogen"] = 0
 					signal.data["carbon_dioxide"] = 0
 			signal.data["sigtype"]="status"
+			sleep(-1)
 			radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
 
@@ -85,9 +86,6 @@ obj/machinery/computer/general_air_control
 
 	var/list/sensor_information = list()
 	var/datum/radio_frequency/radio_connection
-	ScreenColorRed = 0
-	ScreenColorGreen = 0.3
-	ScreenColorBlue = 0
 
 	attack_hand(mob/user)
 		user << browse(return_text(),"window=computer")
@@ -146,7 +144,7 @@ obj/machinery/computer/general_air_control
 			for(var/id_tag in sensors)
 				var/long_name = sensors[id_tag]
 				var/list/data = sensor_information[id_tag]
-				var/sensor_part = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>[long_name]</B>:<BR>"
+				var/sensor_part = "<B>[long_name]</B>:<BR>"
 
 				if(data)
 					if(data["pressure"])
@@ -205,7 +203,7 @@ obj/machinery/computer/general_air_control
 			//if(signal.data)
 			//	input_info = signal.data // Attempting to fix intake control -- TLE
 
-			output += "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Tank Control System</B><BR>"
+			output += "<B>Tank Control System</B><BR>"
 			if(input_info)
 				var/power = (input_info["power"])
 				var/volume_rate = input_info["volume_rate"]
@@ -281,10 +279,12 @@ Max Output Pressure: [output_pressure] kPa<BR>"}
 				signal.data = list ("tag" = output_tag, "set_internal_pressure" = "[pressure_setting]")
 
 			signal.data["sigtype"]="command"
+			sleep(-1)
 			radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
 			spawn(5)
 				src.updateDialog()
+
 
 	fuel_injection
 		icon = 'computer.dmi'
@@ -355,7 +355,7 @@ Max Output Pressure: [output_pressure] kPa<BR>"}
 					"power" = injecting,
 					"sigtype"="command"
 				)
-
+				sleep(-1)
 				radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
 			..()
@@ -409,6 +409,7 @@ Rate: [volume_rate] L/sec<BR>"}
 					"status",
 					"sigtype"="command"
 				)
+				sleep(-1)
 				radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
 			if(href_list["toggle_automation"])
@@ -427,7 +428,7 @@ Rate: [volume_rate] L/sec<BR>"}
 					"power_toggle",
 					"sigtype"="command"
 				)
-
+				sleep(-1)
 				radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
 			if(href_list["injection"])
@@ -442,7 +443,7 @@ Rate: [volume_rate] L/sec<BR>"}
 					"inject",
 					"sigtype"="command"
 				)
-
+				sleep(-1)
 				radio_connection.post_signal(src, signal, filter = RADIO_ATMOSIA)
 
 /obj/machinery/computer/atmos_alert
@@ -450,6 +451,7 @@ Rate: [volume_rate] L/sec<BR>"}
 
 /obj/machinery/computer/atmos_alert/initialize()
 	set_frequency(receive_frequency)
+
 /obj/machinery/computer/atmos_alert/receive_signal(datum/signal/signal)
 	if(!signal || signal.encryption) return
 
@@ -481,9 +483,6 @@ Rate: [volume_rate] L/sec<BR>"}
 /obj/machinery/computer/atmos_alert/process()
 	..()
 	src.updateDialog()
-	if(priority_alarms.len > oldalerts)
-		radioalert("Atmospheric alerts detected currently [priority_alarms.len] outstanding alerts.","Atmospheric Alert Computer","Engineering")
-		oldalerts = priority_alarms.len
 
 /obj/machinery/computer/atmos_alert/update_icon()
 	if(priority_alarms.len)
@@ -511,7 +510,7 @@ Rate: [volume_rate] L/sec<BR>"}
 	else
 		minor_text = "No minor alerts detected.<BR>"
 
-	var/output = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>[name]</B><HR>
+	var/output = {"<B>[name]</B><HR>
 <B>Priority Alerts:</B><BR>
 [priority_text]
 <BR>
@@ -538,3 +537,4 @@ Rate: [volume_rate] L/sec<BR>"}
 			if(ckey(zone) == removing_zone)
 				minor_alarms -= zone
 	update_icon()
+

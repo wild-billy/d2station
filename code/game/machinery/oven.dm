@@ -12,7 +12,6 @@
 	ingred2 = "/obj/item/weapon/reagent_containers/food/snacks/flour"
 	creates = "/obj/item/weapon/reagent_containers/food/snacks/jellydonut"
 
-
 /datum/ovenrecipe/donut
 	ingred1 = "/obj/item/weapon/reagent_containers/food/snacks/doughball"
 	creates = "/obj/item/weapon/reagent_containers/food/snacks/donut"
@@ -261,8 +260,6 @@
 obj/machinery/oven/attackby(var/obj/item/O as obj, var/mob/user as mob)
 	if (istype(src, /obj/item/weapon/disk/nuclear))
 		user << "\blue This is way too important to cook!"
-	if (istype(src, /obj/item/weapon/grab/))// fuck off nernums goddamn grab cooker /DS
-		user << "\blue You can't fit that person in the oven!" //sry DS but it works by putting in nulls still. I will eat as many grabs as I want. -Nernums
 		return
 	if (ingred1)
 		if (ingred2)
@@ -323,7 +320,7 @@ Please wait...!</TT><BR>
 <A href='?src=\ref[src];dump=1'>Dispose contents!<BR>
 "}
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>COOKULATOR 2050</TITLE></HEAD><TT>[dat]</TT>", "window=oven")
+	user << browse("<HEAD><TITLE>COOKULATOR 2050</TITLE></HEAD><TT>[dat]</TT>", "window=oven")
 	onclose(user, "oven")
 	return
 

@@ -24,7 +24,7 @@
 			if (!in_range(src.master, usr))
 				return
 			var/list/cameras = list()
-			for (var/obj/machinery/camera/C in machines)
+			for (var/obj/machinery/camera/C in world)
 				cameras.Add(C)
 			camera_sort(cameras)
 			var/list/D = list()

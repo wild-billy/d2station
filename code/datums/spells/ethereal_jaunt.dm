@@ -1,50 +1,61 @@
-/obj/proc_holder/spell/targeted/ethereal_jaunt
+/obj/spell/ethereal_jaunt
 	name = "Ethereal Jaunt"
 	desc = "This spell creates your ethereal form, temporarily making you invisible and able to pass through walls."
 
 	school = "transmutation"
-	charge_max = 300
+	recharge = 300
 	clothes_req = 1
 	invocation = "none"
 	invocation_type = "none"
-	range = -1
-	include_user = 1
-
+	range = -1 //can affect only the user by default, but with var editing can be an invis other spell
 	var/jaunt_duration = 50 //in deciseconds
 
-/obj/proc_holder/spell/targeted/ethereal_jaunt/cast(list/targets) //magnets, so mostly hardcoded
-	for(var/mob/target in targets)
-		spawn(0)
-			var/mobloc = get_turf(target.loc)
-			var/obj/dummy/spell_jaunt/holder = new /obj/dummy/spell_jaunt( mobloc )
-			var/atom/movable/overlay/animation = new /atom/movable/overlay( mobloc )
-			animation.name = "water"
-			animation.density = 0
-			animation.anchored = 1
-			animation.icon = 'mob.dmi'
-			animation.icon_state = "liquify"
-			animation.layer = 5
-			animation.master = holder
-			flick("liquify",animation)
-			target.loc = holder
-			target.client.eye = holder
-			var/datum/effects/system/steam_spread/steam = new /datum/effects/system/steam_spread()
-			steam.set_up(10, 0, mobloc)
-			steam.start()
-			sleep(jaunt_duration)
-			mobloc = get_turf(target.loc)
-			animation.loc = mobloc
-			steam.location = mobloc
-			steam.start()
-			target.canmove = 0
-			sleep(20)
-			flick("reappear",animation)
-			sleep(5)
-			target.loc = mobloc
-			target.canmove = 1
-			target.client.eye = target
-			del(animation)
-			del(holder)
+/obj/spell/ethereal_jaunt/Click()
+	..()
+
+	if(!cast_check())
+		return
+
+	var/mob/M
+
+	if(range>=0)
+		M = input("Choose whom to jaunt", "ABRAKADABRA") as mob in view(usr,range)
+	else
+		M = usr
+
+	invocation()
+
+	spawn(0)
+		var/mobloc = get_turf(M.loc)
+		var/obj/dummy/spell_jaunt/holder = new /obj/dummy/spell_jaunt( mobloc )
+		var/atom/movable/overlay/animation = new /atom/movable/overlay( mobloc )
+		animation.name = "water"
+		animation.density = 0
+		animation.anchored = 1
+		animation.icon = 'mob.dmi'
+		animation.icon_state = "liquify"
+		animation.layer = 5
+		animation.master = holder
+		flick("liquify",animation)
+		M.loc = holder
+		M.client.eye = holder
+		var/datum/effects/system/steam_spread/steam = new /datum/effects/system/steam_spread()
+		steam.set_up(10, 0, mobloc)
+		steam.start()
+		sleep(jaunt_duration)
+		mobloc = get_turf(M.loc)
+		animation.loc = mobloc
+		steam.location = mobloc
+		steam.start()
+		M.canmove = 0
+		sleep(20)
+		flick("reappear",animation)
+		sleep(5)
+		M.loc = mobloc
+		M.canmove = 1
+		M.client.eye = M
+		del(animation)
+		del(holder)
 
 /obj/dummy/spell_jaunt
 	name = "water"
@@ -82,5 +93,5 @@
 
 /obj/dummy/spell_jaunt/ex_act(blah)
 	return
-/obj/dummy/spell_jaunt/bullet_act(blah)
+/obj/dummy/spell_jaunt/bullet_act(blah,blah)
 	return

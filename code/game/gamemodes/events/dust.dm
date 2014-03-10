@@ -2,26 +2,26 @@
 Space dust
 Commonish random event that causes small clumps of "space dust" to hit the station at high speeds.
 No command report on the common version of this event.
-The "dust" will damage the hull of the station causin minor hull breaches.
+The "dust" will damage the hull of the station causing minor hull breaches.
 */
 
 /proc/dust_swarm(var/strength = "weak")
 	var/numbers = 1
 	switch(strength)
 		if("weak")
-		 numbers = rand(2,4)
+		 numbers = rand(5,10)
 		 for(var/i = 0 to numbers)
 		 	new/obj/space_dust/weak()
 		if("norm")
-		 numbers = rand(5,10)
+		 numbers = rand(10,15)
 		 for(var/i = 0 to numbers)
 		 	new/obj/space_dust()
 		if("strong")
-		 numbers = rand(10,15)
+		 numbers = rand(20,25)
 		 for(var/i = 0 to numbers)
 		 	new/obj/space_dust/strong()
 		if("super")
-		 numbers = rand(15,25)
+		 numbers = rand(30,35)
 		 for(var/i = 0 to numbers)
 		 	new/obj/space_dust/super()
 	return
@@ -36,19 +36,19 @@ The "dust" will damage the hull of the station causin minor hull breaches.
 	anchored = 1
 	var
 		strength = 2 //ex_act severity number
-		life = 2 //how many things we hit before del(src)
+		life = 1 //how many things we hit before del(src)
 
 	weak
-		strength = 3
+		strength = 1
 		life = 1
 
 	strong
 		strength = 1
-		life = 6
+		life = 4
 
 	super
 		strength = 1
-		life = 40
+		life = 6
 
 
 	New()

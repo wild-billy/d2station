@@ -1,13 +1,10 @@
-
 /obj/grille/ex_act(severity)
 	switch(severity)
 		if(1.0)
-//			Shields.AddShield(src.loc)
 			del(src)
 			return
 		if(2.0)
 			if (prob(50))
-	//			Shields.AddShield(src.loc)
 				//SN src = null
 				del(src)
 				return
@@ -28,7 +25,7 @@
 	return
 
 /obj/grille/attack_hand(var/obj/M)
-	if ((usr.mutations & HULK))
+	if ((usr.mutations & 8))
 		usr << text("\blue You kick the grille.")
 		for(var/mob/O in oviewers())
 			if ((O.client && !( O.blinded )))
@@ -44,7 +41,7 @@
 						for (var/datum/data/record/S in data_core.security)
 							if (S.fields["id"] == R.fields["id"])
 								S.fields["criminal"] = "*Arrest*"
-								S.fields["mi_crim"] = "Vandalism (Breaking Grilles)"
+								S.fields["mi_crim"] = "Vandalism"
 								break
 		healthcheck()
 		return
@@ -54,7 +51,7 @@
 			if ((O.client && !( O.blinded )))
 				O << text("\red [] kicks the grille.", usr)
 		playsound(src.loc, 'grillehit.ogg', 80, 1)
-		src.health -= 3
+		src.health -= 2
 		if (src.health <= 5)
 			if(seen_by_camera(usr))
 				var/perpname = usr.name
@@ -65,12 +62,12 @@
 						for (var/datum/data/record/S in data_core.security)
 							if (S.fields["id"] == R.fields["id"])
 								S.fields["criminal"] = "*Arrest*"
-								S.fields["mi_crim"] = "Vandalism (Breaking Grilles)"
+								S.fields["mi_crim"] = "Vandalism"
 								break
 		healthcheck()
 
 /obj/grille/attack_paw(var/obj/M)
-	if ((usr.mutations & HULK))
+	if ((usr.mutations & 8))
 		usr << text("\blue You kick the grille.")
 		for(var/mob/O in oviewers())
 			if ((O.client && !( O.blinded )))
@@ -86,7 +83,7 @@
 						for (var/datum/data/record/S in data_core.security)
 							if (S.fields["id"] == R.fields["id"])
 								S.fields["criminal"] = "*Arrest*"
-								S.fields["mi_crim"] = "Vandalism (Breaking Grilles)"
+								S.fields["mi_crim"] = "Vandalism"
 								break
 		healthcheck()
 		return
@@ -107,7 +104,7 @@
 						for (var/datum/data/record/S in data_core.security)
 							if (S.fields["id"] == R.fields["id"])
 								S.fields["criminal"] = "*Arrest*"
-								S.fields["mi_crim"] = "Vandalism (Breaking Grilles)"
+								S.fields["mi_crim"] = "Vandalism"
 								break
 		healthcheck()
 
@@ -124,26 +121,13 @@
 		healthcheck()
 		return
 
-/obj/grille/attack_metroid(var/obj/M)
-	if(!istype(usr, /mob/living/carbon/metroid/adult))
-		return
-
-	usr<< text("\green You smash against the grille.")
-	for(var/mob/O in oviewers())
-		if ((O.client && !( O.blinded )))
-			O << text("\red [] smashes against the grille.", usr)
-	playsound(src.loc, 'grillehit.ogg', 80, 1)
-	src.health -= rand(2,3)
-	healthcheck()
-	return
-	return
-
 /obj/grille/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	if(air_group || (height==0)) return 1
-	if(istype(mover) && mover.checkpass(PASSGRILLE))
+
+	if ((istype(mover, /obj/effects) || istype(mover, /obj/item/weapon/dummy) || istype(mover, /obj/beam) || istype(mover, /obj/meteor/small)))
 		return 1
 	else
-		if (istype(mover, /obj/item/projectile))
+		if (istype(mover, /obj/bullet))
 			return prob(30)
 		else
 			return !src.density
@@ -157,7 +141,6 @@
 		else
 			playsound(src.loc, 'Wirecutter.ogg', 100, 1)
 			src.health = -100
-
 	else if ((istype(W, /obj/item/weapon/screwdriver) && (istype(src.loc, /turf/simulated) || src.anchored)))
 		if(!shock(user, 90))
 			playsound(src.loc, 'Screwdriver.ogg', 100, 1)
@@ -188,13 +171,11 @@
 			src.icon_state = "brokengrille"
 			src.density = 0
 			src.destroyed = 1
-//			Shields.AddShield(src.loc)
 			new /obj/item/stack/rods( src.loc )
 
 		else
 			if (src.health <= -10.0)
 				new /obj/item/stack/rods( src.loc )
-	//			Shields.AddShield(src.loc)
 				//SN src = null
 				del(src)
 				return

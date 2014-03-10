@@ -18,7 +18,7 @@ IMPLANTER
 /obj/item/weapon/implantcase/attackby(obj/item/weapon/I as obj, mob/user as mob)
 	..()
 	if (istype(I, /obj/item/weapon/pen))
-		var/t = trim(strip_html(input(user, "What would you like the label to be?", text("[]", src.name), null)))  as text
+		var/t = input(user, "What would you like the label to be?", text("[]", src.name), null)  as text
 		if (user.equipped() != I)
 			return
 		if ((!in_range(src, usr) && src.loc != user))
@@ -80,18 +80,6 @@ IMPLANTER
 	..()
 	return
 
-/obj/item/weapon/implantcase/securityweapons/New()
-
-	src.imp = new /obj/item/weapon/implant/securityweapons( src )
-	..()
-	return
-
-/obj/item/weapon/implantcase/mercweapons/New()
-
-	src.imp = new /obj/item/weapon/implant/mercweapons( src )
-	..()
-	return
-
 /obj/item/weapon/implantpad/proc/update()
 
 	if (src.case)
@@ -144,7 +132,6 @@ IMPLANTER
 			if (istype(src.case.imp, /obj/item/weapon/implant/tracking))
 				var/obj/item/weapon/implant/tracking/T = src.case.imp
 				dat += {"
-<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />
 <b>Implant Specifications:</b><BR>
 <b>Name:</b> Tracking Beacon<BR>
 <b>Zone:</b> Spinal Column> 2-5 vertebrae<BR>
@@ -314,8 +301,6 @@ the implant may become unstable and either pre-maturely inject the subject or si
 	if (user && src.imp)
 		for (var/mob/O in viewers(M, null))
 			O.show_message("\red [M] has been implanted by [user].", 1)
-		M.attack_log += text("<font color='orange'>[world.time] - has been implanted with [src.name] ([src.imp.name])  by [user.name] ([user.ckey])</font>")
-		user.attack_log += text("<font color='red'>[world.time] - has used the [src.name] ([src.imp.name]) to implant [M.name] ([M.ckey])</font>")
 		src.imp.loc = M
 		src.imp.imp_in = M
 		src.imp.implanted = 1
@@ -323,28 +308,3 @@ the implant may become unstable and either pre-maturely inject the subject or si
 		src.imp = null
 		user.show_message("\red You implanted the implant into [M].")
 		src.icon_state = "implanter0"
-
-
-/obj/item/weapon/implant/uplink
-	var/activation_emote = "chuckle"
-	var/obj/item/weapon/syndicate_uplink/uplink = null
-
-	New()
-		activation_emote = pick("blink", "blink_r", "eyebrow", "chuckle", "twitch_s", "frown", "nod", "blush", "giggle", "grin", "groan", "shrug", "smile", "pale", "sniff", "whimper", "wink")
-		uplink = new /obj/item/weapon/syndicate_uplink/implanted(src)
-		..()
-
-	implanted(mob/source as mob)
-		source.mind.store_memory("Uplink implant can be activated by using the [activation_emote] emote, <B>say *[activation_emote]</B> to attempt to activate.", 0, 0)
-		source << "The implanted uplink implant can be activated by using the [activation_emote] emote, <B>say *[activation_emote]</B> to attempt to activate."
-
-	trigger(emote, mob/source as mob)
-		if(emote == activation_emote)
-			uplink.attack_self(source)
-
-
-
-/obj/item/weapon/implant/securityweapons
-	implanted(mob/source as mob)
-		source << "Security implant features enabled"
-		source.authenticsec = 1

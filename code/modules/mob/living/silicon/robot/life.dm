@@ -5,25 +5,6 @@
 	if (src.monkeyizing)
 		return
 
-	var/icon/tempHud = 'hud.dmi'
-	for(var/mob/living/carbon/human/patient in view(src))
-		var/foundVirus = 0
-		for(var/datum/disease/D in patient.viruses)
-			foundVirus++
-		if(patient.health > -100)
-			src.client.images += image(tempHud,patient,"hud[RoundHealth(patient.health)]")// so people who are not dead but have less than -100 health to show as critical on health huds
-		else if(patient.health <= -100 && patient.stat == 2)
-			src.client.images += image(tempHud,patient,"hudhealth-100") // so people who are not dead but have less than -100 health to show as critical on health huds
-		else if(patient.health <= -100 && patient.stat != 2)
-			src.client.images += image(tempHud,patient,"hudhealth0")	// so people who are not dead but have less than -100 health to show as critical on health huds
-		if(patient.stat == 2)
-			src.client.images += image(tempHud,patient,"huddead")
-		else if(patient.alien_egg_flag)
-			src.client.images += image(tempHud,patient,"hudxeno")
-		else if(foundVirus)
-			src.client.images += image(tempHud,patient,"hudill")
-		else
-			src.client.images += image(tempHud,patient,"hudhealthy")
 
 	src.blinded = null
 
@@ -66,26 +47,25 @@
 					src.module_state_2 = null
 					src.module_state_3 = null
 					src.sight_mode = 0
-					src.cell.use(1)
+					src.cell.use(0.2)
 				else
 					if(src.module_state_1)
-						src.cell.use(5)
+						src.cell.use(0.5)
 					if(src.module_state_2)
-						src.cell.use(5)
+						src.cell.use(0.5)
 					if(src.module_state_3)
-						src.cell.use(5)
+						src.cell.use(0.5)
 					if (sight_mode & BORGMESON)
 						src.cell.use(50)
 					if (sight_mode & BORGTHERM)
 						src.cell.use(100)
 					if (sight_mode & BORGXRAY)
 						src.cell.use(200)
-					src.cell.use(1)
+					src.cell.use(0.2)
 					src.blinded = 0
 					src.stat = 0
 			else
 				src.stat = 1
-
 
 		update_canmove()
 			if(paralysis || stunned || weakened || buckled || lockcharge) canmove = 0
@@ -109,10 +89,10 @@
 			if(src.resting)
 				src.weakened = max(src.weakened, 5)
 
-	//		if(emagged && prob(10))
-	//			src.overlays += "emag"		//Causes the emag pulse to activate again at random. Causes metagaming to activate constantly.
-	//		else
-	//			src.overlays -= "emag"
+			if(emagged && prob(10))
+				src.overlays += "emag"
+			else
+				src.overlays -= "emag"
 
 			if(health < 0 && src.stat != 2) //die only once
 				death()
@@ -168,7 +148,7 @@
 
 		handle_regular_hud_updates()
 
-			if (src.stat == 2 || src.mutations & XRAY || src.sight_mode & BORGXRAY)
+			if (src.stat == 2 || src.mutations & 4 || src.sight_mode & BORGXRAY)
 				src.sight |= SEE_TURFS
 				src.sight |= SEE_MOBS
 				src.sight |= SEE_OBJS

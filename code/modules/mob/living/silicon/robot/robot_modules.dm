@@ -16,9 +16,6 @@
 			emag.emp_act(severity)
 		..()
 
-	proc/respawn_consumable(var/mob/living/silicon/robot/R)
-		return
-
 /obj/item/weapon/robot_module/standard
 	name = "standard robot module"
 /*
@@ -34,10 +31,9 @@
 /obj/item/weapon/robot_module/janitor
 	name = "janitorial robot module"
 
-/*
 /obj/item/weapon/robot_module/brobot
 	name = "brobot robot module"
-*/
+
 /obj/item/weapon/robot_module/butler
 	name = "service robot module"
 
@@ -55,12 +51,12 @@ obj/item/weapon/robot_module/syndicate
 
 /obj/item/weapon/robot_module/standard/New()
 	..()
-	src.modules += new /obj/item/weapon/melee/baton(src)
+	src.modules += new /obj/item/weapon/baton(src)
 	src.modules += new /obj/item/weapon/extinguisher(src)
 	src.modules += new /obj/item/weapon/wrench(src)
 	src.modules += new /obj/item/weapon/crowbar(src)
 	src.modules += new /obj/item/device/healthanalyzer(src)
-	src.emag = new /obj/item/weapon/melee/energy/sword(src)
+	src.emag = new /obj/item/weapon/sword(src)
 
 /obj/item/weapon/robot_module/engineering/New()
 	..()
@@ -95,36 +91,56 @@ obj/item/weapon/robot_module/syndicate
 
 	src.emag = new /obj/item/weapon/borg/stun(src)
 
-
-/obj/item/weapon/robot_module/engineering/respawn_consumable(var/mob/living/silicon/robot/R)
-	var/list/what = list (
-		/obj/item/stack/sheet/metal,
-		/obj/item/stack/sheet/rglass,
-		/obj/item/weapon/cable_coil,
-	)
-	for (var/T in what)
-		if (!(locate(T) in src.modules))
-			src.modules -= null
-			var/O = new T(src)
-			src.modules += O
-			O:amount = 1
-
+/*
 /obj/item/weapon/robot_module/medical/New()
 	..()
 	src.modules += new /obj/item/device/healthanalyzer(src)
-
-	var/obj/item/stack/medical/ointment/O = new /obj/item/stack/medical/ointment(src)
-	O.amount = 20
-	src.modules += O
-
-	var/obj/item/stack/medical/bruise_pack/B = new /obj/item/stack/medical/bruise_pack(src)
-	B.amount = 20
-	src.modules += B
-
+	src.modules += new /obj/item/weapon/medical/ointment/medbot(src)
+	src.modules += new /obj/item/weapon/medical/bruise_pack/medbot(src)
 	src.modules += new /obj/item/weapon/reagent_containers/syringe/robot(src)
 	src.modules += new /obj/item/weapon/scalpel(src)
 	src.modules += new /obj/item/weapon/circular_saw(src)
+*/
 
+/obj/item/weapon/robot_module/security/New()
+	..()
+	src.modules += new /obj/item/weapon/baton(src)
+	src.modules += new /obj/item/weapon/handcuffs(src)
+	src.modules += new /obj/item/weapon/gun/energy/taser_gun(src)
+	src.emag = new /obj/item/weapon/gun/energy/laser_gun(src)
+
+
+/obj/item/weapon/robot_module/janitor/New()
+	..()
+	src.modules += new /obj/item/weapon/cleaner(src)
+	src.modules += new /obj/item/weapon/mop(src)
+	src.modules += new /obj/item/weapon/reagent_containers/glass/bucket(src)
+	src.emag = new /obj/item/weapon/cleaner(src)
+	var/datum/reagents/R = new/datum/reagents(1000)
+	src.emag.reagents = R
+	R.my_atom = src.emag
+	R.add_reagent("lube", 1000)
+	src.emag.name = "Lube spray"
+
+/obj/item/weapon/robot_module/miner/New()
+	..()
+	src.modules += new /obj/item/weapon/pickaxe/radius/jackhammer(src)
+	src.modules += new /obj/item/weapon/shovel(src)
+	src.modules += new /obj/item/weapon/satchel(src)
+	src.modules += new /obj/item/weapon/borg/sight/meson(src)
+	src.emag = new /obj/item/weapon/borg/stun(src)
+
+/*/obj/item/weapon/robot_module/brobot/New()
+	..()
+	src.modules += new /obj/item/weapon/reagent_containers/food/drinks/beer(src)
+	src.modules += new /obj/item/weapon/reagent_containers/food/drinks/beer(src)
+	src.modules += new /obj/item/weapon/spacecash(src)
+	src.emag = new /obj/item/weapon/reagent_containers/food/drinks/beer(src)
+	var/datum/reagents/R = new/datum/reagents(50)
+	src.emag.reagents = R
+	R.my_atom = src.emag
+	R.add_reagent("beer2", 50)
+	src.emag.name = "Mickey Finn's Special Brew"*/
 
 /obj/item/weapon/robot_module/butler/New()
 	..()
@@ -136,11 +152,6 @@ obj/item/weapon/robot_module/syndicate
 	src.modules += M
 
 	src.modules += new /obj/item/weapon/reagent_containers/robodropper(src)
-
-	var/obj/item/weapon/zippo/L = new /obj/item/weapon/zippo(src)
-	L.lit = 1
-	src.modules += L
-
 	src.modules += new /obj/item/weapon/tray(src)
 	src.modules += new /obj/item/weapon/reagent_containers/food/drinks/shaker(src)
 //	src.emag = new /obj/item/weapon/reagent_containers/food/snacks/roburgerbig(src)
@@ -152,53 +163,9 @@ obj/item/weapon/robot_module/syndicate
 	R.add_reagent("beer2", 50)
 	src.emag.name = "Mickey Finn's Special Brew"
 
-
-/obj/item/weapon/robot_module/security/New()
-	..()
-	src.modules += new /obj/item/weapon/melee/baton(src)
-	src.modules += new /obj/item/weapon/handcuffs(src)
-	src.modules += new /obj/item/weapon/gun/energy/taser/cyborg(src)
-	src.emag = new /obj/item/weapon/gun/energy/laser/cyborg(src)
-
-
-/obj/item/weapon/robot_module/janitor/New()
-	..()
-	src.modules += new /obj/item/weapon/spraybottle/cleaner(src)
-	src.modules += new /obj/item/weapon/mop(src)
-	src.modules += new /obj/item/weapon/reagent_containers/glass/bucket(src)
-	src.emag = new /obj/item/weapon/spraybottle/cleaner(src)
-	var/datum/reagents/R = new/datum/reagents(1000)
-	src.emag.reagents = R
-	R.my_atom = src.emag
-	R.add_reagent("lube", 1000)
-	src.emag.name = "Lube spray"
-
-
-/obj/item/weapon/robot_module/miner/New()
-	..()
-	src.modules += new /obj/item/weapon/tgpickaxe/jackhammer(src)
-	src.modules += new /obj/item/weapon/shovel(src)
-	src.modules += new /obj/item/weapon/satchel(src)
-	src.modules += new /obj/item/weapon/borg/sight/meson(src)
-	src.emag = new /obj/item/weapon/borg/stun(src)
-
-/* /obj/item/weapon/robot_module/brobot/New()
-	..()
-	src.modules += new /obj/item/weapon/reagent_containers/food/drinks/beer(src)
-	src.modules += new /obj/item/weapon/reagent_containers/food/drinks/beer(src)
-	src.modules += new /obj/item/weapon/money(src)
-	src.emag = new /obj/item/weapon/reagent_containers/food/drinks/beer(src)
-	var/datum/reagents/R = new/datum/reagents(50)
-	src.emag.reagents = R
-	R.my_atom = src.emag
-	R.add_reagent("beer2", 50)
-	src.emag.name = "Mickey Finn's Special Brew"
-*/ //Merged with Service borg, not a death, just a transformation
-
 obj/item/weapon/robot_module/syndicate/New()
-	src.modules += new /obj/item/weapon/gun/energy/crossbow/cyborg(src)
+	src.modules += new /obj/item/weapon/gun/energy/crossbow(src)
 	src.modules += new /obj/item/weapon/card/emag(src)
-
 
 /obj/item/weapon/borg/stun
 	name = "Electrified Arm"
@@ -206,9 +173,6 @@ obj/item/weapon/robot_module/syndicate/New()
 	icon_state = "shock"
 
 	attack(mob/M as mob, mob/living/silicon/robot/user as mob)
-
-		M.attack_log += text("<font color='orange'>[world.time] - has been attacked with [src.name] by [user.name] ([user.ckey])</font>")
-		user.attack_log += text("<font color='red'>[world.time] - has used the [src.name] to attack [M.name] ([M.ckey])</font>")
 		user.cell.charge -= 30
 		if (M.weakened < 5)
 			M.weakened = 5
@@ -221,8 +185,8 @@ obj/item/weapon/robot_module/syndicate/New()
 				O.show_message("\red <B>[user] has prodded [M] with an electrically-charged arm!</B>", 1, "\red You hear someone fall", 2)
 
 /obj/item/weapon/borg/sight
-	icon = 'decals.dmi'
-	icon_state = "securearea"
+	icon = 'glasses.dmi'
+	icon_state = "blackgoggle"
 	var/sight_mode
 
 /obj/item/weapon/borg/sight/xray
@@ -236,3 +200,4 @@ obj/item/weapon/robot_module/syndicate/New()
 /obj/item/weapon/borg/sight/meson
 	name = "Meson Vision"
 	sight_mode = BORGMESON
+

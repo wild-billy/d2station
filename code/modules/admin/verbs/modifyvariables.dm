@@ -26,7 +26,7 @@
 	switch(class)
 
 		if("text")
-			var_value = strip_html(input("Enter new text:","Text") as text)
+			var_value = input("Enter new text:","Text") as text
 
 		if("num")
 			var_value = input("Enter new number:","Num") as num
@@ -38,7 +38,7 @@
 			var_value = input("Select reference:","Reference") as mob|obj|turf|area in world
 
 		if("mob reference")
-			var_value = input("Select reference:","Reference") as mob in mobz
+			var_value = input("Select reference:","Reference") as mob in world
 
 		if("file")
 			var_value = input("Pick file:","File") as file
@@ -64,7 +64,7 @@
 	switch(class)
 
 		if("text")
-			var_value = strip_html(input("Enter new text:","Text") as text)
+			var_value = input("Enter new text:","Text") as text
 
 		if("num")
 			var_value = input("Enter new number:","Num") as num
@@ -76,7 +76,7 @@
 			var_value = input("Select reference:","Reference") as mob|obj|turf|area in world
 
 		if("mob reference")
-			var_value = input("Select reference:","Reference") as mob in mobz
+			var_value = input("Select reference:","Reference") as mob in world
 
 		if("file")
 			var_value = input("Pick file:","File") as file
@@ -93,10 +93,11 @@
 		if("No")
 			L += var_value
 
+
 /client/proc/mod_list(var/list/L)
 	if(!istype(L,/list)) src << "Not a List."
 
-	var/list/locked = list("vars", "key", "ckey", "client", "firemut", "ishulk", "telekinesis", "xray", "virus", "viruses", "cuffed", "ka", "last_eaten", "urine", "poo", "icon", "icon_state")
+	var/list/locked = list("vars", "key", "ckey", "client", "firemut", "ishulk", "telekinesis", "xray", "virus", "cuffed", "ka", "last_eaten", "urine", "poo", "icon", "icon_state")
 
 	var/list/names = sortList(L)
 
@@ -113,7 +114,7 @@
 
 	var/dir
 
-	if (locked.Find(variable) && !(src.holder.rank in list("Host", "Robustmin")))
+	if (locked.Find(variable) && !(src.holder.rank in list("Host", "Coder")))
 		return
 
 	if(isnull(variable))
@@ -200,8 +201,8 @@
 			return
 
 		if("text")
-			variable = strip_html(input("Enter new text:","Text",\
-				variable) as text)
+			variable = input("Enter new text:","Text",\
+				variable) as text
 
 		if("num")
 			variable = input("Enter new number:","Num",\
@@ -217,7 +218,7 @@
 
 		if("mob reference")
 			variable = input("Select reference:","Reference",\
-				variable) as mob in mobz
+				variable) as mob in world
 
 		if("file")
 			variable = input("Pick file:","File",variable) \
@@ -248,7 +249,7 @@
 	var/var_value = O.vars[variable]
 	var/dir
 
-	if (locked.Find(variable) && !(src.holder.rank in list("Host", "Robustmin")))
+	if (locked.Find(variable) && !(src.holder.rank in list("Host", "Coder")))
 		return
 
 	if(isnull(var_value))
@@ -338,17 +339,12 @@
 			return .(O.vars[variable])
 
 		if("text")
-			O.vars[variable] = strip_html(input("Enter new text:","Text",\
-				O.vars[variable]) as text)
+			O.vars[variable] = input("Enter new text:","Text",\
+				O.vars[variable]) as text
 
 		if("num")
-			if(variable=="luminosity")
-				var/new_value = input("Enter new number:","Num",\
-					O.vars[variable]) as num
-				O.ul_SetLuminosity(new_value)
-			else
-				O.vars[variable] = input("Enter new number:","Num",\
-					O.vars[variable]) as num
+			O.vars[variable] = input("Enter new number:","Num",\
+				O.vars[variable]) as num
 
 		if("type")
 			O.vars[variable] = input("Enter type:","Type",O.vars[variable]) \
@@ -360,7 +356,7 @@
 
 		if("mob reference")
 			O.vars[variable] = input("Select reference:","Reference",\
-				O.vars[variable]) as mob in mobz
+				O.vars[variable]) as mob in world
 
 		if("file")
 			O.vars[variable] = input("Pick file:","File",O.vars[variable]) \

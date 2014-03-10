@@ -105,17 +105,17 @@
 		user << "\blue You wire the coil energizer into the now-finished component housing."
 
 	if(istype(W, /obj/item/weapon/weaponassembly/hsng_panels) && src.ishousingforlasergun == 1)			//Finalizing the housing with some paneling
-		new /obj/item/weapon/gun/energy/laser(get_turf(src))
+		new /obj/item/weapon/gun/energy/laser_gun(get_turf(src))
 		del(W)
 		del(src)
 
 	if(istype(W, /obj/item/weapon/weaponassembly/hsng_panels) && src.ishousingforplasmagun == 1)
-		new /obj/item/weapon/gun/energy/plasma/rifle(get_turf(src))
+		new /obj/item/weapon/gun/energy/Research/Plasma_Rifle(get_turf(src))
 		del(W)
 		del(src)
 
 	if(istype(W, /obj/item/weapon/weaponassembly/hsng_panels) && src.housing_energcoil == 1)
-		new /obj/item/weapon/gun/projectile/magnetrifle(get_turf(src))
+		new /obj/item/weapon/gun/magnetrifle(get_turf(src))
 		del(W)
 		del(src)
 
@@ -159,14 +159,14 @@
 		src.overlays += icon('weapon_assembly.dmi', "nrg-gun_indicatoroverlay")
 		src.energygunindicator = 1
 		del(W)
-		new /obj/item/weapon/gun/energy(get_turf(src))
+		new /obj/item/weapon/gun/energy/general(get_turf(src))
 		del(src)
 		user << "\blue You wire the charge indicator into the housing, finishing the energy gun."
 	if(istype(W, /obj/item/weapon/weaponassembly/grip) && src.energygunhousing && !src.energygungrip && src.energygunindicator)
 		src.overlays += icon('weapon_assembly.dmi', "nrg-gun_grip")
 		src.energygungrip = 1
 		del(W)
-		new /obj/item/weapon/gun/energy(get_turf(src))
+		new /obj/item/weapon/gun/energy/general(get_turf(src))
 		del(src)
 		user << "\blue You snap a weapon grip into the housing, finishing the energy gun."
 

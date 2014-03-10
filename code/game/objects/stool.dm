@@ -69,9 +69,6 @@
 		if (M.buckled == src)
 			M.buckled = null
 			M.anchored = 0
-			M.pixel_x = 0
-			M.pixel_y = 0
-			M.pixel_z = 0
 
 /obj/stool/proc/manual_unbuckle_all(mob/user as mob)
 	var/N = 0;
@@ -90,9 +87,6 @@
 //			world << "[M] is no longer buckled to [src]"
 			M.anchored = 0
 			M.buckled = null
-			M.pixel_x = 0
-			M.pixel_y = 0
-			M.pixel_z = 0
 			N++
 	return N
 
@@ -114,9 +108,6 @@
 	M.anchored = 1
 	M.buckled = src
 	M.loc = src.loc
-	M.pixel_x = src.pixel_x
-	M.pixel_y = src.pixel_y
-	M.pixel_z = src.pixel_z
 	src:buckled_mobs += M
 	src.add_fingerprint(user)
 	return
@@ -197,14 +188,12 @@
 
 	flick("e_chairs", src)
 	flick("e_chairos", src.overl)
-	for(var/mob/living/M in src.loc)
-		if(!M.mutations & 16384) //check for shock immunity
-			M.burn_skin(85)
-			M << "\red <B>You feel a deep shock course through your body!</B>"
-			sleep(1)
-			M.burn_skin(85)
-			if(M.stunned < 600)
-				M.stunned = 600
+	for(var/mob/M in src.loc)
+		M.burn_skin(85)
+		M << "\red <B>You feel a deep shock course through your body!</B>"
+		sleep(1)
+		M.burn_skin(85)
+		if(M.stunned < 600)	M.stunned = 600
 	for(var/mob/M in hearers(src, null))
 		M.show_message("\red The electric chair went off!.", 3, "\red You hear a deep sharp shock.", 2)
 

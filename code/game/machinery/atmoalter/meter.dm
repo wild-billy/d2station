@@ -50,6 +50,7 @@
 			"pressure" = round(env_pressure),
 			"sigtype" = "status"
 		)
+		sleep(-1)
 		radio_connection.post_signal(src, signal)
 
 /obj/machinery/meter/examine()
@@ -75,7 +76,7 @@
 		return 1
 
 	var/t = null
-	if (get_dist(usr, src) <= 3 || istype(usr, /mob/living/silicon/ai) || istype(usr, /mob/dead))
+	if (get_dist(usr, src) <= 3 || istype(usr, /mob/living/silicon/ai))
 		if (src.target)
 			var/datum/gas_mixture/environment = target.return_air()
 			if(environment)
@@ -89,7 +90,7 @@
 
 	usr << t
 	return 1
-	
+
 /obj/machinery/meter/attackby(var/obj/item/weapon/W as obj, var/mob/user as mob)
 	if (!istype(W, /obj/item/weapon/wrench))
 		return ..()

@@ -3,7 +3,7 @@
 	if(ismob(AM))
 		var/mob/M = AM
 		if(world.time - AM.last_bumped <= 60) return //NOTE do we really need that?
-		if(M.client/* && !M:handcuffed*/)
+		if(M.client && !M:handcuffed)
 			bumpopen(M)
 	else if(istype(AM, /obj/machinery/bot))
 		var/obj/machinery/bot/bot = AM
@@ -19,7 +19,6 @@
 		if(src.check_access(null))
 			if(density)
 				open()
-
 
 /obj/machinery/door/proc/bumpopen(mob/user as mob)
 	if (src.operating)
@@ -37,13 +36,12 @@
 			open()
 	else if (src.density)
 		flick("door_deny", src)
-		playsound(src.loc, 'accessdenied.ogg', 30, 0)
 	return
 
 
 /obj/machinery/door/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	if(air_group) return 0
-	if(istype(mover) && mover.checkpass(PASSGLASS))
+	if(istype(mover, /obj/beam))
 		return !opacity
 	return !density
 
@@ -91,18 +89,16 @@
 
 	return 1
 
-/obj/machinery/door/New()
-	..()
-	if(density)
-		layer = 3.1 //Above most items if closed
-	else
-		layer = 2.7 //Under all objects if opened. 2.7 due to tables being at 2.6
-	update_nearby_tiles(need_rebuild=1)
+/obj/machinery/door
+	New()
+		..()
 
-/obj/machinery/door/Del()
-	update_nearby_tiles()
+		update_nearby_tiles(need_rebuild=1)
 
-	..()
+	Del()
+		update_nearby_tiles()
+
+		..()
 
 
 /obj/machinery/door/meteorhit(obj/M as obj)
@@ -128,41 +124,8 @@
 	if (!src.requiresID())
 		//don't care who they are or what they have, act as if they're NOTHING
 		user = null
-	if (src.density && (istype(I, /obj/item/weapon/card/emag)||istype(I, /obj/item/weapon/melee/energy/blade)))
+	if (src.density && istype(I, /obj/item/weapon/card/emag))
 		src.operating = -1
-		if(istype(I, /obj/item/weapon/melee/energy/blade))
-			if(istype(src, /obj/machinery/door/airlock))
-				var/datum/effects/system/spark_spread/spark_system = new /datum/effects/system/spark_spread()
-				spark_system.set_up(5, 0, src.loc)
-				spark_system.start()
-				playsound(src.loc, 'blade1.ogg', 50, 1)
-				playsound(src.loc, "sparks", 50, 1)
-			//	if(!user in zombies)
-				for(var/mob/O in viewers(user, 3))
-			//	O.show_message(text("\blue The door has been sliced open by [] with an energy blade!", user), 1, text("\red You hear metal being sliced and sparks flying."), 2)
-				if((!src:arePowerSystemsOn()) || (stat & NOPOWER) || src:isWireCut(AIRLOCK_WIRE_DOOR_BOLTS))
-					var/obj/door_assembly/temp
-					var/failsafe=0
-					switch(src:doortype)
-						if(0) temp=new/obj/door_assembly/door_assembly_0(src.loc)
-						if(1) temp=new/obj/door_assembly/door_assembly_com(src.loc)
-						if(2) temp=new/obj/door_assembly/door_assembly_sec(src.loc)
-						if(3) temp=new/obj/door_assembly/door_assembly_eng(src.loc)
-						if(4) temp=new/obj/door_assembly/door_assembly_med(src.loc)
-						if(5) temp=new/obj/door_assembly/door_assembly_mai(src.loc)
-						if(6) temp=new/obj/door_assembly/door_assembly_ext(src.loc)
-						if(7) temp=new/obj/door_assembly/door_assembly_g(src.loc)
-						else	failsafe=1
-					if(!failsafe)
-						temp.anchored=0
-						step_away(temp,usr,15)
-					else	del(temp)
-					del(src)
-					return
-				else
-					src:welded = 0
-					src:locked = 0
-					update_icon()
 		flick("door_spark", src)
 		sleep(6)
 		open()
@@ -174,39 +137,24 @@
 			close()
 	else if (src.density)
 		flick("door_deny", src)
-		playsound(src.loc, 'accessdenied.ogg', 30, 0)
-	return
-
-/obj/machinery/door/airlock/proc/ion_act()
-	if(src.z == 1 && src.density)
-		if(length(req_access) > 0 && !(12 in req_access))
-			if(prob(4))
-				world << "\red Airlock emagged in [src.loc.loc]"
-				src.operating = -1
-				flick("door_spark", src)
-				sleep(6)
-				open()
-		else
-			if(prob(8))
-				world << "\red non vital Airlock emagged in [src.loc.loc]"
-				src.operating = -1
-				flick("door_spark", src)
-				sleep(6)
-				open()
-	return
-
-/obj/machinery/door/firedoor/proc/ion_act()
-	if(src.z == 1)
-		if(prob(15))
-			if(density)
-				open()
-			else
-				close()
 	return
 
 /obj/machinery/door/blob_act()
 	if(prob(40))
 		del(src)
+
+/obj/machinery/door/ex_act(severity)
+	switch(severity)
+		if(1.0)
+			del(src)
+		if(2.0)
+			if(prob(25))
+				del(src)
+		if(3.0)
+			if(prob(80))
+				var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
+				s.set_up(2, 1, src)
+				s.start()
 
 /obj/machinery/door/emp_act(severity)
 	if(prob(20/severity) && (istype(src,/obj/machinery/door/airlock) || istype(src,/obj/machinery/door/window)) )
@@ -217,21 +165,6 @@
 			spawn(300)
 				secondsElectrified = 0
 	..()
-
-/obj/machinery/door/ex_act(severity)
-	switch(severity)
-		if(1.0)
-//			Shields.AddShield(src.loc)
-			del(src)
-		if(2.0)
-			if(prob(25))
-	//			Shields.AddShield(src.loc)
-				del(src)
-		if(3.0)
-			if(prob(80))
-				var/datum/effects/system/spark_spread/s = new /datum/effects/system/spark_spread
-				s.set_up(2, 1, src)
-				s.start()
 
 /obj/machinery/door/update_icon()
 	if(density)
@@ -244,17 +177,16 @@
 	switch(animation)
 		if("opening")
 			if(p_open)
-				icon_state = "o_doorc0"
+				flick("o_doorc0", src)
 			else
-				icon_state = "doorc0"
+				flick("doorc0", src)
 		if("closing")
 			if(p_open)
-				icon_state = "o_doorc1"
+				flick("o_doorc1", src)
 			else
-				icon_state = "doorc1"
+				flick("doorc1", src)
 		if("deny")
 			flick("door_deny", src)
-			playsound(src.loc, 'accessdenied.ogg', 30, 0)
 	return
 
 /obj/machinery/door/proc/open()
@@ -269,11 +201,10 @@
 
 	do_animate("opening")
 	sleep(10)
-	src.layer = 2.7
 	src.density = 0
 	update_icon()
 
-	src.ul_SetOpacity(0)
+	src.sd_SetOpacity(0)
 	update_nearby_tiles()
 
 	if(operating == 1) //emag again
@@ -293,41 +224,11 @@
 
 	do_animate("closing")
 	src.density = 1
-	src.layer = 3.1
-
-	spawn(4)
-		if(!istype(src, /obj/machinery/door/window))
-			for(var/mob/living/L in src.loc) // Crush mobs and move them out of the way
-
-				if(prob(70))
-					L << "\red The airlock forces you out of the way!" //Lucky you
-					for(var/mob/O in viewers(L, null))
-						O.show_message("\red The airlock pushes [L.name] out of the way!", 1)
-
-					var/list/lst = list(NORTH,SOUTH,EAST,WEST)
-					var/turf/T = get_random_turf(L, lst)
-					if(T)
-						L.loc = T
-					else
-						L << "\red AAAARGH! The airlock shuts on you!"
-						L.weakened = 6
-						L.stunned = 3
-						L.bruteloss += 35 // fuck you
-
-
-
-			for(var/obj/item/I in src.loc) // Move items out of the way
-				if(!I.anchored)
-					var/list/lst = list(NORTH,SOUTH,EAST,WEST)
-					var/turf/T = get_random_turf(I, lst)
-					if(T)
-						I.loc = T
-
 	sleep(10)
 	update_icon()
 
-	if (src.visible && !transparent)
-		src.ul_SetOpacity(1)
+	if (src.visible && (!istype(src, /obj/machinery/door/airlock/glass)))
+		src.sd_SetOpacity(1)
 	if(operating == 1)
 		operating = 0
 	update_nearby_tiles()
@@ -364,6 +265,15 @@
 			if(density)
 				open()
 
+/obj/machinery/door/unpowered/open()
+	playsound(src.loc, 'airlock_up.ogg', rand(10,20), 0)
+	return ..()
+
+/obj/machinery/door/unpowered/close()
+	playsound(src.loc, 'airlock_down.ogg', rand(10,20), 0)
+	..()
+	return
+
 /obj/machinery/door/unpowered
 	autoclose = 0
 	var/locked = 0
@@ -397,7 +307,13 @@
 	opacity = 1
 	density = 1
 
-// Puzzle chamber doors
+/obj/machinery/door/unpowered/dshuttle
+	icon = 'shuttle.dmi'
+	name = "ddoor"
+	icon_state = "ddoor1"
+	opacity = 1
+	density = 1
+
 
 /obj/machinery/door/puzzledoor
 	autoclose = 0
@@ -409,6 +325,7 @@
 	icon_state = "door_closed"
 	opacity = 1
 	density = 1
+
 
 /obj/machinery/door/puzzledoor/green
 	icon = 'puzzledoorgreen.dmi'
@@ -481,24 +398,34 @@
 		if(M.client && !M:handcuffed)
 			bumpopen(M)
 
-/obj/machinery/forcefield/New()
-	overlays += image('forcefield.dmi', "field", FLY_LAYER, src.dir)
-
 /obj/machinery/forcefield/CanPass(mob/living/carbon/human/A, turf/T)
 	if (istype(A, /mob/living/carbon/human))
 		var/list/items = A.get_contents()
 		for(var/obj/I in items)
 			if(is_type_in_list(I, src.incorrect_items))
 				return 0
-	if (src.allowed(A))
-		return 1
 	return ..()
 
-/obj/machinery/forcefield/security/CanPass(mob/living/carbon/human/A, turf/T)
-	for (var/obj/item/weapon/implant/securityweapons/I in A)
-		if(!I)
-			return 0
-	if (src.allowed(A))
-		return 1
+//CUSTOM DOORS
+
+/obj/machinery/door/airlock/glass/erika
+ 	var/id
+
+/obj/machinery/door/airlock/glass/erika/attackby(obj/item/I as obj, mob/user as mob)
+	src.add_fingerprint(user)
+	if (src.locked && istype(I, /obj/item/weapon/card/id) && I.name == src.id)
+		src.locked = 0
+		user << "The door accepts the card!"
+	else if (!src.locked && istype(I, /obj/item/weapon/card/id) && I.name == src.id)
+		if (src.density == 0)
+			src.close()
+
+		src.locked = 1
+		src.icon_state = "door_locked"
+		user << "The door accepts the card!"
 	else
-		return 0
+		user << "The door remains locked."
+	return
+
+
+
