@@ -44,7 +44,7 @@
 	var/list/L = list()
 	var/list/areaindex = list()
 
-	for(var/obj/item/device/radio/beacon/R in world)
+	for(var/obj/machinery/cargopad/R in world)
 		var/turf/T = find_loc(R)
 		if (!T)	continue
 		var/tmpname = T.loc.name
@@ -74,6 +74,13 @@
 	for(var/mob/O in hearers(src, null))
 		O.show_message("\blue Locked In", 2)
 	src.add_fingerprint(usr)
+	var/atom/l = src.loc
+	var/obj/machinery/teleport/station/com = locate(/obj/machinery/teleport/station, locate(l.x + 1, l.y, l.z))
+	if(locked && com.exit.loc)
+		com.exit.loc = locked.loc
+	var/turf/T = find_loc(locked)
+	var/tmpname = T.loc.name
+	radioalert("Teleporter in use; Target is [tmpname]","Teleporter Computer","Command")
 	return
 
 /obj/machinery/computer/teleporter/verb/set_id(t as text)
@@ -103,7 +110,7 @@
 	var/list/L = list()
 	var/list/areaindex = list()
 
-	for(var/obj/item/device/radio/courtroom_beacon/R in world)
+	for(var/obj/machinery/cargopad/sci/R in world)
 		var/turf/T = find_loc(R)
 		if (!T)	continue
 		var/tmpname = T.loc.name
@@ -118,6 +125,13 @@
 	for(var/mob/O in hearers(src, null))
 		O.show_message("\blue Locked In", 2)
 	src.add_fingerprint(usr)
+	var/atom/l = src.loc
+	var/obj/machinery/teleport/station/com = locate(/obj/machinery/teleport/station, locate(l.x + 1, l.y, l.z))
+	if(locked && com.exit.loc)
+		com.exit.loc = locked.loc
+	var/turf/T = find_loc(locked)
+	var/tmpname = T.loc.name
+	radioalert("Teleporter in use; Target is [tmpname]","Teleporter Computer","Science")
 	return
 
 /obj/machinery/teleport/hub/Bumped(M as mob|obj)
@@ -211,8 +225,8 @@
 
 	var/turf/destturf = get_turf(destination)
 
-	var/tx = destturf.x + rand(precision * -1, precision)
-	var/ty = destturf.y + rand(precision * -1, precision)
+	var/tx = destturf.x
+	var/ty = destturf.y
 
 	var/tmploc
 
@@ -252,10 +266,13 @@
 
 /obj/machinery/teleport/station/proc/engage()
 	if(stat & (BROKEN|NOPOWER))
+//		if(exit)
+//			del(exit)
 		return
 
 	var/atom/l = src.loc
 	var/atom/com = locate(/obj/machinery/teleport/hub, locate(l.x + 1, l.y, l.z))
+	var/obj/machinery/computer/teleporter/comp = locate(/obj/machinery/computer/teleporter, locate(l.x - 1, l.y, l.z))
 	if (com)
 		com.icon_state = "tele1"
 		use_power(5000)
@@ -263,13 +280,39 @@
 		for(var/mob/O in hearers(src, null))
 			O.show_message("\blue Teleporter engaged!", 2)
 	src.add_fingerprint(usr)
+	var/turf/destturf = get_turf(comp.locked)
+
+	var/tx = destturf.x
+	var/ty = destturf.y
+	var/tmploc
+
+	if (ismob(comp.locked.loc)) //If this is an implant.
+		tmploc = locate(tx, ty, destturf.z)
+	else
+		tmploc = locate(tx, ty, destturf.z)
+
+	if(tx == comp.locked.x && ty == comp.locked.y && (istype(comp.locked.loc, /obj/closet) || istype(comp.locked.loc, /obj/secure_closet)))
+		tmploc = comp.locked.loc
+
+	if(tmploc==null)
+		return
+	for(var/mob/O in hearers(src, null))
+		O.show_message("\blue Locked In", 2)
+	exit = new /obj/portal( get_turf(tmploc) )
+	if(!exit)
+		exit = new /obj/portal( get_turf(tmploc) )
+	exit.target = get_turf(com)
+	exit.creator = src
+	exit.master = src
+	exit.failchance = 0
 	src.engaged = 1
 	return
 
 /obj/machinery/teleport/station/proc/disengage()
 	if(stat & (BROKEN|NOPOWER))
 		return
-
+	if(exit)
+		del(exit)
 	var/atom/l = src.loc
 	var/atom/com = locate(/obj/machinery/teleport/hub, locate(l.x + 1, l.y, l.z))
 	if (com)

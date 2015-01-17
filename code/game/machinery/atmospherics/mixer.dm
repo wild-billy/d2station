@@ -259,7 +259,7 @@ obj/machinery/atmospherics/mixer
 			user << "\red Access denied."
 			return
 		usr.machine = src
-		var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><b>Power: </b><a href='?src=\ref[src];power=1'>[on?"On":"Off"]</a><br>
+		var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><b>Power: </b><a href='?src=\ref[src];power=1'>[on?"On":"Off"]</a><br>
 					<b>Desirable output pressure: </b>
 					[target_pressure]kPa | <a href='?src=\ref[src];set_press=1'>Change</a>
 					<br>

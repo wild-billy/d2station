@@ -47,6 +47,7 @@
 //				usr.current = C
 				//master.current.use_power(50)
 				C.use_power(50)
+				sleep(100)
 
 	receive_command(obj/source, command, datum/signal/signal)
 		if(..() || !signal)

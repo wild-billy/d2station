@@ -22,10 +22,10 @@ SYNDICATE UPLINK
 	user.machine = src
 	var/dat
 	if (src.selfdestruct)
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Self Destructing..."
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Self Destructing..."
 	else
 		if (src.temp)
-			dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />[src.temp]<BR><BR><A href='byond://?src=\ref[src];temp=1'>Clear</A>"
+			dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />[src.temp]<BR><BR><A href='byond://?src=\ref[src];temp=1'>Clear</A>"
 		else
 			dat = "<B>Syndicate Uplink Console:</B><BR>"
 			dat += "Tele-Crystals left: [src.uses]<BR>"

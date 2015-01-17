@@ -376,7 +376,7 @@
 	origin_tech = "combat=2;materials=2;syndicate=6"
 	w_class = 3.0
 	m_amt = 1000
-
+	slowdown = 0.5
 	var
 		list/loaded = list()
 		max_shells = 7
@@ -565,6 +565,7 @@
 	desc = "A basic energy-based gun with two settings: Stun and kill."
 	fire_sound = 'Taser.ogg'
 	calibre = "energy"
+	slowdown = 0.5
 	var
 		var/obj/item/ammo_magazine/energy/power_supply
 		var/removable_mag = 0

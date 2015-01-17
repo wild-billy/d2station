@@ -55,8 +55,8 @@
 		src.stand_icon.Blend(new /icon('human.dmi', "fatbody_s"), ICON_OVERLAY)
 		src.lying_icon.Blend(new /icon('human.dmi', "fatbody_l"), ICON_OVERLAY)
 	else
-		src.stand_icon.Blend(new /icon('human.dmi', "chest_[g]_s"), ICON_OVERLAY)
-		src.lying_icon.Blend(new /icon('human.dmi', "chest_[g]_l"), ICON_OVERLAY)
+		src.stand_icon.Blend(new /icon('human.dmi', "body_[g]_s"), ICON_OVERLAY)
+		src.lying_icon.Blend(new /icon('human.dmi', "body_[g]_l"), ICON_OVERLAY)
 
 	for (var/part in list("head", "arm_left", "arm_right", "hand_left", "hand_right", "leg_left", "leg_right", "foot_left", "foot_right"))
 		if(part == "hand_left" && !src.hasPart("arm_left"))
@@ -77,6 +77,7 @@
 				src.lying_icon.Blend(new /icon('zombie_dismemberment.dmi', "[part]_l[src.hasPart(part)]"), ICON_OVERLAY)
 			src.stand_icon.Blend(new /icon('zombie.dmi', "groin_[g]_s"), ICON_OVERLAY)
 			src.lying_icon.Blend(new /icon('zombie.dmi', "groin_[g]_l"), ICON_OVERLAY)
+		/*
 		else
 			if(src.hasPart(part) == 1)
 				src.stand_icon.Blend(new /icon('human.dmi', "[part]_s"), ICON_OVERLAY)
@@ -87,6 +88,7 @@
 
 			src.stand_icon.Blend(new /icon('human.dmi', "groin_[g]_s"), ICON_OVERLAY)
 			src.lying_icon.Blend(new /icon('human.dmi', "groin_[g]_l"), ICON_OVERLAY)
+		*/
 
 	// Skin tone
 	if(mutantrace == "zombie")

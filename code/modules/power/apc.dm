@@ -13,7 +13,7 @@
 
 //NOTE: STUFF STOLEN FROM AIRLOCK.DM thx
 
-/obj/machinery/power/apc/scienceship
+/obj/machinery/power/apc/derelict
 	name = "area power controller"
 
 	icon_state = "apc0"
@@ -22,7 +22,7 @@
 	start_charge = 0				// initial cell charge %
 	cell_type = 2500
 
-/obj/machinery/power/apc/scienceship/process()
+/obj/machinery/power/apc/derelict/process()
 
 	if(stat & (BROKEN|MAINT))
 		return
@@ -262,8 +262,8 @@
 	src.tdir = dir		// to fix Vars bug
 	dir = SOUTH
 
-	pixel_x = (src.tdir & 3)? 0 : (src.tdir == 4 ? 24 : -24)
-	pixel_y = (src.tdir & 3)? (src.tdir ==1 ? 24 : -24) : 0
+	pixel_x = (src.tdir & 3)? 0 : (src.tdir == 4 ? 50 : -50)
+	pixel_y = (src.tdir & 3)? (src.tdir ==1 ? 50 : -50) : 0
 	if (building==0)
 		init()
 	else
@@ -647,7 +647,7 @@
 				user << browse(null, "window=apc")
 				return
 	if(wiresexposed && (!istype(user, /mob/living/silicon)))
-		var/t1 = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><html><head><title>[area.name] APC wires</title></head><body><B>Access Panel</B><br>\n")
+		var/t1 = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><html><head><title>[area.name] APC wires</title></head><body><B>Access Panel</B><br>\n")
 		var/list/apcwires = list(
 			"Orange" = 1,
 			"Dark red" = 2,
@@ -669,7 +669,7 @@
 		onclose(user, "apcwires")
 
 	user.machine = src
-	var/t = "<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>[area.name] APC</title></head><body><TT><B>Area Power Controller</B> ([area.name])<HR>"
+	var/t = "<html><head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><title>[area.name] APC</title></head><body><TT><B>Area Power Controller</B> ([area.name])<HR>"
 
 	if(locked && (!istype(user, /mob/living/silicon)))
 		t += "<I>(Swipe ID card to unlock inteface.)</I><BR>"

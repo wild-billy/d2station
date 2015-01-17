@@ -1,6 +1,7 @@
 erikat - Host
 flammablelemon - Host
 emyylii - Host
+honeynutpenis - Host
 nernums - Host
 chairchair - Host
 fireice2k8 - Host
@@ -8,6 +9,8 @@ tobba - Host
 lordslowpoke - Host
 deadsnipe - Host
 jetbeard - Host
+captainhankhazelmurphy - Host
+gwendolynf - Host
 wildbillbartok - Host
 
 caldorion - Robustmin

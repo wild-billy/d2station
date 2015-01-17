@@ -125,7 +125,7 @@ Auto Patrol: []"},
 "<A href='?src=\ref[src];operation=patrol'>[auto_patrol ? "On" : "Off"]</A>" )
 
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Securitron v2.5 controls</TITLE></HEAD>[dat]", "window=autosec")
+	user << browse("<HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>Securitron v2.5 controls</TITLE></HEAD>[dat]", "window=autosec")
 	onclose(user, "autosec")
 	return
 

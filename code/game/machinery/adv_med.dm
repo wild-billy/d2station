@@ -211,11 +211,11 @@ obj/machinery/body_scanconsole/New()
 	var/dat
 	var/mob/occupant = src.connected.occupant
 	if (istype(occupant,/mob/living/carbon/monkey))
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><font color='red'>This device can only scan human occupants.</FONT><BR>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><font color='red'>This device can only scan human occupants.</FONT><BR>"
 		user << browse(dat, "window=scannernew;size=550x625")
 		return
 	else if (!istype(occupant,/mob/living/carbon/human))
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><font color='red'>This device can only scan human occupants.</FONT><BR>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><font color='red'>This device can only scan human occupants.</FONT><BR>"
 		user << browse(dat, "window=scannernew;size=550x625")
 	else
 		return src.scan(src.connected.occupant, user)
@@ -499,7 +499,7 @@ obj/machinery/body_scanconsole/New()
 							if(occupant:l_footbloodloss == 3)
 								dat += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=\"red\">	WARNING! Extreme bleeding detected<BR></FONT>"
 
-				dat += {"<br><A href='?src=\ref[src];rf=1'>Refresh</A><BR>"}
+				dat += {"<br><A href='?src=\ref[src];rf=1'>Refresh</A><BR><A href='?src=\ref[src];Print=1'>Print</A><BR>"}
 				shown++
 		else
 			dat = "<font color='red'> Error: No Scanner connected. </FONT>"
@@ -516,36 +516,42 @@ obj/machinery/body_scanconsole/New()
 			src.updateDialog()
 		if (href_list["Print"])
 			if (!( printing ))
+				var/mob/living/carbon/human/occupant = src.connected.occupant
 				printing = 1
 				sleep(50)
 				if (src.connected)
 					var/obj/item/weapon/paper/P = new /obj/item/weapon/paper( loc )
-					P.info = "Test Results"
+					P.info = "Test Results<br><br>"
 					P.name = "paper- 'Scan Results'"
+					if (occupant) //is there REALLY someone in there?
+						if (!istype(occupant,/mob/living/carbon/human))
+							sleep(1)
+						DNA = copytext(occupant.dna.unique_enzymes,1,0)
+						bloodtype = copytext(occupant.b_type,1,0)
+						P.info += "<B>Name:</B> [occupant.real_name]<BR>"
+						P.info += "<B>Age:</B> [occupant.age]<BR>"
+						P.info += "<B>Gender:</B> [occupant.gender == "male" ? "Male" : "Female"]<BR>"
+						P.info += "<B>DNA</B>: [DNA]<BR>"
+						P.info += "<B>Health:</B> [occupant.stat > 1 ? "<font color=\"red\">Dead</Font>" : "[occupant.health]% healthy"]<BR>"
+						if(occupant.eye_blind || occupant.ear_deaf)
+							P.info += "<B>Sensory Organs:</B> [occupant.eye_blind ? "Blind, " : ""] [occupant.ear_deaf ? "Deaf" : ""]<BR>"
+						else if(!occupant.eye_blind || !occupant.ear_deaf)
+							P.info += "<B>Sensory Organs: </B> Normal<BR>"
+						P.info += "<B>Radiation Level:</B> [occupant.radiation < 1 ? "none" : "<font color='red'>[occupant.radiation]</font>"]<BR>"
+						P.info += "<B>Brain Damage:</B> [occupant.brainloss < 1 ? "none" : "<font color='red'>[occupant.brainloss]</font>"]<BR>"
+						P.info += "<B>Blood Type:</B> [bloodtype]<BR>"
+						P.info += "<B>Blood Pressure:</B> [occupant.systolic]/[occupant.diastolic] <BR>"
+						P.info += "<B>Heart Rate:</B> [occupant.heartrate]bpm<BR>"
+						if(occupant.r_armbloodloss == 1)
+							P.info += "<B>Overall Bleeding:</B><font color=\"red\"> Light bleeding detected<BR></FONT>"
+						if(occupant.r_armbloodloss == 2)
+							P.info += "<B>Overall Bleeding:</B><font color=\"red\"> Heavy bleeding detected<BR></FONT>"
+						if(occupant.r_armbloodloss == 3)
+							P.info += "<B>Overall Bleeding:</B><font color=\"red\"> WARNING! Extreme bleeding detected<BR></FONT>"
+						P.info += "<B>Suffocation Damage:</B> [occupant.oxyloss < 1 ? "none" : "<font color='red'>[occupant.oxyloss]</font>"]<BR>"
+						P.info += "<B>Toxin Poisoning:</B> [occupant.toxloss < 1 ? "none" : "<font color='red'>[occupant.toxloss]</font>"]<BR>"
+						P.info += "<B>Genetic Damage Overall:</B> [occupant.cloneloss < 1 ? "none" : "<font color='red'>[occupant.cloneloss]</font>"]<BR>"
+						P.info += "<B>Burn Damage Overall:</B> [occupant.fireloss < 1 ? "none" : "<font color='red'>[occupant.fireloss]</font>"]<BR>"
+						P.info += "<B>Brute Damage Overall:</B> [occupant.bruteloss < 1 ? "none" : "<font color='red'>[occupant.bruteloss]</font>"]<BR>"
+						P.info += "<B>Body Temperature:</B>[occupant.bodytemperature-T0C]*C ([occupant.bodytemperature*1.8-459.67]*F)<BR>"
 					printing = null
-
-
-		/*			for(var/datum/organ/external/e in occupant.GetOrgans())
-					dat += "<tr>"
-					var/AN = ""
-					var/open = ""
-					var/infected = ""
-					var/imp = ""
-					var/bled = ""
-					if(e.wounds.len >= 1)
-						bled = "Bleeding:"
-					if(e.broken)
-						AN = "[e.wound]:"
-					if(e.open)
-						open = "OPEN:"
-					if(!e.clean)
-						infected = "UNCLEAN:"
-					if(e.split)
-						e.split = ":SPLT"
-					if(e.implant)
-						imp = "IMPLANT:"
-					if(!AN && !open && !infected & !imp)
-						AN = "None"
-					dat += "<td>[e.display_name]</td><td>[e.burn_dam]</td><td>[e.brute_dam]</td><td>[bled][AN][open][infected][imp]</font></td>"
-					//dat += text("<td><font color='red'>[e.display_name]</td><td>BRN:[e.burn_dam]</td><td>BRT:[e.brute_dam]</td><td>[AN][open][infected][imp]</font></td>")
-	*/

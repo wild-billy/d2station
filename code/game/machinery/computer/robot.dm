@@ -63,7 +63,7 @@
 	user.machine = src
 	var/dat
 	if (src.temp)
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT>[src.temp]</TT><BR><BR><A href='?src=\ref[src];temp=1'>Clear Screen</A>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT>[src.temp]</TT><BR><BR><A href='?src=\ref[src];temp=1'>Clear Screen</A>"
 	else
 		if(screen == 0)
 			dat += "<h3>Cyborg Control Console</h3><BR>"

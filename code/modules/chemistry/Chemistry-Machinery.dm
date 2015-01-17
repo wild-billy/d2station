@@ -2,6 +2,176 @@
 #define LIQUID 2
 #define GAS 3
 
+/obj/machinery/seed_enhancer/
+	name = "seed enhancer"
+	density = 1
+	anchored = 1
+	icon = 'chemical.dmi'
+	icon_state = "seedenhance"
+	var/energy = 50
+	var/max_energy = 50
+	var/myseed = null
+	proc
+		recharge()
+			if(stat & BROKEN) return
+			if(energy != max_energy)
+				energy++
+				use_power(50)
+			spawn(600) recharge()
+
+	ex_act(severity)
+		switch(severity)
+			if(1.0)
+				del(src)
+				return
+			if(2.0)
+				if (prob(50))
+					del(src)
+					return
+
+	blob_act()
+		if (prob(50))
+			del(src)
+
+	meteorhit()
+		del(src)
+		return
+
+	attackby(var/obj/item/seeds/B as obj, var/mob/user as mob)
+		if(!istype(B, /obj/item/seeds))
+			return
+
+		if(myseed)
+			user << "The seed is already loaded!"
+			return
+
+		myseed = B
+		user.drop_item()
+		B.loc = src
+		user << "You add the [B.name] to the machine!"
+		src.updateUsrDialog()
+
+	Topic(href, href_list)
+		if(..())
+			return
+
+		if(href_list["eject"])
+			myseed:loc = src.loc
+			myseed = null
+			src.updateUsrDialog()
+
+
+
+//seed stats changed here. I had something more elaborate planned, but my way caused runtime errors. Now it's similar to gibbed crap.
+		if(href_list["potency"])
+			myseed:radiation += 1
+			myseed:potency += 1
+			if(prob(20))
+				myseed:potency += rand(1,15)
+			if(prob(30))
+				myseed:potency += rand(1,6)
+				myseed:yield += rand(1,3)
+			if(prob(40))
+				myseed:potency += rand(1,3)
+				myseed:production -= rand(1,3)
+			if(prob(35))
+				del(myseed)
+				usr << "<B>Seed destroyed</B>"
+				myseed = null
+			src.updateUsrDialog()
+
+		if(href_list["yield"])
+			myseed:radiation += 1
+			myseed:yield += 1
+			if(prob(20))
+				myseed:yield += rand(1,15)
+			if(prob(30))
+				myseed:yield += rand(1,6)
+				myseed:potency -= rand(1,3)
+			if(prob(40))
+				myseed:yield += rand(1,3)
+				myseed:production -= rand(1,3)
+			if(prob(35))
+				del(myseed)
+				usr << "<B>Seed destroyed</B>"
+				myseed = null
+			src.updateUsrDialog()
+
+		if(href_list["maturation"])
+			myseed:radiation += 1
+			myseed:maturation += 1
+			if(prob(20))
+				myseed:maturation += rand(1,15)
+			if(prob(30))
+				myseed:maturation += rand(1,6)
+				myseed:potency += rand(1,3)
+			if(prob(40))
+				myseed:maturation += rand(1,3)
+				myseed:potency -= rand(1,3)
+			if(prob(35))
+				del(myseed)
+				usr << "<B>Seed destroyed</B>"
+				myseed = null
+			src.updateUsrDialog()
+
+		if(href_list["production"])
+			myseed:radiation += 1
+			myseed:production += 1
+			if(prob(20))
+				myseed:potency += rand(1,15)
+			if(prob(30))
+				myseed:potency += rand(1,6)
+				myseed:yield += rand(1,3)
+			if(prob(40))
+				myseed:potency += rand(1,3)
+				myseed:production -= rand(1,3)
+			if(prob(35))
+				del(myseed)
+				usr << "<B>Seed destroyed</B>"
+				myseed = null
+			src.updateUsrDialog()
+
+
+	src.master.add_fingerprint(usr)
+	src.master.updateUsrDialog()
+
+	attack_ai(mob/user as mob)
+		return src.attack_hand(user)
+
+	attack_paw(mob/user as mob)
+		return src.attack_hand(user)
+
+	attack_hand(mob/user as mob)
+		if(stat & BROKEN)
+			return
+		user.machine = src
+		var/dat = ""
+		if(myseed)
+			dat += "<B>Seed Stats</B><BR><HR><BR>"
+			dat += "Plant type: <B>[myseed:plantname]</B><BR>"
+			dat += "potency: <B>[myseed:potency]</B><BR>"
+			dat += "yield: <B>[myseed:yield]</B><BR>"
+			dat += "maturity: <B>[myseed:maturation]</B><BR>"
+			dat += "production: <B>[myseed:production]</B><BR><HR><BR>"
+			dat += "<B>Radiation level</B>: [myseed:radiation]"
+			dat += {"
+	<BR><A href='?src=\ref[src];production=1'>Enhance production</A><BR>
+	<BR><A href='?src=\ref[src];maturation=1'>Enhance maturation</A><BR>
+	<BR><A href='?src=\ref[src];potency=1'>Enhance Potency</A><BR>
+	<BR><A href='?src=\ref[src];yield=1'>Enhance Yield</A><BR>
+	<BR><A href='?src=\ref[src];eject=1'>Eject Seeds</A><BR>
+	"}
+		else
+			dat += "Please insert seed<BR><BR>"
+		user << browse("<TITLE>Seed Enhancer</TITLE>Seed enhancer:<BR>Energy = [energy]/[max_energy]<BR><BR>[dat]", "window=chem_dispenser")
+
+		onclose(user, "chem_dispenser")
+		return
+
+
+
+////////////////////////////////////////////////////////////////////////
+
 /obj/machinery/chem_dispenser/
 	name = "chem dispenser"
 	density = 1

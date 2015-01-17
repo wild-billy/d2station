@@ -314,7 +314,7 @@
 		user << text("Turret badly positioned - loc.loc is [].", loc)
 		return
 	var/area/area = loc
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Turret Control Panel</B> ([area.name])<HR>"
+	var/t = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>Turret Control Panel</B> ([area.name])<HR>"
 
 	if(src.locked && (!istype(user, /mob/living/silicon)))
 		t += "<I>(Swipe ID card to unlock control panel.)</I><BR>"
@@ -417,7 +417,7 @@
 	attack_hand(mob/user as mob)
 		user.machine = src
 		var/dat = {"<html>
-						<head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>[src] Control</title></head>
+						<head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><title>[src] Control</title></head>
 						<body>
 						<b>Power: </b><a href='?src=\ref[src];power=1'>[on?"on":"off"]</a><br>
 						<b>Scan Range: </b><a href='?src=\ref[src];scan_range=-1'>-</a> [scan_range] <a href='?src=\ref[src];scan_range=1'>+</a><br>

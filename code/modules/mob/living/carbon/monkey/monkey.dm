@@ -26,7 +26,7 @@
 	return
 
 /mob/living/carbon/monkey/movement_delay()
-	var/tally = 0
+	var/tally = 1
 	if(reagents)
 		if(reagents.has_reagent("hyperzine")) return -1
 

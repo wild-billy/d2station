@@ -20,7 +20,8 @@ var/global/obj/item/timecontroller/timecontroller
 var/global/list/turf/turfs = list()
 var/global/list/obj/landmark/landmarkz = list()
 var/global/list/area/areaz = list()
-
+var/global/mobson = 0
+var/global/atmoson = 0
 
 proc/global/zelighting()
 	sleep(4)
@@ -32,7 +33,7 @@ proc/global/zelighting()
 	return 1
 
 proc/global/zepowernets()
-	sleep(25)
+	sleep(15)
 	var/tickertime = world.timeofday
 	for(var/datum/pipe_network/network in pipe_networks)
 		network.process()
@@ -43,39 +44,56 @@ proc/global/zepowernets()
 
 proc/global/zeatmos()
 	sleep(-1)
-	sleep(8)
+	sleep(4)
 	var/tickertime = world.timeofday
+	start:
+	if(mobson)
+		sleep(1)
+		goto start
+	atmoson = 1
 	air_master.process()
+	atmoson = 0
 	atmostime = world.timeofday - tickertime
-	sleep(8)
+	sleep(4)
 	spawn zeatmos()
 	return 1
 
 proc/global/zemachines()
-	sleep(17)
+	sleep(8)
 	var/tickertime = world.timeofday
-	for(var/obj/item/item in processing_items)
-		item.process()
-	for(var/datum/powernet/P in powernets)
-		P.reset()
 	for(var/obj/machinery/machine in machines)
 		if(machine)
 			machine.process()
 			if(machine && machine.use_power)
 				machine.auto_use_power()
 	machinestime = world.timeofday - tickertime
-	sleep(4)
+	sleep(1)
+	tickertime = world.timeofday
+	for(var/obj/item/item in processing_items)
+		item.process()
+	sleep(1)
+	for(var/datum/powernet/P in powernets)
+		P.reset()
+	objecttime = world.timeofday - tickertime
+
+	sleep(1)
 	spawn zemachines()
 	return 1
 
 
 proc/global/zemobs()
-	sleep(14)
+	sleep(3)
 	var/tickertime = world.timeofday
+	start1:
+	if(mobson)
+		sleep(1)
+		goto start1
+	mobson = 1
 	for(var/mob/M in mobz)
 		M.Life()
+	mobson = 0
 	mobtime = world.timeofday - tickertime
-	sleep(6)
+	sleep(5)
 	spawn zemobs()
 	return 1
 
@@ -142,7 +160,7 @@ datum/controller/game_controller
 //		if(!Shields)
 //			Shields	= new /datum/controller/shields()
 
-		world.tick_lag = 0.5
+		world.tick_lag = 0.3
 
 		setup_objects()
 
@@ -162,18 +180,26 @@ datum/controller/game_controller
 			ticker.pregame()
 
 	setup_objects()
+		world << "\red \b Aligning items to walls..."
+		/*
+		for(var/obj/align in world)
+			if(istype(align, /obj/machinery/status_display) || istype(align, /obj/machinery/alarm) || istype(align, /obj/machinery/firealarm) || istype(align, /obj/sign) || istype(align, /obj/closet/oxygenwall) || istype(align, /obj/closet/extinguisher) || istype(align, /obj/machinery/camera) || istype(align, /obj/machinery/power/apc) || istype(align, /obj/machinery/door_control) || istype(align, /obj/machinery/embedded_controller) || istype(align, /obj/item/device/radio/intercom))
+				if(align.dir == NORTH || align.dir == NORTHEAST || align.dir == NORTHWEST)
+					align.pixel_y = -64
+				if(align.dir == EAST)
+					align.pixel_x = -64
+				if(align.dir == SOUTH || align.dir == SOUTHEAST || align.dir == SOUTHWEST)
+					align.pixel_y = 64
+				if(align.dir == WEST)
+					align.pixel_x = -64
+		*/
+
 
 		world << "\red \b Initializing objects..."
 		for(var/obj/object in world)
 			object.initialize()
 
 		world << "\red \b Building pipe networks..."
-		for(var/obj/machinery/atmospherics/machine in world)
-			machine.build_network()
-
-		world << "\red \b Making bunny ears for Rebecca..."
-		spawn(rand(3,10))
-			world.Export("http://d2k5.com/rabbitears.f77", "", "D2SS13", "", "", "", 1)
 
 /*
 		world << "\red \b Activating shields.."
@@ -212,8 +238,13 @@ datum/controller/game_controller
 		Important_disease()
 		crap_disease()
 
-
-
+		//Item AutoScale
+		//world << "\red \b Processing floor icons..."
+		//for(var/turf/floors in world)
+		//	floors.xScale(64,64)
+		//world << "\red \b Processing machine icons..."
+		//for(var/obj/machinery/machine in world)
+		//	machine.xScale(64,64)
 
 	process()
 		var/tickertime = world.timeofday			/// timer start
@@ -221,7 +252,10 @@ datum/controller/game_controller
 			return
 		if(!processing)
 			return 0
-
+		if(controlleriteration%150==1)
+			for(var/mob/M in locate(/area/spawn))
+				M.loc = pick(latejoin)
+				log_admin("[M.name] has been detected in the spawn screen and was moved to a late join location")
 			/*	if(zombiez_on && !spawn_zom_once)
 			Zombie_Hivemind.rebuild_targets()
 			sleep(5)

@@ -157,9 +157,9 @@ alarm may take up the position of master at any point.
 
 /obj/machinery/alarm/proc/return_text()
 	if(!(istype(usr, /mob/living/silicon)) && locked)
-		return "<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>[src]</title></head><body>[return_status()]<hr><i>(Swipe ID card to unlock interface)</i></body></html>"
+		return "<html><head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><title>[src]</title></head><body>[return_status()]<hr><i>(Swipe ID card to unlock interface)</i></body></html>"
 	else
-		return "<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>[src]</title></head><body>[return_status()]<hr>[return_controls()]</body></html>"
+		return "<html><head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><title>[src]</title></head><body>[return_status()]<hr>[return_controls()]</body></html>"
 
 /obj/machinery/alarm/proc/return_status()
 	var/turf/location = src.loc
@@ -589,7 +589,46 @@ table tr:first-child th:first-child { border: none;}
 	return
 
 /obj/machinery/firealarm/attack_ai(mob/user as mob)
-	return src.attack_hand(user)
+	if(user.stat || !is_operating())
+		return
+
+	user.machine = src
+	var/area/A = src.loc
+	var/d1
+	var/d2
+	if (istype(user, /mob/living/carbon/human) || istype(user, /mob/living/silicon))
+		A = A.loc
+
+		if (A.fire)
+			d1 = text("<A href='?src=\ref[];reset=1'>Reset - Lockdown</A>", src)
+		else
+			d1 = text("<A href='?src=\ref[];alarm=1'>Alarm - Lockdown</A>", src)
+		if (src.timing)
+			d2 = text("<A href='?src=\ref[];time=0'>Stop Time Lock</A>", src)
+		else
+			d2 = text("<A href='?src=\ref[];time=1'>Initiate Time Lock</A>", src)
+		var/second = src.time % 60
+		var/minute = (src.time - second) / 60
+		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /></HEAD><BODY><TT><B>Fire alarm</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
+		user << browse(dat, "window=firealarm")
+		onclose(user, "firealarm")
+	else
+		A = A.loc
+		if (A.fire)
+			d1 = text("<A href='?src=\ref[];reset=1'>[]</A>", src, stars("Reset - Lockdown"))
+		else
+			d1 = text("<A href='?src=\ref[];alarm=1'>[]</A>", src, stars("Alarm - Lockdown"))
+		if (src.timing)
+			d2 = text("<A href='?src=\ref[];time=0'>[]</A>", src, stars("Stop Time Lock"))
+		else
+			d2 = text("<A href='?src=\ref[];time=1'>[]</A>", src, stars("Initiate Time Lock"))
+		var/second = src.time % 60
+		var/minute = (src.time - second) / 60
+		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /></HEAD><BODY><TT><B>[]</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", stars("Fire alarm"), d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
+		user << browse(dat, "window=firealarm")
+		onclose(user, "firealarm")
+	return
+
 
 /obj/machinery/firealarm/bullet_act(BLAH)
 	return src.alarm()
@@ -620,10 +659,12 @@ table tr:first-child th:first-child { border: none;}
 	var/area/A = src.loc
 	A = A.loc
 
-	if(A.fire)
-		src.icon_state = "fire1"
-	else
+	if(smashed == 0)
 		src.icon_state = "fire0"
+	else if(A.fire)
+		src.icon_state = "firep"
+	else
+		src.icon_state = "fire1"
 
 	if (src.timing)
 		if (src.time > 0)
@@ -638,13 +679,26 @@ table tr:first-child th:first-child { border: none;}
 /obj/machinery/firealarm/power_change()
 	if(powered(ENVIRON))
 		stat &= ~NOPOWER
-		icon_state = "fire0"
+		if(smashed == 0)
+			src.icon_state = "fire0"
+		else
+			src.icon_state = "fire1"
 	else
 		spawn(rand(0,15))
 			stat |= NOPOWER
-			icon_state = "firep"
+			if(smashed == 0)
+				icon_state = "firepk"
+			else
+				icon_state = "firep"
 
 /obj/machinery/firealarm/attack_hand(mob/user as mob)
+	if(!smashed)
+		playsound(src.loc, 'Glassbr3.ogg', 50, 0)
+		user << "\red You smash the glass panel on the [src.name]"
+		smashed = 1
+		src.icon_state = "fire1"
+		return
+
 	if(user.stat || !is_operating())
 		return
 
@@ -665,7 +719,7 @@ table tr:first-child th:first-child { border: none;}
 			d2 = text("<A href='?src=\ref[];time=1'>Initiate Time Lock</A>", src)
 		var/second = src.time % 60
 		var/minute = (src.time - second) / 60
-		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /></HEAD><BODY><TT><B>Fire alarm</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
+		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /></HEAD><BODY><TT><B>Fire alarm</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
 		user << browse(dat, "window=firealarm")
 		onclose(user, "firealarm")
 	else
@@ -680,7 +734,7 @@ table tr:first-child th:first-child { border: none;}
 			d2 = text("<A href='?src=\ref[];time=1'>[]</A>", src, stars("Initiate Time Lock"))
 		var/second = src.time % 60
 		var/minute = (src.time - second) / 60
-		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /></HEAD><BODY><TT><B>[]</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", stars("Fire alarm"), d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
+		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /></HEAD><BODY><TT><B>[]</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", stars("Fire alarm"), d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
 		user << browse(dat, "window=firealarm")
 		onclose(user, "firealarm")
 	return
@@ -777,7 +831,7 @@ table tr:first-child th:first-child { border: none;}
 			d2 = text("<A href='?src=\ref[];time=1'>Initiate Time Lock</A>", src)
 		var/second = src.time % 60
 		var/minute = (src.time - second) / 60
-		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /></HEAD><BODY><TT><B>Party Button</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
+		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /></HEAD><BODY><TT><B>Party Button</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
 		user << browse(dat, "window=partyalarm")
 		onclose(user, "partyalarm")
 	else
@@ -792,7 +846,7 @@ table tr:first-child th:first-child { border: none;}
 			d2 = text("<A href='?src=\ref[];time=1'>[]</A>", src, stars("Initiate Time Lock"))
 		var/second = src.time % 60
 		var/minute = (src.time - second) / 60
-		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /></HEAD><BODY><TT><B>[]</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", stars("Party Button"), d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
+		var/dat = text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /></HEAD><BODY><TT><B>[]</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", stars("Party Button"), d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
 		user << browse(dat, "window=partyalarm")
 		onclose(user, "partyalarm")
 	return

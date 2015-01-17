@@ -2,7 +2,7 @@
 
 /obj/machinery/rail_track
 	name = "Rail track"
-	icon = 'Mining.dmi'
+	icon = 'mining.dmi'
 	icon_state = "rail"
 	dir = 2
 	var/id = null    //this is needed for switches to work Set to the same on the whole length of the track
@@ -82,7 +82,7 @@
 
 /obj/machinery/rail_switch
 	name = "Rail switch"
-	icon = 'Mining.dmi'
+	icon = 'mining.dmi'
 	icon_state = "rail"
 	dir = 2
 	icon = 'recycling.dmi'
@@ -158,7 +158,7 @@
 
 /obj/machinery/rail_car
 	name = "Rail car"
-	icon = 'Storage.dmi'
+	icon = 'storage.dmi'
 	icon_state = "miningcar"
 	var/direction = "S"  //S = south, N = north, E = east, W = west. Determines whichw ay it'll look first
 	var/moving = 0;

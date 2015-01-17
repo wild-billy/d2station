@@ -29,7 +29,7 @@ datum/mind
 		memory += "[new_text]<BR>"
 
 	proc/show_memory(mob/recipient)
-		var/output = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>[current.real_name]'s Memory</B><HR>"
+		var/output = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>[current.real_name]'s Memory</B><HR>"
 		output += memory
 
 		if(objectives.len>0)
@@ -43,7 +43,7 @@ datum/mind
 		recipient << browse(output,"window=memory")
 
 	proc/edit_memory()
-		var/out = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>[current.real_name]</B><br>"
+		var/out = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>[current.real_name]</B><br>"
 		out += "Assigned role: [assigned_role]. <a href='?src=\ref[src];role_edit=1'>Edit</a><br>"
 		out += "Factions and special roles:<br>"
 

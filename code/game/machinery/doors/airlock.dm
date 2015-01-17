@@ -57,7 +57,7 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock
 	name = "Airlock"
-	icon = 'doorint.dmi'
+	icon = 'testing.dmi'
 	icon_state = "door_closed"
 
 	var/aiControlDisabled = 0 //If 1, AI control is disabled until the AI hacks back in and disables the lock. If 2, the AI has bypassed the lock. If -1, the control is enabled but the AI had bypassed it earlier, so if it is disabled again the AI would have no trouble getting back in.
@@ -104,7 +104,7 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock/maintenance
 	name = "Maintenance Access"
-	icon = 'Doormaint.dmi'
+	icon = 'Doorhatchmaint2.dmi'
 	doortype = 5
 
 /obj/machinery/door/airlock/external
@@ -114,26 +114,26 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock/glass
 	name = "Glass Airlock"
-	icon = 'Doorglass.dmi'
+	icon = 'testing.dmi'
 	opacity = 0
 	doortype = 7
 	transparent = 1
 
 /obj/machinery/door/airlock/centcom
 	name = "Airlock"
-	icon = 'Doorele.dmi'
+	icon = 'Doorcom.dmi'
 	opacity = 0
 	doortype = 8
 
 /obj/machinery/door/airlock/vault
 	name = "Vault"
-	icon = 'vault.dmi'
+	icon = 'Doorcomglass.dmi'
 	opacity = 1
 	doortype = 9
 
 /obj/machinery/door/airlock/glass_large
 	name = "Glass Airlock"
-	icon = 'Door2x1glassfull.dmi'
+	icon = 'Doorcom.dmi'
 	opacity = 0
 	doortype = 10
 	transparent = 1
@@ -143,7 +143,7 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 		src.connected = locate(/obj/machinery/door/airlock/glass_large/bump, get_step(loc, EAST))
 
 /obj/machinery/door/airlock/glass_large/bump
-	name = "Glass Airlock"
+	name = "Doorcom.dmi"
 	icon = null
 	opacity = 0
 	doortype = 10
@@ -153,7 +153,7 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock/armoureddoor
 	name = "Armoured door"
-	icon = 'Rollingfoor.dmi'
+	icon = 'Doorcom.dmi'
 	doortype = 11
 
 /obj/machinery/door/airlock/glass_large/bumpopen(mob/user as mob) //Airlocks now zap you when you 'bump' them open when they're electrified. --NeoFite
@@ -173,13 +173,13 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock/freezer
 	name = "Freezer Airlock"
-	icon = 'Doorfreezer.dmi'
+	icon = 'Doorcom.dmi'
 	opacity = 1
 	doortype = 11
 
 /obj/machinery/door/airlock/hatch
 	name = "Airtight Hatch"
-	icon = 'Doorhatchele.dmi'
+	icon = 'Doorhatchmaint2.dmi'
 	opacity = 1
 	doortype = 12
 
@@ -199,7 +199,7 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock/glass_engineering
 	name = "Maintenance Hatch"
-	icon = 'Doorengglass.dmi'
+	icon = 'Doorcomglass.dmi'
 	opacity = 0
 	doortype = 15
 	transparent = 1
@@ -213,7 +213,7 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock/glass_green
 	name = "Maintenance Hatch"
-	icon = 'glassairlocks.dmi'
+	icon = 'testing.dmi'
 	opacity = 0
 	doortype = 16
 	transparent = 1
@@ -221,14 +221,14 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 /obj/machinery/door/airlock/glass_medical
 	name = "Maintenance Hatch"
-	icon = 'doormedglass.dmi'
+	icon = 'Doormedglass.dmi'
 	opacity = 0
 	doortype = 17
 	transparent = 1
 
 /obj/machinery/door/airlock/glass_sci
 	name = "Research and Development"
-	icon = 'doorsciglass.dmi'
+	icon = 'Doorsciglass.dmi'
 	opacity = 0
 	doortype = 18
 	transparent = 1
@@ -930,7 +930,8 @@ About the new airlock wires panel:
 		if (src.isElectrified())
 			if(src.shock(user, 75))
 				return
-
+	if((istype(C, /obj/item/weapon/card/id/prison/guard)) && id_tag == "cell")
+		return
 	src.add_fingerprint(user)
 	if ((istype(C, /obj/item/weapon/weldingtool) && !( src.operating ) && src.density))
 		var/obj/item/weapon/weldingtool/W = C

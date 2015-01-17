@@ -10,17 +10,17 @@
 #define MOLES_O2STANDARD MOLES_CELLSTANDARD*O2STANDARD	// O2 standard value (21%)
 #define MOLES_N2STANDARD MOLES_CELLSTANDARD*N2STANDARD	// N2 standard value (79%)
 
-#define MOLES_PLASMA_VISIBLE	0.5 //Moles in a standard cell after which plasma is visible
+#define MOLES_PLASMA_VISIBLE	1.5 //Moles in a standard cell after which plasma is visible
 
 #define BREATH_VOLUME 0.7	//liters in a normal breath
 #define BREATH_PERCENTAGE BREATH_VOLUME/CELL_VOLUME
 	//Amount of air to take a from a tile
-#define HUMAN_NEEDED_OXYGEN	MOLES_CELLSTANDARD*BREATH_PERCENTAGE*0.16
+#define HUMAN_NEEDED_OXYGEN	MOLES_CELLSTANDARD*BREATH_PERCENTAGE*0.10
 	//Amount of air needed before pass out/suffocation commences
 
 // Factor of how fast mob nutrition decreases
 #define	HUNGER_FACTOR 0.1
-#define	REAGENTS_METABOLISM 0.4
+#define	REAGENTS_METABOLISM 0.2
 
 #define MINIMUM_AIR_RATIO_TO_SUSPEND 0.01
 	//Minimum ratio of air that must move to/from a tile to suspend group processing
@@ -37,25 +37,24 @@
 	//Minimum temperature difference before the gas temperatures are just set to be equal
 
 #define MINIMUM_TEMPERATURE_FOR_SUPERCONDUCTION		T20C+10
-#define MINIMUM_TEMPERATURE_START_SUPERCONDUCTION	T20C+200
+#define MINIMUM_TEMPERATURE_START_SUPERCONDUCTION	T20C+140
 
-#define FLOOR_HEAT_TRANSFER_COEFFICIENT 0.08
-#define WALL_HEAT_TRANSFER_COEFFICIENT 0.03
-#define SPACE_HEAT_TRANSFER_COEFFICIENT 0.20 //a hack to partly simulate radiative heat
+#define FLOOR_HEAT_TRANSFER_COEFFICIENT 0.25
+#define WALL_HEAT_TRANSFER_COEFFICIENT 0.35
+#define SPACE_HEAT_TRANSFER_COEFFICIENT 0.50 //a hack to partly simulate radiative heat
 #define OPEN_HEAT_TRANSFER_COEFFICIENT 0.40
 #define WINDOW_HEAT_TRANSFER_COEFFICIENT 0.10 //a hack for now
 	//Must be between 0 and 1. Values closer to 1 equalize temperature faster
 	//Should not exceed 0.4 else strange heat flow occur
 
-#define FIRE_MINIMUM_TEMPERATURE_TO_SPREAD	150+T0C
-#define FIRE_MINIMUM_TEMPERATURE_TO_EXIST	100+T0C
-#define FIRE_SPREAD_RADIOSITY_SCALE		0.85
-#define FIRE_CARBON_ENERGY_RELEASED	  4142880//4148928 //Amount of heat released per mole of burnt carbon into the tile
-#define FIRE_PLASMA_ENERGY_RELEASED	 30240000//29042496 //Amount of heat released per mole of burnt plasma into the tile
-#define FIRE_GROWTH_RATE			3507840//3483648 //For small fires
-
+#define FIRE_MINIMUM_TEMPERATURE_TO_SPREAD	100+T0C
+#define FIRE_MINIMUM_TEMPERATURE_TO_EXIST	80+T0C
+#define FIRE_SPREAD_RADIOSITY_SCALE		0.95
+#define FIRE_CARBON_ENERGY_RELEASED	  498960 //500000 //Amount of heat released per mole of burnt carbon into the tile
+#define FIRE_PLASMA_ENERGY_RELEASED	 3008880//3000000 //Amount of heat released per mole of burnt plasma into the tile
+#define FIRE_GROWTH_RATE			15120 //12500 // these are special numbers that can be divided by numbers 1-10 meaning significantly less decimal spam -Nernums
 //Plasma fire properties
-#define PLASMA_MINIMUM_BURN_TEMPERATURE		170 //+T0C //Now it'll use KELVIN. Propane flashpoint is -104c, so the 100c flashpoint was stupid on propane. -Nernums
+#define PLASMA_MINIMUM_BURN_TEMPERATURE		40 +T0C //+T0C //Now it'll use KELVIN. Propane flashpoint is -104c, so the 100c flashpoint was stupid on propane. -Nernums // you broke everything - Emyylii // nop blam soyuz -nernums
 #define PLASMA_UPPER_TEMPERATURE			1370+T0C
 #define PLASMA_MINIMUM_OXYGEN_NEEDED		16
 #define PLASMA_MINIMUM_OXYGEN_PLASMA_RATIO	16
@@ -189,7 +188,7 @@ var/const
 //#define BE_CIVILIAN   (1<<15) //well, I must stop here. --rastaf0
 
 
-var/list/accessable_z_levels = list("1" = 10, "3" = 15, "4" = 60, "5" = 15) //This list contains the z-level numbers which can be accessed via space travel and the percentual chances to get there. (Exceptions: extended, sandbox and nuke) -Errorage
+var/list/accessable_z_levels = list("1" = 10/*"3" = 15, "4" = 60, "5" = 15*/) //This list contains the z-level numbers which can be accessed via space travel and the percentual chances to get there. (Exceptions: extended, sandbox and nuke) -Errorage
 
 #define IS_MODE_COMPILED(MODE) (ispath(text2path("/datum/game_mode/"+(MODE))))
 #define TABBED_PM	1

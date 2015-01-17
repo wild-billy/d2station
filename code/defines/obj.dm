@@ -423,7 +423,7 @@
 /obj/sign/street
 	desc = "street sign"
 	name = "street sign"
-	icon = 'miscobj.dmi'
+//	icon = 'miscobj.dmi'
 	icon_state = "stop"
 	anchored = 1.0
 	opacity = 0
@@ -729,7 +729,7 @@
 		hypospray.main_reagent = ""
 
 		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
+			user << "\white You remove the hypospray"
 			if(user.hand)
 				user.l_hand = hypospray
 			else
@@ -749,7 +749,7 @@
 		hypospray.main_reagent = ""
 
 		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
+			user << "\white You remove the hypospray"
 			if(user.hand)
 				user.l_hand = hypospray
 			else
@@ -769,7 +769,7 @@
 		hypospray.main_reagent = ""
 
 		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
+			user << "\white You remove the hypospray"
 			if(user.hand)
 				user.l_hand = hypospray
 			else
@@ -789,7 +789,7 @@
 		hypospray.main_reagent = ""
 
 		for(var/mob/living/user in src.loc)
-			user << "\blue You remove the hypospray"
+			user << "\white You remove the hypospray"
 			if(user.hand)
 				user.l_hand = hypospray
 			else
@@ -970,7 +970,7 @@
 	if (!( istype(user, /mob/living/carbon/human) ))
 		return
 	user.machine = src
-	var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT>
+	var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT>
 <A href='?src=\ref[src];power=1'>Turn [src.on ? "Off" : "On"]</A><BR>
 Frequency:
 <A href='byond://?src=\ref[src];freq=-10'>-</A>
@@ -1316,14 +1316,14 @@ Frequency:
 /obj/portal
 	name = "portal"
 	desc = "Looks unstable. Best to test it with the clown."
-	icon = 'stationobjs.dmi'
-	icon_state = "portal"
+	icon = 'Portal.dmi'
 	density = 1
 	unacidable = 1//Can't destroy energy portals.
 	var/failchance = 5
 	var/obj/item/target = null
 	var/creator = null
 	anchored = 1.0
+	var/obj/machinery/teleport/station/master = list()
 
 /obj/projection
 	name = "Projection"
@@ -1364,7 +1364,7 @@ Frequency:
 	icon = 'zone_sel.dmi'
 	icon_state = "blank"
 	var/selecting = "chest"
-	screen_loc = "EAST+1,NORTH"
+	screen_loc = "EAST,NORTH"
 
 /obj/shut_controller
 	name = "shut controller"
@@ -1728,7 +1728,7 @@ Frequency:
 			brainmob.dna = H.dna
 			if(H.mind)
 				H.mind.transfer_to(brainmob)
-			brainmob << "\blue You might feel slightly disoriented. That's normal when your brain gets cut out."
+			brainmob << "\white You might feel slightly disoriented. That's normal when your brain gets cut out."
 			return
 
 //END BRAINS=====================================================
@@ -1798,8 +1798,8 @@ Frequency:
 	desc = "A mecha doll, straight from one of your Japanese animes!"
 
 	New()
-		pixel_y = rand(-5,5)
-		pixel_x = rand(-5,5)
+		src.pixel_x = rand(-10.0, 10)
+		src.pixel_y = rand(-10.0, 10)
 
 /obj/item/mechadoll/durand
 	icon_state = "duranddoll"
@@ -1830,8 +1830,8 @@ Frequency:
 	g_amt = 100
 	New()
 		..()
-		src.pixel_x = rand(-5, 5)
-		src.pixel_y = rand(-5, 5)
+		src.pixel_x = rand(-10.0, 10)
+		src.pixel_y = rand(-10.0, 10)
 
 /obj/item/weapon/storage
 	icon = 'storage.dmi'
@@ -1846,8 +1846,8 @@ Frequency:
 	w_class = 3.0
 	New()
 		..()
-		src.pixel_x = rand(-3.0, 3)
-		src.pixel_y = rand(-3.0, 3)
+		src.pixel_x = rand(-10.0, 10)
+		src.pixel_y = rand(-10.0, 10)
 
 
 /obj/item/weapon/storage/glasswarebox

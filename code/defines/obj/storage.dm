@@ -29,6 +29,7 @@
 	icon = 'belts.dmi'
 	icon_state = "utilitybelt"
 	item_state = "utility"
+	max_w_class = 3
 	can_hold = list(
 		"/obj/item/weapon/crowbar",
 		"/obj/item/weapon/screwdriver",
@@ -70,8 +71,10 @@
 		"/obj/item/weapon/gun/energy",
 		"/obj/item/weapon/gun/projectile/mateba",
 		"/obj/item/weapon/gun/projectile/detective",
+		"/obj/item/weapon/gun/projectile",
 		"/obj/item/device/flash",
 		"/obj/item/weapon/chem_grenade/flashbang",
+		"/obj/item/weapon/chem_grenade",
 		"/obj/item/weapon/storage/cigpack",
 		"/obj/item/weapon/zippo",
 		"/obj/item/weapon/reagent_containers/food/snacks/donut",
@@ -80,6 +83,7 @@
 		"/obj/item/device/flashlight",
 		"/obj/item/device/radio",
 		"/obj/item/device/detective_scanner",
+		"/obj/item/weapon/melee/baton",
 		"/obj/item/weapon/pepperspray"
 	)
 	flags = FPRINT | TABLEPASS | ONBELT

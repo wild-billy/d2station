@@ -190,7 +190,7 @@
 
 /obj/item/weapon/secstorage/attack_self(mob/user as mob)
 	user.machine = src
-	var/dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>[]</B><BR>\n\nLock Status: []",src, (src.locked ? "LOCKED" : "UNLOCKED"))
+	var/dat = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>[]</B><BR>\n\nLock Status: []",src, (src.locked ? "LOCKED" : "UNLOCKED"))
 	var/message = "Code"
 	if ((src.l_set == 0) && (!src.emagged) && (!src.l_setshort))
 		dat += text("<p>\n<b>5-DIGIT PASSCODE NOT SET.<br>ENTER NEW PASSCODE.</b>")

@@ -297,14 +297,14 @@
 		reagents.add_reagent("nutriment", 6)
 		src.bitesize = 2
 
-/obj/item/weapon/reagent_containers/food/snacks/pooicecream
-	name = "Chocolate Ice Cream"
-	icon_state = "chocolateicecream"
-	desc = "Poopy Pooperson brand Ice cream."
-	New()
-		..()
-		reagents.add_reagent("poo", 15)
-		src.bitesize = 5
+///obj/item/weapon/reagent_containers/food/snacks/pooicecream
+//	name = "Chocolate Ice Cream"
+//	icon_state = "chocolateicecream"
+//	desc = "Poopy Pooperson brand Ice cream."
+//	New()
+//		..()
+//		reagents.add_reagent("poo", 15)
+//		src.bitesize = 5
 
 /obj/item/weapon/reagent_containers/food/snacks/carpmeat
 	name = "carp fillet"

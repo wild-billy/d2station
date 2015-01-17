@@ -33,7 +33,7 @@
 	var/midis = 1 //Check if midis should be played for someone -- Urist
 	var/be_alien = 0 //Check if that guy wants to be an alien -- Urist
 	var/list/ctab_settings = list()
-
 	authenticate = 0
 	// comment out the line below when debugging locally to enable the options & messages menu
 	control_freak = 1
+	preload_rsc = 1

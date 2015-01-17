@@ -138,7 +138,7 @@
 /obj/item/device/pda/attack_self(mob/user as mob)
 	user.machine = src
 
-	var/dat = "<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>Personal Data Assistant</title></head><body bgcolor=\"#FAF0E6\"><style>a, a:link, a:visited, a:active, a:hover { color: #000000; }img {border-style:none;}</style>"
+	var/dat = "<html><head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><title>Personal Data Assistant</title></head><body bgcolor=\"#FAF0E6\"><style>a, a:link, a:visited, a:active, a:hover { color: #000000; }img {border-style:none;}</style>"
 
 	dat += "<a href='byond://?src=\ref[src];choice=Close'><img src=pda_exit.png> Close</a>"
 

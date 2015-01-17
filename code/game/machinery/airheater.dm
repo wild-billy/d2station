@@ -51,7 +51,7 @@
 		else
 			temp_text = "<FONT color=blue>[air_contents.temperature]</FONT>"
 
-		var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Cryo gas cooling system</B><BR>
+		var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Cryo gas cooling system</B><BR>
 		Current status: [ on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>
 		Current gas temperature: [temp_text]<BR>
 		Current air pressure: [air_contents.return_pressure()]<BR>

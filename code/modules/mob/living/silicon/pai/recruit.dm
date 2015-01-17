@@ -75,7 +75,7 @@ var/datum/paiController/paiController			// Global handler for pAI candidates
 
 		var/dat = ""
 		dat += {"
-				<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />
+				<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />
 				<style type="text/css">
 
 				p.top {
@@ -128,7 +128,7 @@ var/datum/paiController/paiController			// Global handler for pAI candidates
 		var/dat = ""
 
 		dat += {"
-				<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />
+				<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />
 				<style type="text/css">
 
 				p.top {

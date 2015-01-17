@@ -103,7 +103,7 @@
 
 	user.machine = src
 
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><PRE><B>Thermo-Electric Generator</B><HR>"
+	var/t = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><PRE><B>Thermo-Electric Generator</B><HR>"
 
 	t += "Output : [round(lastgen)] W<BR><BR>"
 

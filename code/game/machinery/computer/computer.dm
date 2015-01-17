@@ -164,9 +164,9 @@ Pod/Blast Doors computer
 		var/crew = ""
 		for(var/datum/data/record/t in data_core.general)
 			crew += "[t.fields["name"]] - [t.fields["rank"]]<br>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];choice=print'>Print</a><br><br><a href='?src=\ref[src];choice=mode;mode_target=0'>Access ID modification console.</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];choice=print'>Print</a><br><br><a href='?src=\ref[src];choice=mode;mode_target=0'>Access ID modification console.</a><br></tt>"
 	else
-		var/header = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
+		var/header = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
 
 		var/target_name
 		var/target_owner
@@ -667,8 +667,27 @@ Pod/Blast Doors computer
 
 	return
 
+/obj/machinery/mass_driver/proc/drive(amount)
+	if(stat & (BROKEN|NOPOWER))
+		return
+	use_power(500)
+	var/O_limit
+	var/atom/target = get_edge_target_turf(src, src.dir)
+	for(var/atom/movable/O in src.loc)
+		if(!O.anchored)
+			O_limit++
+			if(O_limit >= 20)
+				for(var/mob/M in hearers(src, null))
+					M << "\blue The mass driver lets out a screech, it mustn't be able to handle any more items."
+				break
+			use_power(500)
+			spawn( 0 )
+				O.throw_at(target, drive_range * src.power, src.power)
+	flick("mass_driver1", src)
+	return
 
-/obj/machinery/computer/crew/radiotransmitter/process()
+
+/obj/machinery/radiotransmitter/process()
 	if(stat & (NOPOWER|BROKEN))
 		transmitteron = 0
 		if(messagedisplayed == 0)

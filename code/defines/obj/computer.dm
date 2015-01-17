@@ -161,8 +161,9 @@
 	ScreenColorGreen = 0.3
 	ScreenColorBlue = 0
 
-/obj/machinery/computer/crew/radiotransmitter
+/obj/machinery/radiotransmitter
 	name = "Radio Transmitter"
+	icon = 'computer.dmi'
 	icon_state = "radiotransm"
 	var/transmitteron = 1
 	var/messagedisplayed = 0
@@ -221,8 +222,17 @@
 	var/a_id = null
 	var/temp = null
 	var/printing = null
+	ScreenColorRed = 0.5
+	ScreenColorGreen = 0.5
+	ScreenColorBlue = 0.7
+
+/obj/machinery/computer/med_data/virology
+	name = "Medical Records"
+	desc = "This can be used to check medical records."
+	icon_state = "computer_med_data_virology"
+	req_access = list(access_virology)
 	ScreenColorRed = 0
-	ScreenColorGreen = 0.3
+	ScreenColorGreen = 1.5
 	ScreenColorBlue = 0
 
 /obj/machinery/computer/med_data/laptop

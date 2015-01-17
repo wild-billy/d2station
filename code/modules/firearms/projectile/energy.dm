@@ -6,10 +6,11 @@
 	nodamage = 1
 	New()
 		..()
-		effects["stun"] += 20
-		effects["weak"] += 20
+		effects["stun"] += 4
+		effects["weak"] += 4
 		effects["stutter"] += 20
-		effectprob["weak"] += 45
+		effectprob["weak"] += 35
+		effectprob["stun"] += 25
 
 /obj/item/projectile/weakelectrode
 	name = "electrode"
@@ -19,10 +20,11 @@
 	nodamage = 1
 	New()
 		..()
-		effects["stun"] += 12
-		effects["weak"] += 8
+		effects["stun"] += 2
+		effects["weak"] += 2
 		effects["stutter"] += 8
 		effectprob["weak"] += 22
+		effectprob["stun"] += 12
 
 /obj/item/projectile/ep90electrode
 	name = "electrode"

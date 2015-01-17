@@ -2,7 +2,7 @@ var/global
 	obj/datacore/data_core = null
 	obj/overlay/plmaster = null
 	obj/overlay/slmaster = null
-
+	obj/overlay/clmaster = null
 	//obj/hud/main_hud1 = null
 	list/mobs = list()
 	list/machines = list()
@@ -70,7 +70,7 @@ var
 
 	diary = null
 	station_name = null
-	game_version = "D2Station V4 R[check_svnrevlist()]"
+	game_version = "D2Station V5"
 
 	datum/air_tunnel/air_tunnel1/SS13_airtunnel = null
 	going = 1.0
@@ -118,7 +118,7 @@ var
 	//librarianMax = 1
 	lawyerMax = 1
 	viroMax = 1
-	//wardenMax = 1
+	wardenMax = 1
 	cmoMax = 1
 	mimeMax = 1
 	prostMax = 1

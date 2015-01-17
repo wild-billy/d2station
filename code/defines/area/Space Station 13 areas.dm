@@ -140,6 +140,14 @@ proc/process_ghost_teleport_locs()
 //	sd_lighting = 0
 	ul_Lighting = 0
 
+/area/spawn
+	requires_power = 0
+	luminosity = 1
+//	sd_lighting = 0
+	ul_Lighting = 0
+	icon_state = "shuttle2"
+
+
 /area/shuttle/arrival
 	name = "Arrival Shuttle"
 
@@ -486,6 +494,9 @@ proc/process_ghost_teleport_locs()
 	name = "Prison Cell Block C"
 	icon_state = "brig"
 
+/area/prison/cell_block/D
+	name = "Prison Cell Block D"
+	icon_state = "brig"
 //STATION13
 
 /area/commsat
@@ -984,7 +995,7 @@ proc/process_ghost_teleport_locs()
 	requires_power = 0
 	luminosity = 1
 //	sd_lighting = 0
-	ul_Lighting = 0
+//	ul_Lighting = 0
 
 	auxport
 		name = "Port Auxiliary Solar Array"
@@ -1298,6 +1309,9 @@ area/medical/medbaystorage2
 	name = "Virology"
 	icon_state = "viral_lab"
 
+/area/science/secret_lab
+	name = "Secret Lab"
+	icon_state = "viral_lab"
 //Toxins
 
 /area/toxins/lab
@@ -1336,8 +1350,25 @@ area/medical/medbaystorage2
 	name = "Server Room"
 	icon_state = "server"
 
-//Research Satellite
 
+//prison rip off
+/area/prison/hallway
+	name = "Research Satellite"
+	icon_state = "hallF"
+
+/area/prison/hallway/docking
+	name = "Shuttle Docking Area"
+	icon_state = "docking"
+
+/area/prison/quarters
+	name = "Scientists' Quarters"
+	icon_state = "crewqrtrs"
+
+/area/prison/kitchen
+	name = "Scientists' Kitchen"
+	icon_state = "kitchen"
+
+//Research Satellite
 /area/rdsat/hallway
 	name = "Research Satellite"
 	icon_state = "hallF"

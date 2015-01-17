@@ -126,7 +126,7 @@
 	set category = "AI Commands"
 	set name = "Show Alerts"
 
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>Current Station Alerts</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
+	var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><HEAD><TITLE>Current Station Alerts</TITLE><META HTTP-EQUIV='Refresh' CONTENT='10'></HEAD><BODY>\n"
 	dat += "<A HREF='?src=\ref[src];mach_close=aialerts'>Close</A><BR><BR>"
 	for (var/cat in alarms)
 		dat += text("<B>[]</B><BR>\n", cat)
@@ -162,7 +162,7 @@
 	set category = "AI Commands"
 	set name = "Show Crew Manifest"
 
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><html><head><title>Crew Roster</title></head><body><b>Crew Roster:</b><br><br>"
+	var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><html><head><title>Crew Roster</title></head><body><b>Crew Roster:</b><br><br>"
 
 	for (var/datum/data/record/t in data_core.general)
 		dat += "[t.fields["name"]] - [t.fields["rank"]]<br>"

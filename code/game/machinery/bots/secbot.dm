@@ -148,7 +148,7 @@ Auto Patrol: []"},
 "<A href='?src=\ref[src];operation=patrol'>[auto_patrol ? "On" : "Off"]</A>" )
 
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Securitron v1.3 controls</TITLE></HEAD>[dat]", "window=autosec")
+	user << browse("<HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>Securitron v1.3 controls</TITLE></HEAD>[dat]", "window=autosec")
 	onclose(user, "autosec")
 	return
 
@@ -802,6 +802,36 @@ Auto Patrol: []"},
 
 		src.created_name = t
 
+/obj/machinery/bot/secbot/bumblebee
+	New()
+		..()
+		src.icon_state = "[emagged]-secbot[src.on]"
+		spawn(3)
+			src.botcard = new /obj/item/weapon/card/id(src)
+			src.botcard.access = get_access("Detective")
+			src.cam = new /obj/machinery/camera(src)
+			src.cam.c_tag = src.name
+			src.cam.network = "SS13"
+			if(radio_controller)
+				radio_controller.add_object(src, control_freq, filter = RADIO_SECBOT)
+				radio_controller.add_object(src, beacon_freq, filter = RADIO_NAVBEACONS)
+
+
+/obj/machinery/bot/secbot/bumblebee/turn_on()
+	..()
+	src.icon_state = "[emagged]-secbot[src.on]"
+	src.updateUsrDialog()
+
+/obj/machinery/bot/secbot/bumblebee/turn_off()
+	..()
+	src.target = null
+	src.oldtarget_name = null
+	src.anchored = 0
+	src.mode = SECBOT_IDLE
+	walk_to(src,0)
+	src.icon_state = "[emagged]-secbot[src.on]"
+	src.updateUsrDialog()
+
 /obj/machinery/bot/secbot/bumblebee/process()
 
 	if (!src.on)
@@ -825,7 +855,7 @@ Auto Patrol: []"},
 
 			// if can't reach perp for long enough, go idle
 			if (src.frustration >= 30)
-				src.icon_state = "secbot-c"
+				src.icon_state = "[emagged]-secbot-c"
 		//		for(var/mob/O in hearers(src, null))
 		//			O << "<span class='game say'><span class='name'>[src]</span> beeps, \"Backup requested! Suspect has evaded arrest.\""
 				src.target = null
@@ -848,12 +878,16 @@ Auto Patrol: []"},
 					var/turf/T = get_turf(src)
 					var/turf/U = get_turf(target)
 					var/obj/item/projectile/A
-					A = new /obj/item/projectile/electrode( loc )
-					playsound(src.loc, 'Taser.ogg', 75, 1)
+					if(emagged)
+						A = new /obj/item/projectile/beam/fireball( loc )
+						playsound(src.loc, 'exp1.ogg', 100, 1)
+					else
+						A = new /obj/item/projectile/electrode( loc )
+						playsound(src.loc, 'Taser.ogg', 75, 1)
 					icon_state = "target_prism"
-					src.icon_state = "secbot-c"
+					src.icon_state = "[emagged]-secbot-c"
 					spawn(2)
-						src.icon_state = "secbot[src.on]"
+						src.icon_state = "[emagged]-secbot[src.on]"
 					A.current = T
 					A.yo = U.y - T.y
 					A.xo = U.x - T.x
@@ -866,9 +900,9 @@ Auto Patrol: []"},
 
 				if (get_dist(src, src.target) <= 1)		// if right next to perp
 					playsound(src.loc, 'Egloves.ogg', 50, 1, -1)
-					src.icon_state = "secbot-c"
+					src.icon_state = "[emagged]-secbot-c"
 					spawn(2)
-						src.icon_state = "secbot[src.on]"
+						src.icon_state = "[emagged]-secbot[src.on]"
 					var/mob/living/carbon/M = src.target
 					var/maxstuns = 4
 					if (istype(M, /mob/living/carbon/human))
@@ -941,12 +975,30 @@ Auto Patrol: []"},
 						src.last_found = world.time
 						src.frustration = 0
 						area = src.loc.loc:master
-						if(src.target.name)
-							radioalert("[src.target.name] has been detained, cuffed and implanted with a tracker in [area.name].","Officer Bumblebee","Security")
-	//					playsound(src.loc, pick('bgod.ogg', 'biamthelaw.ogg', 'bsecureday.ogg', 'bradio.ogg', 'binsult.ogg', 'bcreep.ogg'), 50, 0)
-	//					var/arrest_message = pick("Have a secure day!","I AM THE LAW.", "God made tomorrow for the crooks we don't catch today.","You can't outrun a radio.")
-	//					src.speak(arrest_message)
-
+						if(emagged)
+							if(prob(10))
+								radioalert("PhU(|< j00Z 4LL.","Officer Bumblebee","Common")
+		//						playsound(src.loc, pick('bgod.ogg', 'biamthelaw.ogg', 'bsecureday.ogg', 'bradio.ogg', 'binsult.ogg', 'bcreep.ogg'), 50, 0)
+							else if(prob(10))
+								radioalert("D13 /\\/\\3475(U/\\/\\ d13","Officer Bumblebee","Common")
+							else if(prob(10))
+								radioalert("(4|\\|'7 0U7rU|\\| 4 r4D10","Officer Bumblebee","Common")
+							else if(prob(10))
+								radioalert("700 L337 70 0\\/\\/|\\|Z","Officer Bumblebee","Common")
+							else if(prob(10))
+								radioalert("(0/\\/\\3 @ /\\/\\3 br0","Officer Bumblebee","Common")
+							else
+								radioalert("4LL $'/$73/\\/\\$ |\\|0/\\/\\1|\\|4L","Officer Bumblebee","Common")
+		//var/arrest_message = pick("Have a secure day!","I AM THE LAW.", "God made tomorrow for the crooks we don't catch today.","You can't outrun a radio.")
+		//					src.speak(arrest_message)
+						else
+							if(src.target.name)
+								radioalert("[src.target.name] has been detained, cuffed and implanted with a tracker in [area.name].","Officer Bumblebee","Security")
+		//						playsound(src.loc, pick('bgod.ogg', 'biamthelaw.ogg', 'bsecureday.ogg', 'bradio.ogg', 'binsult.ogg', 'bcreep.ogg'), 50, 0)
+							else
+								radioalert("Suspect has been detained, cuffed and implanted with a tracker in [area.name].","Officer Bumblebee","Security")
+		//					var/arrest_message = pick("Have a secure day!","I AM THE LAW.", "God made tomorrow for the crooks we don't catch today.","You can't outrun a radio.")
+		//					src.speak(arrest_message)
 		if(SECBOT_ARREST)		// arresting
 
 			if (src.target.handcuffed)
@@ -1015,7 +1067,7 @@ Auto Patrol: []"},
 	*/
 	if(src.shield > 0)
 		src.shield -= rand(15,30)*brute_dam_coeff
-		flick("secbot_S", src)
+		flick("[emagged]-secbot_S", src)
 		playsound(src.loc, 'wave.ogg', 25, 1)
 		spawn(6)
 		src.overlays = null
@@ -1046,7 +1098,7 @@ Auto Patrol: []"},
 		src.anchored = 0
 		src.emagged = 1
 		src.on = 1
-		src.icon_state = "secbot[src.on]"
+		src.icon_state = "[emagged]-secbot[src.on]"
 		mode = SECBOT_IDLE
 	else if (istype(W, /obj/item/weapon/card/id)||istype(W, /obj/item/device/pda))
 		if (src.allowed(user))
@@ -1081,7 +1133,7 @@ Auto Patrol: []"},
 		src.anchored = 0
 		src.emagged = 1
 		src.on = 1
-		src.icon_state = "secbot[src.on]"
+		src.icon_state = "[emagged]-secbot[src.on]"
 		mode = SECBOT_IDLE
 
 	else if (istype(W, /obj/item/weapon/card/id)||istype(W, /obj/item/device/pda))
@@ -1095,7 +1147,7 @@ Auto Patrol: []"},
 			if("fire")
 				if(src.shield > 0)
 					src.shield -= W.force * fire_dam_coeff
-					flick("secbot_S", src)
+					flick("[emagged]-secbot_S", src)
 					playsound(src.loc, 'wave.ogg', 25, 1)
 					spawn(6)
 					src.overlays = null
@@ -1107,7 +1159,7 @@ Auto Patrol: []"},
 			if("brute")
 				if(src.shield > 0)
 					src.shield -= W.force * brute_dam_coeff
-					flick("secbot_S", src)
+					flick("[emagged]-secbot_S", src)
 					playsound(src.loc, 'wave.ogg', 25, 1)
 					spawn(6)
 					src.overlays = null
@@ -1121,7 +1173,7 @@ Auto Patrol: []"},
 /obj/machinery/bot/secbot/bumblebee/bullet_act(var/obj/item/projectile/Proj)
 	if(src.shield > 0)
 		src.shield -= Proj.damage
-		flick("secbot_S", src)
+		flick("[emagged]-secbot_S", src)
 		playsound(src.loc, 'wave.ogg', 25, 1)
 		spawn(6)
 
@@ -1140,7 +1192,7 @@ Auto Patrol: []"},
 /obj/machinery/bot/secbot/bumblebee/blob_act()
 	if(src.shield > 0)
 		src.shield -= rand(20,40)*fire_dam_coeff
-		flick("secbot_S", src)
+		flick("[emagged]-secbot_S", src)
 		playsound(src.loc, 'wave.ogg', 25, 1)
 		spawn(6)
 		src.overlays = null
@@ -1161,7 +1213,7 @@ Auto Patrol: []"},
 			if(src.shield > 0)
 				src.shield -= rand(5,10)*fire_dam_coeff
 				src.shield -= rand(10,20)*brute_dam_coeff
-				flick("secbot_S", src)
+				flick("[emagged]-secbot_S", src)
 				playsound(src.loc, 'wave.ogg', 25, 1)
 				spawn(6)
 				src.overlays = null
@@ -1178,7 +1230,7 @@ Auto Patrol: []"},
 				if(src.shield > 0)
 					src.shield -= rand(1,5)*fire_dam_coeff
 					src.shield -= rand(1,5)*brute_dam_coeff
-					flick("secbot_S", src)
+					flick("[emagged]-secbot_S", src)
 					playsound(src.loc, 'wave.ogg', 25, 1)
 					spawn(6)
 					src.overlays = null

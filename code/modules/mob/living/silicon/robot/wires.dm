@@ -71,7 +71,7 @@
 /mob/living/silicon/robot/proc/interact(mob/user)
 	if(wiresexposed && (!istype(user, /mob/living/silicon)))
 		user.machine = src
-		var/t1 = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Access Panel</B><br>\n")
+		var/t1 = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Access Panel</B><br>\n")
 		var/list/Borgwires = list(
 			"Orange" = 1,
 			"Dark red" = 2,

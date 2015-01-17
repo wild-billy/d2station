@@ -40,12 +40,16 @@
 	opacity = 0
 	density = 0
 	var/nextstate = null
+	level = 2
+	layer = 2.7
+	transparent = 1
 
 /obj/machinery/door/firedoor/border_only
 	name = "Firelock"
 	desc = "Disable Alarm."
 	icon = 'door_fire2.dmi'
 	icon_state = "door0"
+
 
 /obj/machinery/forcefield
 	name = "Material Screening Field"
@@ -68,6 +72,19 @@
 	icon = 'rapid_pdoor.dmi'
 	icon_state = "pdoor1"
 
+	CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
+		if(density == 0)
+			if(air_group)
+				var/direction = get_dir(src,target)
+				return (dir != direction)
+			else if(density)
+				if(!height)
+					var/direction = get_dir(src,target)
+					return (dir != direction)
+				else
+					return 0
+
+			return 1
 
 /obj/machinery/door/poddoor/shuttles
 	name = "Shuttle Podlock"

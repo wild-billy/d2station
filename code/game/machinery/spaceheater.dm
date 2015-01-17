@@ -95,7 +95,7 @@
 			dat += "<A href='?src=\ref[src];op=temp;val=5'>+</A><BR>"
 
 			user.machine = src
-			user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Space Heater Control Panel</TITLE></HEAD><TT>[dat]</TT>", "window=spaceheater")
+			user << browse("<HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>Space Heater Control Panel</TITLE></HEAD><TT>[dat]</TT>", "window=spaceheater")
 			onclose(user, "spaceheater")
 
 
@@ -166,7 +166,7 @@
 					var/datum/gas_mixture/env = L.return_air()
 					if(env.temperature < (set_temperature+T0C))
 
-						var/transfer_moles = 0.25 * env.total_moles()
+						var/transfer_moles = 0.5 * env.total_moles()
 
 						var/datum/gas_mixture/removed = env.remove(transfer_moles)
 
@@ -186,7 +186,6 @@
 						env.merge(removed)
 
 						//world << "turf now at [env.temperature]"
-
 
 			else
 				on = 0

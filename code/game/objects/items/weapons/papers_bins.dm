@@ -26,10 +26,10 @@ CLIPBOARDS
 
 	..()
 	if (!( istype(usr, /mob/living/carbon/human) || istype(usr, /mob/dead/observer) || istype(usr, /mob/living/silicon) ))
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	else
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	return
 
@@ -41,10 +41,10 @@ CLIPBOARDS
 
 	usr << browse_rsc(map_graphic)
 	if (!( istype(usr, /mob/living/carbon/human) || istype(usr, /mob/dead/observer) || istype(usr, /mob/living/silicon) ))
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	else
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	return
 
@@ -170,7 +170,7 @@ CLIPBOARDS
 		dat += text("<b>Jump into a new line at the end?</b> yes / <A href='?src=\ref[src];break=[0]'>no</A><br>")
 	else
 		dat += text("<b>Jump into a new line at the end?</b> <A href='?src=\ref[src];break=[1]'>yes</A> / no<br>")
-	user << browse("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />[dat]", "window=pen")
+	user << browse("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />[dat]", "window=pen")
 
 /obj/item/weapon/pen/Topic(href, href_list)
 	usr.machine = src
@@ -216,10 +216,10 @@ CLIPBOARDS
 	else //cyborg or AI not seeing through a camera
 		dist = get_dist(src, user)
 	if (dist < 2)
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, src.info), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	else
-		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
+		usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, stars(src.info)), text("window=[]", src.name))
 		onclose(usr, "[src.name]")
 	return
 
@@ -460,7 +460,7 @@ CLIPBOARDS
 				del(src)
 				return
 		else
-			user << "\blue You need wirecutters!"
+			user << "\blue You need scissors!"
 	else
 		user << "\blue The object is FAR too large!"
 	return
@@ -663,7 +663,7 @@ CLIPBOARDS
 // CLIPBOARD
 
 /obj/item/weapon/clipboard/attack_self(mob/user as mob)
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Clipboard</B><BR>"
+	var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Clipboard</B><BR>"
 	if (src.pen)
 		dat += text("<A href='?src=\ref[];pen=1'>Remove Pen</A><BR><HR>", src)
 	for(var/obj/item/weapon/paper/P in src)
@@ -728,10 +728,10 @@ CLIPBOARDS
 			var/obj/item/weapon/paper/P = locate(href_list["read"])
 			if ((P && P.loc == src))
 				if (!( istype(usr, /mob/living/carbon/human) ))
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, stars(P.info)), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, stars(P.info)), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 				else
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.info), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.info), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 		if (ismob(src.loc))
 			var/mob/M = src.loc

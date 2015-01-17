@@ -289,6 +289,12 @@
 	for (var/mob/M in listening)
 		if (M.say_understands(src))
 			heard_a += M
+			//chat bubbles
+//			var/colour = ""
+//			colour = "<font size=1><font color=#84B500><font face=system>"
+//			colour += message
+//			colour += "</font>"
+//			spawn new /text_obj(colour, src, M, 124, 124, 70, 73)
 		else
 			heard_b += M
 

@@ -95,47 +95,49 @@
 
 */
 	//PERMA LOADOUTS DONE HERE
-	var/gethead = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M:ckey]@and@getLoadout@and@head")
+	/*
+	var/gethead = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M:ckey]&getLoadout&head")
 	if(gethead)
 		gethead = file2text(gethead["CONTENT"])
 	if((gethead) && (gethead != "NA") && (gethead != "0"))
 		var/equip = gethead
 		M:equip_if_possible(new equip(M), M:slot_head)
 
-	var/getsuit = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M:ckey]@and@getLoadout@and@suit")
+	var/getsuit = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M:ckey]&getLoadout&suit")
 	if(getsuit)
 		getsuit = file2text(getsuit["CONTENT"])
 	if((getsuit) && (getsuit != "NA") && (getsuit != "0"))
 		var/equip = getsuit
 		M:equip_if_possible(new equip(M), M:slot_wear_suit)
 
-	var/getuniform = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M:ckey]@and@getLoadout@and@uniform")
+	var/getuniform = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M:ckey]&getLoadout&uniform")
 	if(getuniform)
 		getuniform = file2text(getuniform["CONTENT"])
 	if((getuniform) && (getuniform != "NA") && (getuniform != "0"))
 		var/equip = getuniform
 		M:equip_if_possible(new equip(M), M:slot_w_uniform)
 
-	var/geteyes = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M:ckey]@and@getLoadout@and@eyes")
+	var/geteyes = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M:ckey]&getLoadout&eyes")
 	if(geteyes)
 		geteyes = file2text(geteyes["CONTENT"])
 	if((geteyes) && (geteyes != "NA") && (geteyes != "0"))
 		var/equip = geteyes
 		M:equip_if_possible(new equip(M), M:slot_glasses)
 
-	var/getgloves = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M:ckey]@and@getLoadout@and@gloves")
+	var/getgloves = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M:ckey]&getLoadout&gloves")
 	if(getgloves)
 		getgloves = file2text(getgloves["CONTENT"])
 	if((getgloves) && (getgloves != "NA") && (getgloves != "0"))
 		var/equip = getgloves
 		M:equip_if_possible(new equip(M), M:slot_gloves)
 
-	var/getshoes = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M:ckey]@and@getLoadout@and@shoes")
+	var/getshoes = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M:ckey]&getLoadout&shoes")
 	if(getshoes)
 		getshoes = file2text(getshoes["CONTENT"])
 	if((getshoes) && (getshoes != "NA") && (getshoes != "0"))
 		var/equip = getshoes
 		M:equip_if_possible(new equip(M), M:slot_shoes)
+	*/
 
 
 

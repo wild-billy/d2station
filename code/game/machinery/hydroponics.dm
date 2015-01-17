@@ -36,6 +36,12 @@ obj/machinery/hydroponics/process()
 		if(src.planted && !src.dead)
 			// Advance age
 			src.age++
+			if(src.age >= 15)
+				src.myseed.potency += 1
+			if(src.age >= 30)
+				src.myseed.potency += 2
+			if(src.age >= 45)
+				src.myseed.potency += 4
 
 			// Drink random amount of water
 			src.waterlevel -= rand(1,6)

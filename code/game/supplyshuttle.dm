@@ -269,7 +269,7 @@ var/ordernum=0
 		dat = src.temp
 	else
 
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Supply shuttle</B><HR>
+		dat += {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><BR><B>Supply shuttle</B><HR>
 		Location: [supply_shuttle_moving ? "Moving to station ([supply_shuttle_timeleft] Mins.)":supply_shuttle_at_station ? "Station":"Dock"]<BR>
 		<HR>Supply points: [supply_shuttle_points]<BR>
 		<BR>\n<A href='?src=\ref[src];order=1'>Request items</A><BR><BR>
@@ -379,7 +379,7 @@ var/ordernum=0
 	if (src.temp)
 		dat = src.temp
 	else
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Supply shuttle</B><HR>
+		dat += {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><BR><B>Supply shuttle</B><HR>
 		\nLocation: [supply_shuttle_moving ? "Moving to station ([supply_shuttle_timeleft] Mins.)":supply_shuttle_at_station ? "Station":"Dock"]<BR>
 		<HR>\nSupply points: [supply_shuttle_points]<BR>\n<BR>
 		[supply_shuttle_moving ? "\n*Must be at dock to order items*<BR>\n<BR>":supply_shuttle_at_station ? "\n*Must be at dock to order items*<BR>\n<BR>":"\n<A href='?src=\ref[src];order=1'>Order items</A><BR>\n<BR>"]

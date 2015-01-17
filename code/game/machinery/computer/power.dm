@@ -29,7 +29,7 @@ var/reportingpower = 0  //this tracks whether this power monitoring computer is 
 
 
 	user.machine = src
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Power Monitoring</B><HR>"
+	var/t = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>Power Monitoring</B><HR>"
 
 	t += "<BR><HR><A href='?src=\ref[src];update=1'>Refresh</A>"
 	t += "<BR><HR><A href='?src=\ref[src];close=1'>Close</A>"

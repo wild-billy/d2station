@@ -321,7 +321,7 @@ var/list/occupations = list(
 
 	//red shirts
 	"Head of Security"       = 1,
-//	"Warden"                 = 1,
+	"Warden"                 = 1,
 	"Detective"              = 1,
 
 	"Security Officer"       = 5,

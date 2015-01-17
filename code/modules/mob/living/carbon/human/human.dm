@@ -1,4 +1,5 @@
 
+
 /mob/living/carbon/human/New()
 	var/datum/reagents/R = new/datum/reagents(1000)
 	reagents = R
@@ -64,7 +65,7 @@
 				lying_icon = new /icon('human.dmi', "body_[g]_l")
 		icon = stand_icon
 		update_clothing()
-		//src << "\blue Your icons have been generated!"
+		//src << "\white Your icons have been generated!"
 
 	..()
 
@@ -144,7 +145,7 @@
 	return
 
 /mob/living/carbon/human/movement_delay()
-	var/tally = 0.8
+	var/tally = 1.5
 
 	if(reagents.has_reagent("hyperzine")) return -1
 
@@ -165,6 +166,11 @@
 
 	var/hungry = (500 - nutrition)/5 // So overeat would be 100 and default level would be 80
 	if (hungry >= 70) tally += hungry/50
+
+	for(var/atom/O in src.contents) //I'm guessing this might be a bad way to do it...
+		if(istype(O, /obj/item/weapon/gun))
+			var/obj/item/weapon/gun/A = O
+			tally += A.slowdown
 
 	if(wear_suit)
 		tally += wear_suit.slowdown
@@ -217,10 +223,28 @@
 		if (istype(wear_suit, /obj/item/clothing/suit/space/space_ninja)&&wear_suit:s_initialized)
 			stat("Energy Charge", round(wear_suit:cell:charge/100))
 
+
+
+/obj/overlay/hitmarker
+	icon = 'effects.dmi'
+	icon_state = "hitmarker"
+	layer = 5
+
+/obj/overlay/speachbubble
+	icon = 'speechbubble.dmi'
+	icon_state = "Speechbubble"
+	layer = 5
+
+
+/mob/living/carbon/human/proc/hitmarker()
+      overlays += /obj/overlay/hitmarker
+      sleep(4)
+      overlays -= /obj/overlay/hitmarker
+
 /mob/living/carbon/human/bullet_act(A as obj, var/datum/organ/external/def_zone)
 	var/shielded = 0
 	//Preparing the var for grabbing the armor information, can't grab the values yet because we don't know what kind of bullet was used. --NEO
-
+	spawn hitmarker()
 	var/obj/item/projectile/P = A
 	if(prob(80))
 		for(var/mob/living/carbon/metroid/M in view(1,src))
@@ -253,7 +277,7 @@
 			S.icon_state = "shield0"
 	if ((shielded && P.flag != "bullet"))
 		if (P.flag)
-			src << "\blue Your shield was disturbed by a laser!"
+			src << "\white Your shield was disturbed by a laser!"
 			if(paralysis <= 120)	paralysis = 120
 			updatehealth()
 
@@ -981,6 +1005,7 @@
 	return
 
 /mob/living/carbon/human/meteorhit(O as obj)
+	spawn hitmarker()
 	for(var/mob/M in viewers(src, null))
 		if ((M.client && !( M.blinded )))
 			M.show_message(text("\red [] has been hit by []", src, O), 1)
@@ -1094,6 +1119,8 @@
 		fat = "fat"
 
 	overlays = null
+	if(speakingbubble == 1)
+		overlays += image("icon" = 'speechbubble.dmi', "layer" = MOB_LAYER)
 
 	if (mutations & HULK)
 		overlays += image("icon" = 'genetics.dmi', "icon_state" = "hulk[fat][!lying ? "_s" : "_l"]")
@@ -1139,7 +1166,7 @@
 
 	if (mutantrace)
 		switch(mutantrace)
-			if("lizard","golem","metroid","dog","nevrean","vriska","hulk","rabbit","sanic","Inigknot","Err","midget","brony","ghost","pooman","clowndick","emokid","changeling_1","changeling_2","changeling_3")
+			if("lizard","golem","metroid","dog","nevrean","vriska","hulk","rabbit","sanic","Inigknot","Err","midget","brony","ghost","pooman","clowndick","emokid","changeling_1","changeling_2","changeling_3","tittykitty")
 				overlays += image("icon" = 'genetics.dmi', "icon_state" = "[mutantrace][fat][!lying ? "_s" : "_l"]")
 			if("plant")
 				if(stat != 2) //if not dead, that is
@@ -1208,7 +1235,7 @@
 				c:layer = initial(c:layer)
 		w_uniform.screen_loc = ui_iclothing
 		if (istype(w_uniform, /obj/item/clothing/under))
-			var/t1 = w_uniform.colour
+			var/t1 = w_uniform.color
 			if (!t1)
 				t1 = icon_state
 			if (mutations & FAT)
@@ -1503,8 +1530,8 @@
 			src.frozen++ // you're going to need help when you're this fucking cool, no turning back.
 
 	if (frozen > 15)
-		frozen = 15 // Fï¿½hrerin Erika: and then they're like omg im frozen cant unfreeze
-					//	Fï¿½hrerin Erika: so we have been adminfixing people
+		frozen = 15 // Führerin Erika: and then they're like omg im frozen cant unfreeze
+					//	Führerin Erika: so we have been adminfixing people
 
 
 	if (frozen) // cool
@@ -1611,6 +1638,7 @@
 	if (M.a_intent == "hurt")
 		if (istype(M.wear_mask, /obj/item/clothing/mask/muzzle))
 			return
+		spawn hitmarker()
 		if (health > 0)
 			if (istype(wear_suit, /obj/item/clothing/suit/space))
 				if (prob(25))
@@ -1667,6 +1695,7 @@
 	else
 		if (istype(wear_mask, /obj/item/clothing/mask/muzzle))
 			return
+		spawn hitmarker()
 		if (health > 0)
 			if (istype(wear_suit, /obj/item/clothing/suit/space))
 				if (prob(25))
@@ -1728,7 +1757,7 @@
 		if ("help")
 			for(var/mob/O in viewers(src, null))
 				if ((O.client && !( O.blinded )))
-					O.show_message(text("\blue [M] caresses [src] with its scythe like arm."), 1)
+					O.show_message(text("\white [M] caresses [src] with its scythe like arm."), 1)
 		if ("grab")
 			//This will be changed to skin, where we can skin a dead human corpse//Actually, that sounds kind of impractical./N
 			if (M == src)
@@ -1756,6 +1785,7 @@
 		if ("hurt")
 			if (w_uniform)
 				w_uniform.add_fingerprint(M)
+			spawn hitmarker()
 			var/damage = rand(15, 30) // How much damage aliens do to humans? Increasing -- TLE
 									  // I've decreased the chance of humans being protected by uniforms. Now aliens can actually damage them.
 			var/datum/organ/external/affecting = organs["chest"]
@@ -1787,7 +1817,7 @@
 				else
 					if (def_zone == "chest")
 						if ((((wear_suit && wear_suit.body_parts_covered & UPPER_TORSO) || (w_uniform && w_uniform.body_parts_covered & LOWER_TORSO)) && prob(10)))
-							show_message("\blue You have been protected from a hit to the chest.")
+							show_message("\white You have been protected from a hit to the chest.")
 							return
 						if (damage >= 25)
 							if (prob(50))
@@ -1808,7 +1838,7 @@
 					else
 						if (def_zone == "groin")
 							if ((((wear_suit && wear_suit.body_parts_covered & LOWER_TORSO) || (w_uniform && w_uniform.body_parts_covered & LOWER_TORSO)) && prob(1)))
-								show_message("\blue You have been protected from a hit to the lower chest.")
+								show_message("\white You have been protected from a hit to the lower chest.")
 								return
 							if (damage >= 25)
 								if (prob(50))
@@ -1835,6 +1865,7 @@
 					if ((O.client && !( O.blinded )))
 						O.show_message(text("\red <B>[M] has lunged at [src] but missed!</B>"), 1)
 		if ("disarm")
+			spawn hitmarker()
 			var/damage = 5
 			var/datum/organ/external/affecting = organs["chest"]
 			var/t = M.zone_sel.selecting
@@ -1878,7 +1909,7 @@
 	if(M.Victim) return // can't attack while eating!
 
 	if (health > -100)
-
+		spawn hitmarker()
 		for(var/mob/O in viewers(src, null))
 			if ((O.client && !( O.blinded )))
 				O.show_message(text("\red <B>The [M.name] has [pick("bit","slashed")] []!</B>", src), 1)
@@ -1897,7 +1928,7 @@
 		if (dam_zone == "chest")
 			if ((((wear_suit && wear_suit.body_parts_covered & UPPER_TORSO) || (w_uniform && w_uniform.body_parts_covered & LOWER_TORSO)) && prob(10)))
 				if(prob(20))
-					show_message("\blue You have been protected from a hit to the chest.")
+					show_message("\white You have been protected from a hit to the chest.")
 					return
 
 
@@ -1962,6 +1993,7 @@
 	..()*/
 
 	if ((M.gloves && M.gloves.elecgen == 1 && M.a_intent == "hurt") /*&& (!istype(src:wear_suit, /obj/item/clothing/suit/judgerobe))*/)
+		spawn hitmarker()
 		if(M.gloves.uses > 0)
 			M.gloves.uses--
 			if (weakened < 5)
@@ -1984,7 +2016,7 @@
 		else
 			if (M.health >= -75.0)
 				if (((M.head && M.head.flags & 4) || ((M.wear_mask && !( M.wear_mask.flags & 32 )) || ((head && head.flags & 4) || (wear_mask && !( wear_mask.flags & 32 ))))))
-					M << "\blue <B>Remove that mask!</B>"
+					M << "\white <B>Remove that mask!</B>"
 					return
 				var/obj/equip_e/human/O = new /obj/equip_e/human(  )
 				O.source = M
@@ -2022,6 +2054,23 @@
 			if (M.a_intent == "hurt" && !(M.gloves && M.gloves.elecgen == 1))
 				if (w_uniform)
 					w_uniform.add_fingerprint(M)
+			//	spawn hitmarker()
+			//	var/colour = ""
+			//	if(prob(20))
+			//		colour = "<font size=1><font color=#FFFFFF><font face=system>POW!</font>"
+			//	else if(prob(20))
+			//		colour = "<font size=1><font color=#FF0099><font face=system>KAPOW!</font>"
+			//	else if(prob(20))
+			//		colour = "<font size=1><font color=FFFF00><font face=system>BASH!</font>"
+			//	else if(prob(20))
+			//		colour = "<font size=1><font color=#00CC00><font face=system>CHA!</font>"
+			//	else
+			//		colour = "<font size=1><font color=#FFCC66><font face=system>WACK!</font>"
+			//	var/randy = rand(0, 18)
+			//	var/randx = rand(-18, 18)
+			//	for(var/mob/O in viewers(src, null))
+			//		spawn new /text_obj(colour, src, O, 192, 96, randx, randy)
+
 				var/damage = 0
 				if(organStructure && organStructure.arms)
 					damage = rand(organStructure.arms.minDamage,organStructure.arms.maxDamage)
@@ -2865,7 +2914,7 @@ It can still be worn/put on as normal.
 				target.updatehealth()
 				for(var/mob/O in viewers(source, null))
 					O.show_message(text("\red [] performs CPR on []!", source, target), 1)
-				target << "\blue <b>You feel a breath of fresh air enter your lungs. It feels good.</b>"
+				target << "\white <b>You feel a breath of fresh air enter your lungs. It feels good.</b>"
 				source << "\red Repeat every 7 seconds AT LEAST."
 		if("fuel")
 			var/obj/item/weapon/fuel/S = item
@@ -2951,6 +3000,7 @@ It can still be worn/put on as normal.
 	return
 
 /mob/living/carbon/human/proc/TakeDamage(zone, brute, burn)
+	spawn hitmarker()
 	var/datum/organ/external/E = organs[text("[]", zone)]
 	if (istype(E, /datum/organ/external))
 		if (E.take_damage(brute, burn))
@@ -3023,7 +3073,7 @@ It can still be worn/put on as normal.
 
 	user.machine = src
 	var/dat = {"
-	<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B><HR><FONT size=3>[name]</FONT></B>
+	<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B><HR><FONT size=3>[name]</FONT></B>
 	<BR><HR>
 	<BR><B>Head(Mask):</B> <A href='?src=\ref[src];item=mask'>[(wear_mask ? wear_mask : "<font color=red>Nothing</font>")]</A>
 	<BR><B>Left Hand:</B> <A href='?src=\ref[src];item=l_hand'>[(l_hand ? l_hand  : "<font color=red>Nothing</font>")]</A>
@@ -3178,6 +3228,8 @@ It can still be worn/put on as normal.
 
 // damage MANY external organs, in random order
 /mob/living/carbon/human/take_overall_damage(var/brute, var/burn)
+	spawn hitmarker()
+
 	var/list/datum/organ/external/parts = get_damageable_organs()
 
 	while(parts.len && (brute>0 || burn>0) )

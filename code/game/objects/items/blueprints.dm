@@ -41,7 +41,7 @@
 
 /obj/item/blueprints/proc/interact()
 	var/area/A = get_area()
-	var/text = {"<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><head><title>[src]</title></head><BODY>
+	var/text = {"<HTML><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><head><title>[src]</title></head><BODY>
 <h2>[station_name()] blueprints</h2>
 <small>Property of Nanotrasen. For heads of staff only. Store in high-secure storage.</small><hr>
 "}

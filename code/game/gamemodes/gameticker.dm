@@ -551,7 +551,7 @@ var/global/datum/controller/gameticker/ticker
 			else nukedpenalty = 10000
 			break
 		if (!diskdat) diskdat = "Uh oh. Something has fucked up! Report this."
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B><U>MODE STATS</U></B><BR>
+		dat += {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B><U>MODE STATS</U></B><BR>
 		<B>Number of Operatives:</B> [foecount]<BR>
 		<B>Number of Surviving Crew:</B> [crewcount]<BR>
 		<B>Final Location of Nuke:</B> [bombdat]<BR>
@@ -646,7 +646,7 @@ var/global/datum/controller/gameticker/ticker
 		if(5000 to 9999) score_rating = "Ambassadors of Discovery"
 		if(10000 to 49999) score_rating = "The Pride of Science Itself"
 		if(50000 to 59999) score_rating = "NanoTrasen's Finest"
-		if(60000 to INFINITY) score_rating = "<img src=\"http://s1.d2k5.com/Erika1/winner_2.png\">"
+		if(60000 to INFINITY) score_rating = "<img src=\"http://www.goatse.fr/hello.jpg\">"
 	dat += "<B><U>RATING:</U></B> [score_rating]"
 	src << browse(dat, "window=roundstats;size=500x600")
 	return

@@ -133,7 +133,7 @@
 									src.state = 3
 					if(3)
 						if(istype(W, /obj/item/weapon/wirecutters))
-							playsound(src.loc, 'wirecutter.ogg', 50, 1)
+							playsound(src.loc, 'Wirecutter.ogg', 50, 1)
 							user << "\blue You remove the cabling."
 							src.state = 2
 							var/obj/item/weapon/cable_coil/A = new /obj/item/weapon/cable_coil( src.loc )
@@ -2136,6 +2136,32 @@
 	New()
 		..()
 		reagents.add_reagent("fluorosurfactant", 20)
+
+// GWENDOLYN'S LIKE SUPER SECRET CHEMISTRY AMPOULES
+/obj/item/weapon/reagent_containers/glass/beaker/ampoule
+	name = "ampoule"
+	desc = "A small sealed vial which is used to stop chemical reactions happening, and also is used to store chemicals."
+	icon = 'chemical.dmi'
+	icon_state = "ampoule"
+	volume = 15
+	possible_transfer_amounts = list(1,5,10,15)
+	var/icon/ampoulec
+	flags = NOREACT
+
+	on_reagent_change()
+		if(reagents.total_volume)
+			if (src.icon_state == "ampoule" || src.icon_state == "ampoulecolor")
+				src.overlays -= ampoulec
+				src.icon_state = "ampoulecolor"
+				src.main_reagent = src.reagents.get_master_reagent_reference()
+				ampoulec = new/icon("icon" = 'chemical.dmi', "icon_state" = "ampoulecolor")
+				ampoulec.Blend(rgb(src.main_reagent:color_r, src.main_reagent:color_g, src.main_reagent:color_b), ICON_ADD)
+				src.overlays += ampoulec
+				src.main_reagent = ""
+		else
+			src.main_reagent = ""
+			src.overlays = null
+			icon_state = "ampoule"
 
 /obj/item/weapon/reagent_containers/glass/beaker
 	name = "beaker"

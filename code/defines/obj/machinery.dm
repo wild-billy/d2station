@@ -126,6 +126,7 @@
 	var/time = 10.0
 	var/timing = 0.0
 	var/lockdownbyai = 0
+	var/smashed = 0
 	anchored = 1.0
 	use_power = 1
 	idle_power_usage = 2
@@ -478,6 +479,7 @@
 /obj/machinery/teleport/hub
 	name = "hub"
 	desc = "A hub of a teleporting machine."
+	icon = 'teleporterpad.dmi'
 	icon_state = "tele0"
 	var/accurate = 0
 	use_power = 1
@@ -493,6 +495,7 @@
 	use_power = 1
 	idle_power_usage = 10
 	active_power_usage = 2000
+	var/obj/portal/exit = list()
 
 /obj/machinery/stargate
 	name = "teleport"

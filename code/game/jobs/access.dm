@@ -478,7 +478,7 @@
 	return list("Medical Doctor", "Geneticist", "Chemist", "Roboticist", "Chief Medical Officer")
 
 /proc/get_all_jobsSec()
-	return list("Detective", "Security Officer", "Head of Security")
+	return list("Detective", "Security Officer", "Head of Security", "Warden")
 /proc/get_all_jobsEng()
 	return list("Assistant", "Station Engineer", "Shaft Miner", "Atmospheric Technician", "Janitor", "Quartermaster", "Chief Engineer")
 

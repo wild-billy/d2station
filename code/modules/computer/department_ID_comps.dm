@@ -19,9 +19,9 @@
 		var/crew = ""
 		for(var/datum/data/record/t in data_core.general)
 			crew += "[t.fields["name"]] - [t.fields["rank"]]<br>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
 	else
-		var/header = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
+		var/header = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
 
 		var/target_name
 		var/target_owner
@@ -63,7 +63,7 @@
 			body = "[carddesc]<br>[jobs]<br><br>[accesses]"
 		else
 			body = "<a href='?src=\ref[src];auth=1'>{Log in}</a>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
 	user << browse(dat, "window=id_com;size=700x375")
 	onclose(user, "id_com")
 	return
@@ -199,9 +199,9 @@
 		var/crew = ""
 		for(var/datum/data/record/t in data_core.general)
 			crew += "[t.fields["name"]] - [t.fields["rank"]]<br>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
 	else
-		var/header = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
+		var/header = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
 
 		var/target_name
 		var/target_owner
@@ -243,7 +243,7 @@
 			body = "[carddesc]<br>[jobs]<br><br>[accesses]"
 		else
 			body = "<a href='?src=\ref[src];auth=1'>{Log in}</a>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
 	user << browse(dat, "window=id_com;size=700x375")
 	onclose(user, "id_com")
 	return
@@ -379,9 +379,9 @@
 		var/crew = ""
 		for(var/datum/data/record/t in data_core.general)
 			crew += "[t.fields["name"]] - [t.fields["rank"]]<br>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
 	else
-		var/header = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
+		var/header = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
 
 		var/target_name
 		var/target_owner
@@ -423,7 +423,7 @@
 			body = "[carddesc]<br>[jobs]<br><br>[accesses]"
 		else
 			body = "<a href='?src=\ref[src];auth=1'>{Log in}</a>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
 	user << browse(dat, "window=id_com;size=700x375")
 	onclose(user, "id_com")
 	return
@@ -558,9 +558,9 @@
 		var/crew = ""
 		for(var/datum/data/record/t in data_core.general)
 			crew += "[t.fields["name"]] - [t.fields["rank"]]<br>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt><b>Crew Manifest:</b><br>Please use security record computer to modify entries.<br>[crew]<a href='?src=\ref[src];print=1'>Print</a><br><br><a href='?src=\ref[src];mode=0'>Access ID modification console.</a><br></tt>"
 	else
-		var/header = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
+		var/header = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><b>Identification Card Modifier</b><br><i>Please insert the cards into the slots</i><br>"
 
 		var/target_name
 		var/target_owner
@@ -602,7 +602,7 @@
 			body = "[carddesc]<br>[jobs]<br><br>[accesses]"
 		else
 			body = "<a href='?src=\ref[src];auth=1'>{Log in}</a>"
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><tt>[header][body]<hr><a href='?src=\ref[src];mode=1'>Access Crew Manifest</a><br></tt>"
 	user << browse(dat, "window=id_com;size=700x375")
 	onclose(user, "id_com")
 	return

@@ -97,7 +97,7 @@
 
 /obj/machinery/autolathe/proc/wires_win(mob/user as mob)
 	var/dat as text
-	dat += "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Autolathe Wires:<BR>"
+	dat += "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Autolathe Wires:<BR>"
 	for(var/wire in src.wires)
 		dat += text("[wire] Wire: <A href='?src=\ref[src];wire=[wire];act=wire'>[src.wires[wire] ? "Mend" : "Cut"]</A> <A href='?src=\ref[src];wire=[wire];act=pulse'>Pulse</A><BR>")
 
@@ -109,7 +109,7 @@
 
 /obj/machinery/autolathe/proc/regular_win(mob/user as mob)
 	var/dat as text
-	dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Metal Amount:</B> [src.m_amount] cm<sup>3</sup> (MAX: [max_m_amount])<BR>\n<FONT color=blue><B>Glass Amount:</B></FONT> [src.g_amount] cm<sup>3</sup> (MAX: [max_g_amount])<HR>")
+	dat = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Metal Amount:</B> [src.m_amount] cm<sup>3</sup> (MAX: [max_m_amount])<BR>\n<FONT color=blue><B>Glass Amount:</B></FONT> [src.g_amount] cm<sup>3</sup> (MAX: [max_g_amount])<HR>")
 	var/list/objs = list()
 	objs += src.L
 	if (src.hacked)

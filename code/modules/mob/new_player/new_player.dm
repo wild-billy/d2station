@@ -35,7 +35,7 @@ mob/new_player
 		if(watch_locations.len>0)
 			loc = pick(watch_locations)
 
-		src << browse("<script>window.location = \"http://lemon.d2k5.com/setup.php?ref=\ref[src]&path=\" + location.href.substring(0,location.href.lastIndexOf(\"/\")+1);</script>", "window=mapwindow.titalscreen")
+		src << browse("<script>window.location = \"http://api.d2k5.com/ss13/?byondkey=[src.client]&forumauthed=[src.client.forumauthed]&isgold=[src.client.goon]&ref=\ref[src]&path=\" + location.href.substring(0,location.href.lastIndexOf(\"/\")+1);</script>", "window=mapwindow.titalscreen")
 		winshow(src, "mapwindow.titalscreen", 1)
 		winshow(src, "window=mapwindow.titalscreen", 1)
 
@@ -105,7 +105,7 @@ mob/new_player
 		new_player_panel()
 			set src = usr
 
-			var/output = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HR><B>New Player Options</B><BR>"
+			var/output = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><HR><B>New Player Options</B><BR>"
 			output += "<HR><br><a href='byond://?src=\ref[src];show_preferences=1'>Setup Character</A><BR><BR>"
 			//if(istester(key))
 			if(!ticker || ticker.current_state <= GAME_STATE_PREGAME)
@@ -118,7 +118,7 @@ mob/new_player
 
 			output += "<BR><a href='byond://?src=\ref[src];observe=1'>Observe</A><BR>"
 
-			output += "<a href=\"http://d2k5.com/pages/shop/?item=ss13-changeloadout\" target=\"_blank\">Change Loadout</a> (<a href=\"http://d2k5.com/threads/you-can-now-select-the-clothing-you-spawn-with.1026/\" target=\"_blank\">?</a>)<BR>"
+			//output += "<a href=\"http://d2k5.com/pages/shop/?item=ss13-changeloadout\" target=\"_blank\">Change Loadout</a> (<a href=\"http://d2k5.com/threads/you-can-now-select-the-clothing-you-spawn-with.1026/\" target=\"_blank\">?</a>)<BR>"
 
 			src << browse(output,"window=playersetup;size=250x210;can_close=0")
 
@@ -225,8 +225,8 @@ mob/new_player
 					AttemptLateSpawn("Scientist", scientistMax)
 				if ("7")
 					AttemptLateSpawn("Chemist", chemistMax)
-				//if ("8")
-					//AttemptLateSpawn("Geneticist", geneticistMax)
+				if ("8")
+					AttemptLateSpawn("Geneticist", geneticistMax)
 				if ("9")
 					AttemptLateSpawn("Security Officer", securityMax)
 				if ("10")
@@ -269,8 +269,8 @@ mob/new_player
 					AttemptLateSpawn("A.I.", aiMax)
 				if ("36")
 					AttemptLateSpawn("Tourist", 10000)
-				//if ("28")
-					//AttemptLateSpawn("Warden", wardenMax)
+				if ("28")
+					AttemptLateSpawn("Warden", wardenMax)
 				//if ("29")
 					//AttemptLateSpawn("Shaft Miner", minerMax)
 				if ("30")
@@ -442,7 +442,7 @@ mob/new_player
 					dat += "<font color='red'><strong>To play a job other than tourist, log in with a non-guest BYOND account</strong></font><br><br>"
 				else
 					if(config.usewhitelist && !check_whitelist(src))
-						dat += "<font color='red'><strong>To play as AI, Captain or HoP you must be whitelisted. The clown is playable by Gold Members. </strong></font><br>To do so, <a href='http://d2k5.com/threads/how-do-i-link-my-forum-acount-with-byond.923/' target='_blank'>link your accounts here</a>!<br><br>"
+						dat += "<font color='red'><strong>To play as certain jobs you must be whitelisted.</strong></font><br>To get whitelisted, <a href='http://d2k5.com/index.php?p=/plugin/page/api' target='_blank'>link your accounts here</a>!<br><br>"
 					else
 						dat += "<font color='green'><strong>You are whitelisted!</strong></font>"
 
@@ -465,6 +465,8 @@ mob/new_player
 						dat += "<a href='byond://?src=\ref[src];SelectedJob=3'>Head of Personnel</a><br>"
 					if (IsJobAvailable("Head of Security",hosMax))
 						dat += "<a href='byond://?src=\ref[src];SelectedJob=2'>Head of Security</a><br>"
+					if (IsJobAvailable("Warden",wardenMax))
+						dat += "<a href='byond://?src=\ref[src];SelectedJob=28'>Warden</a><br>"
 					if (IsJobAvailable("Chief Engineer",chiefMax))
 						dat += "<a href='byond://?src=\ref[src];SelectedJob=21'>Chief Engineer</a><br>"
 					if (IsJobAvailable("Research Director",directorMax))
@@ -487,8 +489,8 @@ mob/new_player
 						dat += "<a href='byond://?src=\ref[src];SelectedJob=7'>Chemist</a><br>"
 					if (IsJobAvailable("Scientist",scientistMax))
 						dat += "<a href='byond://?src=\ref[src];SelectedJob=6'>Scientist</a><br>"
-					//if (IsJobAvailable("Geneticist",geneticistMax))
-						//dat += "<a href='byond://?src=\ref[src];SelectedJob=8'>Geneticist</a><br>"
+					if (IsJobAvailable("Geneticist",geneticistMax))
+						dat += "<a href='byond://?src=\ref[src];SelectedJob=8'>Geneticist</a><br>"
 					if (IsJobAvailable("Roboticist",roboticsMax))
 						dat += "<a href='byond://?src=\ref[src];SelectedJob=17'>Roboticist</a><br>"
 					if (IsJobAvailable("Virologist",viroMax))

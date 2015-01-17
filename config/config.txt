@@ -1,5 +1,5 @@
 ## Server Name
-SERVERNAME D2K5 Testserver
+SERVERNAME Development Server
 
 ## log OOC channel
 LOG_OOC
@@ -95,7 +95,7 @@ GUEST_JOBBAN 1
 # SERVER 178.63.153.81:1025
 
 ## Ban appeals URL - usually for a forum or wherever people should go to contact your admins.
-BANAPPEALS http://ss13.d2k5.com/?page_id=12
+BANAPPEALS http://d2k5.com/groups/space-station-13/
 
 ## In-game features
 ## spawns a spellbook which gives object-type spells instead of verb-type spells for the wizard

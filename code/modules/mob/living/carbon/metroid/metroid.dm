@@ -21,7 +21,7 @@
 	mind.key = G.key
 
 /mob/living/carbon/metroid/movement_delay()
-	var/tally = 0
+	var/tally = 1
 
 	var/health_deficiency = (100 - health)
 	if(health_deficiency >= 45) tally += (health_deficiency / 25)
@@ -667,7 +667,7 @@ mob/living/carbon/metroid/var/temperature_resistance = T0C+75
 
 	user.machine = src
 	var/dat = {"
-	<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B><HR><FONT size=3>[name]</FONT></B>
+	<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B><HR><FONT size=3>[name]</FONT></B>
 	<BR><HR><BR>
 	<BR><A href='?src=\ref[user];mach_close=mob[name]'>Close</A>
 	<BR>"}

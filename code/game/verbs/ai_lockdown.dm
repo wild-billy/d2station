@@ -28,7 +28,8 @@
 			else if(!D.density)
 				spawn(0)
 				D.close()
-
+				D.level = 2
+				D.layer = 2.7
 	var/obj/machinery/computer/communications/C = locate() in machines
 	if(C)
 		C.post_status("alert", "lockdown")
@@ -65,10 +66,11 @@
 		if(!D.blocked)
 			if(D.operating)
 				D.nextstate = OPEN
-			else if(D.density)
-				spawn(0)
-				D.open()
-
+	//		else if(D.density)
+	//			spawn(0)
+	//			D.open()
+	//			D.level = 1
+	//			D.layer = 1
 /*	src.verbs -= /mob/living/silicon/ai/proc/disablelockdown
 	src.verbs += /mob/living/silicon/ai/proc/lockdown
 	usr << "\red Disable lockdown command removed until lockdown initiated again!"

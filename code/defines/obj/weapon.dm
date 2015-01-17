@@ -612,7 +612,6 @@
 	icon_state = "id"
 	item_state = "card-id"
 	var/originalckey = null
-	var/pincode = null
 	var/access = list()
 	var/registered = null
 	var/assignment = null
@@ -695,6 +694,31 @@
 	icon_state = "id_sec"
 	item_state = "card-id"
 
+/obj/item/weapon/card/id/prison/guard
+	name = "identification card"
+	icon_state = "id_guard"
+	item_state = "card-id"
+
+/obj/item/weapon/card/id/prison/guard/afterattack(atom/target as mob|obj|turf|area, mob/user as mob)
+	if(!istype(target, /obj/machinery/door/airlock))
+		return
+	if(istype(target, /obj/machinery/door/airlock))
+		var/obj/machinery/door/airlock/A = target
+		if(A.id_tag != "cell")
+			return
+		if(!A.locked)
+			if(!src.density)
+				A.close()
+				sleep(5)
+			A.locked = 1
+			A.icon_state = "door_locked"
+			user << "\red You lock the cell door"
+		else if(A.locked)
+			A.locked = 0
+			A.icon_state = "door_closed"
+			sleep(2)
+			A.open()
+			user << "\green You unlock the cell door"
 /obj/item/weapon/card/id/hos
 	name = "identification card"
 	icon_state = "id_hos"
@@ -1341,6 +1365,8 @@
 	throw_range = 5
 	m_amt = 10000
 	origin_tech = "magnets=1;bluespace=3"
+//	var/obj/item/weapon/cell/power = null
+
 
 /obj/item/weapon/handcuffs
 	name = "handcuffs"

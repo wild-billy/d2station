@@ -118,10 +118,10 @@ FINGERPRINT CARD
 			var/obj/item/weapon/f_card/P = locate(href_list["read"])
 			if ((P && P.loc == src))
 				if (!( istype(usr, /mob/living/carbon/human) ))
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 				else
-					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
+					usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", P.name, P.display()), text("window=[]", P.name))
 					onclose(usr, "[P.name]")
 			src.add_fingerprint(usr)
 		if (ismob(src.loc))
@@ -195,7 +195,7 @@ FINGERPRINT CARD
 
 	..()
 	usr << text("\blue There are [] on the stack!", src.amount)
-	usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, display()), text("window=[]", src.name))
+	usr << browse(text("<HTML><HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", src.name, display()), text("window=[]", src.name))
 	onclose(usr, "[src.name]")
 	return
 

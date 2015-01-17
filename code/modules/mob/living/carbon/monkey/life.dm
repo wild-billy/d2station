@@ -3,8 +3,62 @@
 		oxygen_alert = 0
 		toxins_alert = 0
 		fire_alert = 0
-
+		old_intent = null
 		temperature_alert = 0
+		old_item_name = null
+		var/icon/Icon = null
+
+/mob/living/carbon/monkey/New()
+	spawn mousepointer()
+	..()
+
+/mob/living/carbon/monkey/proc/mousepointer()
+//	var/tickertime = world.timeofday
+	sleep(1)
+	var/obj/item/item_in_hand = src.get_active_hand()
+	if(client)
+		if(item_in_hand)
+			if(old_item_name == item_in_hand.name && a_intent == old_intent)
+			//	world << "same item"
+				sleep(-1)
+				spawn mousepointer()
+				return
+			var/icon/Icon2 = null
+			if (a_intent == "help")
+				Icon2 = new('mouse.dmi',icon_state = "help")
+			else if (a_intent == "hurt")
+				Icon2 = new('mouse.dmi',icon_state = "hurt")
+			else if (a_intent == "grab")
+				Icon2 = new('mouse.dmi',icon_state = "grab")
+			else if (a_intent == "disarm")
+				Icon2 = new('mouse.dmi',icon_state = "disarm")
+			Icon = new(item_in_hand.icon,item_in_hand.icon_state)
+			Icon2.Blend(Icon,ICON_OVERLAY,x=18,y=-18)
+			src.client.mouse_pointer_icon = Icon2
+			old_item_name = item_in_hand.name
+			old_intent = a_intent
+			//world << "changed pointer with item"
+		else
+			var/icon/Icon2 = null
+			if (a_intent == "help")
+				Icon2 = new('mouse.dmi',icon_state = "help")
+				src.client.mouse_pointer_icon = Icon2
+			else if (a_intent == "hurt")
+				Icon2 = new('mouse.dmi',icon_state = "hurt")
+				src.client.mouse_pointer_icon = Icon2
+			else if (a_intent == "grab")
+				Icon2 = new('mouse.dmi',icon_state = "grab")
+				src.client.mouse_pointer_icon = Icon2
+			else if (a_intent == "disarm")
+				Icon2 = new('mouse.dmi',icon_state = "disarm")
+				src.client.mouse_pointer_icon = Icon2
+			old_item_name = null
+			old_intent = a_intent
+			//world << "changed pointer with intent"
+//	var/timetaken = world.timeofday - tickertime
+	//world << "Time taken to complete mouse pointer check: [timetaken]"
+	spawn mousepointer()
+	return
 
 
 /mob/living/carbon/monkey/Life()

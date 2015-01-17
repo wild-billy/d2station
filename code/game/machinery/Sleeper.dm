@@ -57,7 +57,7 @@
 		return
 	if (src.connected)
 		var/mob/occupant = src.connected.occupant
-		var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><font color='blue'><B>Occupant Statistics:</B></FONT><BR>"
+		var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><font color='blue'><B>Occupant Statistics:</B></FONT><BR>"
 		if (occupant)
 			var/t1
 			switch(occupant.stat)

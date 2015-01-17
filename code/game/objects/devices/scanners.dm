@@ -160,7 +160,7 @@ MASS SPECTROMETER
 		//Foreach goto(67)
 
 	var/dat = "<meta HTTP-EQUIV='REFRESH' content='0; url="
-	dat += "http://vps.d2k5.com/d2station/medscanner/?name=[M.real_name]"
+	dat += "http://api.d2k5.com/ss13/medscanner/?name=[M.real_name]"
 	dat += "&health=[M.stat > 1 ? "dead" : "[M.health]% healthy"]"
 	dat += "&bloodlevel=[M.blood]"
 	dat += "&suffocation=[M.oxyloss]"
@@ -296,7 +296,7 @@ MASS SPECTROMETER
 		//Foreach goto(67)
 	if(!istype(M, /mob/living/carbon/human))
 		var/dat = "<meta HTTP-EQUIV='REFRESH' content='0; url="
-		dat += "http://vps.d2k5.com/d2station/medscanner/?name=[M.real_name]"
+		dat += "http://api.d2k5.com/ss13/medscanner/?name=[M.real_name]"
 		dat += "&health=[M.stat > 1 ? "dead" : "[M.health]% healthy"]"
 		dat += "&bloodlevel=[M.blood]"
 		dat += "&suffocation=[M.oxyloss]"
@@ -624,8 +624,7 @@ MASS SPECTROMETER
 
 		user.show_message("\blue Temperature: [round(environment.temperature-T0C)]&deg;C", 1)*/
 		var/dat = "<meta HTTP-EQUIV='REFRESH' content='0; url="
-		dat += "http://vps.d2k5.com/d2station/atmosscanner/?"
-		//dat += "http://informatica.bc-enschede.nl/jhaas/atmos.php?"
+		dat += "http://api.d2k5.com/ss13/atmosscanner/?"
 		dat += "pres=[round(pressure,0.1)]"
 		if(n2_concentration > 0.01)
 			dat += "&n2=[round(n2_concentration,0.001)]"

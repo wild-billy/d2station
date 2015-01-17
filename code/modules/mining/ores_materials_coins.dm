@@ -2,7 +2,7 @@
 
 /obj/item/weapon/ore
 	name = "Rock"
-	icon = 'Mining.dmi'
+	icon = 'mining.dmi'
 	icon_state = "ore"
 
 /obj/item/weapon/ore/attackby(obj/item/weapon/W as obj, mob/user as mob)

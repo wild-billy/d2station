@@ -1327,18 +1327,18 @@ datum
 				for(var/i = 1, i <= created_volume, i++)
 					new /obj/item/weapon/reagent_containers/food/snacks/tofuicecream(location)
 				return
-		pooicecream
-			name = "Chocolate Icecream"
-			id = "icecream4"
-			result = null
-			required_reagents = list("poo" = 10)
-			required_catalysts = list("ice" = 5, "sodiumchloride" = 5)
-			result_amount = 1
-			on_reaction(var/datum/reagents/holder, var/created_volume)
-				var/location = get_turf(holder.my_atom)
-				for(var/i = 1, i <= created_volume, i++)
-					new /obj/item/weapon/reagent_containers/food/snacks/pooicecream(location)
-				return
+//		pooicecream
+//			name = "Chocolate Icecream"
+//			id = "icecream4"
+///			result = null
+	//		required_reagents = list("poo" = 10)
+	//		required_catalysts = list("ice" = 5, "sodiumchloride" = 5)
+	//		result_amount = 1
+	//		on_reaction(var/datum/reagents/holder, var/created_volume)
+	//			var/location = get_turf(holder.my_atom)
+	//			for(var/i = 1, i <= created_volume, i++)
+	//				new /obj/item/weapon/reagent_containers/food/snacks/pooicecream(location)
+	//			return
 
 		chocolate_bar
 			name = "Chocolate Bar"

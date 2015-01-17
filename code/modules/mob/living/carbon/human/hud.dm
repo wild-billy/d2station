@@ -95,26 +95,27 @@
 	src.adding += using
 	move_intent = using
 
-	using = new src.h_type(src) //Right hud bar
-	using.dir = SOUTH
-	using.icon = ui_style
-	using.screen_loc = "EAST+1,SOUTH to EAST+1,NORTH"
-	using.layer = 19
-	src.adding += using
+//	using = new src.h_type(src) //Right hud bar
+//	using.dir = SOUTH
+//	using.icon = ui_style
+//	using.screen_loc = "EAST,SOUTH to EAST,NORTH"
+//	using.layer = 19
+//	src.adding += using
 
 	using = new src.h_type(src) //Lower hud bar
 	using.dir = EAST
-	using.icon = ui_style
-	using.screen_loc = "WEST,SOUTH-1 to EAST,SOUTH-1"
-	using.layer = 19
+	using.icon = 'HUDpieces.dmi'
+	using.icon_state = "hud"
+	using.screen_loc = "1,1 to 1,1"
+	using.layer = 16
 	src.adding += using
 
-	using = new src.h_type(src) //Corner Button
-	using.dir = NORTHWEST
-	using.icon = ui_style
-	using.screen_loc = "EAST+1,SOUTH-1"
-	using.layer = 19
-	src.adding += using
+//	using = new src.h_type(src) //Corner Button
+//	using.dir = NORTHWEST
+//	using.icon = ui_style
+//	using.screen_loc = "EAST+1,SOUTH-1"
+//	using.layer = 19
+//	src.adding += using
 
 	using = new src.h_type( src )
 	using.name = "arrowleft"
@@ -233,7 +234,7 @@
 	using = new src.h_type( src )
 	using.name = "suit storage"
 	using.icon = ui_style
-	using.icon_state = "belt"
+	using.icon_state = "suitpocket"
 	using.screen_loc = ui_sstore1
 	using.layer = 19
 	src.other += using
@@ -241,7 +242,7 @@
 	using = new src.h_type( src )
 	using.name = "hat storage"
 	using.icon = ui_style
-	using.icon_state = "hair"
+	using.icon_state = "hatpocket"
 	using.screen_loc = ui_hstore1
 	using.layer = 19
 	src.other += using
@@ -266,14 +267,14 @@
 	using = new src.h_type( src )
 	using.name = "intent"
 	using.icon_state = "intent"
-	using.screen_loc = "15,15"
+	using.screen_loc = "12,12"
 	using.layer = 20
 	src.adding += using
 
 	using = new src.h_type( src )
 	using.name = "m_intent"
 	using.icon_state = "move"
-	using.screen_loc = "15,15"
+	using.screen_loc = "12,12"
 	using.layer = 20
 	src.adding += using
 */
@@ -330,14 +331,14 @@
 	using = new src.h_type( src )
 	using.name = "grab"
 	using.icon_state = "grab"
-	using.screen_loc = "12:-11,15"
+	using.screen_loc = "12:-11,12"
 	using.layer = 19
 	src.intents += using
 	//ICONS
 	using = new src.h_type( src )
 	using.name = "hurt"
 	using.icon_state = "harm"
-	using.screen_loc = "15:-11,15"
+	using.screen_loc = "12:-11,12"
 	using.layer = 19
 	src.intents += using
 	src.m_ints += using
@@ -345,14 +346,14 @@
 	using = new src.h_type( src )
 	using.name = "disarm"
 	using.icon_state = "disarm"
-	using.screen_loc = "15:-10,15"
+	using.screen_loc = "12:-10,12"
 	using.layer = 19
 	src.intents += using
 
 	using = new src.h_type( src )
 	using.name = "help"
 	using.icon_state = "help"
-	using.screen_loc = "15:-10,15"
+	using.screen_loc = "12:-10,12"
 	using.layer = 19
 	src.intents += using
 	src.m_ints += using
@@ -360,30 +361,30 @@
 	using = new src.h_type( src )
 	using.name = "face"
 	using.icon_state = "facing"
-	using.screen_loc = "15:-11,15"
+	using.screen_loc = "12:-11,12"
 	using.layer = 19
 	src.mov_int += using
 
 	using = new src.h_type( src )
 	using.name = "walk"
 	using.icon_state = "walking"
-	using.screen_loc = "15:-11,15"
+	using.screen_loc = "12:-11,12"
 	using.layer = 19
 	src.mov_int += using
 
 	using = new src.h_type( src )
 	using.name = "run"
 	using.icon_state = "running"
-	using.screen_loc = "15:-11,15"
+	using.screen_loc = "12:-11,12"
 	using.layer = 19
 	src.mov_int += using
-*/
 
+*/
 	using = new src.h_type( src )
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "1,1 to 5,15"
+	using.screen_loc = "1,1 to 5,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.vimpaired += using
@@ -399,7 +400,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "6,11 to 10,15"
+	using.screen_loc = "6,10 to 10,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.vimpaired += using
@@ -407,7 +408,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "11,1 to 15,15"
+	using.screen_loc = "11,1 to 12,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.vimpaired += using
@@ -416,7 +417,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "3,3 to 5,15"
+	using.screen_loc = "3,3 to 5,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -432,7 +433,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "6,11 to 10,15"
+	using.screen_loc = "6,10 to 10,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -440,7 +441,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "dither50"
-	using.screen_loc = "11,3 to 15,15"
+	using.screen_loc = "10,3 to 10,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -448,7 +449,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "black"
-	using.screen_loc = "1,1 to 15,2"
+	using.screen_loc = "1,1 to 10,2"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -456,7 +457,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "black"
-	using.screen_loc = "1,3 to 2,15"
+	using.screen_loc = "1,3 to 2,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -464,7 +465,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "black"
-	using.screen_loc = "15,3 to 15,15"
+	using.screen_loc = "12,3 to 12,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -472,7 +473,7 @@
 	using.name = null
 	using.icon = ui_style
 	using.icon_state = "black"
-	using.screen_loc = "3,15 to 15,15"
+	using.screen_loc = "3,10 to 12,10"
 	using.layer = 17
 	using.mouse_opacity = 0
 	src.darkMask += using
@@ -493,12 +494,12 @@
 	mymob.i_select = new /obj/screen( null )
 	mymob.i_select.icon_state = "selector"
 	mymob.i_select.name = "intent"
-	mymob.i_select.screen_loc = "16:-11,15"
+	mymob.i_select.screen_loc = "16:-11,12"
 
 	mymob.m_select = new /obj/screen( null )
 	mymob.m_select.icon_state = "selector"
 	mymob.m_select.name = "moving"
-	mymob.m_select.screen_loc = "16:-11,15"
+	mymob.m_select.screen_loc = "16:-11,12"
 */
 
 	mymob.toxin = new /obj/screen( null )
@@ -547,14 +548,14 @@
 	mymob.blind.icon = ui_style
 	mymob.blind.icon_state = "dither50"
 	mymob.blind.name = " "
-	mymob.blind.screen_loc = "1,1 to 15,15"
+	mymob.blind.screen_loc = "1,1 to 12,10"
 	mymob.blind.layer = 0
 
 	mymob.flash = new /obj/screen( null )
 	mymob.flash.icon = ui_style
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
-	mymob.flash.screen_loc = "1,1 to 15,15"
+	mymob.flash.screen_loc = "1,1 to 12,10"
 	mymob.flash.layer = 17
 
 	mymob.hands = new /obj/screen( null )
@@ -671,7 +672,7 @@
 	mymob.client.screen = null
 
 	//, mymob.i_select, mymob.m_select
-	mymob.client.screen += list( mymob.throw_icon, mymob.zone_sel, mymob.oxygen, mymob.toxin, mymob.bodytemp, mymob.internals, mymob.fire, mymob.hands, mymob.healths, mymob.nutrition_icon, mymob.pullin, mymob.blind, mymob.flash, mymob.rest, mymob.sleep) //, mymob.mach )
+	mymob.client.screen += list( mymob.throw_icon, mymob.zone_sel, mymob.oxygen, mymob.toxin, mymob.bodytemp, mymob.internals, mymob.fire, mymob.hands, mymob.healths, mymob.nutrition_icon, mymob.pullin, mymob.blind/*, mymob.rest*/, mymob.sleep) //, mymob.mach )
 	mymob.client.screen += src.adding + src.other
 
 	//if(istype(mymob,/mob/living/carbon/monkey)) mymob.client.screen += src.mon_blo

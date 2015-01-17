@@ -141,7 +141,7 @@
 			"Goldenrod" = 3,
 			"Green" = 4,
 		)
-		var/pdat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Access Panel</B><br>"
+		var/pdat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Access Panel</B><br>"
 		for(var/wiredesc in vendwires)
 			var/is_uncut = src.wires & APCWireColorToFlag[vendwires[wiredesc]]
 			pdat += "[wiredesc] wire: "
@@ -161,7 +161,7 @@
 		user << browse(pdat, "window=vendwires")
 		onclose(user, "vendwires")
 
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><body style='margin: 0; padding: 0;'>"
+	var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><body style='margin: 0; padding: 0;'>"
 
 	if (src.product_records.len == 0)
 		dat += "<font color = 'red'>No product loaded!</font>"
@@ -216,7 +216,7 @@
 				if(I)
 					if (istype(I, /obj/item/weapon/card/id))
 						var/pincode = input("Enter your PIN:", "PIN", null) as num
-						if(pincode != I:pincode)
+						if(pincode != getPin(I:originalckey))
 							usr << "\blue <span class='game say'><span class='name'>[src]</span> beeps, \"PIN incorrect.\""
 							return
 						if(src.doTransaction(I:originalckey,"-[R.product_price]","Vending Machine: [src.name] (Item: [R.product_name])") == 1)

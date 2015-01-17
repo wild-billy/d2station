@@ -1,4 +1,4 @@
-/obj/hud/proc/monkey_hud(var/ui_style='screen1_old.dmi')
+/obj/hud/proc/monkey_hud(var/ui_style='screen1.dmi')
 
 	src.adding = list(  )
 	src.other = list(  )

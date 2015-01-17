@@ -144,7 +144,7 @@ IMPLANTER
 			if (istype(src.case.imp, /obj/item/weapon/implant/tracking))
 				var/obj/item/weapon/implant/tracking/T = src.case.imp
 				dat += {"
-<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />
+<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />
 <b>Implant Specifications:</b><BR>
 <b>Name:</b> Tracking Beacon<BR>
 <b>Zone:</b> Spinal Column> 2-5 vertebrae<BR>

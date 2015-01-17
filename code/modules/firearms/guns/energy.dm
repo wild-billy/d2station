@@ -50,6 +50,7 @@
 	force = 10 //The standard high damage
 	mode = 2
 	fire_sound = 'pulse.ogg'
+	slowdown = 3
 	load_into_chamber()
 		if(in_chamber)
 			return 1
@@ -115,7 +116,7 @@
 	origin_tech = "combat=3;materials=5;powerstorage=3"
 	var/lightfail = 0
 	icon_state = "nucgun"
-
+	slowdown = 2
 	New()
 		..()
 		charge()
@@ -255,7 +256,7 @@
 	icon_state = "lasercannon"
 	fire_sound = 'lasercannonfire.ogg'
 	origin_tech = "combat=4;materials=3;powerstorage=3"
-
+	slowdown = 2
 
 	load_into_chamber()
 		if(in_chamber)

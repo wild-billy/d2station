@@ -28,7 +28,7 @@
 				spawn() alert("You have logged in already with another key this round, please log out of this one NOW or risk being banned!")
 	if(!src.dna) src.dna = new /datum/dna(null)
 	//src.client.screen -= main_hud1.contents
-	world.update_status()
+	//world.update_status()
 	//if (!src.hud_used)
 	//	src.hud_used = main_hud1
 
@@ -43,7 +43,7 @@
 	src.logged_in = 1
 
 	if(src.client)
-		src << browse("<meta HTTP-EQUIV=\"REFRESH\" content=\"0; url=http://lemon.d2k5.com/loader.php\">Loading Media...", "window=rpane.hwload")
+		src << browse("<meta HTTP-EQUIV=\"REFRESH\" content=\"0; url=http://178.63.153.81/ss13/loader.php\">Loading Media...", "window=rpane.hwload")
 
 	for (var/mob/M in mobz)
 		if(M == src)

@@ -57,6 +57,13 @@
 	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
 	autoboot = 1
 
+/obj/machinery/computer2/Virologymed
+	setup_has_radio = 1
+	setup_mainboard = 1
+	setup_starting_program = /datum/computer/file/computer_program/med_data/virology
+	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
+	autoboot = 1
+
 /obj/machinery/computer2/id
 	setup_has_radio = 1
 	setup_mainboard = 1
@@ -64,10 +71,45 @@
 	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
 	autoboot = 1
 
+/obj/machinery/computer2/idmed
+	setup_has_radio = 1
+	setup_mainboard = 1
+	setup_starting_program = /datum/computer/file/computer_program/MEDid
+	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
+	autoboot = 1
+
+/obj/machinery/computer2/idrd
+	setup_has_radio = 1
+	setup_mainboard = 1
+	setup_starting_program = /datum/computer/file/computer_program/RDid
+	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
+	autoboot = 1
+
+/obj/machinery/computer2/idsec
+	setup_has_radio = 1
+	setup_mainboard = 1
+	setup_starting_program = /datum/computer/file/computer_program/SECid
+	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
+	autoboot = 1
+
+/obj/machinery/computer2/ideng
+	setup_has_radio = 1
+	setup_mainboard = 1
+	setup_starting_program = /datum/computer/file/computer_program/ENGid
+	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
+	autoboot = 1
+
 /obj/machinery/computer2/crew
 	setup_has_radio = 1
 	setup_mainboard = 1
 	setup_starting_program = /datum/computer/file/computer_program/crew
+	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
+	autoboot = 1
+
+/obj/machinery/computer2/messenger
+	setup_has_radio = 1
+	setup_mainboard = 1
+	setup_starting_program = /datum/computer/file/computer_program/messenger
 	setup_starting_peripheral = /obj/item/weapon/peripheral/printer
 	autoboot = 1
 

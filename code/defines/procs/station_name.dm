@@ -1,6 +1,6 @@
 /proc/station_name()
-	return "D2K5 Space Observatory Beta 242"
-/*
+	//return "D2K5 Space Observatory Beta 242"
+
 	if (station_name)
 		return station_name
 
@@ -34,9 +34,8 @@
 	station_name = name
 
 	if (config && config.server_name)
-		world.name = "[config.server_name]: [name]"
+		world.name = "[config.server_name] [name]"
 	else
 		world.name = name
 
 	return name
-*/

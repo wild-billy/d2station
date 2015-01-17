@@ -131,9 +131,14 @@
 			if(!D.blocked)
 				if(D.operating)
 					D.nextstate = CLOSED
+					D.close()
+					D.level = 2
+					D.layer = 2.7
 				else if(!D.density)
 					spawn(0)
 					D.close()
+			//		D.level = 2
+			//		D.layer = 2.7
 		var/list/cameras = list()
 		for (var/obj/machinery/camera/C in src)
 			cameras += C
@@ -152,9 +157,12 @@
 			if(!D.blocked)
 				if(D.operating)
 					D.nextstate = OPEN
+					D.open()
 				else if(D.density)
 					spawn(0)
 					D.open()
+		//			D.level = 1
+		//			D.layer = 1
 		for (var/mob/living/silicon/ai/aiPlayer in mobz)
 			aiPlayer.cancelAlarm("Fire", src, src)
 		for (var/obj/machinery/computer/station_alert/a in machines)

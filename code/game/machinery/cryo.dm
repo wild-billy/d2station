@@ -86,7 +86,7 @@
 			beaker_text = "<B>Beaker:</B> <A href='?src=\ref[src];eject=1'>Eject</A>"
 		else
 			beaker_text = "<B>Beaker:</B> <FONT color=red>No beaker loaded</FONT>"
-		var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Cryo cell control system</B><BR>
+		var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Cryo cell control system</B><BR>
 			<B>Current cell temperature:</B> [temp_text]K<BR>
 			<B>Cryo status:</B> [ src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>
 			[beaker_text]<BR><BR>

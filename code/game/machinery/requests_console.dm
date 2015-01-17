@@ -98,7 +98,7 @@ var/list/obj/machinery/requests_console/allConsoles = list()
 
 /obj/machinery/requests_console/attack_hand(user as mob)
 	var/dat
-	dat = text("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>Requests Console</TITLE></HEAD><H3>[src.department] Requests Console</H3>")
+	dat = text("<HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>Requests Console</TITLE></HEAD><H3>[src.department] Requests Console</H3>")
 	if(!src.open)
 		if (src.screen == 0)
 			announceAuth = 0

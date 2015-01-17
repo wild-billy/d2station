@@ -53,7 +53,7 @@
 
 	attack_self(mob/user as mob)
 		user.machine = src
-		var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B> Valve properties: </B>
+		var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B> Valve properties: </B>
 		<BR> <B> Attachment one:</B> [tank_one] [tank_one ? "<A href='?src=\ref[src];tankone=1'>Remove</A>" : ""]
 		<BR> <B> Attachment two:</B> [tank_two] [tank_two ? "<A href='?src=\ref[src];tanktwo=1'>Remove</A>" : ""]
 		<BR> <B> Valve attachment:</B> [attached_device ? "<A href='?src=\ref[src];device=1'>[attached_device]</A>" : "None"] [attached_device ? "<A href='?src=\ref[src];rem_device=1'>Remove</A>" : ""]

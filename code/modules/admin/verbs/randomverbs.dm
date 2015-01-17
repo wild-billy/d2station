@@ -104,14 +104,14 @@
 		if (usr.client && usr.client.holder)
 			M << "\red Admin PM from-<b>[key_name(usr, M, 0)]</b>: [t]"
 			usr << "\blue Admin PM to-<b>[key_name(M, usr, 1)]</b>: [t]"
-			world.Export("http://78.47.53.54/requester.php?url=http://lemon.d2k5.com/adminhelp/adminhelp.php@vals@name=PM%20from%20[usr.key]%20to%20[M.key]@and@msg=[t]")
+			//world.Export("http://178.63.153.81/ss13/adminhelp/adminhelp.php?name=PM%20from%20[usr.key]%20to%20[M.key]&msg=[t]")
 		else
 			if (M.client && M.client.holder)
 				M << "\blue Reply PM from-<b>[key_name(usr, M, 1)]</b>: [t]"
 			else
 				M << "\red Reply PM from-<b>[key_name(usr, M, 0)]</b>: [t]"
 			usr << "\blue Reply PM to-<b>[key_name(M, usr, 0)]</b>: [t]"
-			world.Export("http://78.47.53.54/requester.php?url=http://lemon.d2k5.com/adminhelp/adminhelp.php@vals@name=PM%20from%20[usr.key]%20to%20[M.key]@and@msg=[t]")
+			//world.Export("http://178.63.153.81/ss13/adminhelp/adminhelp.php?name=PM%20from%20[usr.key]%20to%20[M.key]&msg=[t]")
 
 		log_admin("PM: [key_name(usr)]->[key_name(M)] : [t]")
 
@@ -591,7 +591,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 			M << "\red To try to resolve this matter head to http://ss13.donglabs.com/forum/"
 			log_admin("[usr.client.ckey] has banned [M.ckey].\nReason: [reason]\nThis will be removed in [mins] minutes.")
 			message_admins("\blue[usr.client.ckey] has banned [M.ckey].\nReason: [reason]\nThis will be removed in [mins] minutes.")
-			world.Export("http://78.47.53.54/requester.php?url=http://216.38.134.132/adminlog.php?type=ban&key=[usr.client.key]&key2=[M.key]&msg=[html_decode(reason)]&time=[mins]&server=[dd_replacetext(config.server_name, "#", "")]")
+			//world.Export("http://216.38.134.132/adminlog.php?type=ban&key=[usr.client.key]&key2=[M.key]&msg=[html_decode(reason)]&time=[mins]&server=[dd_replacetext(config.server_name, "#", "")]")
 			del(M.client)
 			del(M)
 		else
@@ -607,7 +607,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 		M << "\red To try to resolve this matter head to http://ss13.donglabs.com/forum/"
 		log_admin("[usr.client.ckey] has banned [M.ckey].\nReason: [reason]\nThis is a permanent ban.")
 		message_admins("\blue[usr.client.ckey] has banned [M.ckey].\nReason: [reason]\nThis is a permanent ban.")
-		world.Export("http://78.47.53.54/requester.php?url=http://216.38.134.132/adminlog.php?type=ban&key=[usr.client.key]&key2=[M.key]&msg=[html_decode(reason)]&time=perma&server=[dd_replacetext(config.server_name, "#", "")]")
+		//world.Export("http://216.38.134.132/adminlog.php?type=ban&key=[usr.client.key]&key2=[M.key]&msg=[html_decode(reason)]&time=perma&server=[dd_replacetext(config.server_name, "#", "")]")
 		del(M.client)
 		del(M)
 */

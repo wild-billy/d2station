@@ -114,6 +114,7 @@
 	var/oneharvest = 0
 	var/potency = -1
 	var/growthstages = 0
+	var/radiation = 0
 	var/plant_type = 0 // 0 = 'normal plant'; 1 = weed; 2 = shroom
 
 /obj/item/seeds/chiliseed
@@ -131,6 +132,7 @@
 	yield = 4
 	potency = 20
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/replicapod
@@ -149,6 +151,7 @@
 	oneharvest = 1
 	potency = 30
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 	var/ui = null //for storing the guy
 	var/se = null
@@ -172,6 +175,7 @@
 	yield = 4
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 2
 
 /obj/item/seeds/greengrapeseed
@@ -180,7 +184,7 @@
 	icon_state = "seed-greengrapes"
 	mypath = "/obj/item/seeds/greengrapeseed"
 	species = "greengrape"
-	plantname = "Gren Grape Vine"
+	plantname = "Green Grape Vine"
 	productname = "/obj/item/weapon/reagent_containers/food/snacks/grown/greengrapes"
 	lifespan = 50
 	endurance = 25
@@ -189,6 +193,7 @@
 	yield = 4
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 2
 
 /obj/item/seeds/cabbageseed
@@ -206,6 +211,7 @@
 	yield = 4
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 1
 
 /obj/item/seeds/berryseed
@@ -223,6 +229,7 @@
 	yield = 2
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/glowberryseed
@@ -240,6 +247,7 @@
 	yield = 2
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/apricotseeds
@@ -257,6 +265,7 @@
 	yield = 4
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 7
 
 /obj/item/seeds/bananaseed
@@ -273,6 +282,7 @@
 	production = 6
 	yield = 3
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/eggplantseed
@@ -289,6 +299,7 @@
 	production = 6
 	yield = 2
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/cannabisseed
@@ -303,10 +314,30 @@
 	maturation = 6
 	production = 6
 	yield = 4
-	potency = 8
+	potency = 4
 	oneharvest = 0
 	growthstages = 5
 	plant_type = 1
+	radiation = 0
+
+/obj/item/seeds/cannabisseedbetter
+	name = "Super powered cannabis seeds"
+	icon_state = "seed-cannabis-better"
+	mypath = "/obj/item/seeds/cannabisseedbetter"
+	species = "cannabis"
+	plantname = "cannabis plant"
+	productname = "/obj/item/weapon/reagent_containers/food/snacks/grown/cannabisleafbetter"
+	lifespan = 30
+	endurance = 30 // tuff like a toiger
+	maturation = 6
+	production = 12
+	yield = 8
+	potency = 8
+	oneharvest = 0
+	growthstages = 5
+	radiation = 0
+	plant_type = 1
+
 
 /obj/item/seeds/tobacco
 	name = "Nicotiana tabacum seeds"
@@ -323,6 +354,7 @@
 	potency = 8
 	oneharvest = 0
 	growthstages = 5
+	radiation = 0
 	plant_type = 1
 
 /obj/item/seeds/eggyseed
@@ -339,6 +371,7 @@
 	production = 12
 	yield = 2
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/bloodtomatoseed
@@ -356,6 +389,7 @@
 	yield = 3
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/tomatoseed
@@ -373,6 +407,7 @@
 	yield = 2
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/killertomatoseed
@@ -391,6 +426,7 @@
 	potency = 10
 	plant_type = 0
 	oneharvest = 1
+	radiation = 0
 	growthstages = 2
 
 /obj/item/seeds/bluetomatoseed
@@ -408,6 +444,7 @@
 	yield = 2
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/cornseed
@@ -425,6 +462,7 @@
 	yield = 3
 	plant_type = 0
 	oneharvest = 1
+	radiation = 0
 	growthstages = 3
 
 /obj/item/seeds/poppyseed
@@ -442,6 +480,7 @@
 	yield = 6
 	plant_type = 0
 	oneharvest = 1
+	radiation = 0
 	growthstages = 3
 
 /obj/item/seeds/potatoseed
@@ -458,6 +497,7 @@
 	production = 1
 	yield = 4
 	plant_type = 0
+	radiation = 0
 	oneharvest = 1
 	potency = 10
 	growthstages = 4
@@ -477,6 +517,7 @@
 	yield = 4
 	potency = 20
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/soyaseed
@@ -494,6 +535,7 @@
 	yield = 3
 	potency = 0
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/wheatseed
@@ -512,6 +554,7 @@
 	potency = 0
 	oneharvest = 1
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/carrotseed
@@ -530,6 +573,7 @@
 	potency = 10
 	oneharvest = 1
 	plant_type = 0
+	radiation = 0
 	growthstages = 5
 
 /obj/item/seeds/amanitamycelium
@@ -548,6 +592,7 @@
 	potency = 10 // Damage based on potency?
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/angelmycelium
@@ -565,6 +610,7 @@
 	potency = 35
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/libertymycelium
@@ -583,6 +629,26 @@
 	potency = 15 // Lowish potency at start
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
+	plant_type = 2
+
+/obj/item/seeds/powercapmycelium
+	name = "Power Cap mycelium"
+	desc = "It is said to be pure psilocybin."
+	icon_state = "mycelium-liberty"
+	mypath = "/obj/item/seeds/powercapmycelium"
+	species = "powercap"
+	plantname = "Power Cap"
+	productname = "/obj/item/weapon/reagent_containers/food/snacks/grown/mushroom/powercap"
+	lifespan = 25
+	endurance = 15
+	maturation = 7
+	production = 1
+	yield = 2
+	potency = 15 // Not so lowish given the context
+	oneharvest = 1
+	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/chantermycelium
@@ -601,6 +667,7 @@
 	potency = -1
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/towermycelium
@@ -619,6 +686,7 @@
 	potency = -1
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/glowshroom
@@ -637,6 +705,7 @@
 	potency = 30 //-> brightness
 	oneharvest = 1
 	growthstages = 4
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/plumpmycelium
@@ -655,6 +724,7 @@
 	potency = 0
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/walkingmushroommycelium
@@ -673,6 +743,7 @@
 	potency = 0
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/nettleseed
@@ -691,6 +762,7 @@
 	potency = 8
 	oneharvest = 0
 	growthstages = 5
+	radiation = 0
 	plant_type = 1
 
 /obj/item/seeds/deathnettleseed
@@ -709,6 +781,7 @@
 	potency = 20
 	oneharvest = 0
 	growthstages = 5
+	radiation = 0
 	plant_type = 1
 
 /obj/item/seeds/weeds
@@ -727,6 +800,7 @@
 	potency = -1
 	oneharvest = 1
 	growthstages = 4
+	radiation = 0
 	plant_type = 1
 
 /obj/item/seeds/harebell
@@ -744,6 +818,7 @@
 	potency = -1
 	oneharvest = 1
 	growthstages = 4
+	radiation = 0
 	plant_type = 1
 
 /obj/item/seeds/sunflowerseed
@@ -762,6 +837,7 @@
 	potency = -1
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 1
 
 /obj/item/seeds/brownmold
@@ -780,6 +856,7 @@
 	potency = -1
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 2
 
 /obj/item/seeds/appleseed
@@ -796,6 +873,7 @@
 	production = 6
 	yield = 5
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/ambrosiavulgarisseed
@@ -812,6 +890,7 @@
 	production = 6
 	yield = 8
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/whitebeetseed
@@ -828,6 +907,7 @@
 	production = 6
 	yield = 4
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/sugarcaneseed
@@ -844,6 +924,7 @@
 	production = 6
 	yield = 4
 	plant_type = 0
+	radiation = 0
 	growthstages = 3
 
 /obj/item/seeds/watermelonseed
@@ -860,6 +941,7 @@
 	production = 6
 	yield = 3
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/pumpkinseed
@@ -876,6 +958,7 @@
 	production = 6
 	yield = 3
 	plant_type = 0
+	radiation = 0
 	growthstages = 3
 
 
@@ -893,6 +976,7 @@
 	production = 6
 	yield = 4
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/lemonseed
@@ -909,6 +993,7 @@
 	production = 6
 	yield = 4
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/orangeseed
@@ -925,6 +1010,7 @@
 	production = 6
 	yield = 5
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/poisonberryseed
@@ -942,6 +1028,7 @@
 	yield = 2
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/deathberryseed
@@ -959,6 +1046,7 @@
 	yield = 3
 	potency = 50
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /obj/item/seeds/grassseed
@@ -976,6 +1064,7 @@
 	yield = 5
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 2
 
 /obj/item/seeds/cocoapodseed
@@ -993,6 +1082,7 @@
 	yield = 2
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 
 /*  // Maybe one day when I get it to work like a grenade which exlodes gibs.
@@ -1011,6 +1101,7 @@
 	yield = 3
 	potency = 10
 	plant_type = 0
+	radiation = 0
 	growthstages = 6
 */
 
@@ -1030,6 +1121,7 @@
 	potency = 0
 	oneharvest = 1
 	growthstages = 3
+	radiation = 0
 	plant_type = 0
 
 */
@@ -1059,6 +1151,7 @@
 	var/production = 0
 	var/yield = 0
 	var/potency = -1
+	var/radiation = 0
 	var/plant_type = 0
 	icon = 'harvest.dmi'
 	New(newloc,newpotency)
@@ -1397,9 +1490,14 @@
 	icon_state = "chilipepper"
 	New()
 		..()
-		reagents.add_reagent("nutriment", max(round(potency / 5, 1), rand(10,20)))
-		reagents.add_reagent("capsaicin", max(round(potency / 5, 1), rand(10,20)))
-		bitesize = max(round(reagents.total_volume / 2, 1), 1)
+		if(potency >= 1)
+			reagents.add_reagent("nutriment", max(round(potency / 5, 1), rand(10,20)))
+			reagents.add_reagent("capsaicin", max(round(potency / 5, 1), rand(10,20)))
+			bitesize = max(round(reagents.total_volume / 2, 1), 1)
+		if(potency >= 10)
+			reagents.add_reagent("nutriment", max(round(potency / 5, 1), rand(10,20)))
+			reagents.add_reagent("capsaicin", max(round(potency / 2, 1), rand(10,20)))
+			bitesize = max(round(reagents.total_volume / 2, 1), 1)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/chili/attackby(var/obj/item/O as obj, var/mob/user as mob)
 	. = ..()
@@ -1420,10 +1518,47 @@
 	name = "Cannabis Leaf"
 	desc = "Yummy!"
 	icon_state = "cannabisleaf"
-	potency = 2
 	New()
 		..()
-		reagents.add_reagent("thc", max(round(potency / 5, 1), rand(10,20)))
+		if(potency >= 1)
+			reagents.add_reagent("thc", max(round(potency / 2, 1), rand(10,20)))
+		if(potency >= 10)
+			reagents.add_reagent("thc", max(round(potency * 2, 1), rand(20,40)))
+		if(potency >= 20)
+			reagents.add_reagent("thc", max(round(potency * 4, 1), rand(30,60)))
+		bitesize = max(round(reagents.total_volume / 2), 1)
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/cannabisleafbetter
+	seed = "/obj/item/seeds/cannabisseedbetter"
+	name = "Cannabis Leaf"
+	desc = "Looks potent"
+	icon_state = "cannabisleafbetter"
+	New()
+		..()
+		if(potency >= 10)
+			reagents.add_reagent("thc", rand(40,80))
+		if(potency >= 20)
+			reagents.add_reagent("thc", rand(50,100))
+		if(potency >= 30)
+			reagents.add_reagent("thc", rand(60,120))
+		if(potency >= 40)
+			reagents.add_reagent("thc", rand(80,160))
+			if(prob (75))
+				name = "Cannabis bud"
+				desc = "A great whopping bud of cannabis."
+				icon_state = "cannabisbud"
+		if(potency >= 60)
+			reagents.add_reagent("thc", rand(120,200))
+		if(potency >= 120)
+			reagents.add_reagent("thc", rand(150,250))
+		if(potency >= 150)
+			reagents.add_reagent("thc", 200)
+			reagents.add_reagent("psilocybin", 100)
+			if(prob (50))
+				name = "Hyper cannabis"
+				desc = "Monstrously potent bud"
+				icon_state = "cannabispurple"
+		bitesize = max(round(reagents.total_volume / 2), 1)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/tobaccoleaf
 	seed = "/obj/item/seeds/tobacco"
@@ -1595,6 +1730,17 @@
 		..()
 		reagents.add_reagent("nutriment", max(round(potency / 5, 1), rand(10,20)))
 		reagents.add_reagent("psilocybin", max(round(potency / 5, 1), rand(10,20)))
+		bitesize = max(round(reagents.total_volume / 2), 1)
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/mushroom/powercap
+	seed = "/obj/item/seeds/powercapmycelium"
+	name = "Power cap"
+	desc = "<I>Psilocybe Potentem</I>: Empower yourself!"
+	icon_state = "powercap"
+	potency = 15
+	New()
+		..()
+		reagents.add_reagent("psilocybin", max(round(potency * 5, 1), rand(10,20)))
 		bitesize = max(round(reagents.total_volume / 2), 1)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/mushroom/libertycap/attackby(var/obj/item/O as obj, var/mob/user as mob)

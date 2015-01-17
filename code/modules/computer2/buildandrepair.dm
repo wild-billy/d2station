@@ -153,7 +153,7 @@
 		// Anchored computer2 frame, with peripherals installed, wired up
 		if(3)
 			if(istype(P, /obj/item/weapon/wirecutters))
-				playsound(loc, 'wirecutter.ogg', 50, 1)
+				playsound(loc, 'Wirecutter.ogg', 50, 1)
 				user << "\blue You remove the cables."
 				state = 2
 				icon_state = "[screen_size]2"

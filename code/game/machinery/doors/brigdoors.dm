@@ -24,14 +24,14 @@
 
 /obj/machinery/door_timer/New()
 	..()
-	for(var/obj/machinery/door/window/brigdoor/M in machines)
+	for(var/obj/machinery/door/window/brigdoor/M in world)
 		if (M.id == src.id)
 			targetdoors += M
 			break
 	if (targetdoors.len==0)
 		stat |= BROKEN
 	targetflashers = list()
-	for(var/obj/machinery/flasher/F in machines)
+	for(var/obj/machinery/flasher/F in world)
 		if(F.id == src.id)
 			targetflashers += F
 	update_icon()
@@ -190,11 +190,11 @@
 /obj/machinery/door_timer/proc/update_display(var/line1, var/line2)
 	if(line2 == null)		// single line display
 		overlays = null
-		overlays += texticon(line1, 23, -13)
+		overlays += texticon(line1, 40, -16)
 	else					// dual line display
 		overlays = null
-		overlays += texticon(line1, 23, -9)
-		overlays += texticon(line2, 23, -17)
+		overlays += texticon(line1, 40, -8)
+		overlays += texticon(line2, 40, -16)
 	// return an icon of a time text string (tn)
 	// valid characters are 0-9 and :
 	// px, py are pixel offsets

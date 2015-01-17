@@ -18,9 +18,9 @@
 		return
 	var/dat
 	if (src.temp)
-		dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT>[src.temp]</TT><BR><BR><A href='?src=\ref[src];logout=1'>Log Out</A><BR><A href='?src=\ref[src];temp=1'>Clear Screen</A>")
+		dat = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT>[src.temp]</TT><BR><BR><A href='?src=\ref[src];logout=1'>Log Out</A><BR><A href='?src=\ref[src];temp=1'>Clear Screen</A>")
 	else
-		dat = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Card: <A href='?src=\ref[];id=auth'>[]</A><HR>", master, (src.master.authid ? text("[]", src.master.authid.name) : "----------"))
+		dat = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Card: <A href='?src=\ref[];id=auth'>[]</A><HR>", master, (src.master.authid ? text("[]", src.master.authid.name) : "----------"))
 		if (src.authenticated)
 			dat += text("PIN: <A href='?src=\ref[];id=pincode'>[]</A><HR>", master, (src.master.pincode ? text("[]", src.master.pincode) : "-----"))
 		if (src.authenticated && src.pinauthed)
@@ -64,10 +64,10 @@
 				src.authenticated = src.master.authid.registered
 				src.rank = src.master.authid.assignment
 				src.screen = 1
-				if(src.master.pincode == src.master.authid.pincode)
+				if(src.master.pincode == getPin(src.master.authid.originalckey))
 					src.pinauthed = 1
 	if (src.authenticated && src.pinauthed)
-		if(src.master.pincode != src.master.authid.pincode)
+		if(src.master.pincode != getPin(src.master.authid.originalckey))
 			src.temp = text("ERROR: PIN incorrect.")
 			return
 		//verify existence of bank account

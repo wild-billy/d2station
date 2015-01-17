@@ -323,7 +323,7 @@ Please wait...!</TT><BR>
 <A href='?src=\ref[src];dump=1'>Dispose contents!<BR>
 "}
 
-	user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>COOKULATOR 2050</TITLE></HEAD><TT>[dat]</TT>", "window=oven")
+	user << browse("<HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>COOKULATOR 2050</TITLE></HEAD><TT>[dat]</TT>", "window=oven")
 	onclose(user, "oven")
 	return
 

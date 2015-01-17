@@ -81,12 +81,12 @@
 	using.layer = 19
 	src.adding += using
 
-	using = new src.h_type(src) //Corner Button
-	using.dir = NORTHWEST
-	using.icon = 'screen1_alien.dmi'
-	using.screen_loc = "EAST+1,SOUTH-1"
-	using.layer = 19
-	src.adding += using
+	//using = new src.h_type(src) //Corner Button
+	//using.dir = NORTHWEST
+	//using.icon = 'screen1_alien.dmi'
+	//using.screen_loc = "EAST+1,SOUTH-1"
+	//using.layer = 19
+	//src.adding += using
 
 	using = new src.h_type( src )
 	using.name = "arrowleft"

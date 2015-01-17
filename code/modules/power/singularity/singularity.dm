@@ -27,7 +27,7 @@ var/global/list/uneatable = list(
 		dissipate_track = 0
 		dissipate_strength = 1 //How much energy do we lose?
 		move_self = 1 //Do we move on our own?
-		grav_pull = 4 //How many tiles out do we pull?
+		grav_pull = 0 //How many tiles out do we pull?
 		consume_range = 0 //How many tiles out do we eat
 		event_chance = 15 //Prob for event each tick
 		target = null //its target. moves towards the target if it has one
@@ -360,11 +360,11 @@ var/global/list/uneatable = list(
 
 
 		toxmob()
-			var/toxrange = 8
+			var/toxrange = 10
 			if (src.energy>1000)
 				toxrange += 6
 			var/toxloss = 4
-			var/radiation = 5
+			var/radiation = 20
 			if (src.energy>200)
 				toxloss = round(((src.energy-150)/50)*4,1)
 				radiation = round(((src.energy-150)/50)*5,1)

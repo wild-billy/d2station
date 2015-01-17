@@ -53,7 +53,7 @@
 	if(..())
 		return
 	user.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><a href='byond://?src=\ref[src];close=1'>Close</a>"
+	var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><a href='byond://?src=\ref[src];close=1'>Close</a>"
 	dat += "<center><h4>[src.enemy_name]</h4></center>"
 
 	dat += "<br><center><h3>[src.temp]</h3></center>"

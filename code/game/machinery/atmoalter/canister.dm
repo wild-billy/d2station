@@ -191,7 +191,7 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 <A href='?src=\ref[user];mach_close=canister'>Close</A><BR>
 "}
 
-	user << browse("<html><head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><title>[src]</title></head><body>[output_text]</body></html>", "window=canister;size=600x300")
+	user << browse("<html><head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><title>[src]</title></head><body>[output_text]</body></html>", "window=canister;size=600x300")
 	onclose(user, "canister")
 	return
 
@@ -209,7 +209,7 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 				if (holding)
 					release_log += "Valve was <b>closed</b> by [usr], stopping the transfer into the [holding]<br>"
 				else
-					release_log += "Valve was <b>closed</b> by [usr], stopping the transfer into the <font colour='red'><b>air</b></font><br>"
+					release_log += "Valve was <b>closed</b> by [usr], stopping the transfer into the <font color='red'><b>air</b></font><br>"
 			else
 				if (holding)
 					playsound(src.loc, 'oxygen_desk.ogg', 20, 1)
@@ -218,7 +218,7 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 				else
 					playsound(src.loc, 'oxygen_desk.ogg', 20, 1)
 					message_admins("[name] valve was opened in [bombarea] by [src.fingerprintslast]")
-					release_log += "Valve was <b>opened</b> by [usr], starting the transfer into the <font colour='red'><b>air</b></font><br>"
+					release_log += "Valve was <b>opened</b> by [usr], starting the transfer into the <font color='red'><b>air</b></font><br>"
 			valve_open = !valve_open
 
 		if (href_list["remove_tank"])
@@ -235,7 +235,7 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 
 		if (href_list["relabel"])
 			if (!is_labeled)
-				var/list/colours = list(\
+				var/list/colors = list(\
 					"\[N2O\]" = "redws", \
 					"\[N2\]" = "red", \
 					"\[O2\]" = "blue", \
@@ -244,10 +244,10 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 					"\[Air\]" = "grey", \
 					"\[CAUTION\]" = "yellow", \
 				)
-				var/label = input("Choose canister label", "Gas canister") as null|anything in colours
+				var/label = input("Choose canister label", "Gas canister") as null|anything in colors
 				if (label)
-					src.colour = colours[label]
-					src.icon_state = colours[label]
+					src.colour = colors[label]
+					src.icon_state = colors[label]
 					src.name = "Canister: [label]"
 					is_labeled = 1
 		src.updateUsrDialog()
@@ -289,6 +289,17 @@ Release Pressure: <A href='?src=\ref[src];pressure_adj=-1000'>-</A> <A href='?sr
 	..()
 
 	var/datum/gas/sleeping_agent/trace_gas = new
+	air_contents.trace_gases += trace_gas
+	trace_gas.moles = (src.maximum_pressure*filled)*air_contents.volume/(R_IDEAL_GAS_EQUATION*air_contents.temperature)
+
+	src.update_icon()
+	return 1
+
+/obj/machinery/portable_atmospherics/canister/volatile_fuel/New()
+
+	..()
+
+	var/datum/gas/volatile_fuel/trace_gas = new
 	air_contents.trace_gases += trace_gas
 	trace_gas.moles = (src.maximum_pressure*filled)*air_contents.volume/(R_IDEAL_GAS_EQUATION*air_contents.temperature)
 

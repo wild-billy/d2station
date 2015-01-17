@@ -4,7 +4,7 @@
 	icon_state = "detective"
 	calibre = "9.1"
 	origin_tech = "combat=2;materials=2"
-
+	slowdown = 0.5
 	New()
 		for(var/i = 1, i <= max_shells, i++)
 			loaded += new /obj/item/ammo_casing/c38(src)
@@ -49,6 +49,7 @@
 	calibre = "18.5"
 	origin_tech = "combat=2;materials=2"
 	jammable = 1
+	slowdown = 2
 	var/recentpump = 0 // to prevent spammage
 
 	New()
@@ -158,7 +159,8 @@
 			return 1
 		else
 			return 0
-
+/obj/item/weapon/gun
+	var/slowdown = 0
 
 /obj/item/weapon/gun/projectile/automatic //Hopefully someone will find a way to make these fire in bursts or something. --Superxpdude
 	name = "Submachine Gun"
@@ -171,6 +173,7 @@
 	origin_tech = "combat=4;materials=2"
 	burst_size = 3
 	jammable = 1
+	slowdown = 2
 
 	New()
 		for(var/i = 1, i <= max_shells, i++)
@@ -201,7 +204,7 @@
 	allow_suppressor = 1
 	sprsr_icon_name = "uzi-suppress"
 	suppressor_x = 6
-
+	slowdown = 1
 	New()
 		loaded_magazine = new /obj/item/ammo_magazine/c45(src)
 		update_icon()
@@ -243,7 +246,7 @@
 	allow_suppressor = 1
 	sprsr_icon_name = "deagle-suppress"
 	suppressor_x = 11
-
+	slowdown = 0.5
 	New()
 		loaded_magazine = new /obj/item/ammo_magazine/c50ae(src)
 		update_icon()

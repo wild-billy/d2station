@@ -29,7 +29,7 @@ proc/explosion(turf/epicenter, devastation_range, heavy_impact_range, light_impa
 					if(prob(40))
 						M << sound('exp6.ogg', volume=5)
 
-
+		/* Guess our code is still too shit to handle this.
 		if((heavy_impact_range > 1) && (light_impact_range > 1))
 			var/turf/location = epicenter.loc
 			for(var/turf/simulated/floor/target_tile in range(0,location))
@@ -46,7 +46,7 @@ proc/explosion(turf/epicenter, devastation_range, heavy_impact_range, light_impa
 
 				target_tile.assume_air(napalm)
 				spawn (0) target_tile.hotspot_expose(700, 400)
-
+		*/
 
 		if(light_impact_range > 1)
 			playsound(epicenter.loc, "explosion", 70, 1, round(devastation_range,1) )

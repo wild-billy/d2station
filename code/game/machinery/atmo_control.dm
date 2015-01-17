@@ -146,7 +146,7 @@ obj/machinery/computer/general_air_control
 			for(var/id_tag in sensors)
 				var/long_name = sensors[id_tag]
 				var/list/data = sensor_information[id_tag]
-				var/sensor_part = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>[long_name]</B>:<BR>"
+				var/sensor_part = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>[long_name]</B>:<BR>"
 
 				if(data)
 					if(data["pressure"])
@@ -205,7 +205,7 @@ obj/machinery/computer/general_air_control
 			//if(signal.data)
 			//	input_info = signal.data // Attempting to fix intake control -- TLE
 
-			output += "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Tank Control System</B><BR>"
+			output += "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Tank Control System</B><BR>"
 			if(input_info)
 				var/power = (input_info["power"])
 				var/volume_rate = input_info["volume_rate"]
@@ -511,7 +511,7 @@ Rate: [volume_rate] L/sec<BR>"}
 	else
 		minor_text = "No minor alerts detected.<BR>"
 
-	var/output = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>[name]</B><HR>
+	var/output = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>[name]</B><HR>
 <B>Priority Alerts:</B><BR>
 [priority_text]
 <BR>

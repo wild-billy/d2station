@@ -248,8 +248,8 @@ Microphone:"<A href='byond://?src=\ref[src];ch_name=[chan_name];talk=[!broad]'> 
 
 
 /obj/item/device/radio/talk_into(mob/M as mob, message, channel)
-	for(var/obj/machinery/computer/crew/radiotransmitter/TR in machines)
-		if ((src.requiretransmitter == 0) || (TR.transmitteron == 1))
+	for(var/obj/machinery/radiotransmitter/TR in machines)
+		if ((src.requiretransmitter == 0) || TR.transmitteron == 1)
 			var/datum/radio_frequency/connection = null // Code shared by Mport2004 for Security Headsets -- TLE
 			if(channel && channels && channels.len > 0)
 				if (channel == "department")
@@ -336,6 +336,8 @@ Microphone:"<A href='byond://?src=\ref[src];ch_name=[chan_name];talk=[!broad]'> 
 						freq_text = "Mining"
 					if(1347)
 						freq_text = "Cargo"
+					if(1441)
+						freq_text = "Prison"
 				//There's probably a way to use the list var of channels in code\game\communications.dm to make the dept channels non-hardcoded, but I wasn't in an experimentive mood. --NEO
 
 				if(!freq_text)
@@ -430,7 +432,7 @@ Microphone:"<A href='byond://?src=\ref[src];ch_name=[chan_name];talk=[!broad]'> 
 							R.show_message(rendered, 2)
 
 /obj/item/device/radio/hear_talk(mob/M as mob, msg)
-	for(var/obj/machinery/computer/crew/radiotransmitter/N in machines)
+	for(var/obj/machinery/radiotransmitter/N in machines)
 		if ((src.requiretransmitter == 0) || (N.transmitteron == 1))
 			if (broadcasting)
 				talk_into(M, msg)

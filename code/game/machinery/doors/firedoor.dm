@@ -65,7 +65,7 @@
 	return
 
 /obj/machinery/door/firedoor/process()
-	if(src.operating)
+	if(!src.operating)
 		return
 	if(src.nextstate)
 		if(src.nextstate == OPEN && src.density)
@@ -73,6 +73,12 @@
 				src.open()
 		else if(src.nextstate == CLOSED && !src.density)
 			spawn()
+				var/turf/simulated/floor/boom = get_turf(src.loc)
+				if(istype(boom, /turf/simulated/floor))
+					if(!(boom.broken || boom.burnt) && boom.floor_tile && boom.floor_tile.type)
+						new boom.floor_tile.type(boom.loc)
+						boom.make_plating()
+						playsound(src.loc, 'Crowbar.ogg', 80, 1)
 				src.close()
 		src.nextstate = null
 

@@ -218,8 +218,8 @@ HIDDEN ITEMS ARE FREE BY DEFAULT BECAUSE I AM A LAZY SHIT AND THEY ARE NOT VERY 
 	product_amounts = "3;2;2;2;2;2;2;2;3;2;2;2;2;2;3;5;4;3;3;3;3;3;3;3;3;3;3;3"
 	product_prices = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
 	product_slogans = "THIS'S WHERE TH' SEEDS LIVE! GIT YOU SOME!;Hands down the best seed selection on the station!;Also certain mushroom varieties available, more for experts! Get certified today!"
-	product_hidden = "/obj/item/seeds/amanitamycelium;/obj/item/seeds/glowshroom;/obj/item/seeds/libertymycelium;/obj/item/seeds/nettleseed;/obj/item/seeds/plumpmycelium"
-	product_hideamt = "2;2;2;2;2"
+	product_hidden = "/obj/item/seeds/amanitamycelium;/obj/item/seeds/glowshroom;/obj/item/seeds/libertymycelium;/obj/item/seeds/powercapmycelium;/obj/item/seeds/nettleseed;/obj/item/seeds/plumpmycelium;/obj/item/seeds/cannabisseedbetter"
+	product_hideamt = "2;2;2;2;2;2;2"
 	//product_cost = 0
 
 /obj/machinery/vending/magivend

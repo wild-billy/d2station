@@ -757,11 +757,11 @@
 		src.delete = src.delete
 
 	else if (!src.delete && src.temphtml) //Window in buffer - its a menu, dont add clear message
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />[src.temphtml]<BR><BR><A href='?src=\ref[src];clear=1'>Main Menu</A>"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />[src.temphtml]<BR><BR><A href='?src=\ref[src];clear=1'>Main Menu</A>"
 	else
 		if (src.connected) //Is something connected?
 			var/mob/occupant = src.connected.occupant
-			dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><font color='blue'><B>Occupant Statistics:</B></FONT><BR>" //Blah obvious
+			dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><font color='blue'><B>Occupant Statistics:</B></FONT><BR>" //Blah obvious
 			if (occupant) //is there REALLY someone in there?
 				if (!istype(occupant,/mob/living/carbon/human))
 					sleep(1)
@@ -841,7 +841,7 @@
 			if(src.connected.occupant == usr)
 				usr << browse(null, "window=scannernew;size=1000x625")
 				return
-			src.temphtml = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Radiation Duration: <B><font color='green'>[]</B></FONT><BR>", src.radduration)
+			src.temphtml = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Radiation Duration: <B><font color='green'>[]</B></FONT><BR>", src.radduration)
 			src.temphtml += text("Radiation Intensity: <font color='green'><B>[]</B></FONT><BR><BR>", src.radstrength)
 			src.temphtml += text("<A href='?src=\ref[];radleminus=1'>--</A> Duration <A href='?src=\ref[];radleplus=1'>++</A><BR>", src, src)
 			src.temphtml += text("<A href='?src=\ref[];radinminus=1'>--</A> Intesity <A href='?src=\ref[];radinplus=1'>++</A><BR>", src, src)
@@ -886,7 +886,7 @@
 				temphtml = null
 				delete = 0
 				return null
-			src.temphtml = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Unique Identifier: <font color='blue'>[getleftblocks(src.connected.occupant.dna.uni_identity,uniblock,3)][src.subblock == 1 ? "<U><B>"+getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),1,1)+"</U></B>" : getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),1,1)][src.subblock == 2 ? "<U><B>"+getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),2,1)+"</U></B>" : getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),2,1)][src.subblock == 3 ? "<U><B>"+getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),3,1)+"</U></B>" : getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),3,1)][getrightblocks(src.connected.occupant.dna.uni_identity,uniblock,3)]</FONT><BR><BR>")
+			src.temphtml = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Unique Identifier: <font color='blue'>[getleftblocks(src.connected.occupant.dna.uni_identity,uniblock,3)][src.subblock == 1 ? "<U><B>"+getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),1,1)+"</U></B>" : getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),1,1)][src.subblock == 2 ? "<U><B>"+getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),2,1)+"</U></B>" : getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),2,1)][src.subblock == 3 ? "<U><B>"+getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),3,1)+"</U></B>" : getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),3,1)][getrightblocks(src.connected.occupant.dna.uni_identity,uniblock,3)]</FONT><BR><BR>")
 			src.temphtml += text("Selected Block: <font color='blue'><B>[]</B></FONT><BR>", src.uniblock)
 			src.temphtml += text("<A href='?src=\ref[];unimenuminus=1'><-</A> Block <A href='?src=\ref[];unimenuplus=1'>-></A><BR><BR>", src, src)
 			src.temphtml += text("Selected Sub-Block: <font color='blue'><B>[]</B></FONT><BR>", src.subblock)
@@ -916,7 +916,7 @@
 			var/tstructure2
 			block = getblock(getblock(src.connected.occupant.dna.uni_identity,src.uniblock,3),src.subblock,1)
 			src.delete = 1
-			src.temphtml = text("<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Working ... Please wait ([] Seconds)", src.radduration)
+			src.temphtml = text("<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Working ... Please wait ([] Seconds)", src.radduration)
 			usr << browse(temphtml, "window=scannernew;size=550x650")
 			onclose(usr, "scannernew")
 			sleep(10*src.radduration)
@@ -1055,7 +1055,7 @@
 			if(src.connected.occupant == usr)
 				usr << browse(null, "window=scannernew;size=550x625")
 				return
-			src.temphtml = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Buffer 1:</B><BR>"
+			src.temphtml = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Buffer 1:</B><BR>"
 			if (!(src.buffer1))
 				src.temphtml += "Buffer Empty<BR>"
 			else

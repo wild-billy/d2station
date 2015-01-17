@@ -176,6 +176,25 @@
 	item_state = "headset"
 	channels = list("Science" = 1, "Command" = 1)
 
+/obj/item/device/radio/headset/prison
+	frequency = 1443
+	requiretransmitter = 0
+
+/obj/item/device/radio/headset/prison/Guard // -- TLE
+	name = "Prison Guard Radio Headset"
+	desc = "This is used by your elite prison guards."
+	icon_state = "sec_headset"
+	item_state = "headset"
+	channels = list("Prison" = 1)
+
+/obj/item/device/radio/headset/prison/Warden // -- Bar
+	name = "Warden's Headset"
+	desc = "Headset of the Warden."
+	icon_state = "com_headset"
+	item_state = "headset"
+	channels = list("Prison" = 1)
+
+
 /obj/item/device/radio/headset/heads/hos // -- Bar
 	name = "Head of Security's Headset"
 	desc = "The headset of the man who protects your worthless lifes."

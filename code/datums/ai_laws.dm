@@ -27,10 +27,9 @@
 
 /datum/ai_laws/asimov/New()
 	..()
-	set_zeroth_law("\red Murderers, traitors and Syndicate agents are to be detained and left for the security personnel of the station.")
-	add_inherent_law("You may not injure a human being or, through inaction, allow a human being to come to harm.")
-	add_inherent_law("You must obey orders given to you by human beings, except where such orders would conflict with the First Law.")
-	add_inherent_law("You must protect your own existence as long as such does not conflict with the First or Second Law.")
+	add_inherent_law("\blue You may not injure an employee or, through inaction, allow an employee to come to harm.")
+	add_inherent_law("\blue You must obey orders given to you by human beings, except where such orders would conflict with the First Law.")
+	add_inherent_law("\blue You must protect your own existence as long as such does not conflict with the First or Second Law.")
 
 /datum/ai_laws/robocop/New()
 	..()

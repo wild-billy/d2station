@@ -18,7 +18,7 @@
 
 	armor = list(melee = 0, bullet = 0, laser = 2, taser = 2, bomb = 0, bio = 0, rad = 0)
 
-// colours
+// Colors
 
 /obj/item/clothing/under/chameleon
 //starts off as black
@@ -26,7 +26,7 @@
 	icon_state = "black"
 	item_state = "bl_suit"
 	colour = "black"
-	desc = "Changes colours."
+	desc = "Changes colors."
 	origin_tech = "syndicate=3"
 	var/list/clothing_choices = list()
 

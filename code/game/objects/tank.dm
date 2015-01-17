@@ -20,7 +20,7 @@
 		if(location.internal==src)
 			using_internal = 1
 
-	var/message = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />
+	var/message = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />
 <b>Tank</b><BR>
 <FONT color='blue'><b>Tank Pressure:</b> [air_contents.return_pressure()]</FONT><BR>
 <BR>

@@ -129,11 +129,11 @@ var/showadminmessages = 1
 		else
 			log_admin("[key_name(usr)] edited [banned_key]'s ban. Reason: [reason] Duration: [mins]")
 			message_admins("\blue [key_name_admin(usr)] edited [banned_key]'s ban. Reason: [reason] Duration: [mins]", 1)
-		//world.Export("http://78.47.53.54/requester.php?url=http://d2k5.com/serverstatus/ss13writestatus.php@vals@name=Server%20Ban&@and@msg=[banned_key] was banned for [reason] for [mins] minutes by [key_name(usr)]")
+		//world.Export("http://d2k5.com/serverstatus/ss13writestatus.php?name=Server%20Ban&&msg=[banned_key] was banned for [reason] for [mins] minutes by [key_name(usr)]")
 		for(var/mob/M in mobz)
 			if(M:ckey == banned_key)
 				message_admins("\blue [banned_key] was booted.", 1)
-				M << browse("<meta http-equiv=\"REFRESH\" content=\"0;url=http://lemon.d2k5.com/banned.php?user=[banned_key]&reason=[reason]&banner=[key_name_admin(usr)]&expire=[mins]\">", "window=mapwindow.titalscreen")
+				M << browse("<meta http-equiv=\"REFRESH\" content=\"0;url=http://178.63.153.81/ss13/banned.php?user=[banned_key]&reason=[reason]&banner=[key_name_admin(usr)]&expire=[mins]\">", "window=mapwindow.titalscreen")
 				winshow(M, "mapwindow.titalscreen", 1)
 				winshow(M, "window=mapwindow.titalscreen", 1)
 				del(M:client)
@@ -253,8 +253,8 @@ var/showadminmessages = 1
 					//M.achievement_give("Banned!", 75)
 					log_admin("[usr.client.ckey] has prisoned [M.ckey].\nReason: [reason]\nThis will be removed in [mins] minutes.")
 					message_admins("\blue[usr.client.ckey] has prisoned [M.ckey].\nReason: [reason]\nThis will be removed in [mins] minutes.")
-					//world.Export("http://78.47.53.54/requester.php?url=http://d2k5.com/serverstatus/ss13writestatus.php@vals@name=Server%20Status%20Report&@and@msg=[M.ckey]%20was%20banned%20for%20[mins]%20minutes%20by%20[usr.client.key]")
-					M << browse("<meta http-equiv=\"REFRESH\" content=\"0;url=http://lemon.d2k5.com/banned.php?user=[M.ckey]&reason=[reason]&banner=[usr.client.key]&expire=[mins]\">", "window=mapwindow.titalscreen")
+					//world.Export("http://d2k5.com/serverstatus/ss13writestatus.php?name=Server%20Status%20Report&&msg=[M.ckey]%20was%20banned%20for%20[mins]%20minutes%20by%20[usr.client.key]")
+					M << browse("<meta http-equiv=\"REFRESH\" content=\"0;url=http://178.63.153.81/ss13/banned.php?user=[M.ckey]&reason=[reason]&banner=[usr.client.key]&expire=[mins]\">", "window=mapwindow.titalscreen")
 					//winshow(M, "mapwindow.titalscreen", 1)
 					//winshow(M, "window=mapwindow.titalscreen", 1)
 					//del(M.client)
@@ -1390,6 +1390,23 @@ var/showadminmessages = 1
 							if(O.viruses)
 								O.viruses = initial(O.viruses)
 						message_admins("[key_name_admin(usr)] removed all viruses!")
+				if("openall")
+					if (src.rank in list("Host"))
+						for(var/obj/machinery/door/O in world)
+							O:open()
+							flick("door_spark", O)
+				if("closeall")
+					if (src.rank in list("Host"))
+						for(var/obj/machinery/door/O in world)
+							O:close()
+				if("unlockall")
+					if (src.rank in list("Host"))
+						for(var/obj/machinery/door/airlock/O in world)
+							O.locked = 0
+				if("lockall")
+					if (src.rank in list("Host"))
+						for(var/obj/machinery/door/airlock/O in world)
+							O.locked = 1
 				if("fartstorm")
 					if(usr.key == "lordslowpoke") // jesus fucking christ stop
 						message_admins("\red <B>slowpoke is being shit again</B>")
@@ -2004,7 +2021,8 @@ var/showadminmessages = 1
 <A href='?src=\ref[src];secretsfun=blackout'>Remove All Viruses</A><BR>
 <A href='?src=\ref[src];secretsfun=retardify'>Revive everyone</A><BR>
 <A href='?src=\ref[src];secretsfun=fakeguns'>Clean up the station (adminbus bullshit, decals)</A><BR>
-<A href='?src=\ref[src];secretsfun=blackout'>Break all lights</A><BR><BR>"} //fuckyou
+<A href='?src=\ref[src];secretsfun=openall'>Open All Airlocks</A> (<A href='?src=\ref[src];secretsfun=unlockall'>unlock all</A>)<BR>
+<A href='?src=\ref[src];secretsfun=closeall'>Close All Airlocks</A> (<A href='?src=\ref[src];secretsfun=lockall'>lock all</A>)<BR><BR>"} //fuckyou
 //<A href='?src=\ref[src];secretsfun=moveadminshuttle'>Move Administration Shuttle</A><BR>
 //<A href='?src=\ref[src];secretsfun=moveferry'>Move Ferry</A><BR>
 //<A href='?src=\ref[src];secretsfun=moveminingshuttle'>Move Mining Shuttle</A><BR>
@@ -2164,7 +2182,7 @@ var/showadminmessages = 1
 			if(E.client) E.scorestats()
 		world << "\red <b>Restarting world!</b> \blue Initiated by [usr.client.stealth ? "Admin Candidate" : usr.key]!"
 		log_admin("[key_name(usr)] initiated a reboot.")
-		world.Export("http://78.47.53.54/requester.php?url=http://d2k5.com/serverstatus/ss13writestatus.php@vals@name=Server%20Restart&@and@msg=[usr.client.stealth ? "Admin Candidate" : usr.key]%20initiated%20a%20restart.")
+		//world.Export("http://d2k5.com/serverstatus/ss13writestatus.php?name=Server%20Restart&&msg=[usr.client.stealth ? "Admin Candidate" : usr.key]%20initiated%20a%20restart.")
 		sleep(50)
 		world.Reboot()
 
@@ -2247,7 +2265,7 @@ var/showadminmessages = 1
 		world << "<B>New players may now enter the game.</B>"
 	log_admin("[key_name(usr)] toggled new player game entering.")
 	message_admins("\blue [key_name_admin(usr)] toggled new player game entering.", 1)
-	world.update_status()
+	//world.update_status()
 
 /obj/admins/proc/toggleAI()
 	set category = "Server"
@@ -2259,7 +2277,7 @@ var/showadminmessages = 1
 	else
 		world << "<B>The AI job is chooseable now.</B>"
 	log_admin("[key_name(usr)] toggled AI allowed.")
-	world.update_status()
+	//world.update_status()
 
 /obj/admins/proc/toggleaban()
 	set category = "Server"
@@ -2272,7 +2290,7 @@ var/showadminmessages = 1
 		world << "<B>You may no longer respawn :(</B>"
 	message_admins("\blue [key_name_admin(usr)] toggled respawn to [abandon_allowed ? "On" : "Off"].", 1)
 	log_admin("[key_name(usr)] toggled respawn to [abandon_allowed ? "On" : "Off"].")
-	world.update_status()
+	//world.update_status()
 
 /obj/admins/proc/toggle_aliens()
 	set category = "Server"
@@ -2330,7 +2348,7 @@ var/showadminmessages = 1
 		if(E.client) E.scorestats()
 	world << "\red <b>Rebooting world!</b> \blue Initiated by [usr.client.stealth ? "Admin Candidate" : usr.key]!"
 	log_admin("[key_name(usr)] initiated an immediate reboot.")
-	world.Export("http://78.47.53.54/requester.php?url=http://d2k5.com/serverstatus/ss13writestatus.php@vals@name=Server%20Restart&@and@msg=[usr.client.stealth ? "Admin Candidate" : usr.key]%20initiated%20a%20restart.")
+	//world.Export("http://d2k5.com/serverstatus/ss13writestatus.php?name=Server%20Restart&&msg=[usr.client.stealth ? "Admin Candidate" : usr.key]%20initiated%20a%20restart.")
 	world.Reboot()
 
 /client/proc/deadchat()

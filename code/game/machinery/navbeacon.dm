@@ -145,7 +145,7 @@
 		var/t
 
 		if(locked && !ai)
-			t = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Navigation Beacon</B><HR><BR>
+			t = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>Navigation Beacon</B><HR><BR>
 <i>(swipe card to unlock controls)</i><BR>
 Frequency: [format_frequency(freq)]<BR><HR>
 Location: [location ? location : "(none)"]</A><BR>
@@ -157,7 +157,7 @@ Transponder Codes:<UL>"}
 
 		else
 
-			t = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Navigation Beacon</B><HR><BR>
+			t = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>Navigation Beacon</B><HR><BR>
 <i>(swipe card to lock controls)</i><BR>
 Frequency:
 <A href='byond://?src=\ref[src];freq=-10'>-</A>

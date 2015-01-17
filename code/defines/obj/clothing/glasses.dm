@@ -19,7 +19,7 @@
 	item_state = "glasses"
 	origin_tech = "magnets=2;engineering=2"
 
-/obj/item/clothing/glasses/meson/sollux
+/obj/item/clothing/glasses/solux
 	name = "Sollux' Glasses"
 	desc = "One side red, one side blue!"
 	icon_state = "sollux"

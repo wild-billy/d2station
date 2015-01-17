@@ -73,7 +73,7 @@
 				if (brain)
 					user << "Get that brain out of there first"
 				else
-					playsound(loc, 'wirecutter.ogg', 50, 1)
+					playsound(loc, 'Wirecutter.ogg', 50, 1)
 					user << "\blue You remove the cables."
 					state = 2
 					icon_state = "2"

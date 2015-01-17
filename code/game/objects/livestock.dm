@@ -1643,6 +1643,112 @@
 		del src
 
 
+/obj/critter/changelingbutt
+	name = "butt"
+	desc = "Today, Space Station 13 - tomorrow, THE WORLD!"
+	icon = 'livestock.dmi'
+	icon_state = "butt"
+	density = 0
+	health = 15
+	aggressive = 1
+	defensive = 1
+	wanderer = 1
+	opensdoors = 1
+	atkcarbon = 1
+	atksilicon = 1
+	firevuln = 2
+	brutevuln = 2
+	var/infectedby = null
+	var/list/absorbed_dna = list()
+	var/olddna
+	var/oldname
+	seek_target()
+		src.anchored = 0
+		for (var/mob/living/C in view(src.seekrange,src))
+			if ((C.name == src.oldtarget_name) && (world.time < src.last_found + 100)) continue
+			if (istype(C, /mob/living/carbon/) && !src.atkcarbon) continue
+			if (istype(C, /mob/living/silicon/) && !src.atksilicon) continue
+			if (C.health < 0) continue
+			if (C.name == src.attacker) src.attack = 1
+			if (istype(C, /mob/living/carbon/) && src.atkcarbon) src.attack = 1
+			if (istype(C, /mob/living/silicon/) && src.atksilicon) src.attack = 1
+			if (C.changeling_level >= 1) continue
+			if (src.attack)
+				src.target = C
+				src.oldtarget_name = C.name
+				for(var/mob/O in viewers(src, null))
+					O.show_message("\red <b>[src]</b> charges at [C:name]!", 1)
+				//playsound(src.loc, pick('MEhunger.ogg', 'MEraaargh.ogg', 'MEruncoward.ogg', 'MEbewarecoward.ogg'), 50, 0)	Strumpetplaya - Not supported
+				src.task = "chasing"
+				break
+			else
+				continue
+
+	patrol_step()
+		playsound(src.loc, 'squishy.ogg', 20, 1)
+		var/turf/location = src.loc
+
+		new /obj/decal/cleanable/poo(location) //Places a stain of shit on the floor
+		..()
+
+	ChaseAttack(mob/M)
+		for(var/mob/O in viewers(src, null))
+			O.show_message("\red <B>[src]</B> viciously lunges at [M]!", 1)
+		//M.stunned = 10
+		M.weakened = 10
+
+		playsound(src.loc, 'fart.ogg', 60, 1)
+		playsound(src.loc, 'squishy.ogg', 40, 1)
+		var/turf/location = src.loc
+
+		new /obj/decal/cleanable/poo(location) //Places a stain of shit on the floor
+		new /obj/item/weapon/reagent_containers/food/snacks/poo(location) //Spawns a turd
+
+	//	var/datum/disease/the_thing/A = new /datum/disease/the_thing
+	//	A.infectedby = src.infectedby
+	//	A.absorbed_dna = absorbed_dna
+	//	A.oldname = src.oldname
+	//	A.olddna = src.olddna
+	//	target:contract_disease(A)
+		seek_target()
+		sleep(20)
+
+	CritterAttack(mob/M)
+		sleep(20)
+		src.attacking = 1
+		for(var/mob/O in viewers(src, null))
+			O.show_message("\red <B>[src]</B> bites [src.target]!", 1)
+		src.target:bruteloss += rand(1,2)
+
+		playsound(src.loc, 'fart.ogg', 60, 1)
+		playsound(src.loc, 'squishy.ogg', 40, 1)
+		var/turf/location = src.loc
+
+		new /obj/decal/cleanable/poo(location) //Places a stain of shit on the floor
+		new /obj/item/weapon/reagent_containers/food/snacks/poo(location) //Spawns a turd
+
+	//	var/datum/disease/the_thing/A = new /datum/disease/the_thing
+	//	A.infectedby = src.infectedby
+	//	A.absorbed_dna = absorbed_dna
+	//	A.oldname = src.oldname
+	//	A.olddna = src.olddna
+	//	target:contract_disease(A)
+		seek_target()
+		spawn(10)
+			src.attacking = 0
+
+	CritterDeath()
+		src.visible_message("<b>[src]</b> messily splatters into a puddle of poo!")
+		src.alive = 0
+		playsound(src.loc, 'fart.ogg', 60, 1)
+		playsound(src.loc, 'squishy.ogg', 40, 1)
+		var/turf/location = src.loc
+
+		new /obj/decal/cleanable/poo(location) //Places a stain of shit on the floor
+		new /obj/item/weapon/reagent_containers/food/snacks/poo(location) //Spawns a turd
+		del src
+
+
 /obj/critter/killertomato
 	name = "killer tomato"
 	desc = "Today, Space Station 13 - tomorrow, THE WORLD!"

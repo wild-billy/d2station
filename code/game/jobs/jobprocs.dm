@@ -602,8 +602,8 @@
 		hobby3 = pick(hobby)
 
 	if(src.client && src.mind)
-		src << "\blue <br><br><b>Good morning [src.name]!</b><br>You are a crew member on D2K5 Space Observatory Beta 242, born and raised in [birthplace1]. Your favorite hobbies were always [hobby1], [hobby2] and [hobby3], while your lifelong dream is [lifedream1].<br>"
-		src.mind.store_memory("You are a crew member on D2K5 Space Observatory Beta 242, born and raised in [birthplace1]. Your favorite hobbies are [hobby1], [hobby2] and [hobby3], while your lifelong dream is [lifedream1].")
+		src << "\blue <br><br><b>Good morning [src.name]!</b><br>You are a crew member on [world.name], born and raised in [birthplace1]. Your favorite hobbies were always [hobby1], [hobby2] and [hobby3], while your lifelong dream is [lifedream1].<br>"
+		src.mind.store_memory("You are a crew member on [world.name], born and raised in [birthplace1]. Your favorite hobbies are [hobby1], [hobby2] and [hobby3], while your lifelong dream is [lifedream1].")
 		apply_specialstuff(src)
 
 		/*if(prob(5))
@@ -833,14 +833,14 @@
 			src.equip_if_possible(new /obj/item/weapon/storage/utilitybelt/secbelt/full(src), slot_belt)
 
 		if ("Warden")
-			src.equip_if_possible(new /obj/item/device/radio/headset/headset_sec (src), slot_ears) // -- TLE
+			src.equip_if_possible(new /obj/item/device/radio/headset/prison/Warden (src), slot_ears) // -- TLE
 			src.equip_if_possible(new /obj/item/weapon/storage/backpack/security (src), slot_back)
 
 			src.equip_if_possible(new /obj/item/device/pda/security(src), slot_l_store)
 			src.equip_if_possible(new /obj/item/clothing/under/rank/warden(src), slot_w_uniform)
 			src.equip_if_possible(new /obj/item/clothing/suit/armor/vest(src), slot_wear_suit)
 			src.equip_if_possible(new /obj/item/clothing/head/helmet/warden(src), slot_head)
-			src.equip_if_possible(new /obj/item/clothing/shoes/black(src), slot_shoes)
+			src.equip_if_possible(new /obj/item/clothing/shoes/jackboots(src), slot_shoes)
 			src.equip_if_possible(new /obj/item/clothing/gloves/black(src), slot_gloves)
 			src.equip_if_possible(new /obj/item/clothing/glasses/sunglasses(src), slot_glasses)
 			src.equip_if_possible(new /obj/item/clothing/mask/gas/emergency(src), slot_wear_mask)
@@ -1290,13 +1290,11 @@
 
 
 /mob/living/carbon/human/proc/spawnId(rank)
-	src.pincode = rand(10000,99999)
-
 	if(getBalance(src.ckey) != "no key found")
-		src << "\blue Your bank PIN is [src.pincode] and you have Ð[getBalance(src.ckey)] on your bank account.<br><br>"
+		src << "\blue Your bank PIN is [getPin(src.ckey)] and you have Ð[getBalance(src.ckey)] on your bank account.<br><br>"
+		src.mind.store_memory("Bank PIN: [getPin(src.ckey)]")
 	else
-		src << "\blue Your bank PIN is [src.pincode] but unfortunately you do not have a bank account. To get one, <a href=\"http://d2k5.com/threads/how-to-get-a-bank-account.879/\" target=\"_blank\">click here</a>.<br><br>"
-	src.mind.store_memory("Bank PIN: [src.pincode]")
+		src << "\blue (Registration Notice).<br><br>"
 
 	var/obj/item/weapon/card/id/C = null
 	switch(rank)
@@ -1308,6 +1306,8 @@
 			C = new /obj/item/weapon/card/id/hop(src)
 		if("Head of Security")
 			C = new /obj/item/weapon/card/id/hos(src)
+		if("Warden")
+			C = new /obj/item/weapon/card/id/prison/guard(src)
 		if("Chief Engineer")
 			C = new /obj/item/weapon/card/id/ce(src)
 		if("Research Director")
@@ -1358,7 +1358,6 @@
 			C.assignment = rank
 			C.name = "[C.registered]'s ID Card ([C.assignment])"
 			C.originalckey = src.ckey
-			C.pincode = src.pincode
 			C.access = get_access(C.assignment)
 			src.equip_if_possible(C, slot_wear_id)
 

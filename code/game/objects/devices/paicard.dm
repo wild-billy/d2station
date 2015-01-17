@@ -15,7 +15,7 @@
 		if (!in_range(src, user))
 			return
 		user.machine = src
-		var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Personal AI Device</B><BR>"
+		var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>Personal AI Device</B><BR>"
 		if(pai && (!pai.master_dna || !pai.master))
 			dat += "<a href='byond://?src=\ref[src];setdna=1'>Imprint Master DNA</a><br>"
 		if(pai)

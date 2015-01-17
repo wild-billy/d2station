@@ -181,6 +181,9 @@
 			verbs += /client/proc/changeckey
 			verbs += /client/proc/changename
 			verbs += /client/proc/viewfingerprints
+			verbs += /client/proc/resizeobj
+			verbs += /client/proc/resizeturf
+			verbs += /client/proc/resizemob
 
 		if ("Robustmin")
 			deadchat = 1
@@ -1850,7 +1853,7 @@
 
 
 
-/client/proc/changename(var/mob/M in mobz)
+/client/proc/changename(var/mob/M)
 	set category = "Debug"
 	set name = "Change Name"
 
@@ -1869,7 +1872,7 @@
 				id.name = "[id.registered]'s ID Card ([id.assignment])"
 
 
-/client/proc/changeckey(var/mob/M in mobz)
+/client/proc/changeckey(var/mob/M)
 	set category = "Debug"
 	set name = "Change Key"
 
@@ -1889,7 +1892,7 @@
 				id.registered = newname
 				id.name = "[id.registered]'s ID Card ([id.assignment])"
 
-/client/proc/viewfingerprints(var/obj/I in mobz)
+/client/proc/viewfingerprints(var/obj/I)
 	set category = "Debug"
 	set name = "View Fingerprints"
 
@@ -1898,3 +1901,30 @@
 		src << "All: [I.fingerprints]"
 		src << "Hidden: [I.fingerprintshidden]"
 		src << "Last: [I.fingerprintslast]"
+
+/client/proc/resizeobj(var/obj/I)
+	set category = "Debug"
+	set name = "Resize obj to 64x64"
+
+	if(isobj(I))
+		var/icon/O = new(I.icon)
+		O.Scale(64,64)
+		I.icon = O
+
+/client/proc/resizeturf(var/turf/I)
+	set category = "Debug"
+	set name = "Resize turf to 64x64"
+
+	if(isturf(I))
+		var/icon/O = new(I.icon)
+		O.Scale(64,64)
+		I.icon = O
+
+/client/proc/resizemob(var/mob/I in mobz)
+	set category = "Debug"
+	set name = "Resize mob to 64x64"
+
+	if(ismob(I))
+		var/icon/O = new(I.icon)
+		O.Scale(64,64)
+		I.icon = O

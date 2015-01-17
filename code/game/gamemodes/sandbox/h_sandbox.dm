@@ -35,7 +35,7 @@ datum/hSB
 		admin = 0
 	proc
 		update()
-			var/hsbpanel = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><center><b>h_Sandbox Panel</b></center><hr>"
+			var/hsbpanel = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><center><b>h_Sandbox Panel</b></center><hr>"
 			if(admin)
 				hsbpanel += "<b>Administration Tools:</b><br>"
 				hsbpanel += "- <a href=\"?\ref[src];hsb=hsbtobj\">Toggle Object Spawning</a><br><br>"

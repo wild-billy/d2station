@@ -1,7 +1,6 @@
 /turf
 	icon = 'floors.dmi'
 	var/intact = 1 //for floors, use is_plating(), is_steel_floor() and is_light_floor()
-
 	level = 1.0
 
 	var
@@ -42,6 +41,10 @@
 	turfs -= src
 	turfs += src
 
+	var/icon/I = new(src.icon)
+	I.Scale(64,64)
+	src.icon = I
+
 /turf/space
 	icon = 'space.dmi'
 	name = "\proper space"
@@ -52,12 +55,11 @@
 	heat_capacity = 700000
 
 /turf/space/New()
-//	icon = 'space.dmi'
 	icon_state = "[pick(1,2,3,4)]"
 	..()
 
 /turf/mars
-	icon = 'mars.dmi'
+//	icon = 'mars.dmi'
 	name = "mars"
 	icon_state = "placeholder"
 
@@ -66,7 +68,7 @@
 	heat_capacity = 700000
 
 /turf/mars/New()
-	icon = 'mars.dmi'
+//	icon = 'mars.dmi'
 	icon_state = "[pick(1,2,3,4,5,6)]"
 	..()
 /turf/simulated/floor/plating/airless/transitspace
@@ -100,6 +102,7 @@
 	icon_state = "largetile2"
 	opacity = 0
 	density = 1
+
 
 /turf/simulated/shuttle/wall/heatshield
 	thermal_conductivity = 0
@@ -162,7 +165,7 @@
 /turf/simulated/wall/alien_wall
 	name = "Alien wall"
 	desc = "A wall unlike anything you've seen before, unless you've watched a sci-fi movie."
-	icon = 'alienwall.dmi'
+//	icon = 'alienwall.dmi'
 	icon_state = "wall0"
 	opacity = 1
 	density = 1
@@ -266,7 +269,7 @@
 
 
 /turf/simulated/wall/mineral
-	icon = 'mineral_walls.dmi'
+//	icon = 'mineral_walls.dmi'
 	walltype = "iron"
 
 	var/oreAmount = 1
@@ -364,3 +367,14 @@
 
 			hardness -= toxinsToDeduce/100
 			CheckHardness()
+
+/* Gwendolyn's Tiles */
+
+/turf/simulated/floor/plating/moon
+	icon = 'floors.dmi'
+	icon_state = "moon"
+	oxygen = 0
+	carbon_dioxide = 0
+	temperature = TCMB
+	thermal_conductivity = OPEN_HEAT_TRANSFER_COEFFICIENT
+	heat_capacity = 700000

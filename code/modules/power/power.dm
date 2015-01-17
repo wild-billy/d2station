@@ -63,7 +63,7 @@
 
 	for(var/obj/cable/PC in world)
 		PC.netnum = 0
-	for(var/obj/machinery/power/M in machines)
+	for(var/obj/machinery/power/M in world)
 		if(M.netnum >=0)
 			M.netnum = 0
 
@@ -88,7 +88,7 @@
 		var/datum/powernet/PN = powernets[C.netnum]
 		PN.cables += C
 
-	for(var/obj/machinery/power/M in machines)
+	for(var/obj/machinery/power/M in world)
 		if(M.netnum<=0)		// APCs have netnum=-1 so they don't count as network nodes directly
 			continue
 

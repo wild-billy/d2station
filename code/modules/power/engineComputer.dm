@@ -52,7 +52,7 @@
 	interact(user)
 
 /obj/machinery/computer/enginecontrol/proc/interact(mob/user)
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Main Engine Control</B><HR>"
+	var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Main Engine Control</B><HR>"
 	for(var/obj/machinery/door/poddoor/I in machines)
 		if (I.name == "Port Chamber access")
 			if	(I.density)

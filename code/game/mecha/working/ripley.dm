@@ -9,11 +9,12 @@
 	var/list/cargo = new
 	state = 1
 
-/*
+
 /obj/mecha/working/ripley/New()
+	pixel_x -= 5
 	..()
-	return
-*/
+
+
 
 /obj/mecha/working/ripley/Exit(atom/movable/O)
 	if(O in cargo)

@@ -111,7 +111,7 @@ var/list/prob_G_list = list()
 		user.machine = src
 		var/dat = ""
 		if(!dish)
-			dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Please insert dish into the incubator.<BR>"
+			dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Please insert dish into the incubator.<BR>"
 			dat += "<A href='?src=\ref[src];close=1'>Close</A><br>"
 		var/string = "Off"
 		if(dish && on)
@@ -285,10 +285,10 @@ var/list/prob_G_list = list()
 		user.machine = src
 		var/dat = ""
 		if(!beaker)
-			dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Please insert sample into the isolator.<BR>"
+			dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Please insert sample into the isolator.<BR>"
 			dat += "<A href='?src=\ref[src];close=1'>Close</A>"
 		else if(isolating)
-			dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Isolating"
+			dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Isolating"
 		else
 			var/datum/reagents/R = beaker:reagents
 			dat += "<A href='?src=\ref[src];eject=1'>Eject</A><BR><BR>"
@@ -466,11 +466,11 @@ var/list/prob_G_list = list()
 	user.machine = src
 	var/dat
 	if(curing)
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Antibody production in progress"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Antibody production in progress"
 	else if(virusing)
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Virus production in progress"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Virus production in progress"
 	else if(dish)
-		dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Virus dish inserted"
+		dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Virus dish inserted"
 		if(dish.virus)
 			if(dish.growth >= 100 && tube && !tube.reagents.total_volume >= 0)
 				dat += "<BR><A href='?src=\ref[src];antibody=1'>Begin antibody production</a>"
@@ -705,9 +705,9 @@ var/list/prob_G_list = list()
 		user.machine = src
 		var/dat = ""
 		if(src.temphtml)
-			dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />[src.temphtml]<BR><BR><A href='?src=\ref[src];clear=1'>Main Menu</A>"
+			dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />[src.temphtml]<BR><BR><A href='?src=\ref[src];clear=1'>Main Menu</A>"
 		else if(!beaker)
-			dat += "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' />Please insert beaker.<BR>"
+			dat += "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' />Please insert beaker.<BR>"
 			dat += "<A href='?src=\ref[user];mach_close=pandemic'>Close</A>"
 		else
 			var/datum/reagents/R = beaker.reagents

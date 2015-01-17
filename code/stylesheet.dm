@@ -1,24 +1,26 @@
 client/script = {"<style>
 body
 {
-	font-family: Verdana, sans-serif;
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 10pt;
+	margin: 4px;
 }
 
 h1, h2, h3, h4, h5, h6
 {
-	color: #00f;
-	font-family: Georgia, Verdana, sans-serif;
+	color: #14C900;
+	font-family: Arial, Georgia, Verdana, sans-serif;
 }
 
 .motd
 {
-	color: #638500;
-	font-family: Verdana, sans-serif;
+	color: #383838;
+	font-family: Arial, Verdana, sans-serif;
 }
 
 .motd h1, .motd h2, .motd h3, .motd h4, .motd h5, .motd h6
 {
-	color: #638500;
+	color: #383838;
 	text-decoration: underline;
 }
 
@@ -81,6 +83,7 @@ h1, h2, h3, h4, h5, h6
 
 .say
 {
+	color: #000000;
 }
 
 .deadsay

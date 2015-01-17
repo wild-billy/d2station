@@ -202,7 +202,7 @@
 	user.machine = src
 
 
-	var/t = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>SMES Power Storage Unit</B> [n_tag? "([n_tag])" : null]<HR><PRE>"
+	var/t = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>SMES Power Storage Unit</B> [n_tag? "([n_tag])" : null]<HR><PRE>"
 
 	t += "Stored capacity : [round(100.0*charge/capacity, 0.1)]%<BR><BR>"
 

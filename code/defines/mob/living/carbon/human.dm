@@ -4,8 +4,8 @@
 	voice_name = "human"
 	icon = 'mob.dmi'
 	icon_state = "m-none"
+	var/speakingbubble = 0
 	var/prioritory = 7
-	var/pincode = 0
 	var/r_hair = 0.0
 	var/g_hair = 0.0
 	var/b_hair = 0.0

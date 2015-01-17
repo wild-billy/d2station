@@ -13,10 +13,18 @@
 	return
 
 /obj/portal/New()
-	spawn(300)
+	sleep(5)
+//	world << "spawned exit"
+	if(!master)
+//		world << "master not found"
+		sleep(300)
 		del(src)
 		return
-	return
+	while(master)
+//		world << "master found"
+	//	master.use_power(5000)
+//		world << "used power"
+		sleep(300)
 
 /obj/portal/proc/teleport(atom/movable/M as mob|obj)
 	if(istype(M, /obj/effects)) //sparks don't teleport

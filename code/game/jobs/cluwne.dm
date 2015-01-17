@@ -11,7 +11,7 @@ var/list/cluwnelist
 /proc/check_cluwnelist(mob/M /*, var/rank*/)
 	if(!cluwnelist)
 		return 0
-	var/feresult = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M.ckey]@and@isCluwne")
+	var/feresult = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M.ckey]&isCluwne")
 	if(!feresult)
 		return 0
 	if(!feresult["CONTENT"])

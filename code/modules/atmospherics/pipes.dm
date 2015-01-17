@@ -588,7 +588,7 @@ obj/machinery/atmospherics/pipe
 				var/pressure = parent.air.return_pressure()
 				var/total_moles = parent.air.total_moles()
 
-				user << "\blue Results of analysis of \icon[icon]"
+				user << "\white Results of analysis of \icon[icon]"
 				if (total_moles>0)
 					var/o2_concentration = parent.air.oxygen/total_moles
 					var/n2_concentration = parent.air.nitrogen/total_moles
@@ -597,16 +597,16 @@ obj/machinery/atmospherics/pipe
 
 					var/unknown_concentration =  1-(o2_concentration+n2_concentration+co2_concentration+plasma_concentration)
 
-					user << "\blue Pressure: [round(pressure,0.1)] kPa"
-					user << "\blue Nitrogen: [round(n2_concentration*100)]%"
-					user << "\blue Oxygen: [round(o2_concentration*100)]%"
-					user << "\blue CO2: [round(co2_concentration*100)]%"
-					user << "\blue Plasma: [round(plasma_concentration*100)]%"
+					user << "\white Pressure: [round(pressure,0.1)] kPa"
+					user << "\white Nitrogen: [round(n2_concentration*100)]%"
+					user << "\white Oxygen: [round(o2_concentration*100)]%"
+					user << "\white CO2: [round(co2_concentration*100)]%"
+					user << "\white Plasma: [round(plasma_concentration*100)]%"
 					if(unknown_concentration>0.01)
 						user << "\red Unknown: [round(unknown_concentration*100)]%"
-					user << "\blue Temperature: [round(parent.air.temperature-T0C)]&deg;C"
+					user << "\white Temperature: [round(parent.air.temperature-T0C)]&deg;C"
 				else
-					user << "\blue Tank is empty!"
+					user << "\white Tank is empty!"
 
 	vent
 		icon = 'pipe_vent.dmi'

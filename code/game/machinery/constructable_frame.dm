@@ -52,7 +52,7 @@
 					else
 						user << "\red This frame does not accept circuit boards of this type!"
 				if(istype(P, /obj/item/weapon/wirecutters))
-					playsound(src.loc, 'wirecutter.ogg', 50, 1)
+					playsound(src.loc, 'Wirecutter.ogg', 50, 1)
 					user << "\blue You remove the cables."
 					state = 1
 					icon_state = "box_0"

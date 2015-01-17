@@ -83,7 +83,6 @@
 	if (config.usewhitelist)
 		load_whitelist()
 	LoadBansjob()
-	src.update_status()
 	SetupHooks()
 
 	makepowernets()
@@ -114,6 +113,13 @@
 	slmaster.icon_state = "sleeping_agent"
 	slmaster.layer = FLY_LAYER
 	slmaster.mouse_opacity = 0
+
+
+	clmaster = new /obj/overlay(  )
+	clmaster.icon = 'tile_effects.dmi'
+	clmaster.icon_state = "cold150"
+	clmaster.layer = FLY_LAYER
+	clmaster.mouse_opacity = 0
 
 	src.update_status()
 

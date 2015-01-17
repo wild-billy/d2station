@@ -1,6 +1,8 @@
 var/mob/living/carbon/human/cycle = 0
 var/mob/time_of_death = 0
 var/mob/timeofdeathtemp = 0
+
+
 /mob/living/carbon/human
 	var
 		oxygen_alert = 0
@@ -9,6 +11,61 @@ var/mob/timeofdeathtemp = 0
 		temperature_alert = 0
 		tempstate = 0
 		paytime = 0
+		var/icon/Icon = null
+		old_intent = null
+		old_item_name = null
+/mob/living/carbon/human/New()
+	spawn mousepointer()
+	..()
+
+
+/mob/living/carbon/human/proc/mousepointer()
+//	var/tickertime = world.timeofday
+	sleep(1)
+	var/obj/item/item_in_hand = src.get_active_hand()
+	if(client)
+		if(item_in_hand)
+			if(old_item_name == item_in_hand.name && a_intent == old_intent)
+			//	world << "same item"
+				sleep(-1)
+				spawn mousepointer()
+				return
+			var/icon/Icon2 = null
+			if (a_intent == "help")
+				Icon2 = new('mouse.dmi',icon_state = "help")
+			else if (a_intent == "hurt")
+				Icon2 = new('mouse.dmi',icon_state = "hurt")
+			else if (a_intent == "grab")
+				Icon2 = new('mouse.dmi',icon_state = "grab")
+			else if (a_intent == "disarm")
+				Icon2 = new('mouse.dmi',icon_state = "disarm")
+			Icon = new(item_in_hand.icon,item_in_hand.icon_state)
+			Icon2.Blend(Icon,ICON_OVERLAY,x=18,y=-18)
+			src.client.mouse_pointer_icon = Icon2
+			old_item_name = item_in_hand.name
+			old_intent = a_intent
+			//world << "changed pointer with item"
+		else
+			var/icon/Icon2 = null
+			if (a_intent == "help")
+				Icon2 = new('mouse.dmi',icon_state = "help")
+				src.client.mouse_pointer_icon = Icon2
+			else if (a_intent == "hurt")
+				Icon2 = new('mouse.dmi',icon_state = "hurt")
+				src.client.mouse_pointer_icon = Icon2
+			else if (a_intent == "grab")
+				Icon2 = new('mouse.dmi',icon_state = "grab")
+				src.client.mouse_pointer_icon = Icon2
+			else if (a_intent == "disarm")
+				Icon2 = new('mouse.dmi',icon_state = "disarm")
+				src.client.mouse_pointer_icon = Icon2
+			old_item_name = null
+			old_intent = a_intent
+			//world << "changed pointer with intent"
+//	var/timetaken = world.timeofday - tickertime
+	//world << "Time taken to complete mouse pointer check: [timetaken]"
+	spawn mousepointer()
+	return
 
 /mob/living/carbon/human/proc/mind_initialize(mob/G)
 	mind = new
@@ -16,15 +73,22 @@ var/mob/timeofdeathtemp = 0
 	mind.key = G.key
 	mind.special_role = "Changeling"
 
+
 /mob/living/carbon/human/Life()
+
+
 	set invisibility = 0
 	set background = 1
 	cycle++
 	if(!loc)			// Fixing a null error that occurs when the mob isn't found in the world -- TLE
 		return
+
+		old_intent = a_intent
 	if (monkeyizing)
 		return
-	handle_changeling_regen()
+
+	if(changeling_level > 0)
+		handle_changeling_regen()
 
 	if(stat != 2)
 		time_of_death = 0
@@ -53,12 +117,17 @@ var/mob/timeofdeathtemp = 0
 		//stuff in the stomach
 		handle_stomach()
 
+		//
+		handle_drugs()
+
 		//Disabilities
 		handle_disabilities()
 
 		if(cycle%3)
 			spawn(0)
 			breathe()
+
+
 
 	bruteloss = round(bruteloss, 0.1)
 	toxloss = round(toxloss, 0.1)
@@ -150,7 +219,6 @@ var/mob/timeofdeathtemp = 0
 				if(prob(80))
 					src:removePart(src.organ_manager.head)
 				do_once = 1
-
 	//Chemicals in the body
 	handle_chemicals_in_body()
 
@@ -165,7 +233,16 @@ var/mob/timeofdeathtemp = 0
 	// Yup.
 	update_canmove()
 
-	clamp_values()
+	stunned = max(min(stunned, 100),0)
+	paralysis = max(min(paralysis, 100), 0)
+	weakened = max(min(weakened, 100), 0)
+	sleeping = max(min(sleeping, 100), 0)
+	bruteloss = max(min(bruteloss, 100), 0)
+	toxloss = max(min(toxloss, 100), 0)
+	oxyloss = max(min(oxyloss, 100), 0)
+	fireloss = max(min(fireloss, 100), 0)
+	health = max(min(health, 100), -400)
+
 
 	// Grabbing
 	for(var/obj/item/weapon/grab/G in src)
@@ -1045,6 +1122,10 @@ var/mob/timeofdeathtemp = 0
 
 			if (stuttering) stuttering--
 
+			if (stoned && !src.reagents.has_reagent("thc")) stoned--
+			if (tripping && !src.reagents.has_reagent("psilocybin")) tripping--
+			if (opiates && !src.reagents.has_reagent("opium")) opiates--
+
 			if (eye_blind)
 				eye_blind--
 				blinded = 1
@@ -1081,6 +1162,183 @@ var/mob/timeofdeathtemp = 0
 				else
 					client.dir = NORTH
 			return 1
+
+			if(client)
+				if ((src.kanye > 0) && (stat != 2))
+					src.kanye--
+					src.toxloss += 0.05
+					src.kanye = max(0, src.kanye)
+					if(prob(5))
+						client.dir = WEST
+						src << "\red <B>KANYE WEST</b>"
+					if(prob(5))
+						client.dir = EAST
+						src << "\red <B>KANYE EAST</b>"
+				else
+					client.dir = NORTH
+			return 1
+
+		handle_drugs()
+			if(reagents.has_reagent("thc"))
+				if(stoned <= 15)
+					druggy = max(druggy, 20)
+					if(prob(10)) emote("smile")
+				else if(stoned <= 30)
+					druggy = max(druggy, 30)
+					if(prob(10)) emote(pick("giggle","smile"))
+				else if(stoned <= 45)
+					druggy = max(druggy, 40)
+					make_dizzy(1)
+					if(prob(20)) emote(pick("giggle","smile","laugh"))
+				else if(stoned <= 60)
+					druggy = max(druggy, 60)
+					make_dizzy(2)
+					if(prob(20)) emote(pick("giggle","laugh","smile"))
+				else if(stoned <= 90)
+					kanye = max(kanye, 80)
+					druggy = max(druggy, 80)
+					make_dizzy(5)
+					if(prob(30)) emote(pick("giggle","laugh","smile"))
+					if(prob(1)) emote("fart") //it's not that getting high makes you gassy, it's just that you don't care to hold it in.
+				else if(stoned <= 120)
+					kanye = max(kanye, 100)
+					druggy = max(druggy, 100)
+					make_dizzy(5)
+					if(prob(45)) emote(pick("giggle","laugh"))
+					if(prob(1)) emote("fart")
+				else if(stoned <= 150)
+					kanye = max(kanye, 140)
+					druggy = max(druggy, 140)
+					make_dizzy(5)
+					src.stuttering = 5
+					if(prob(45)) emote(pick("giggle","laugh"))
+					if(prob(2)) emote("fart")
+				else if(stoned <= 200)
+					kanye = max(kanye, 160)
+					druggy = max(druggy, 160)
+					make_dizzy(5)
+					src.stuttering = 5
+					if(prob(65)) emote(pick("giggle","laugh"))
+					if(prob(2) )emote("fart")
+				else if(stoned <= 255)
+					kanye = max(kanye, 200)
+					druggy = max(druggy, 200)
+					make_dizzy(20)
+					if(prob(65)) emote(pick("giggle","laugh"))
+					if(prob(2)) emote("fart")
+				else if (stoned <= 420)
+					kanye = max(kanye, 250)
+					druggy = max(druggy, 250)
+					make_dizzy(40)
+					src.stuttering = 10
+					if(prob(65)) emote(pick("giggle","laugh"))
+					if(prob(5)) emote("fart")
+				else if (stoned >= 420)
+					src << "\red 420 BLAZE IT FAGGOT"
+					kanye = max(kanye, 420)
+					druggy = max(druggy, 420)
+					src.stuttering = 30
+					make_dizzy(90)
+					if(prob(65)) emote(pick("giggle","laugh"))
+					if(prob(10)) emote("fart")
+					if(prob(1) && prob(1))
+						src.name = "Snoop Dogg"
+						src.real_name = "Snoop Dogg"
+						src.s_tone = -80
+						src.hair_icon_state = "hair_dreads"
+						src.r_hair = 0
+						src.g_hair = 0
+						src.g_hair = 0
+					if(prob(1) && prob(1))
+						src.name = "Snoop Lion"
+						src.real_name = "Snoop Lion"
+						src.s_tone = -80
+						src.hair_icon_state = "hair_dreads"
+						src.r_hair = 0
+						src.g_hair = 0
+						src.g_hair = 0
+					if(prob(1) && prob(1))
+						src.name = "Kanye West"
+						src.real_name = "Kanye West"
+						src.s_tone = -120
+						src.hair_icon_state = "bald"
+						src.r_hair = 0
+						src.g_hair = 0
+						src.g_hair = 0
+					if(prob(1) && prob(1) && prob(1))
+						src << "\red <B>NIGGER</b> YOU HIGH"
+						src.s_tone = -420
+						src.hair_icon_state = "hair_afro"
+						src.r_hair = 0
+						src.g_hair = 0
+						src.g_hair = 0
+				else
+					..()
+			if(reagents.has_reagent("psilocybin"))
+				if(tripping <= 10)
+					druggy = max(druggy, 20)
+				else if(tripping <= 50)
+					druggy = max(druggy, 40)
+				else if(tripping <= 100)
+					druggy = max(druggy, 60)
+					if(prob(1)) say(pick("It hurts when I pee...", "Has anyone really been far even as decided to use even go want to do look more like?", "PLEASE! Tell me about the fucking golf shoes!", "Fuck, you've gone completely sideways man.", "HI THERE! My name... is, uh, Raoul Duke. I'm on the list. Free lunch, final wisdom, total coverage. I have my attorneyyyyyyy... with me, and I realize that his name is not on that list, but we must have that suite! Yes, must have that suite. What's the score here? What's next?", ";No.", ";NO!", ";YES!", ";Bitches love how [src] rolls.", ";BEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEES!!!", ";SYNDIES!", "There are colours and I am scared.", ";Beepsky's after me man!", ";CALL THE SHUTTLE, THERE'S NO WAY I'M STAYING ON THIS HELLHOLE", "GET THE FUCK OFF OF ME", "Stop watching me. STOP WATCHING ME", ";Back off! I'll make you teensy!", "There's a big machine in space, some kind of electric snake", "SPAAAAAAACEEEEMAAAAAAAAN", ";This server has awesome drugs", "Oh god, what's that?!", ";SYNDIES ARE MELTING THE STATION", "Damn these are good drugs! WOOOO!", ";Why?", "Jesus creeping shit!", ";Dogs fucked the Pope, no fault of mine, watch out! Why money....My name is Brinks; I was born.....Born?", ";Please, don't tell me those things. Not now", "When will this station stop? It won't stop...it's never going to stop", ";WHO FUCKED WITH ATMOS? Fuck I can taste music in the air..", ";BOLT EVERYTHING, USE THE CHAINS", ";THAT DIRTY BASTARD! I KNEW IT! I knew he stole my drugs"))
+					if(prob(5)) emote(pick("giggle", "laugh"))
+					if(prob(5)) src << sound(pick('rustle1.ogg', 'rustle2.ogg', 'rustle3.ogg', 'rustle4.ogg', 'rustle5.ogg', 'meteorimpact.ogg', 'squishy.ogg'))
+					if(prob(1))
+						src << sound(pick('bjustice.ogg', 'bfreeze.ogg'))
+						src << pick("<B>Officer Beepsky</b> beeps, 'Level 4 infraction alert (Public masturbation)'!", "<B>Officer Beepsky</b> beeps, 'Level 4 infraction alert (Rape)'!")
+						src << "<B>Officer Beepsky</b> points at <B>[src]</b>!"
+				else if(tripping <= 150)
+					druggy = max(druggy, 80)
+					if(prob(2)) say(pick("It hurts when I pee...", "Has anyone really been far even as decided to use even go want to do look more like?", "PLEASE! Tell me about the fucking golf shoes!", "Fuck, you've gone completely sideways man.", "HI THERE! My name... is, uh, Raoul Duke. I'm on the list. Free lunch, final wisdom, total coverage. I have my attorneyyyyyyy... with me, and I realize that his name is not on that list, but we must have that suite! Yes, must have that suite. What's the score here? What's next?", ";No.", ";NO!", ";YES!", ";Bitches love how [src] rolls.", ";BEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEES!!!", ";SYNDIES!", "There are colours and I am scared.", ";Beepsky's after me man!", "Just shut the hell up already.", "No one asked you.", ";If you're looking for me, you better look under the sea, coz that is where you'll find me.", "What the fuck even IS a PDA?", ";I CAN'T TAKE THIS GIB ME!", "ehehe the walls, man, the angles, man", "Jesus!  Did I say that?", ";I CAN EASE YOUR PAIN, GET YOU ON YOUR FEET AGAIN", "dOn't Take any gRuff from these faggots", ";TRAITORS IN BOTANY", ";CAPTAIN LIKES LITTLE GIRLS", "My attourney understands this concept, despite his racial handicap", "GIB ME BACK MY DERUGS", ";Where's the medicine?!", "Alright, stay calm, it's just a game...life is just a game. Sometimes you win, sometimes you lose, something, something fuck it lets eat more shrooms", ";NO! WE HAVEN'T DONE ANYTHING YET", ";LIZARD JEWS ARE BOARDING THE STATION", "If you think we're in trouble now wait till you see the escape arm"))
+					if(prob(10)) emote(pick("giggle", "laugh"))
+					if(prob(5)) src << sound(pick('rustle1.ogg', 'rustle2.ogg', 'rustle3.ogg', 'rustle4.ogg', 'rustle5.ogg', 'meteorimpact.ogg', 'squishy.ogg', 'hiss1.ogg', 'hiss2.ogg', 'hiss3.ogg', 'hiss4.ogg', 'hiss5.ogg'))
+					if(prob(1))
+						src << sound(pick('bjustice.ogg', 'bfreeze.ogg'))
+						src << pick("<B>Officer Beepsky</b> beeps, 'Level 4 infraction alert (Public masturbation)'!", "<B>Officer Beepsky</b> beeps, 'Level 4 infraction alert (Rape)'!")
+						src << "<B>Officer Beepsky</b> points at <B>[src]</b>!"
+				else if(tripping >= 250)
+					druggy = max(druggy, 140)
+					if(prob(3)) say(pick("It hurts when I pee...", "Has anyone really been far even as decided to use even go want to do look more like?", "PLEASE! Tell me about the fucking golf shoes!", "Fuck, you've gone completely sideways man.", "HI THERE! My name... is, uh, Raoul Duke. I'm on the list. Free lunch, final wisdom, total coverage. I have my attorneyyyyyyy... with me, and I realize that his name is not on that list, but we must have that suite! Yes, must have that suite. What's the score here? What's next?", ";No.", ";NO!", ";YES!", ";Bitches love how [src] rolls.", ";BEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEES!!!", ";SYNDIES!", "There are colours and I am scared.", ";Beepsky's after me!", ";Yeah? Well that's just, like, your opinion, man.", ";I'm lost. Can someone tell me where I am?", ";Don't touch the floor it's a river of dicks", ";Do not touch the trim!", "I'm tripping fucking balls.", ";If you're looking for me, you better look under the sea, coz that is where you'll find me.", "underneath the seeeeeeeeeeeeeeeeeeeeeeeeeeeaaaalaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab underneath the waaaater...", ";There's this fantasy I have where Jesus Christ is jackhammering Mickey Mouse in the doo-doo hole with a lawn dart as Garth Brooks gives birth to something resembling a cheddar cheese log with almonds on Santa Claus's tummy-tum", "I feel a bit lightheaded.  Maybe you should drive...", ";What are you yelling about?", "No point mentioning these bats. The poor bastards will see them soon enough.", ";You poor fools, wait till you see those bats", "I'm melllllttiiiiing"))
+					if(prob(20)) emote(pick("giggle", "laugh"))
+					if(prob(10)) src << sound(pick('rustle1.ogg', 'rustle2.ogg', 'rustle3.ogg', 'rustle4.ogg', 'rustle5.ogg', 'meteorimpact.ogg', 'squishy.ogg', 'Taser.ogg', 'ep90_4.ogg', 'ep90_3.ogg', 'armbomb.ogg', 'bewareilive.ogg', 'ihunger.ogg', 'hiss1.ogg', 'hiss2.ogg', 'hiss3.ogg', 'hiss4.ogg', 'hiss5.ogg', 'runcoward.ogg','redalert3.ogg'))
+					if(prob(1))
+						src << sound(pick('bjustice.ogg', 'bfreeze.ogg'))
+						src << pick("<B>Officer Beepsky</b> beeps, 'Level 4 infraction alert (Public masturbation)'!", "<B>Officer Beepsky</b> beeps, 'Level 4 infraction alert (Rape)'!")
+						src << "<B>Officer Beepsky</b> points at <B>[src]</b>!"
+				else
+					..()
+			if(reagents.has_reagent("opium"))
+				if(opiates <= 10) //mild opiate high
+					make_dizzy(5)
+					if(prob(1)) src.sleeping = max(src.sleeping, 1)
+				else if(opiates <= 50) //not-so-mild opiate high
+					make_dizzy(10)
+					src.stuttering = 10
+					if(prob(1)) src.sleeping = max(src.sleeping, 2)
+				else if(opiates <= 100) //alright, now we're starting to feel it.
+					druggy = max(druggy, 40)
+					make_dizzy(10)
+					if(prob(1)) src.paralysis = max(src.paralysis, 3)
+					if(prob(1)) src.sleeping = max(src.sleeping)
+				else if(opiates <= 200) //Taking this much heroin is probably not a good idea.
+					druggy = max(druggy, 80)
+					kanye = max(kanye, 80)
+					if(prob(3)) src.paralysis = max(src.paralysis, 3)
+					if(prob(3)) src.sleeping = max(src.sleeping, 20)
+				else if(opiates <= 300) //Taking this much heroin is definitely not a good idea.
+					druggy = max(druggy, 100)
+					kanye = max(kanye, 100)
+					if(prob(5)) src.paralysis = max(src.paralysis, 3)
+					if(prob(5)) src.sleeping = max(src.sleeping, 30)
+				else if(opiates >= 300) //Only smackies of the most dedicated variety could possibly hope to achieve this level of high.
+					druggy = max(druggy, 120)
+					kanye = max(kanye, 120)
+					if(prob(5)) src.paralysis = max(src.paralysis, 5)
+					if(prob(5)) src.sleeping = max(src.sleeping, 40)
+				else
+					..()
+			return
 
 		handle_regular_hud_updates()
 
@@ -1364,6 +1622,9 @@ var/mob/timeofdeathtemp = 0
 
 					if (eye_blurry)
 						client.screen += hud_used.blurry
+
+					if (druggy)
+						client.screen += hud_used.druggy
 
 					if (istype(head, /obj/item/clothing/head/helmet/welding))
 						if(!head:up && tinted_weldhelh)
@@ -1723,7 +1984,7 @@ var/mob/timeofdeathtemp = 0
 								paytime = 0
 							else
 								src << "\blue Payday! You got Ð[paidtoday]!"
-								src << "\blue Want to earn even more? Consider <a href='http://d2k5.com/pages/shop/?item=enterlottery'>entering the lottery!</a>" //until we get a casino
+								//src << "\blue Want to earn even more? Consider <a href='http://d2k5.com/pages/shop/?item=enterlottery'>entering the lottery!</a>" //until we get a casino
 								paytime = 0
 						paytime = 0
 					return

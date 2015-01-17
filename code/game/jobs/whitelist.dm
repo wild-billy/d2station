@@ -10,7 +10,7 @@ var/list/whitelist
 	return
 
 /proc/check_whitelist(mob/M /*, var/rank*/)
-	var/feresult = world.Export("http://78.47.53.54/requester.php?url=http://178.63.153.81/emauth.php@vals@ckey=[M.ckey]@and@isCorrect")
+	var/feresult = world.Export("http://api.d2k5.com/ss13/auth.php?ckey=[M.ckey]&isCorrect")
 	if(!feresult)
 		return 1
 	var/feresultcontent = file2text(feresult["CONTENT"])

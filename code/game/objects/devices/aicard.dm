@@ -30,7 +30,7 @@
 		if (!in_range(src, user))
 			return
 		user.machine = src
-		var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TT><B>Intelicard</B><BR>"
+		var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TT><B>Intelicard</B><BR>"
 		var/laws
 		for(var/mob/living/silicon/ai/A in src)
 			dat += "Stored AI: [A.name]<br>System integrity: [(A.health+100)/2]%<br>"

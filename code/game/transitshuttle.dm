@@ -297,6 +297,8 @@ var/prison_shuttle_timeleft = 0
 				C.show_message("\blue Thrusters engaged.", 3)
 			sleep(10)
 			start_location.move_contents_to(end_location)
+			for(var/turf/T in start_location)
+				del(T)
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue Shuttle en route.", 3)
 			sleep(600)
@@ -330,6 +332,8 @@ var/prison_shuttle_timeleft = 0
 					del(T)
 
 			start_location2.move_contents_to(end_location2)
+			for(var/turf/T in start_location2)
+				del(T)
 			sleep(2)
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue <B>Shuttle has arrived at destination: [station_name].</B>", 3)
@@ -371,6 +375,8 @@ var/prison_shuttle_timeleft = 0
 				C.show_message("\blue Thrusters engaged.", 3)
 			sleep(10)
 			start_location.move_contents_to(end_location)
+			for(var/turf/T in start_location)
+				del(T)
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue Shuttle en route.", 3)
 			sleep(600)
@@ -404,6 +410,8 @@ var/prison_shuttle_timeleft = 0
 					del(T)
 
 			start_location2.move_contents_to(end_location2)
+			for(var/turf/T in start_location2)
+				del(T)
 			sleep(2)
 			for (var/mob/C in viewers(src))
 				C.show_message("\blue <B>Shuttle has arrived at destination: Prison Satellite.</B>", 3)
@@ -615,7 +623,7 @@ var/prison_shuttle_timeleft = 0
 	if (src.temp)
 		dat = src.temp
 	else
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Prison Shuttle</B><HR>
+		dat += {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><BR><B>Prison Shuttle</B><HR>
 		\nLocation: [prison_shuttle_moving_to_station || prison_shuttle_moving_to_prison ? "Moving to station ([prison_shuttle_timeleft] Secs.)":prison_shuttle_at_station ? "Station":"Dock"]<BR>
 		[prison_shuttle_moving_to_station || prison_shuttle_moving_to_prison ? "\n*Shuttle already called*<BR>\n<BR>":prison_shuttle_at_station ? "\n<A href='?src=\ref[src];sendtodock=1'>Send to Dock</A><BR>\n<BR>":"\n<A href='?src=\ref[src];sendtostation=1'>Send to station</A><BR>\n<BR>"]
 		\n<A href='?src=\ref[user];mach_close=computer'>Close</A>"}
@@ -819,7 +827,7 @@ var/prison_shuttle_timeleft = 0
 	if (src.temp)
 		dat = src.temp
 	else
-		dat += {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><BR><B>Salvaging Shuttle</B><HR>
+		dat += {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><BR><B>Salvaging Shuttle</B><HR>
 		\nLocation: [derelict_shuttle_moving_to_station || derelict_shuttle_moving_to_derelict ? "Moving to station (Approximately [derelict_shuttle_timeleft] Secs.)":derelict_shuttle_at_station ? "Station":"\[Beacon NT-288\]"]<BR>
 		[derelict_shuttle_moving_to_station || derelict_shuttle_moving_to_derelict ? "\n*Shuttle already called*<BR>\n<BR>":derelict_shuttle_at_station ? "\n<A href='?src=\ref[src];sendtodock=1'>Send to \[Beacon NT-288\]</A><BR>\n<BR>":"\n<A href='?src=\ref[src];sendtostation=1'>Send to station</A><BR>\n<BR>"]
 		\n<A href='?src=\ref[user];mach_close=computer'>Close</A>"}

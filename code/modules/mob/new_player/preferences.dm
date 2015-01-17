@@ -405,7 +405,7 @@ datum/preferences
 
 		var/list/destructive = assistant_occupations.Copy()
 		var/dat = "<html><body>"
-		dat += "<head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><style type=\"text/css\">"
+		dat += "<head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><style type=\"text/css\">"
 		dat += "body, table{font-family: Tahoma; font-size: 10pt;}"
 		dat += "table {"
 		dat += "border-width: 0px;"
@@ -430,28 +430,54 @@ datum/preferences
 		dat += "}"
 		dat += "</style></head>"
 		dat += "<body>"
-		dat += "<table border=\"0\" bordercolor=\"\" width=\"600\" bgcolor=\"\">"
-		dat += "<tr>"
-		dat += "<td style=\"padding: 8px; width: 500px;\">"
+		dat += "<table class=\"player-table\"border=\"0\" bordercolor=\"\" bgcolor=\"\">"
+		dat += "<tr class=\"player-tr\">"
+		dat += "<td class=\"player-td\" style=\"padding: 8px;\">"
+
+		dat += "<span class=\"title\">Character Settings:</span><br/>"
+		dat += "<div class=\"main settings\">"
+
+		dat += "<span class=\"preview\">"
+		dat += "<img src=\"previewicon.png\" height=\"64\" width=\"64\">"
+		dat += "</span>"
+
 		dat += "<b>Name:</b> <a href=\"byond://?src=\ref[user];preferences=1;real_name=input\">[real_name]</a>"
 		dat += " (<a href=\"byond://?src=\ref[user];preferences=1;real_name=random\">&reg;</A>) "
 		dat += "(&reg; = <a href=\"byond://?src=\ref[user];preferences=1;b_random_name=1\">[be_random_name ? "Yes" : "No"]</a>)<br>"
 		dat += "<b>Gender:</b> <a href=\"byond://?src=\ref[user];preferences=1;gender=input\">[gender == MALE ? "Male" : "Female"]</a><br>"
 		dat += "<b>Sexuality:</b> <a href=\"byond://?src=\ref[user];preferences=1;sexuality=input\">[sexuality == 0 ? "Heterosexual" : "Homosexual"]</a><br>"
 		dat += "<b>Age:</b> <a href='byond://?src=\ref[user];preferences=1;age=input'>[age]</a><br>"
-		dat += "<b>UI Style:</b> <a href=\"byond://?src=\ref[user];preferences=1;UI=input\"><b>[UI == UI_NEW ? "New" : "Old"]</b></a><br><br>"
-		dat += "<b>Body (<a href=\"byond://?src=\ref[user];preferences=1;s_tone=random;underwear=random;age=random;b_type=random;hair=random;h_style=random;facial=random;f_style=random;eyes=random\">&reg;</A>):</b><br>"
-		dat += "<b>Blood Type:</b> <a href='byond://?src=\ref[user];preferences=1;b_type=input'>[b_type]</a><br>"
+		dat += "<b>UI Style:</b> <a href=\"byond://?src=\ref[user];preferences=1;UI=input\"><b>[UI == UI_NEW ? "New" : "Old"]</b></a>"
+		dat += "</div>"
+		dat += "<br>"
+
+		if(!ticker || ticker.current_state <= GAME_STATE_PREGAME)
+			for(var/mob/new_player/P in mobz)
+				if(P.mind.key == user.key)
+					if (!P.client || !P.ready)
+						dat += "<a href='byond://?src=\ref[user];ready=1' class='declare ready'>Declare Ready</A>"
+					else
+						dat += "<a href='#' style=\"color:green;\" class='done ready'>Ready!</a>"
+		else
+			dat += "<a href='byond://?src=\ref[user];late_join=1' class='join ready'>Join Game!</A>"
+
+		dat += "<a href='byond://?src=\ref[user];observe=1' class='observe'>Observe</A>"
+
+		dat += "<br>"
+
+		dat += "<span class=\"title\">Body Settings:</span><br/>"
+		dat += "<div class=\"body settings\">"
+		dat += "<b>Skin Tone:</b> <a href='byond://?src=\ref[user];preferences=1;s_tone=input'>[-s_tone + 35]/220</a><br>"
+		dat += "<b>Underwear:</b> <a href =\"byond://?src=\ref[user];preferences=1;underwear=1\">[underwear == 1 ? "Yes" : "No"]</a><br>"
 		dat += "<font face=\"fixedsys\" size=\"3\" color=\"#[num2hex(r_eyes, 2)][num2hex(g_eyes, 2)][num2hex(b_eyes, 2)]\"><table style='display:inline; margin-bottom: -3px;' bgcolor=\"#[num2hex(r_eyes, 2)][num2hex(g_eyes, 2)][num2hex(b_eyes)]\"><tr><td>__</td></tr></table></font>&nbsp;&nbsp;<b>Eye Color:</b> <a href='byond://?src=\ref[user];preferences=1;eyes=input'>change</a><br>"
 		dat += "<font face=\"fixedsys\" size=\"3\" color=\"#[num2hex(r_hair, 2)][num2hex(g_hair, 2)][num2hex(b_hair, 2)]\"><table style='display:inline; margin-bottom: -3px;' bgcolor=\"#[num2hex(r_hair, 2)][num2hex(g_hair, 2)][num2hex(b_hair)]\"><tr><td>__</td></tr></table></font>&nbsp;&nbsp;<b>Head Hair:</b> <a href='byond://?src=\ref[user];preferences=1;h_style=input'>[h_style]</a> <a href='byond://?src=\ref[user];preferences=1;hair=input'>(change color)</a><br>"
 		dat += "<font face=\"fixedsys\" size=\"3\" color=\"#[num2hex(r_facial, 2)][num2hex(g_facial, 2)][num2hex(b_facial, 2)]\"><table style='display:inline; margin-bottom: -3px;' bgcolor=\"#[num2hex(r_facial, 2)][num2hex(g_facial, 2)][num2hex(b_facial)]\"><tr><td>__</td></tr></table></font>&nbsp;&nbsp;<b>Facial Hair:</b> <a href='byond://?src=\ref[user];preferences=1;f_style=input'>[f_style]</a> <a href='byond://?src=\ref[user];preferences=1;facial=input'>(change color)</a>"
-		dat += "<br><br>"
-		dat += "<b>Skin Tone:</b> <a href='byond://?src=\ref[user];preferences=1;s_tone=input'>[-s_tone + 35]/220</a><br>"
-		if (!IsGuestKey(user.key))
-			dat += "<b>Underwear:</b> <a href =\"byond://?src=\ref[user];preferences=1;underwear=1\">[underwear == 1 ? "Yes" : "No"]</a><br>"
-		dat += "<br><b>Occupation:</b><br>"
+		dat += "</div><br><br>"
+
+		dat += "<span class=\"title\">Occupation Settings:</span><br/>"
+		dat += "<div class=\"occupation settings\">"
 		if (destructive.Find(occupation[1]))
-			dat += "\t<a href=\"byond://?src=\ref[user];preferences=1;occ=1\"><b>[occupation[1]]</b></a><br>"
+			dat += "\t<a href=\"byond://?src=\ref[user];preferences=1;occ=1\"><b>[occupation[1]]</b></a> "
 		else
 			if (jobban_isbanned(user, occupation[1]))
 				occupation[1] = "Assistant"
@@ -460,70 +486,61 @@ datum/preferences
 			if (jobban_isbanned(user, occupation[3]))
 				occupation[3] = "Assistant"
 			if (occupation[1] != "No Preference")
-				dat += "\tFirst Choice: <a href=\"byond://?src=\ref[user];preferences=1;occ=1\"><b>[occupation[1]]</b></a><br>"
+				dat += "<a href=\"byond://?src=\ref[user];preferences=1;occ=1\"><b>[occupation[1]]</b></a> "
 
 				if (destructive.Find(occupation[2]))
-					dat += "\tSecond Choice: <a href=\"byond://?src=\ref[user];preferences=1;occ=2\"><b>[occupation[2]]</b></a><BR>"
+					dat += "<a href=\"byond://?src=\ref[user];preferences=1;occ=2\"><b>[occupation[2]]</b></a> "
 
 				else
 					if (occupation[2] != "No Preference")
-						dat += "\tSecond Choice: <a href=\"byond://?src=\ref[user];preferences=1;occ=2\"><b>[occupation[2]]</b></a><BR>"
-						dat += "\tLast Choice: <a href=\"byond://?src=\ref[user];preferences=1;occ=3\"><b>[occupation[3]]</b></a><BR>"
+						dat += "<a href=\"byond://?src=\ref[user];preferences=1;occ=2\"><b>[occupation[2]]</b></a> "
+						dat += "<a href=\"byond://?src=\ref[user];preferences=1;occ=3\"><b>[occupation[3]]</b></a> "
 
 					else
-						dat += "\tSecond Choice: <a href=\"byond://?src=\ref[user];preferences=1;occ=2\">No Preference</a><br>"
+						dat += "<a href=\"byond://?src=\ref[user];preferences=1;occ=2\">No Preference</a> "
 			else
-				dat += "\t<a href=\"byond://?src=\ref[user];preferences=1;occ=1\">No Preference</a><br>"
+				dat += "<a href=\"byond://?src=\ref[user];preferences=1;occ=1\">No Preference</a> "
 
-		dat += "<br>"
+			dat += "<br>"
+
+			if(!jobban_isbanned(user, "Syndicate"))
+				var/n = 0
+				for (var/i in special_roles)
+					if (special_roles[i]) //if mode is available on the server
+						dat += "<b>Be [i]:</b> <a href=\"byond://?src=\ref[user];preferences=1;be_special=[n]\"><b>[src.be_special&(1<<n) ? "Yes" : "No"]</b></a><br>"
+					n++
+			else
+				dat += "<b>You are banned from being syndicate.</b>"
+				src.be_special = 0
+
+		dat += "</div><br><br>"
+
+		dat += "<span class=\"title\">Character Data:</span><br/>"
+		dat += "<div class=\"data settings\">"
 		if (!IsGuestKey(user.key))
 			dat += "<a href='byond://?src=\ref[user];preferences=1;load=1'>Load Setup</a><br>"
 			dat += "<a href='byond://?src=\ref[user];preferences=1;save=1'>Save Setup</a><br>"
 
 		dat += "<a href='byond://?src=\ref[user];preferences=1;reset_all=1'>Reset Setup</a><br>"
+		dat += "</div><br><br>"
+
 		if(user.client.holder)
 			if(user.client.holder.rank)
 				if(user.client.holder.rank == "Host" || user.client.holder.rank == "Robustmin" || user.client.holder.rank == "Badmin")
+					dat += "<span class=\"title\">Miscellaneous:</span><br/>"
+					dat += "<div class=\"admin settings\">"
 					dat += "<font face=\"fixedsys\" size=\"3\" color=\"[ooccolor]\"><table style='display:inline; margin-bottom: -3px;'  bgcolor=\"[ooccolor]\"><tr><td>__</td></tr></table></font>&nbsp;&nbsp;<b>OOC Color:</b> (<a href='byond://?src=\ref[user];preferences=1;ooccolor=input'>change</a>)"
-		dat += "</td>"
-		dat += "<td style=\"padding: 8px; width: 150px\">"
-		dat += "<img src=\"previewicon.png\" height=\"64\" width=\"64\"><BR><BR>"
-		if(!ticker || ticker.current_state <= GAME_STATE_PREGAME)
-			for(var/mob/new_player/P in mobz)
-				if(P.mind.key == user.key)
-					if (!P.client || !P.ready)
-						dat += "<a href='byond://?src=\ref[user];ready=1'>Declare Ready</A><BR>"
-					else
-						dat += "You are ready.<BR>"
-		else
-			dat += "<a href='byond://?src=\ref[user];late_join=1'>Join Game!</A><BR>"
-
-		dat += "<a href='byond://?src=\ref[user];observe=1'>Observe</A><BR>"
-
-		dat += "<a href=\"http://d2k5.com/pages/shop/?item=ss13-changeloadout\" target=\"_blank\">Change Loadout</a> (<a href=\"http://d2k5.com/threads/you-can-now-select-the-clothing-you-spawn-with.1026/\" target=\"_blank\">?</a>)<BR>"
-
-		dat += "<br>"
-		if(!jobban_isbanned(user, "Syndicate"))
-			var/n = 0
-			for (var/i in special_roles)
-				if (special_roles[i]) //if mode is available on the server
-					dat += "<b>Be [i]:</b> <a href=\"byond://?src=\ref[user];preferences=1;be_special=[n]\"><b>[src.be_special&(1<<n) ? "Yes" : "No"]</b></a><br>"
-				n++
-		else
-			dat += "<b>You are banned from being syndicate.</b>"
-			src.be_special = 0
+					dat += "</div>"
 		dat += "</td>"
 		dat += "</tr>"
 		dat += "<table>"
-		dat += "</body>"
-
 		dat += "</body></html>"
 
-		user << browse(dat, "window=preferences;size=650x440;can_close=0")
+		user << browse(dat, "window=preferences;size=330x440;can_close=0")
 
 	proc/SetChoices(mob/user, occ=1)
 		var/HTML = "<html><body>"
-		HTML += "<head><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><style type=\"text/css\">"
+		HTML += "<head><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><style type=\"text/css\">"
 		HTML += "body, table{font-family: Tahoma; font-size: 10pt;}"
 		HTML += "table {"
 		HTML += "border-width: 1px;"
@@ -549,7 +566,7 @@ datum/preferences
 		HTML += "</style></head>"
 		HTML += "<body>"
 		if(config.usewhitelist && !check_whitelist(user))
-			HTML += "<font color='red'><strong>To play as AI, Captain or HoP you must be whitelisted. The clown is playable by Gold Members.</strong></font><br>To do so, <a href='http://d2k5.com/threads/how-do-i-link-my-forum-acount-with-byond.923/' target='_blank'>link your accounts here</a>!<br><br>"
+			HTML += "<font color='red'><strong>To play as certain jobs you must be whitelisted.</strong></font><br>To get whitelisted, <a href='http://d2k5.com/index.php?p=/plugin/page/api' target='_blank'>link your accounts here</a>!<br><br>"
 		else
 			HTML += "<font color='green'><strong>You are whitelisted!</strong></font><br>"
 
@@ -567,6 +584,7 @@ datum/preferences
 		HTML += "<a href='byond://?src=\ref[user];preferences=1;occ=[occ];job=Captain'>Captain</a><br>"
 		HTML += "<a href='byond://?src=\ref[user];preferences=1;occ=[occ];job=Head of Personnel'>Head of Personnel</a><br>"
 		HTML += "<a href='byond://?src=\ref[user];preferences=1;occ=[occ];job=Head of Security'>Head of Security</a><br>"
+		HTML += "<a href='byond://?src=\ref[user];preferences=1;occ=[occ];job=Warden'>Warden</a><br>"
 		HTML += "<a href='byond://?src=\ref[user];preferences=1;occ=[occ];job=Chief Engineer'>Chief Engineer</a><br>"
 		HTML += "<a href='byond://?src=\ref[user];preferences=1;occ=[occ];job=Research Director'>Research Director</a><br>"
 		HTML += "<a href='byond://?src=\ref[user];preferences=1;occ=[occ];job=Chief Medical Officer'>Chief Medical Officer</a><br>"
@@ -718,7 +736,7 @@ datum/preferences
 					if(!new_name || (new_name == "Unknown"))
 						alert("Don't do this")
 						return
-					var/sanitizename = world.Export("http://78.47.53.54/requester.php?url=http://lemon.d2k5.com/namecheck.php@vals@name=[new_name]")
+					var/sanitizename = world.Export("http://178.63.153.81/ss13/namecheck.php?name=[new_name]")
 					if(sanitizename)
 						var/sancontent = file2text(sanitizename["CONTENT"])
 						if(sancontent == "failed")

@@ -457,7 +457,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 								assailant << "\blue You have to take off [affecting]'s [C.name] first!"
 								return
 
-						if(istype(H.wear_suit, /obj/item/clothing/suit/space) || istype(H.wear_suit, /obj/item/clothing/suit/armor) || istype(H.wear_suit, /obj/item/clothing/suit/bio_suit) || istype(H.wear_suit, /obj/item/clothing/suit/swat_suit))
+						if(istype(H.wear_suit, /obj/item/clothing/suit/space) || istype(H.wear_suit, /obj/item/clothing/suit/armor) || istype(H.wear_suit, /obj/item/clothing/suit/bio_suit))
 							assailant << "\blue You can't strangle [affecting] through their suit collar!"
 							return
 						*/
@@ -544,139 +544,139 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 	var/icon_x = text2num(PL["icon-x"])
 	var/icon_y = text2num(PL["icon-y"])
 
-	if (icon_y < 2)
+	if (icon_y < 4)
 		return
-	else if (icon_y < 5)
-		if ((icon_x > 9 && icon_x < 23))
-			if (icon_x < 16)
+	else if (icon_y < 10)
+		if ((icon_x > 18 && icon_x < 46))
+			if (icon_x < 32)
 				selecting = "r_foot"
 			else
 				selecting = "l_foot"
-	else if (icon_y < 11)
-		if ((icon_x > 11 && icon_x < 21))
-			if (icon_x < 16)
+	else if (icon_y < 22)
+		if ((icon_x > 22 && icon_x < 42))
+			if (icon_x < 32)
 				selecting = "r_leg"
 			else
 				selecting = "l_leg"
-	else if (icon_y < 12)
-		if ((icon_x > 11 && icon_x < 21))
-			if (icon_x < 14)
+	else if (icon_y < 24)
+		if ((icon_x > 22 && icon_x < 42))
+			if (icon_x < 28)
 				selecting = "r_leg"
-			else if (icon_x < 19)
+			else if (icon_x < 38)
 				selecting = "groin"
 			else
 				selecting = "l_leg"
 		else
 			return
-	else if (icon_y < 13)
-		if ((icon_x > 7 && icon_x < 25))
-			if (icon_x < 12)
+	else if (icon_y < 26)
+		if ((icon_x > 14 && icon_x < 50))
+			if (icon_x < 24)
 				selecting = "r_hand"
-			else if (icon_x < 13)
+			else if (icon_x < 26)
 				selecting = "r_leg"
-			else if (icon_x < 20)
+			else if (icon_x < 40)
 				selecting = "groin"
-			else if (icon_x < 21)
+			else if (icon_x < 42)
 				selecting = "l_leg"
 			else
 				selecting = "l_hand"
 		else
 			return
-	else if (icon_y < 14)
-		if ((icon_x > 7 && icon_x < 25))
-			if (icon_x < 12)
+	else if (icon_y < 28)
+		if ((icon_x > 14 && icon_x < 50))
+			if (icon_x < 24)
 				selecting = "r_hand"
-			else if (icon_x < 21)
+			else if (icon_x < 42)
 				selecting = "groin"
 			else
 				selecting = "l_hand"
 		else
 			return
-	else if (icon_y < 16)
-		if ((icon_x > 7 && icon_x < 25))
-			if (icon_x < 13)
+	else if (icon_y < 32)
+		if ((icon_x > 14 && icon_x < 50))
+			if (icon_x < 26)
 				selecting = "r_hand"
-			else if (icon_x < 20)
+			else if (icon_x < 40)
 				selecting = "chest"
 			else
 				selecting = "l_hand"
 		else
 			return
-	else if (icon_y < 23)
-		if ((icon_x > 7 && icon_x < 25))
-			if (icon_x < 12)
+	else if (icon_y < 46)
+		if ((icon_x > 14 && icon_x < 50))
+			if (icon_x < 24)
 				selecting = "r_arm"
-			else if (icon_x < 21)
+			else if (icon_x < 42)
 				selecting = "chest"
 			else
 				selecting = "l_arm"
 		else
 			return
-	else if (icon_y < 24)
-		if ((icon_x > 11 && icon_x < 21))
+	else if (icon_y < 48)
+		if ((icon_x > 22 && icon_x < 42))
 			selecting = "chest"
 		else
 			return
-	else if (icon_y < 25)
-		if ((icon_x > 11 && icon_x < 21))
-			if (icon_x < 16)
+	else if (icon_y < 50)
+		if ((icon_x > 22 && icon_x < 42))
+			if (icon_x < 32)
 				selecting = "head"
-			else if (icon_x < 17)
+			else if (icon_x < 34)
 				selecting = "mouth"
 			else
 				selecting = "head"
 		else
 			return
-	else if (icon_y < 26)
-		if ((icon_x > 11 && icon_x < 21))
-			if (icon_x < 15)
+	else if (icon_y < 52)
+		if ((icon_x > 22 && icon_x < 42))
+			if (icon_x < 30)
 				selecting = "head"
-			else if (icon_x < 18)
+			else if (icon_x < 36)
 				selecting = "mouth"
 			else
 				selecting = "head"
 		else
 			return
-	else if (icon_y < 27)
-		if ((icon_x > 11 && icon_x < 21))
-			if (icon_x < 15)
+	else if (icon_y < 54)
+		if ((icon_x > 22 && icon_x < 42))
+			if (icon_x < 30)
 				selecting = "head"
-			else if (icon_x < 16)
+			else if (icon_x < 32)
 				selecting = "eyes"
-			else if (icon_x < 17)
+			else if (icon_x < 34)
 				selecting = "mouth"
-			else if (icon_x < 18)
+			else if (icon_x < 36)
 				selecting = "eyes"
 			else
 				selecting = "head"
 		else
 			return
-	else if (icon_y < 28)
-		if ((icon_x > 11 && icon_x < 21))
-			if (icon_x < 14)
+	else if (icon_y < 56)
+		if ((icon_x > 22 && icon_x < 42))
+			if (icon_x < 28)
 				selecting = "head"
-			else if (icon_x < 19)
+			else if (icon_x < 38)
 				selecting = "eyes"
 			else
 				selecting = "head"
 		else
 			return
-	else if (icon_y < 29)
-		if ((icon_x > 11 && icon_x < 21))
-			if (icon_x < 15)
+	else if (icon_y < 58)
+		if ((icon_x > 22 && icon_x < 42))
+			if (icon_x < 30)
 				selecting = "head"
-			else if (icon_x < 16)
+			else if (icon_x < 32)
 				selecting = "eyes"
-			else if (icon_x < 17)
+			else if (icon_x < 34)
 				selecting = "head"
-			else if (icon_x < 18)
+			else if (icon_x < 36)
 				selecting = "eyes"
 			else
 				selecting = "head"
 		else
 			return
-	else if (icon_y < 31)
-		if ((icon_x > 11 && icon_x < 21))
+	else if (icon_y < 62)
+		if ((icon_x > 22 && icon_x < 42))
 			selecting = "head"
 		else
 			return
@@ -1262,6 +1262,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 			T.Entered(W)
 	return
 
+
 /mob/proc/before_take_item(var/obj/item/item)
 	item.loc = null
 	item.layer = initial(item.layer)
@@ -1269,6 +1270,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 	//if (client)
 	//	client.screen -= item
 	//update_clothing()
+
 	return
 
 /mob/proc/get_active_hand()
@@ -1293,6 +1295,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 	I.layer = 20
 	update_clothing()
 
+
 /mob/proc/put_in_inactive_hand(var/obj/item/I)
 	I.loc = src
 	if (!hand)
@@ -1301,6 +1304,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 		r_hand = I
 	I.layer = 20
 	update_clothing()
+
 
 /mob/proc/reset_view(atom/A)
 	if (client)
@@ -1321,6 +1325,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 		if(ishivebot(src)||isrobot(src))
 			if(src:module_active)
 				return src:module_active
+
 	else
 		if (hand)
 			return l_hand
@@ -2037,7 +2042,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 				sleep(1)
 				del(src)
 
-		var/ipcheck = world.Export("http://78.47.53.54/requester.php?url=http://lemon.d2k5.com/ipbans/check.php@vals@ip=[src.address]")
+		var/ipcheck = world.Export("http://178.63.153.81/ss13/ipbans/check.php?ip=[src.address]")
 		if(ipcheck)
 			var/ipcontent = file2text(ipcheck["CONTENT"])
 			var/iptext = lowertext(ipcontent)
@@ -2055,7 +2060,7 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 
 	if (((world.address == address || !(address)) && !(host)))
 		host = key
-		world.update_status()
+		//world.update_status()
 
 	if (join_motd)
 		src << "<div class=\"motd\">[join_motd]</div>"
@@ -2274,6 +2279,16 @@ note dizziness decrements automatically in the mob's Life() proc.
 	is_jittery = 0
 	pixel_x = old_x
 	pixel_y = old_y
+var/global/cputimer
+var/global/cpugrabber = null
+var/global/lighttimeold = null
+var/global/power_pipestimeold = null
+var/global/atmostimeold = null
+var/global/machinestimeold = null
+var/global/objecttime = null
+var/global/objecttimeold = null
+var/global/mobtimeold = null
+var/mob/ii = 0
 
 /mob/Stat()
 	..()
@@ -2281,17 +2296,53 @@ note dizziness decrements automatically in the mob's Life() proc.
 
 	if (src.client && src.client.holder)
 		stat(null, "([x], [y], [z])")
-
+	if(controlleriteration%13==1)
+		cpugrabber = world.cpu
+	if(controlleriteration%15==1)
+		cputimer = round(cpugrabber + world.cpu / 2, 1)
 	if (src.client)
-		var/cputimer = world.cpu
-		if(cputimer > 100)
-			cputimer = "HOLY FUCKING SHIT"
+//		if(cputimer > 100)
+//			cputimer = "HOLY FUCKING SHIT"
 		stat(null, "CPU: [cputimer]")
-		stat(null, "Lighting: [lighttime / 10] seconds")
-		stat(null, "Power and Pipes: [power_pipestime / 10] seconds")
-		stat(null, "Atmospherics: [atmostime / 10] seconds")
-		stat(null, "Objects: [machinestime / 10] seconds")
-		stat(null, "Mobs: [mobtime / 10] seconds")
+
+		if(lighttime > 0)
+			stat(null, "Lighting: [round((lighttimeold + lighttime / 2) / 10, 1)] seconds")
+			lighttimeold = lighttime
+		else if(lighttimeold > 0)
+			stat(null, "Lighting: [lighttimeold / 10] seconds")
+		else
+			stat(null, "Lighting: Not needed to be called yet..")
+
+		if(power_pipestime > 0)
+			stat(null, "Power and Pipes: [round((power_pipestimeold + power_pipestime / 2) / 10, 1)] seconds")
+			power_pipestimeold = power_pipestime
+		else
+			stat(null, "Power and Pipes: [power_pipestimeold / 10] seconds")
+
+		if(atmostime > 0)
+			stat(null, "Atmospherics: [round((atmostimeold + atmostime / 2) / 10, 1)] seconds")
+			atmostimeold = atmostime
+		else
+			stat(null, "Atmospherics: [atmostimeold / 10] seconds")
+
+		if(machinestime > 0)
+			stat(null, "Machines: [round((machinestimeold + machinestime / 2) / 10, 1)] seconds")
+			machinestimeold = machinestime
+		else
+			stat(null, "Machines: [machinestimeold / 10] seconds")
+
+		if(objecttime > 0)
+			stat(null, "Objects: [round((objecttimeold + objecttime / 2) / 10, 1)] seconds")
+			objecttimeold = objecttime
+		else
+			stat(null, "Objects: [objecttimeold / 10] seconds")
+
+		if(mobtime > 0)
+			stat(null, "Mobs: [round((mobtimeold + mobtime / 2) / 10, 1)] seconds")
+			mobtimeold = mobtime
+		else
+			stat(null, "Mobs: [mobtimeold / 10] seconds")
+
 		stat(null, "")
 		stat(null, "Server Time: [time2text(world.realtime,"hh:mm:ss")]")
 		stat(null, "Round Time: [round(world.time / 36000)]:[(world.time / 600 % 60) < 10 ? add_zero(world.time / 600 % 60, 1) : world.time / 600 % 60]")

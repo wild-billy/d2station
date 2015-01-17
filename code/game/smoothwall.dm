@@ -15,6 +15,9 @@
 		for(var/obj/falsewall/W in orange(src,1))
 			if(abs(src.x-W.x)-abs(src.y-W.y)) //doesn't count diagonal walls
 				junction |= get_dir(src,W)
+		for(var/obj/machinery/door/airlock/W in orange(src,1))
+			if(abs(src.x-W.x)-abs(src.y-W.y)) //doesn't count diagonal walls
+				junction |= get_dir(src,W)
 
 /* Commenting this out for now until we figure out what to do with shuttle smooth walls, if anything.
    As they are now, they sort of work screwy and may need further coding. Or just be scrapped.*/
@@ -41,6 +44,9 @@
 		src.icon_state = "rwall[junction]"
 	else if (istype(src,/obj/falsewall))
 		src.icon_state = "wall[junction]"
+	else if (istype(src,/obj/machinery/door/airlock))
+		src.underlays += image(icon='Doorcom.dmi',icon_state="wall[junction]")
+
 /*	else if(istype(src,/turf/simulated/shuttle/wall))
 		var/newicon = icon;
 		var/newiconstate = icon_state;
@@ -83,6 +89,8 @@
 	for(var/obj/falsewall/W in range(src,1))
 		W.relativewall()
 
+	for(var/obj/machinery/door/airlock/W in range(src,1))
+		W.relativewall()
 	..()
 
 /obj/falsewall/New()
@@ -93,6 +101,8 @@
 	for(var/obj/falsewall/W in range(src,1))
 		W.relativewall()
 
+	for(var/obj/machinery/door/airlock/W in range(src,1))
+		W.relativewall()
 	..()
 
 /*/turf/simulated/shuttle/wall/New()

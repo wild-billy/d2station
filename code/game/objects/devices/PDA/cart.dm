@@ -210,7 +210,7 @@
 	proc/generate_menu()
 		switch(mode)
 			if(40) //signaller
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_signaler.png> Remote Signaling System</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_signaler.png> Remote Signaling System</h4>"
 
 				menu += {"
 <a href='byond://?src=\ref[src];choice=Send Signal'>Send Signal</A><BR>
@@ -229,7 +229,7 @@ Code:
 <a href='byond://?src=\ref[src];choice=Signal Code;scode=5'>+</a><br>"}
 			if (41) //crew manifest
 
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_notes.png> Crew Manifest</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_notes.png> Crew Manifest</h4>"
 				menu += "Entries cannot be modified from this terminal.<br><br>"
 
 				for (var/datum/data/record/t in data_core.general)
@@ -238,7 +238,7 @@ Code:
 
 
 			if (42) //status displays
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_status.png> Station Status Display Interlink</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_status.png> Station Status Display Interlink</h4>"
 
 				menu += "\[ <A HREF='?src=\ref[src];choice=Status;statdisp=blank'>Clear</A> \]<BR>"
 				menu += "\[ <A HREF='?src=\ref[src];choice=Status;statdisp=shuttle'>Shuttle ETA</A> \]<BR>"
@@ -251,7 +251,7 @@ Code:
 				menu += " <A HREF='?src=\ref[src];choice=Status;statdisp=alert;alert=biohazard'>Biohazard</A> \]<BR>"
 
 			if (43) //Muskets' power monitor
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_power.png> Power Monitor</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_power.png> Power Monitor</h4>"
 
 				if(!powerreport)
 					menu += "\red No connection"
@@ -279,7 +279,7 @@ Code:
 					menu += "</FONT></PRE>"
 
 			if (44) //medical records //This thing only displays a single screen so it's hard to really get the sub-menu stuff working.
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_medical.png> Medical Record List</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_medical.png> Medical Record List</h4>"
 				for (var/datum/data/record/R in data_core.general)
 					menu += "<a href='byond://?src=\ref[src];choice=Medical Records;target=\ref[R]'>[R.fields["id"]]: [R.fields["name"]]<br>"
 				menu += "<br>"
@@ -320,14 +320,14 @@ Code:
 
 				menu += "<br>"
 			if (45) //security records
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_cuffs.png> Security Record List</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_cuffs.png> Security Record List</h4>"
 
 				for (var/datum/data/record/R in data_core.general)
 					menu += "<a href='byond://?src=\ref[src];choice=Security Records;target=\ref[R]'>[R.fields["id"]]: [R.fields["name"]]<br>"
 
 				menu += "<br>"
 			if(451)
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_cuffs.png> Security Record</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_cuffs.png> Security Record</h4>"
 
 				if (istype(active1, /datum/data/record) && (active1 in data_core.general))
 					menu += "Name: [active1.fields["name"]] ID: [active1.fields["id"]]<br>"
@@ -363,7 +363,7 @@ Code:
 					menu = "Interlink Error - Please reinsert cartridge."
 					return
 
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_cuffs.png> Securitron Interlink</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_cuffs.png> Securitron Interlink</h4>"
 
 				if(!SC.active)
 					// list of bots
@@ -407,7 +407,7 @@ Code:
 						menu += "<HR><A href='byond://?src=\ref[SC];op=botlist'><img src=pda_back.png>Return to bot list</A>"
 
 			if (47) //quartermaster order records
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_crate.png> Supply Record Interlink</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_crate.png> Supply Record Interlink</h4>"
 
 				menu += "<BR><B>Supply shuttle</B><BR>"
 				menu += "Location: [supply_shuttle_moving ? "Moving to station ([supply_shuttle_timeleft] Mins.)":supply_shuttle_at_station ? "Station":"Dock"]<BR>"
@@ -429,7 +429,7 @@ Code:
 					menu = "Interlink Error - Please reinsert cartridge."
 					return
 
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_mule.png> M.U.L.E. bot Interlink V0.8</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_mule.png> M.U.L.E. bot Interlink V0.8</h4>"
 
 				if(!QC.active)
 					// list of bots
@@ -482,7 +482,7 @@ Code:
 						menu += "<HR><A href='byond://?src=\ref[QC];op=botlist'><img src=pda_back.png>Return to bot list</A>"
 
 			if (49) //janitorial locator
-				menu = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><h4><img src=pda_bucket.png> Persistent Custodial Object Locator</h4>"
+				menu = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><h4><img src=pda_bucket.png> Persistent Custodial Object Locator</h4>"
 
 				var/turf/cl = get_turf(src)
 				if (cl)

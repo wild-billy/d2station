@@ -66,10 +66,10 @@
 
 
 /obj/item/weapon/extinguisher/New()
-	var/datum/reagents/R = new/datum/reagents(50)
+	var/datum/reagents/R = new/datum/reagents(250)
 	reagents = R
 	R.my_atom = src
-	R.add_reagent("water", 50)
+	R.add_reagent("water", 250)
 
 /obj/item/weapon/extinguisher/examine()
 	set src in usr
@@ -92,11 +92,11 @@
 		if (src.reagents.total_volume < 1)
 			return
 
-		if (world.time < src.last_use + 20)
+		if (world.time < src.last_use + 5)
 			return
 
 		src.last_use = world.time
-/*
+
 		if(loaded)
 			if(istype(loaded, /obj/item))
 				var/turf/targloc = get_turf(target)
@@ -106,7 +106,7 @@
 				loaded = null
 				playsound(src.loc, 'bamf.ogg', 30, 1, -3)
 			return
-*/
+
 		playsound(src.loc, 'extinguish.ogg', 30, 1, -3)
 
 		var/direction = get_dir(src,target)
@@ -270,7 +270,7 @@
 
 /obj/item/weapon/teleportation_scroll/attack_self(mob/user as mob)
 	user.machine = src
-	var/dat = "<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Teleportation Scroll:</B><BR>"
+	var/dat = "<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Teleportation Scroll:</B><BR>"
 	dat += "Number of uses: [src.uses]<BR>"
 	dat += "<HR>"
 	dat += "<B>Four uses use them wisely:</B><BR>"

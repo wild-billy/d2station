@@ -17,6 +17,7 @@
 	var/onright = 0
 	var/onrightshoulder = 0
 	var/onleftshoulder = 0
+
 /obj/item/mecha_parts/mecha_equipment/proc/do_after_cooldown(target=1)
 	sleep(equip_cooldown)
 	set_ready_state(1)

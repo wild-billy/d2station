@@ -18,6 +18,9 @@ datum
 		var/color_g = 0
 		var/color_b = 0
 		var/color_a = 255
+		var/mob/stoned
+		var/mob/opiates
+		var/mob/tripping
 		var/melting_temp = 273	//In degrees Kelvin
 		var/boiling_temp = 373	//293K, 68.7F, or 20C is approximately room temperature on the station
 		var/current_temp = 293	//For debugging and keeping track of a reagent's temperature
@@ -78,17 +81,18 @@ datum
 			on_update(var/atom/A)
 				return
 
-/*			distribute_temperature_changes(enacted_temperature)
+			distribute_temperature_changes(enacted_temperature)
 				var/enact_temp = enacted_temperature			//The amount of temperature change that will be spread out to the reagents
 				var/temp_diff = 0
-				for(var/datum/reagent/T in holder.reagent_list)
-					temp_diff = abs(enact_temp - T.current_temp)
-					if(temp_diff > 0.5)
-						if(T.current_temp < enact_temp)
-							T.current_temp += temp_diff / T.volume
-						else
-							T.current_temp -= temp_diff / T.volume
-					T.check_phase_transition(current_temp)
+				if(holder.reagent_list)
+					for(var/datum/reagent/T in holder.reagent_list)
+						temp_diff = abs(enact_temp - T.current_temp)
+						if(temp_diff > 0.5)
+							if(T.current_temp < enact_temp)
+								T.current_temp += temp_diff / T.volume
+							else
+								T.current_temp -= temp_diff / T.volume
+						T.check_phase_transition(current_temp)
 
 			check_phase_transition(exposed_temperature)
 				current_temp = exposed_temperature
@@ -97,12 +101,14 @@ datum
 						reagent_state = SOLID
 						for(var/mob/O in viewers(world.view, holder.my_atom.loc))
 							O.show_message(text("\blue Something in the [] solidifies!", holder.my_atom.name), 1)
+						holder.handle_reactions()
 						return
 				else if(current_temp < boiling_temp && current_temp > melting_temp)
 					if(reagent_state != LIQUID)
 						reagent_state = LIQUID
 						for(var/mob/O in viewers(world.view, holder.my_atom.loc))
 							O.show_message(text("\blue Something in the [] liquifies!", holder.my_atom.name), 1)
+						holder.handle_reactions()
 						return
 				else if(current_temp >= boiling_temp)
 					if(reagent_state != GAS)
@@ -110,9 +116,10 @@ datum
 						for(var/mob/O in viewers(world.view, holder.my_atom.loc))
 							O.show_message(text("\blue Something in the [] bubbles into vapour!", holder.my_atom.name), 1)
 							playsound(get_turf(holder.my_atom), 'bubbles.ogg', 80, 1)
+						holder.handle_reactions()
 						return
 				return
-*/
+
 		metroid
 			name = "Metroid Jam"
 			id = "metroid"
@@ -3630,30 +3637,10 @@ datum
 			addictive = 1
 			on_mob_life(var/mob/living/M as mob)
 				if(!M) M = holder.my_atom
-				M.druggy = max(M.druggy, 30)
-				if(!data) data = 1
-				switch(data)
-					if(1 to 5)
-						if (!M:stuttering) M:stuttering = 1
-						M.make_dizzy(5)
-						if(prob(10)) M:emote(pick("twitch","giggle"))
-					if(5 to 10)
-						if (!M:stuttering) M:stuttering = 1
-						M.make_jittery(10)
-						M.make_dizzy(10)
-						M.druggy = max(M.druggy, 35)
-						if(prob(20)) M:emote(pick("twitch","giggle"))
-					if (10 to INFINITY)
-						if (!M:stuttering) M:stuttering = 1
-						M.make_jittery(20)
-						M.make_dizzy(20)
-						M.druggy = max(M.druggy, 40)
-						if(prob(30)) M:emote(pick("twitch","giggle"))
-				holder.remove_reagent(src.id, 0.2)
-				data++
+				if(!M.tripping) M.tripping++
+				M.tripping++
 				..()
 				return
-
 		opium
 			name = "Opium"
 			id = "opium"
@@ -3662,8 +3649,10 @@ datum
 			color_g = 232
 			color_b = 232
 			addictive = 1
-			on_mob_life(var/mob/M)
-				M.druggy = max(M.druggy, 10)
+			on_mob_life(var/mob/living/M as mob)
+				if(!M) M = holder.my_atom
+				if(!M.opiates) M.opiates++
+				M.opiates++
 				..()
 				return
 
@@ -3675,9 +3664,10 @@ datum
 			color_g = 234
 			color_b = 167
 			addictive = 0
-			on_mob_life(var/mob/M)
-				M.druggy = max(M.druggy, 20)
-				if(prob(14)) M:emote(pick("giggle","smile","laugh"))
+			on_mob_life(var/mob/living/M as mob)
+				if(!M) M = holder.my_atom
+				if(!M.stoned) M.stoned++
+				M.stoned++
 				..()
 				return
 
@@ -4376,11 +4366,11 @@ datum
 			//	M.dizziness +=3
 				if(data >= 45 && data <125)
 					if (!M.stuttering) M.stuttering = 1
-					M.stuttering += 3
-					M:confused += 0.5
-					M:drowsyness += 0.5
+					M.stuttering += 4
+					M:confused += 1
+					M:drowsyness += 1
 				else if(data >= 125 && prob(33))
-					M.confused = max(M:confused+2,0)
+					M.confused = max(M:confused+3,0)
 				..()
 				return
 
@@ -4423,11 +4413,11 @@ datum
 			//	M.dizziness +=3
 				if(data >= 45 && data <125)
 					if (!M.stuttering) M.stuttering = 1
-					M.stuttering += 3
-					M:confused += 0.5
-					M:drowsyness += 0.5
+					M.stuttering += 5
+					M:confused += 2
+					M:drowsyness += 2
 				else if(data >= 125 && prob(33))
-					M.confused = max(M:confused+2,0)
+					M.confused = max(M:confused+5,0)
 				..()
 				return
 
@@ -4446,9 +4436,9 @@ datum
 			//	M.dizziness +=3
 				if(data >= 45 && data <125)
 					if (!M.stuttering) M.stuttering = 1
-					M.stuttering += 3
-					M:confused += 0.5
-					M:drowsyness += 0.5
+					M.stuttering += 4
+					M:confused += 1
+					M:drowsyness += 1
 				else if(data >= 125 && prob(33))
 					M.confused = max(M:confused+2,0)
 				..()
@@ -4469,11 +4459,11 @@ datum
 			//	M.dizziness +=3
 				if(data >= 45 && data <125)
 					if (!M.stuttering) M.stuttering = 1
-					M.stuttering += 3
-					M:confused += 0.5
+					M.stuttering += 5
+					M:confused += 2
 					M:drowsyness += 0.5
 				else if(data >= 125 && prob(33))
-					M.confused = max(M:confused+2,0)
+					M.confused = max(M:confused+3,0)
 				..()
 				return
 
@@ -4591,9 +4581,9 @@ datum
 			//	M.dizziness +=4
 				if(data >= 45 && data <115)
 					if (!M.stuttering) M.stuttering = 1
-					M.stuttering += 3
-					M:confused += 0.5
-					M:drowsyness += 0.5
+					M.stuttering += 5
+					M:confused += 4
+					M:drowsyness += 2
 				else if(data >= 115 && prob(33))
 					M.confused = max(M:confused+2,0)
 				..()
@@ -5012,7 +5002,7 @@ datum
 						M:bloodstopper = 1
 						if(prob(20))
 							M:removePart(pick("M/arm_left","M/arm_right","M/leg_left","M/leg_right","M/foot_left","M/foot_right", "M/head"))
-							playsound(M.loc, 'glock.ogg', 65, 1) //it just sounded best like this
+							playsound(M.loc, 'Glock.ogg', 65, 1) //it just sounded best like this
 							M.blood = (M.blood-5) //haha yes
 						..()
 						if(prob(5))

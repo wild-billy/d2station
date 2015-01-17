@@ -292,13 +292,13 @@
 		for(var/mob/living/silicon/ai/O in mobz)
 			//if (O.current == src)
 			O << "[user] holds a paper up to one of your cameras ..."
-			O << browse(text("<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
+			O << browse(text("<HTML><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
 		for(var/mob/O in mobz)
 			if (istype(O.machine, /obj/machinery/computer/security))
 				var/obj/machinery/computer/security/S = O.machine
 				if (S.current == src)
 					O << "[user] holds a paper up to one of the cameras ..."
-					O << browse(text("<HTML><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
+					O << browse(text("<HTML><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", X.name, X.info), text("window=[]", X.name))
 	else if (istype(W, /obj/item/weapon/wrench)) //Adding dismantlable cameras to go with the constructable ones. --NEO
 		if(src.status)
 			user << "\red You can't dismantle a camera while it is active."

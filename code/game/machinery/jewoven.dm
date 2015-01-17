@@ -127,7 +127,7 @@
 			dat += "<A href='?src=\ref[src];op=temp;val=5000'>+</A><BR>"
 
 			user.machine = src
-			user << browse("<HEAD><link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><TITLE>NaziTech Air-Oven Control Panel:</TITLE></HEAD><TT>[dat]</TT>", "window=jewoven")
+			user << browse("<HEAD><link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><TITLE>NaziTech Air-Oven Control Panel:</TITLE></HEAD><TT>[dat]</TT>", "window=jewoven")
 			onclose(user, "jewoven")
 
 		else if (anchored == 1)

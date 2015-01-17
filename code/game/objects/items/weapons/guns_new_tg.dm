@@ -1025,7 +1025,7 @@
 				else
 					temp_text = "<FONT color=red>[temperature] ([round(temperature+T0C)]&deg;C) ([round(temperature*1.8+459.67)]&deg;F)</FONT>"
 
-				var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Plasma Gun Configuration: </B><BR>
+				var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Plasma Gun Configuration: </B><BR>
 				Current output temperature: [temp_text]<BR>
 				Target output temperature: <A href='?src=\ref[src];temp=-100'>-</A> <A href='?src=\ref[src];temp=-10'>-</A> <A href='?src=\ref[src];temp=-1'>-</A> [current_temperature] <A href='?src=\ref[src];temp=1'>+</A> <A href='?src=\ref[src];temp=10'>+</A> <A href='?src=\ref[src];temp=100'>+</A><BR>
 				"}
@@ -1182,7 +1182,7 @@
 				else
 					temp_text = "<FONT color=blue>[temperature] ([round(temperature-T0C)]&deg;C) ([round(temperature*1.8-459.67)]&deg;F)</FONT>"
 
-				var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Freeze Gun Configuration: </B><BR>
+				var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Freeze Gun Configuration: </B><BR>
 				Current output temperature: [temp_text]<BR>
 				Target output temperature: <A href='?src=\ref[src];temp=-100'>-</A> <A href='?src=\ref[src];temp=-10'>-</A> <A href='?src=\ref[src];temp=-1'>-</A> [current_temperature] <A href='?src=\ref[src];temp=1'>+</A> <A href='?src=\ref[src];temp=10'>+</A> <A href='?src=\ref[src];temp=100'>+</A><BR>
 				"}
@@ -1267,7 +1267,7 @@
 				else
 					temp_text = "<FONT color=red>[temperature] ([round(temperature+T0C)]&deg;C) ([round(temperature*1.8+459.67)]&deg;F)</FONT>"
 
-				var/dat = {"<link rel='stylesheet' href='http://lemon.d2k5.com/ui.css' /><B>Plasma Gun Configuration: </B><BR>
+				var/dat = {"<link rel='stylesheet' href='http://178.63.153.81/ss13/ui.css' /><B>Plasma Gun Configuration: </B><BR>
 				Current output temperature: [temp_text]<BR>
 				Target output temperature: <A href='?src=\ref[src];temp=-100'>-</A> <A href='?src=\ref[src];temp=-10'>-</A> <A href='?src=\ref[src];temp=-1'>-</A> [current_temperature] <A href='?src=\ref[src];temp=1'>+</A> <A href='?src=\ref[src];temp=10'>+</A> <A href='?src=\ref[src];temp=100'>+</A><BR>
 				"}
